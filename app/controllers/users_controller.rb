@@ -131,7 +131,7 @@ class UsersController < ApplicationController
 
     permitted_params += [dmail_filter_attributes: %i[id words]]
     permitted_params += [:profile_about, :profile_artinfo, :avatar_id] if CurrentUser.is_member? # Prevent editing when blocked
-    permitted_params += [:enable_compact_uploader] if context != :create && CurrentUser.post_upload_count >= 10
+    permitted_params += [:enable_compact_uploader] if context != :create && CurrentUser.post_active_count >= Danbooru.config.compact_uploader_minimum_posts
     permitted_params += [:name, :email] if context == :create
 
     params.require(:user).permit(permitted_params)

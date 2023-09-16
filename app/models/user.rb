@@ -68,7 +68,7 @@ class User < ApplicationRecord
     no_feedback
     disable_user_dmails
     enable_compact_uploader
-    replacements_beta
+    no_replacements
   )
 
   include PawsMovin::HasBitFlags
@@ -526,7 +526,9 @@ class User < ApplicationRecord
     end
 
     def can_replace?
-      is_janitor? || replacements_beta?
+      return true if is_janitor?
+      return false if no_replacements?
+      post_active_count >= Danbooru.config.replacements_minimum_posts
     end
 
     def can_view_staff_notes?
@@ -682,6 +684,10 @@ class User < ApplicationRecord
 
     def post_update_count
       user_status.post_update_count
+    end
+
+    def post_active_count
+      post_upload_count - post_deleted_count
     end
 
     def post_upload_count

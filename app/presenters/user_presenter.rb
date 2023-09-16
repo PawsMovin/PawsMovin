@@ -30,10 +30,6 @@ class UserPresenter
       permissions << "unrestricted uploads"
     end
 
-    if user.replacements_beta?
-      permissions << "replacements beta"
-    end
-
     permissions.join(", ")
   end
 
@@ -73,7 +69,7 @@ class UserPresenter
   end
 
   def active_upload_count(template)
-    template.link_to(user.post_upload_count - user.post_deleted_count, template.posts_path(tags: "user:#{user.name}"))
+    template.link_to(user.post_active_count, template.posts_path(tags: "user:#{user.name}"))
   end
 
   def deleted_upload_count(template)
