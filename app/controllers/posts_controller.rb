@@ -202,17 +202,17 @@ class PostsController < ApplicationController
           warnings = post.warnings.full_messages.join(".\n \n")
           if warnings.length > 45_000
             Dmail.create_automated({
-                                       to_id: CurrentUser.id,
-                                       title: "Post update notices for post ##{post.id}",
-                                       body: "While editing post ##{post.id} some notices were generated. Please review them below:\n\n#{warnings[0..45_000]}"
-                                   })
+               to_id: CurrentUser.id,
+               title: "Post update notices for post ##{post.id}",
+               body: "While editing post ##{post.id} some notices were generated. Please review them below:\n\n#{warnings[0..45_000]}"
+           })
             flash[:notice] = "What the heck did you even do to this poor post? That generated way too many warnings. But you get a dmail with most of them anyways"
           elsif warnings.length > 1500
             Dmail.create_automated({
-                                       to_id: CurrentUser.id,
-                                       title: "Post update notices for post ##{post.id}",
-                                       body: "While editing post ##{post.id} some notices were generated. Please review them below:\n\n#{warnings}"
-                                   })
+                 to_id: CurrentUser.id,
+                 title: "Post update notices for post ##{post.id}",
+                 body: "While editing post ##{post.id} some notices were generated. Please review them below:\n\n#{warnings}"
+             })
             flash[:notice] = "This edit created a LOT of notices. They have been dmailed to you. Please review them"
           else
             flash[:notice] = warnings

@@ -130,17 +130,18 @@ class PostVersion < ApplicationRecord
 
   def self.queue(post)
     self.create({
-                    post_id: post.id,
-                    rating: post.rating,
-                    parent_id: post.parent_id,
-                    source: post.source,
-                    updater_id: CurrentUser.id,
-                    updater_ip_addr: CurrentUser.ip_addr,
-                    tags: post.tag_string,
-                    locked_tags: post.locked_tags,
-                    description: post.description,
-                    reason: post.edit_reason
-                })
+        post_id: post.id,
+        rating: post.rating,
+        parent_id: post.parent_id,
+        source: post.source,
+        updater_id: CurrentUser.id,
+        updater_ip_addr: CurrentUser.ip_addr,
+        tags: post.tag_string,
+        original_tags: post.tag_string_before_parse,
+        locked_tags: post.locked_tags,
+        description: post.description,
+        reason: post.edit_reason
+    })
   end
 
   def self.calculate_version(post_id)
@@ -370,6 +371,10 @@ class PostVersion < ApplicationRecord
 
     def obsolete_removed_tags
       changes[:obsolete_removed_tags].join(" ")
+    end
+    
+    def original_tags_array
+      @original_tags_array ||= original_tags.split
     end
 
     def unchanged_tags

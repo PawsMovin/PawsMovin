@@ -55,7 +55,7 @@ class Post < ApplicationRecord
   has_many :replacements, class_name: "PostReplacement", :dependent => :destroy
 
   attr_accessor :old_tag_string, :old_parent_id, :old_source, :old_rating,
-                :do_not_version_changes, :tag_string_diff, :source_diff, :edit_reason
+                :do_not_version_changes, :tag_string_diff, :source_diff, :edit_reason, :tag_string_before_parse
 
   # FIXME: Remove this
   alias_attribute :is_comment_locked, :is_comment_disabled
@@ -503,6 +503,7 @@ class Post < ApplicationRecord
     def apply_tag_diff
       @removed_tags = []
       return unless tag_string_diff.present?
+      @tag_string_before_parse = remove_metatags(tag_string_diff.split(" ")).join(" ")
 
       current_tags = tag_array
       diff = TagQuery.scan(tag_string_diff.downcase)
@@ -536,6 +537,7 @@ class Post < ApplicationRecord
     end
 
     def normalize_tags
+      @tag_string_before_parse = remove_metatags(tag_array - tag_array_was).join(" ") unless tag_string_diff.present?
       if !locked_tags.nil? && locked_tags.strip.blank?
         self.locked_tags = nil
       elsif locked_tags.present?
@@ -712,6 +714,13 @@ class Post < ApplicationRecord
       end
       return tags
     end
+
+    def remove_metatags(tags)
+      tags = tags.reject {|x| x =~ /\A(?:-set|set|fav|-fav|upvote|downvote):/i}
+      prefixed, unprefixed = tags.partition {|x| x =~ Tag.categories.regexp}
+      prefixed.map!{|tag| tag.sub(/\A#{Tag.categories.regexp}:/, '')}
+      prefixed + unprefixed
+      end
 
     def filter_metatags(tags)
       @bad_type_changes = []

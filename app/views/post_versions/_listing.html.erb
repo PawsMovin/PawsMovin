@@ -73,6 +73,12 @@
       <div class="pv-sources pv-content">
         <%= post_source_diff(post_version) %>
       </div>
+      <div class="pv-original-tag-string-label pv-label">
+        Original Tag String
+      </div>
+      <div class="pv-original-tag-string pv-content">
+        <%= post_version.presenter.inline_tag_list_html %>
+      </div>
     </div>
   <% end %>
 </div>

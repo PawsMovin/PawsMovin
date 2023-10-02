@@ -1473,7 +1473,8 @@ CREATE TABLE public.post_versions (
     description text,
     description_changed boolean DEFAULT false NOT NULL,
     version integer DEFAULT 1 NOT NULL,
-    reason character varying
+    reason character varying,
+    original_tags text DEFAULT ''::text NOT NULL
 );
 
 
@@ -1585,7 +1586,8 @@ CREATE TABLE public.posts (
     bg_color character varying,
     generated_samples character varying[],
     duration numeric,
-    is_comment_disabled boolean DEFAULT false NOT NULL
+    is_comment_disabled boolean DEFAULT false NOT NULL,
+    original_tag_string text DEFAULT ''::text NOT NULL
 );
 
 
@@ -4529,6 +4531,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20240113112949'),
 ('20240101042716'),
 ('20231213010430'),
+('20231002181447'),
 ('20230531081706'),
 ('20230531080817'),
 ('20230518182034'),
