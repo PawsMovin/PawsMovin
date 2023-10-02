@@ -74,6 +74,8 @@ class UploadService
         # Reset ownership information on post.
         post.uploader_id = replacement.creator_id
         post.uploader_ip_addr = replacement.creator_ip_addr
+        # Change approver to whoever approved the replacement.
+        post.approver_id = CurrentUser.id
         post.save!
 
         # rescaling notes reloads the post, be careful when accessing previous values
