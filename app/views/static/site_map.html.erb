@@ -113,6 +113,10 @@
           <li><%= link_to("IP Bans", ip_bans_path) %></li>
           <li><%= link_to("Alt list", alt_list_admin_users_path) %></li>
           <li><%= link_to("Stuck DNP tags", new_admin_stuck_dnp_path) %></li>
+          <% if CurrentUser.is_owner? %>
+            <li><%= link_to("Bulk Update Request Import", new_admin_bulk_update_request_import_path) %></li>
+            <li><%= link_to("Post Reowner", new_admin_reowner_path) %></li>
+          <% end %>
         <% end %>
         <li><%= link_to("Upload Whitelist", upload_whitelists_path) %></li>
         <li><%= link_to("Mod Actions", mod_actions_path) %></li>

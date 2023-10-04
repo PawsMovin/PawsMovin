@@ -17,7 +17,8 @@ Rails.application.routes.draw do
         get :alt_list
       end
     end
-    resource :dashboard, only: [:show]
+    resource :bulk_update_request_import, only: %i[new create]
+    resource :dashboard, only: %i[show]
     resources :exceptions, only: %i[index show]
     resource :reowner, controller: "reowner", only: %i[new create]
     resource :stuck_dnp, controller: "stuck_dnp", only: %i[new create]

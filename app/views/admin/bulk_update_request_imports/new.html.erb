@@ -1,0 +1,38 @@
+<div id="c-admin-bulk-update-request-imports">
+  <div id="a-new">
+    <h1>Bulk Update Request Import</h1>
+
+    <%= form_tag(admin_bulk_update_request_import_path, :class => "simple_form") do %>
+      <pre>
+Use the following format:
+
+remove alias aaa -> bbb
+remove implication aaa -> bbb
+create alias aaa -> bbb
+create implication aaa -> bbb
+mass update aaa -> bbb
+      </pre>
+
+      <div class="input">
+        <label for="batch_text">
+          Script
+        </label>
+        <%= text_area "batch", "text", :size => "60x20" %>
+      </div>
+
+      <div class="input">
+        <label for="batch_forum_id">
+          Forum ID
+        </label>
+        <%= text_field "batch", "forum_id" %>
+      </div>
+
+      <%= submit_tag "Import" %>
+    <% end %>
+  </div>
+</div>
+<%= render "secondary_links" %>
+
+<% content_for(:page_title) do %>
+  Bulk Update Request Import
+<% end %>
