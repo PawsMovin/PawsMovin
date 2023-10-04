@@ -24,7 +24,7 @@ PostSet.add_post = function (set_id, post_id) {
   });
 };
 
-PostSet.remove_post = function (set_id, post_id) {
+PostSet.remove_post = function (set_id, post_id, successNotice) {
   Post.notice_update("inc");
   SendQueue.add(function () {
     $.ajax({
@@ -35,9 +35,13 @@ PostSet.remove_post = function (set_id, post_id) {
       var message = $.map(data.responseJSON.errors, function(msg, attr) { return msg; }).join('; ');
       Post.notice_update("dec");
       $(window).trigger('danbooru:error', "Error: " + message);
-    }).done(function () {
+    }).done(function (data) {
       Post.notice_update("dec");
-      $(window).trigger("danbooru:notice", "Removed post from set");
+      if(typeof successNotice === "function") {
+        $(window).trigger("danbooru:notice", successNotice(data));
+      } else {
+        $(window).trigger("danbooru:notice", successNotice || "Removed post from set");
+      }
     });
   });
 };

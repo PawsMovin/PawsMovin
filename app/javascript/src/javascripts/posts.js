@@ -4,6 +4,7 @@ import LS from './local_storage'
 import Note from './notes'
 import { SendQueue } from './send_queue'
 import Shortcuts from './shortcuts'
+import PostSet from "./post_sets";
 
 let Post = {};
 
@@ -36,6 +37,22 @@ Post.initialize_all = function() {
 
   if ($("#c-posts #a-show, #c-uploads #a-new").length) {
     this.initialize_edit_dialog();
+  }
+
+  if($("div.set-nav").length) {
+    const sets = $("div.set-nav span.set-name");
+    for(const set of sets) {
+      const removeButton = $(set).find("a#remove-from-set-button");
+      removeButton.on("click", (event) => {
+        event.preventDefault();
+        const setID = set.dataset.setId;
+        const setName = set.dataset.setName;
+        const postID = Post.currentPost().id;
+        PostSet.remove_post(setID, postID, (data) => `<a href="/post_sets/${setID}">${setName}</a>: <a href="/posts/${postID}">post #${postID}</a> removed (${data.post_count} total)`);
+        // debating if we should remove the element or not
+        // set.parentElement.remove();
+      });
+    }
   }
 
   $(document).on("danbooru:open-post-edit-tab", () => Shortcuts.disabled = true);

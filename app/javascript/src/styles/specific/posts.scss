@@ -394,6 +394,13 @@ div#c-posts {
       }
     }
 
+    .set-nav .set-name {
+      a#remove-from-set-button {
+        margin-left: 1rem;
+        cursor: pointer;
+      }
+    }
+
     span.close-button {
       position: absolute;
       top: 5px;
