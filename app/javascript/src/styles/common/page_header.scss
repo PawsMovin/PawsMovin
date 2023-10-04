@@ -4,15 +4,15 @@
 }
 
 #nav {
-  display: grid; 
-  grid-template-columns: 3.75em 1fr; 
-  grid-template-areas: "logo main" "logo secondary"; 
+  display: grid;
+  grid-template-columns: 3.75em 1fr;
+  grid-template-areas: "logo main" "logo secondary";
 
   .logo {
     grid-area: logo;
 
     margin-top: 6px;
-    background-image: url("images/main-logo.png");
+    background-image: url("images/Blep.png");
     background-repeat: no-repeat;
     background-size: contain;
     background-position-y: center;
