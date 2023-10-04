@@ -69,6 +69,7 @@ class User < ApplicationRecord
     disable_user_dmails
     enable_compact_uploader
     no_replacements
+    move_related_thumbnails
   )
 
   include PawsMovin::HasBitFlags

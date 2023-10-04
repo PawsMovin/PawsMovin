@@ -104,6 +104,7 @@ module PawsMovin
         user.per_page = 75
         user.show_post_statistics = true
         user.style_usernames = true
+        user.move_related_thumbnails = true
       end
 
       def default_blacklist

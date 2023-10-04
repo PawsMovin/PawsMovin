@@ -2,21 +2,9 @@
   <div id="a-show">
     <aside id="sidebar">
       <%= render "posts/partials/common/search", :path => posts_path, :tags => params[:q], :tags_dom_id => "tags" %>
-      <div class="parent-children">
-        <% if @post.parent_id && @post.parent_exists? %>
-          <div class="notice notice-child">
-            <%= has_parent_message(@post, @parent_post_set) %>
-            <div id="has-parent-relationship-preview" style="display: none;"><%= @parent_post_set.presenter.post_previews_html(self) %></div>
-          </div>
-        <% end %>
-
-        <% if @post.has_visible_children? %>
-          <div class="notice notice-parent">
-            <%= has_children_message(@post, @children_post_set) %>
-            <div id="has-children-relationship-preview" style="display: none;"><%= @children_post_set.presenter.post_previews_html(self) %></div>
-          </div>
-        <% end %>
-      </div>
+      <% if CurrentUser.move_related_thumbnails? %>
+        <%= render "posts/partials/show/parent_children", post: @post, parent_post_set: @parent_post_set, children_post_set: @children_post_set %>\
+      <% end %>
 
       <%= render "posts/partials/index/blacklist" %>
 
@@ -163,7 +151,10 @@
       </section>
 
       <div class="bottom-notices">
-        <% if !CurrentUser.is_janitor? %>
+        <% unless CurrentUser.move_related_thumbnails? %>
+          <%= render "posts/partials/show/parent_children", post: @post, parent_post_set: @parent_post_set, children_post_set: @children_post_set %>
+        <% end %>
+        <% unless CurrentUser.is_janitor? %>
           <%= render "posts/partials/show/notices", post: @post %>
         <% end %>
       </div>

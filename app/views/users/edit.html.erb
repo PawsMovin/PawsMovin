@@ -6,6 +6,7 @@
       <h2 id="edit-options">
         <%= link_to "Basic", "#basic-settings", class: "active" %>
         | <%= link_to "Advanced", "#advanced-settings" %>
+        | <%= link_to "Enhancements", "#enhancement-settings" %>
         <% if CurrentUser.user.id == @user.id %>
           | <%= link_to "Change password", edit_user_password_path(user_id: @user.id), id: "change-password" %>
           | <%= link_to "Delete account", users_deletion_path, id: "delete-account" %>
@@ -109,6 +110,14 @@
         <%= f.input :custom_style, label: "Custom <a href='https://en.wikipedia.org/wiki/Cascading_Style_Sheets'>CSS</a> style".html_safe, hint: "Style to apply to the whole site.", input_html: { size: "40x5"} %>
       </fieldset>
 
+      <fieldset id="enhancement-settings-section">
+        <%= f.input :enable_enhanced_profiles, label: "Enable Enhanced Profiles", as: :select, collection: [%w[Yes true], %w[No false]], include_blank: false,
+                    hint: "Enables an enhanced profile layout, borrowed from <a href=\"https://github.com/re621/re621.Legacy\">re621</a>.".html_safe %>
+
+        <%= f.input :move_related_thumbnails, label: "Move Related Thumbnails", as: :select, collection: [%w[Yes true], %w[No false]], include_blank: false,
+                    hint: "Moves the parent/child thumbnails to the sidebar." %>
+      </fieldset>
+
       <%= f.button :submit, "Submit" %>
     <% end %>
   </div>
@@ -121,11 +130,11 @@
 <% content_for(:html_header) do %>
   <%= javascript_tag nonce: true do -%>
     $(function() {
-      $("#advanced-settings-section").hide();
+      $("#advanced-settings-section,#enhancement-settings-section").hide();
       $("#edit-options a:not(#delete-account):not(#change-password)").on("click", function(e) {
         var $target = $(e.target);
         $("h2 a").removeClass("active");
-        $("#basic-settings-section,#advanced-settings-section").hide();
+        $("#basic-settings-section,#advanced-settings-section,#enhancement-settings-section").hide();
         $target.addClass("active");
         $($target.attr("href") + "-section").show();
         e.preventDefault();
