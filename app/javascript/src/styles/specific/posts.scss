@@ -471,9 +471,65 @@ textarea[data-autocomplete="tag-edit"] {
 
 section#image-extra-controls {
   display: flex;
+  align-items: center;
+
+  div {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    margin-right: 0.5em;
+  }
+
   flex-wrap: wrap;
-  gap: 0.5em;
-  margin: 0.5em 0;
+  margin: 0.25rem 0;
+
+  & > div {
+    margin: 0.25rem 0.5rem 0.25rem 0;
+
+    &:last-child {
+      margin-right: 0;
+    }
+
+    & > a, & > button, & > select {
+      outline: 0;
+      @include nonselectable;
+    }
+  }
+
+  div#image-vote-buttons {
+    & > a > span {
+      font-size: 1rem;
+    }
+
+    & > span {
+      padding: 0 0.5rem;
+    }
+  }
+
+  div#image-full-screen-button > a {
+    width: 7rem;
+    text-align: center;
+    position: relative;
+  }
+
+  div#image-add-buttons > a,
+  div#image-note-buttons > a,
+  div#image-full-screen-button > a {
+    margin-right: 0.2srem;
+    &:last-child { margin-right: 0; }
+
+    &:nth-child(1) {
+      margin-right: 0.1rem;
+    }
+
+    &:nth-child(2) {
+      left: 0.1rem;
+    }
+  }
+
+  div#image-download-button > a {
+    text-align: center;
+    position: relative;
+  }
 }
 
 section#tag-list {
@@ -501,6 +557,11 @@ div#image-and-nav {
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: repeat(5, auto);
+  width: fit-content;
+
+  div.nav-notice {
+    margin-bottom: 0;
+  }
 
   [data-th-nav=bottom] & {
     #nav-links-top {

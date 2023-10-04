@@ -1742,6 +1742,19 @@ class Post < ApplicationRecord
     typed_tags(Tag.categories.artist).include?(uploader_name.downcase)
   end
 
+  def download_filename
+    name = id.to_s
+    artists = typed_tags(Tag.categories.artist)
+    copyrights = typed_tags(Tag.categories.copyright)
+    characters = typed_tags(Tag.categories.character)
+    species = typed_tags(Tag.categories.species)
+    name += "-#{artists.join('-')}" if artists.present?
+    name += "-#{copyrights.join('-')}" if copyrights.present?
+    name += "-#{characters.join('-')}" if characters.present?
+    name += "-#{species.join('-')}" if species.present?
+    "#{name}.#{file_ext}"
+  end
+
   def flaggable_for_guidelines?
     return true if is_pending?
     return true if CurrentUser.is_trusted?

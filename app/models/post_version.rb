@@ -372,7 +372,7 @@ class PostVersion < ApplicationRecord
     def obsolete_removed_tags
       changes[:obsolete_removed_tags].join(" ")
     end
-    
+
     def original_tags_array
       @original_tags_array ||= original_tags.split
     end

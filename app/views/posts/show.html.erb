@@ -42,7 +42,7 @@
               <li><%= link_to "Recommendations", post_recommendations_path(search: { post_id: @post.id }), rel: "nofollow" %></li>
             <% end %>
             <% if @post.is_image? %>
-              <li><a rel="nofollow" href="https://www.google.com/searchbyimage?image_url=<%= @post.reverse_image_url %>&client=pawsmovin">Reverse Google Search</a></li>
+              <li><a rel="nofollow" href="https://www.google.com/searchbyimage?image_url=<%= @post.reverse_image_url %>&client=<%= PawsMovin.config.app_name %>">Reverse Google Search</a></li>
               <li><a rel="nofollow" href="https://saucenao.com/search.php?url=<%= @post.reverse_image_url %>">Reverse SauceNAO Search</a></li>
               <li><a rel="nofollow" href="https://derpibooru.org/search/reverse?url=<%= @post.reverse_image_url %>">Reverse Derpibooru Search</a></li>
               <li><a rel="nofollow" href="https://kheina.com/?url=<%= @post.reverse_image_url %>">Reverse Kheina Search</a></li>
@@ -94,7 +94,7 @@
       <section id="image-extra-controls">
 
         <% if CurrentUser.is_member? %>
-          <div class="image-vote-buttons">
+          <div id="image-vote-buttons">
             <%= post_vote_block(@post, @post.own_vote, buttons: true) %>
           </div>
           <%= tag.div(class: "fav-buttons fav-buttons-#{@post.is_favorited?}") do %>
@@ -109,29 +109,42 @@
           <% end %>
         <% end %>
         <% if @post.visible? %>
-          <div id="image-download-link">
-            <%= link_to @post.file_url, class: "button btn-warn" do %>
-              <%= tag.i(class: "fa-solid fa-right-to-bracket fa-rotate-90") %>
-              <span>Download</span>
+          <div id="image-full-screen-button">
+            <%= link_to "Full Screen", @post.file_url, class: "button btn-warn" %>
+          </div>
+          <div id="image-add-buttons">
+            <%# TODO: find some way to remove the whitespace that's being inserted here, then return the margin to 0.5 %>
+            <%= link_to "+ Set", "#", id: "set", class: "button btn-neutral" %>
+            <%= link_to "+ Pool", "#", id: "pool", class: "button btn-neutral" %>
+          </div>
+          <div id="image-note-buttons">
+            <%= link_to "Notes: ON", "#", id: "toggle-notes-button", class: "button btn-neutral" %>
+            <% if @post.is_note_locked? %>
+              <%= link_to "Notes Locked", "#", class: "button btn-neutral" %>
+            <% else %>
+              <%= link_to "+ Note", "#", id: "translate", title: "shortcut is n", class: "button btn-neutral", data: { shortcut: "n" } %>
             <% end %>
           </div>
         <% end %>
         <% if !@post.force_original_size? %>
           <div>
-            <select id="image-resize-selector" class="button btn-neutral">
-              <option value="original">Original</option>
-              <option value="fit">Fit (Horizontal)</option>
-              <option value="fitv">Fit (Vertical)</option>
-              <% if !@post.is_video? %>
-                <option value="large">Sample (<%= PawsMovin.config.large_image_width %>px)</option>
-              <% end %>
-              <% PawsMovin.config.video_rescales.keys.each do |size| %>
-                <% next unless @post.has_sample_size?(size) %>
-                <option value="<%= size %>">Sample (<%= size %>)</option>
-              <% end %>
-          </select>
+            | <select id="image-resize-selector" class="button btn-neutral">
+                <% PawsMovin.config.video_rescales.keys.each do |size| %>
+                  <% next unless @post.has_sample_size?(size) %>
+                  <option value="<%= size %>">Sample (<%= size %>)</option>
+                <% end %>
+                <% if !@post.is_video? %>
+                  <option value="large">Sample (<%= PawsMovin.config.large_image_width %>px)</option>
+                <% end %>
+                <option value="fitv">Fit (Vertical)</option>
+                <option value="fit">Fit (Horizontal)</option>
+                <option value="original">Original</option>
+              </select>
           </div>
         <% end %>
+        <div id="image-download-button">
+          <%= link_to "Download", @post.file_url, class: "button btn-neutral", download: @post.download_filename %>
+        </div>
       </section>
 
       <div class="bottom-notices">

@@ -30,6 +30,7 @@ Post.initialize_all = function() {
     this.initialize_gestures();
     this.initialize_voting();
     this.initialize_moderation();
+    this.initialize_hide_notes()
   }
 
   if ($("#p-index-by-post").length)
@@ -1007,6 +1008,51 @@ Post.set_as_avatar = function(id) {
       $(window).trigger("danbooru:notice", "Post set as avatar");
     });
   });
+}
+
+
+
+Post.initialize_hide_notes = function() {
+  const container = $("#note-container")
+    .css("display", "")
+  $("#toggle-notes-button")
+    .on("click", (event) => {
+      event.preventDefault();
+      Post.toggle_hide_notes();
+    });
+  $("#translate")
+    .on("click", async() => {
+      if(container.attr("data-hidden") === "true") {
+        Post.toggle_hide_notes(false);
+      } else {
+        const isHidden = LS.get("hide-notes") === "1";
+        if(isHidden) {
+          Post.toggle_hide_notes(false, true);
+        }
+      }
+    });
+
+  Post.toggle_hide_notes(false, true);
+}
+
+Post.toggle_hide_notes = function(save = true, init = false) {
+  let isHidden = LS.get("hide-notes") === "1";
+  if(init) {
+    isHidden = !isHidden;
+    save = false;
+  }
+  const button = $("#toggle-notes-button")
+  const container = $("#note-container");
+
+  if(isHidden) {
+    container.attr("data-hidden", false);
+    button.text("Notes: ON");
+    if(save) LS.put("hide-notes", "0");
+  } else {
+    container.attr("data-hidden", true);
+    button.text("Notes: OFF");
+    if(save) LS.put("hide-notes", "1");
+  }
 }
 
 $(document).ready(function() {

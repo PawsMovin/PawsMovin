@@ -46,6 +46,12 @@ div#note-container {
       outline: 2px solid $note-box-highlighted-outline;
     }
   }
+
+  visibility: visible !important;
+
+  &[data-hidden=true] {
+    display: none !important;
+  }
 }
 
 div#note-preview {
