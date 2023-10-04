@@ -48,10 +48,10 @@ class TagSetPresenter < Presenter
   end
 
   # compact (horizontal) list, as seen in the /comments index.
-  def inline_tag_list_html
+  def inline_tag_list_html(link_type = :tag)
     html = TagCategory::CATEGORIZED_LIST.map do |category|
       tags_for_category(category).map do |tag|
-        %(<li class="category-#{tag.category}">#{tag_link(tag)}</li>)
+        %(<li class="category-#{tag.category}">#{tag_link(tag, tag.name, link_type)}</li>)
       end.join
     end.join
     %(<ul class="inline-tag-list">#{html}</ul>).html_safe
@@ -164,8 +164,9 @@ class TagSetPresenter < Presenter
     html
   end
 
-  def tag_link(tag, link_text = tag.name)
+  def tag_link(tag, link_text = tag.name, link_type = :tag)
+    link_base = link_type == :wiki_page ? "/wiki_pages/show_or_new?title=" : "/posts?tags="
     itemprop = 'itemprop="author"' if tag.category == Tag.categories.artist
-    %(<a rel="nofollow" class="search-tag" #{itemprop} href="/posts?tags=#{u(tag.name)}">#{h(link_text)}</a> )
-  end
+    %(<a rel="nofollow" class="search-tag" #{itemprop} href="#{link_base}#{u(tag.name)}">#{h(link_text)}</a> )
+    end
 end
