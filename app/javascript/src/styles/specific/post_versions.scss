@@ -73,6 +73,10 @@ div#c-post-versions {
       background-color: themed("color-section-lighten-5");
     }
 
+    .pv-check.without-original {
+      grid-row-end: 5;
+    }
+
     .pv-post-label {
       grid-row: 1;
       @include grid-col(2, 3);
