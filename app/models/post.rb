@@ -1728,10 +1728,15 @@ class Post < ApplicationRecord
     linked_artists.select { |artist| artist.linked_user_id == uploader_id }
   end
 
+  def uploader_name_matches_artists?
+    return false if uploader_id.nil? || uploader_linked_artists.any?
+    typed_tags(Tag.categories.artist).include?(uploader_name.downcase)
+  end
+
   def flaggable_for_guidelines?
     return true if is_pending?
     return true if CurrentUser.is_trusted?
-    false
+    is_pending?
   end
 
   def visible_comment_count(_user)
