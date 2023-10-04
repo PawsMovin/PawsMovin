@@ -4,11 +4,11 @@
 
     <%= custom_form_for @user do |f| %>
       <h2 id="edit-options">
-        <%= link_to "Basic", "#basic-settings", :class => "active" %>
+        <%= link_to "Basic", "#basic-settings", class: "active" %>
         | <%= link_to "Advanced", "#advanced-settings" %>
         <% if CurrentUser.user.id == @user.id %>
-          | <%= link_to "Change password", edit_user_password_path(:user_id => @user.id), :id => "change-password" %>
-          | <%= link_to "Delete account", users_deletion_path, :id => "delete-account" %>
+          | <%= link_to "Change password", edit_user_password_path(user_id: @user.id), id: "change-password" %>
+          | <%= link_to "Delete account", users_deletion_path, id: "delete-account" %>
         <% end %>
       </h2>
 
@@ -38,75 +38,75 @@
 
         <%= f.input :profile_artinfo, as: :dtext, label: "Commission Info", limit: PawsMovin.config.user_about_max_size %>
 
-        <%= f.input :time_zone, :include_blank => false %>
+        <%= f.input :time_zone, include_blank: false %>
 
-        <%= f.input :receive_email_notifications, :as => :select, :include_blank => false, :collection => [["Yes", "true"], ["No", "false"]] %>
+        <%= f.input :receive_email_notifications, as: :select, include_blank: false, collection: [%w[No false], %w[Yes true]] %>
 
-        <%= f.input :comment_threshold, :hint => "Comments below this score will be hidden by default." %>
+        <%= f.input :comment_threshold, hint: "Comments below this score will be hidden by default." %>
 
-        <%= f.input :default_image_size, :hint => "Show original image size, scaled to fit, scaled to fit vertically, or show resized #{PawsMovin.config.large_image_width} pixel sample version.", :label => "Default image width", :collection => [["Original", "original"], ["Fit (Horizonal)", "fit"], ["Fit (Vertical)", "fitv"], ["Sample (#{PawsMovin.config.large_image_width}px)", "large"]], :include_blank => false %>
+        <%= f.input :default_image_size, hint: "Show original image size, scaled to fit, scaled to fit vertically, or show resized #{PawsMovin.config.large_image_width} pixel sample version.", label: "Default image width", collection: [%w[Original original], ["Fit (Horizonal)", "fit"], ["Fit (Vertical)", "fitv"], ["Sample (#{PawsMovin.config.large_image_width}px)", "large"]], include_blank: false %>
 
-        <%= f.input :per_page, :label => "Posts per page", :as => :select, :collection => (25..250), :include_blank => false %>
+        <%= f.input :per_page, label: "Posts per page", as: :select, collection: (25..250), include_blank: false %>
 
-        <%= f.input :enable_safe_mode, :label => "Safe mode", :hint => "Show only safe images. Hide questionable and explicit images.", :as => :select, :include_blank => false, :collection => [["Yes", "true"], ["No", "false"]] %>
+        <%= f.input :enable_safe_mode, label: "Safe mode", hint: "Show only safe images. Hide questionable and explicit images.", as: :select, include_blank: false, collection: [%w[No false], %w[Yes true]] %>
 
-        <%= f.input :blacklisted_tags, :hint => "Put any tag combinations you never want to see here. Each combination should go on a separate line. <a href='/help/blacklist'>View help.</a>".html_safe, autocomplete: "tag-query", input_html: { size: "40x5" } %>
+        <%= f.input :blacklisted_tags, hint: "Put any tag combinations you never want to see here. Each combination should go on a separate line. <a href='/help/blacklist'>View help.</a>".html_safe, autocomplete: "tag-query", input_html: { size: "40x5" } %>
 
-        <%= f.input :blacklist_users, hint: "Hide comments and forum posts from users that have been blacklisted, in addition to posts.", as: :select, include_blank: false, collection: [["Yes", "true"], ["No", "false"]] %>
+        <%= f.input :blacklist_users, hint: "Hide comments and forum posts from users that have been blacklisted, in addition to posts.", as: :select, include_blank: false, collection: [%w[No false], %w[Yes true]] %>
       </fieldset>
 
       <fieldset id="advanced-settings-section">
-        <%= f.input :style_usernames, :as => :select, :label => "Colored usernames",
-                    :hint => raw("Color each user's name depending on their level. See #{link_to 'the legend', wiki_page_path(id: 'help:colored_usernames')} for what the colors are."),
-                    :include_blank => false, :collection => [["Yes", "true"], ["No", "false"]] %>
+        <%= f.input :style_usernames, as: :select, label: "Colored usernames",
+                    hint: raw("Color each user's name depending on their level. See #{link_to 'the legend', wiki_page_path(id: 'help:colored_usernames')} for what the colors are."),
+                    include_blank: false, collection: [%w[No false], %w[Yes true]] %>
 
-        <%= f.input :enable_keyboard_navigation, :as => :select, :include_blank => false, :label => "Enable keyboard shortcuts", :collection => [["Yes", "true"], ["No", "false"]],
+        <%= f.input :enable_keyboard_navigation, as: :select, include_blank: false, label: "Enable keyboard shortcuts", collection: [%w[No false], %w[Yes true]],
         hint: raw("Enables the use of keyboard shortcuts for a majority of site actions related to posts. A list of keyboard shortcuts is available #{link_to 'here', keyboard_shortcuts_path}.")%>
 
-        <%= f.input :enable_auto_complete, :as => :select, :collection => [["Yes", "true"], ["No", "false"]], :include_blank => false,
+        <%= f.input :enable_auto_complete, as: :select, collection: [%w[No false], %w[Yes true]], include_blank: false,
                     hint: "Enables auto-completion on most tag and user entry fields." %>
 
-        <%= f.input :enable_privacy_mode, :as => :select, :collection => [["No", "false"], ["Yes", "true"]], :include_blank => false,
+        <%= f.input :enable_privacy_mode, as: :select, collection: [%w[No false], %w[Yes true]], include_blank: false,
         hint: "Prevent showing your favorites to others users (except staff)." %>
 
-        <%= f.input :show_post_statistics, as: :select, collection: [["No", "false"],["Yes", "true"]], include_blank: false,
+        <%= f.input :show_post_statistics, as: :select, collection: [%w[No false], %w[Yes true]], include_blank: false,
         hint: "Show post statistics below posts on search pages." %>
 
-        <%= f.input :description_collapsed_initially, as: :select, collection: [["No", "false"],["Yes", "true"]], include_blank: false,
+        <%= f.input :description_collapsed_initially, as: :select, collection: [%w[No false], %w[Yes true]], include_blank: false,
         hint: "Don't expand post descriptions on page load." %>
 
-        <%= f.input :hide_comments, as: :select, collection: [["No", "false"],["Yes", "true"]], include_blank: false,
+        <%= f.input :hide_comments, as: :select, collection: [%w[No false], %w[Yes true]], include_blank: false,
         hint: "Do not show the comments section on post pages." %>
 
         <% unless CurrentUser.is_janitor? %>
           <%= f.input :disable_user_dmails, label: "Disable DMails", hint: "Prevent other users from sending you DMails. You will be prevented from sending DMails to non-staff members while this option is enabled. Staff are always allowed to send you DMails.",
-                      :as => :select, :collection => [["No", "false"], ["Yes", "true"]], :include_blank => false %>
+                      as: :select, collection: [%w[No false], %w[Yes true]], include_blank: false %>
         <% end %>
 
-        <%= f.input :disable_cropped_thumbnails, :as => :select, :collection => [["No", "false"], ["Yes", "true"]], :include_blank => false,
+        <%= f.input :disable_cropped_thumbnails, as: :select, collection: [%w[No false], %w[Yes true]], include_blank: false,
         hint: "Disables displaying cropped thumbnails on the mobile layout of the site in favor of scaled thumbnails. Has no effect on the desktop site." %>
 
-        <%= f.input :show_hidden_comments, label: "Show Own Hidden Comments", :as => :select, :collection => [["No", "false"], ["Yes", "true"]], :include_blank => false,
+        <%= f.input :show_hidden_comments, label: "Show Own Hidden Comments", as: :select, collection: [%w[No false], %w[Yes true]], include_blank: false,
                     hint: "Show your own hidden comments on comment pages." %>
 
         <% if @user.post_active_count >= PawsMovin.config.compact_uploader_minimum_posts %>
           <%= f.input :enable_compact_uploader, label: "Enable Compact Uploader", as: :select,
-          collection: [["No", "false"], ["Yes", "true"]], include_blank: false,
+          collection: [%w[No false], %w[Yes true]], include_blank: false,
           hint: "Enables a more compact and less guided post uploader." %>
         <% end %>
 
         <div class="input text optional field_with_hint">
           <label class="text optional" for="user_dmail_filter_attributes_words">Dmail filter</label>
           <%= hidden_field_tag "user[dmail_filter_attributes][id]", @user.dmail_filter.try(:id) %>
-          <%= text_field_tag "user[dmail_filter_attributes][words]", @user.dmail_filter.try(:words), :id => "user_dmail_filter_attributes_words", :class => "text optional", :size => 40 %>
+          <%= text_field_tag "user[dmail_filter_attributes][words]", @user.dmail_filter.try(:words), id: "user_dmail_filter_attributes_words", class: "text optional", size: 40 %>
           <span class="hint">A list of banned words (space delimited). Any dmail you receive with a banned word will automatically be deleted.</span>
         </div>
 
-        <%= f.input :favorite_tags, :label => "Frequent tags", :hint => "A list of tags that you use often. They will appear when using the list of Related Tags.", autocomplete: "tag-query", input_html: { rows: 5 } %>
+        <%= f.input :favorite_tags, label: "Frequent tags", hint: "A list of tags that you use often. They will appear when using the list of Related Tags.", autocomplete: "tag-query", input_html: { rows: 5 } %>
 
-        <%= f.input :disable_responsive_mode, :as => :select, :collection => [["No", "false"], ["Yes", "true"]], :include_blank => false, :hint => "Disable alternative layout for mobile and tablet." %>
+        <%= f.input :disable_responsive_mode, as: :select, collection: [%w[No false], %w[Yes true]], include_blank: false, hint: "Disable alternative layout for mobile and tablet." %>
 
-        <%= f.input :custom_style, :label => "Custom <a href='https://en.wikipedia.org/wiki/Cascading_Style_Sheets'>CSS</a> style".html_safe, :hint => "Style to apply to the whole site.", :input_html => {:size => "40x5"} %>
+        <%= f.input :custom_style, label: "Custom <a href='https://en.wikipedia.org/wiki/Cascading_Style_Sheets'>CSS</a> style".html_safe, hint: "Style to apply to the whole site.", input_html: { size: "40x5"} %>
       </fieldset>
 
       <%= f.button :submit, "Submit" %>
