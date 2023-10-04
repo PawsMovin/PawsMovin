@@ -51,6 +51,38 @@ $box-shadow-size: 2px 2px 5px;
             user-select: none; /* Chrome, Edge, Opera and Firefox */
 }
 
+// Scrollbar Styling
+@mixin scrollbars() {
+
+  // For Chrome
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    height: 6px;
+    background-color: #ffffff55;
+  }
+
+  &::-webkit-scrollbar-button {
+    width: 0;
+    height: 0;
+    display: none;
+  }
+
+  &::-webkit-scrollbar-track,
+  &::-webkit-scrollbar-corner {
+    background-color: transparent;
+  }
+
+  // For Firefox
+  & {
+    scrollbar-width: thin;
+    scrollbar-color: #ffffff55 transparent;
+  }
+}
+
 // SASS converts UTF-8 character codes to their actual characters.
 // This occasionally causes issues. See https://github.com/sass/sass/issues/1395
 @function unicode($str) {

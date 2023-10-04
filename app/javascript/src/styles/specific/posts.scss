@@ -223,7 +223,7 @@ div#c-posts {
   }
 
   div.parent-children {
-    display: flex;
+    display: grid;
     margin: 0 (-$padding-025);
     margin-bottom: $padding-025;
     div.notice {
@@ -232,6 +232,14 @@ div#c-posts {
     div.notice-parent {
       flex-grow: 1;
     }
+
+    & #has-children-relationship-preview,
+     & #has-parent-relationship-preview {
+       display: grid;
+       justify-items: center;
+       max-height: 50vh;
+       @include scrollbars;
+     }
   }
 
   div.notice {
