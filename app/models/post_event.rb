@@ -15,22 +15,28 @@ class PostEvent < ApplicationRecord
     status_unlocked: 11,
     note_locked: 12,
     note_unlocked: 13,
-    comment_disabled: 18,
-    comment_enabled: 19,
     replacement_accepted: 14,
     replacement_rejected: 15,
     replacement_promoted: 20,
     replacement_deleted: 16,
     expunged: 17,
+    comment_disabled: 18,
+    comment_enabled: 19,
     comment_locked: 21,
     comment_unlocked: 22,
   }
-  MOD_ONLY_ACTIONS = [
+  MOD_ONLY_SEARCH_ACTIONS = [
     actions[:comment_disabled],
     actions[:comment_enabled],
     actions[:comment_locked],
     actions[:comment_unlocked],
   ].freeze
+
+  def self.search_options_for(user)
+    options = actions.keys
+    return options if user.is_moderator?
+    options.reject { |action| MOD_ONLY_SEARCH_ACTIONS.any?(actions[action]) }
+  end
 
   def self.add(post_id, creator, action, data = {})
     create!(post_id: post_id, creator: creator, action: action.to_s, extra_data: data)
@@ -48,9 +54,6 @@ class PostEvent < ApplicationRecord
   def self.search(params)
     q = super
 
-    unless CurrentUser.is_moderator?
-      q = q.where.not(action: MOD_ONLY_ACTIONS)
-    end
     if params[:post_id].present?
       q = q.where("post_id = ?", params[:post_id].to_i)
     end
@@ -63,6 +66,9 @@ class PostEvent < ApplicationRecord
     end
 
     if params[:action].present?
+      if !CurrentUser.is_moderator? && MOD_ONLY_SEARCH_ACTIONS.include?(actions[params[:action]])
+        raise User::PrivilegeError
+      end
       q = q.where('action = ?', actions[params[:action]])
     end
 
