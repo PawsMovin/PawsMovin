@@ -81,7 +81,6 @@ class PostPresenter < Presenter
     end
 
     if options[:stats]
-      locals[:post] = post
       locals[:stats] = true
     else
       locals[:stats] = false

@@ -84,19 +84,23 @@ module PostsHelper
   end
 
   def post_stats_section(post)
-    status_flags = []
-    status_flags << 'P' if post.parent_id
-    status_flags << 'C' if post.has_active_children?
-    status_flags << 'U' if post.is_pending?
-    status_flags << 'F' if post.is_flagged?
-
-    post_score_icon = "#{'↑' if post.score > 0}#{'↓' if post.score < 0}#{'↕' if post.score == 0}"
-    score = tag.span("#{post_score_icon}#{post.score}", class: "post-score-score #{score_class(post.score)}")
-    favs = tag.span("♥#{post.fav_count}", class: "post-score-faves")
+    post_score_icon_positive = "↑"
+    post_score_icon_negative = "↓"
+    post_score_icon_neutral = "↕"
+    post_score_icon = "#{post_score_icon_positive if post.score > 0}#{post_score_icon_negative if post.score < 0}#{post_score_icon_neutral if post.score == 0}"
+    score = tag.span(class: "post-score-classes-#{post.id} #{score_class(post.score)}") do
+      icon = tag.span(post_score_icon, class: "post-score-icon-#{post.id}", data: { "icon-positive": post_score_icon_positive, "icon-negative": post_score_icon_negative, "icon-neutral": post_score_icon_neutral })
+      amount = tag.span(post.score, class: "post-score-score-#{post.id}")
+      icon + amount
+    end
+    favs = tag.span(class: "post-score-faves-classes-#{post.id}") do
+      icon = tag.span("♥", class: "post-score-faves-icon-#{post.id}")
+      amount = tag.span(post.fav_count, class: "post-score-faves-faves-#{post.id}")
+      icon + amount
+    end
     comments = tag.span "C#{post.visible_comment_count(CurrentUser)}", class: 'post-score-comments'
     rating =  tag.span(post.rating.upcase, class: "post-score-rating")
-    status = tag.span(status_flags.join(''), class: 'post-score-extras')
-    tag.div score + favs + comments + rating + status, class: 'post-score', id: "post-score-#{post.id}"
+    tag.div score + favs + comments + rating, class: 'post-score', id: "post-score-#{post.id}"
   end
 
   def user_record_meta(user)

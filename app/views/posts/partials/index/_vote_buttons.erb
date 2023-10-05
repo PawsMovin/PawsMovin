@@ -1,0 +1,11 @@
+<div id="vote-buttons">
+  <%= button_tag "", class: "button vote-button vote score-neutral", disabled: post.is_vote_locked?, data: { action: "up" } do %>
+    <span class="post-vote-up-<%= post.id %> score-<%= post.is_voted_up? ? "positive" : "neutral" %>"></span>
+  <% end %>
+  <%= button_tag "", class: "button vote-button vote score-neutral", disabled: post.is_vote_locked?, data: { action: "down" } do %>
+    <span class="post-vote-down-<%= post.id %> score-<%= post.is_voted_down? ? "negative" : "neutral" %>"></span>
+  <% end %>
+  <%= button_tag "", class: "button vote-button fav score-neutral", data: { action: "fav", state: post.is_favorited? } do %>
+    <span class="post-favorite-<%= post.id %> score-neutral<% if post.is_favorited? %> is-favorited<% end %>"></span>
+  <% end %>
+</div>

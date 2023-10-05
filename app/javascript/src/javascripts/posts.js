@@ -5,6 +5,7 @@ import Note from './notes'
 import { SendQueue } from './send_queue'
 import Shortcuts from './shortcuts'
 import PostSet from "./post_sets";
+import Favorite from "./favorites";
 
 let Post = {};
 
@@ -18,11 +19,12 @@ Post.initialize_all = function() {
     this.initialize_collapse();
   }
 
-  if ($("#c-posts").length && $("#a-index").length) {
+  if ($("#c-posts #a-index").length) {
     this.initialize_gestures();
+    this.initialize_index_vote_buttons();
   }
 
-  if ($("#c-posts").length && $("#a-show").length) {
+  if ($("#c-posts #a-show").length) {
     this.initialize_links();
     this.initialize_post_relationship_previews();
     this.initialize_post_sections();
@@ -970,23 +972,42 @@ Post.vote = function (id, score, prevent_unvote) {
         accept: '*/*;q=0.5,text/javascript'
       }
     }).done(function(data) {
-      const scoreClasses = 'score-neutral score-positive score-negative';
+      const scoreClasses = "score-neutral score-positive score-negative";
       const postID = id;
       const postScore = data.score;
       const ourScore = data.our_score;
       function scoreToClass(inScore) {
-        if(inScore == 0) return 'score-neutral';
-        return inScore > 0 ? 'score-positive' : 'score-negative';
+        if(inScore == 0) return "score-neutral";
+        return inScore > 0 ? "score-positive" : "score-negative";
       }
-      $(".post-score-"+postID).removeClass(scoreClasses);
-      $(".post-vote-up-"+postID).removeClass(scoreClasses);
-      $(".post-vote-down-"+postID).removeClass(scoreClasses);
-      $('.post-score-'+postID).text(postScore);
-      $('.post-score-'+postID).attr('title', `${data.up} up/${data.down} down`);
-      $(".post-score-"+postID).addClass(scoreToClass(postScore));
-      $('.post-vote-up-'+postID).addClass(ourScore > 0 ? 'score-positive' : 'score-neutral');
-      $('.post-vote-down-'+postID).addClass(ourScore < 0 ? 'score-negative' : 'score-neutral');
-      $(window).trigger('danbooru:notice', 'Vote saved');
+
+      const scoreSelector = $(`.post-score-${postID}`);
+      const voteUpSelector = $(`.post-vote-up-${postID}`);
+      const voteDownSelector = $(`.post-vote-down-${postID}`);
+      scoreSelector.removeClass(scoreClasses);
+      scoreSelector.text(postScore);
+      scoreSelector.attr("title", `${data.up} up/${data.down} down`);
+      scoreSelector.addClass(scoreToClass(postScore));
+      voteUpSelector.removeClass(scoreClasses);
+      voteUpSelector.addClass(ourScore > 0 ? "score-positive" : "score-neutral");
+      voteDownSelector.removeClass(scoreClasses);
+      voteDownSelector.addClass(ourScore < 0 ? "score-negative" : "score-neutral");
+
+      const scoreScoreSelector = $(`.post-score-score-${postID}`);
+      const scoreClassesSelector = $(`.post-score-classes-${postID}`);
+      const iconsSelector = $(scoreClassesSelector.find(`.post-score-icon-${postID}`));
+      scoreScoreSelector.text(postScore)
+      scoreScoreSelector.attr("title", `${data.up} up/${data.down} down`);
+      scoreClassesSelector.removeClass(scoreClasses);
+      scoreClassesSelector.addClass(scoreToClass(postScore));
+      if(iconsSelector.length) {
+        const positive = iconsSelector.attr("data-icon-positive");
+        const negative = iconsSelector.attr("data-icon-negative");
+        const neutral = iconsSelector.attr("data-icon-neutral");
+        const icon = postScore > 0 ? positive : postScore < 0 ? negative : neutral;
+        iconsSelector.text(icon);
+      }
+      $(window).trigger("danbooru:notice", "Vote saved");
     }).always(function() {
       Post.notice_update("dec");
     });
@@ -1009,8 +1030,6 @@ Post.set_as_avatar = function(id) {
     });
   });
 }
-
-
 
 Post.initialize_hide_notes = function() {
   const container = $("#note-container")
@@ -1052,6 +1071,45 @@ Post.toggle_hide_notes = function(save = true, init = false) {
     container.attr("data-hidden", true);
     button.text("Notes: OFF");
     if(save) LS.put("hide-notes", "1");
+  }
+}
+
+Post.initialize_index_vote_buttons = function() {
+  const containers = $(".post-preview div#vote-buttons");
+  for(const set of containers) {
+    for(const button of $(set).find("button.vote-button")) {
+      $(button).on("click.femboyfans.vote", (event) => {
+        event.preventDefault();
+        const id = $(event.target).parent().parent().attr("data-id");
+        switch($(event.target).attr("data-action")) {
+          case "up": {
+            Post.vote(id, 1);
+            break;
+          }
+
+          case "down": {
+            Post.vote(id, -1);
+            break;
+          }
+
+          case "fav": {
+            const span = $(event.target).find("span");
+            const isFavorited = span.hasClass("is-favorited");
+            if(isFavorited) {
+              Favorite.destroy(id);
+              span.removeClass("is-favorited");
+            } else {
+              Favorite.create(id);
+              span.addClass("is-favorited");
+            }
+
+            const favSelector = $(`.post-score-faves-faves-${id}`);
+            favSelector.text(Number(favSelector.text()) + (isFavorited ? -1 : 1));
+            break;
+          }
+        }
+      });
+    }
   }
 }
 

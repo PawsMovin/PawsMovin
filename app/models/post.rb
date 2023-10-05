@@ -1040,6 +1040,26 @@ class Post < ApplicationRecord
       return nil unless user
       votes.where('user_id = ?', user.id).first
     end
+
+    def is_voted?(user = CurrentUser.user)
+      return false unless user
+      own_vote(user).present?
+    end
+
+    def is_voted_down?(user = CurrentUser.user)
+      return false unless user
+      own_vote(user).try(:is_negative?) || false
+    end
+
+    def is_voted_up?(user = CurrentUser.user)
+      return false unless user
+      own_vote(user).try(:is_positive?) || false
+    end
+
+    def is_vote_locked?(user = CurrentUser.user)
+      return false unless user
+      own_vote(user).try(:is_locked?) || false
+    end
   end
 
   module CountMethods

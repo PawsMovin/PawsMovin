@@ -125,6 +125,101 @@ article.post-preview {
       &.is-flagged.is-pending span { background: linear-gradient(90deg,$preview-pending-color 50%, $preview-flagged-color 50%); }
     }
   }
+
+  div#vote-buttons {
+    display: flex;
+    position: absolute;
+    justify-content: center;
+    align-items: flex-end;
+    bottom: 1rem;
+    left: 0;
+    right: 0;
+    height: 0;
+    z-index: 10;
+
+    button.vote-button {
+      font-size: 0.9rem;
+      padding: 0.125rem 0.75rem;
+      border-radius: 0;
+
+      & span {
+        pointer-events: none;
+      }
+
+      &.vote {
+        display: none;
+        padding: 0.125rem 1rem;
+
+        & span::before {
+          @include FontAwesomeFamily;
+          font-weight: 500;
+          position: relative;
+        }
+        &[data-action=up] {
+          border-right: 1px solid #666;
+          border-top-left-radius: 0.75rem;
+          margin-right: -0.5px;
+          padding-right: 0.7rem;
+          box-shadow: -1px -3px 5px #00000060;
+
+          & span::before {
+            content: unicode("f164");
+            bottom: -1px;
+          }
+        }
+        &[data-action=down] {
+          border-left: 1px solid #666;
+          border-top-right-radius: 0.75rem;
+          margin-left: -0.5px;
+          padding-left: 0.7rem;
+          box-shadow: 1px -3px 5px #00000060;
+
+          & span::before {
+            content: unicode("f165");
+            top: 2px;
+            left: 2px;
+          }
+        }
+      }
+
+      &.fav {
+        display: none;
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        padding: 0.125rem 0.375rem;
+        border-top-right-radius: 0.75rem;
+        box-shadow: 1px -3px 5px #00000060;
+
+        & span::before {
+          content: unicode("f005");
+          @include FontAwesomeFamily;
+          font-weight: 500;
+          position: relative;
+          top: 1px;
+          right: 1px;
+        }
+        & span.is-favorited { color: goldenrod; }
+      }
+    }
+  }
+
+  &:hover div#vote-buttons {
+    button.vote-button.vote, button.vote-button.fav {
+      display: block;
+    }
+  }
+
+  &[data-is-favorited=true] {
+    button.vote-button.fav {
+      display: block;
+    }
+
+    &:not(:hover) button.vote-button.fav {
+      background: #00000090;
+      &::before { font-weight: 600; }
+    }
+  }
 }
 
 .post-preview.current-post {

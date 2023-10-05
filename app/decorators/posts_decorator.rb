@@ -69,23 +69,6 @@ class PostsDecorator < ApplicationDecorator
     score > 0 ? 'score-positive' : 'score-negative'
   end
 
-  def stats_section(t)
-    post = object
-    status_flags = []
-    status_flags << 'P' if post.parent_id
-    status_flags << 'C' if post.has_children?
-    status_flags << 'U' if post.is_pending?
-    status_flags << 'F' if post.is_flagged?
-
-    post_score_icon = "#{'↑' if post.score > 0}#{'↓' if post.score < 0}#{'↕' if post.score == 0}"
-    score = t.tag.span("#{post_score_icon}#{post.score}", class: "post-score-score #{score_class(post.score)}")
-    favs = t.tag.span("♥#{post.fav_count}", class: "post-score-faves")
-    comments = t.tag.span "C#{post.visible_comment_count(CurrentUser)}", class: 'post-score-comments'
-    rating =  t.tag.span(post.rating.upcase, class: "post-score-rating")
-    status = t.tag.span(status_flags.join(''), class: 'post-score-extras')
-    t.tag.div score + favs + comments + rating + status, class: 'post-score', id: "post-score-#{post.id}"
-  end
-
   def preview_html(t, options = {})
     post = object
     if post.nil?
@@ -161,15 +144,16 @@ class PostsDecorator < ApplicationDecorator
     end
     desc_contents = if options[:stats] || pool || similarity || size
       t.tag.div class: "desc" do
-        stats_section(t) if options[:stats]
+        t.post_stats_section(post) if options[:stats]
       end
     else
       "".html_safe
     end
 
     ribbons = t.render("posts/partials/index/ribbons", post: post).html_safe
+    vote_buttons = t.render("posts/partials/index/vote_buttons", post: post).html_safe
     t.tag.article(**article_attrs) do
-      img_contents + desc_contents + ribbons
+      img_contents + desc_contents + ribbons + vote_buttons
     end
   end
 end
