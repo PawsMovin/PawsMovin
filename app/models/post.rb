@@ -57,9 +57,6 @@ class Post < ApplicationRecord
   attr_accessor :old_tag_string, :old_parent_id, :old_source, :old_rating,
                 :do_not_version_changes, :tag_string_diff, :source_diff, :edit_reason, :tag_string_before_parse
 
-  # FIXME: Remove this
-  alias_attribute :is_comment_locked, :is_comment_disabled
-
   has_many :versions, -> {order("post_versions.id ASC")}, :class_name => "PostVersion", :dependent => :destroy
 
   IMAGE_TYPES = %i[original large preview crop]
@@ -1574,6 +1571,10 @@ class Post < ApplicationRecord
         action = is_note_locked? ? :note_locked : :note_unlocked
         PostEvent.add(id, CurrentUser.user, action)
       end
+      if saved_change_to_is_comment_disabled?
+        action = is_comment_disabled? ? :comment_disabled : :comment_enabled
+        PostEvent.add(id, CurrentUser.user, action)
+      end
       if saved_change_to_is_comment_locked?
         action = is_comment_locked? ? :comment_locked : :comment_unlocked
         PostEvent.add(id, CurrentUser.user, action)
@@ -1720,6 +1721,11 @@ class Post < ApplicationRecord
     return true
   end
 
+  def comments_visible_to?(user)
+    return true if CurrentUser.is_moderator?
+    !is_comment_disabled?
+  end
+
   def allow_sample_resize?
     true
   end
@@ -1787,7 +1793,7 @@ class Post < ApplicationRecord
     is_pending?
   end
 
-  def visible_comment_count(_user)
-    comment_count
+  def visible_comment_count(user)
+    comments_visible_to?(user) ? comment_count : 0
   end
 end

@@ -6,7 +6,7 @@ class Comment < ApplicationRecord
   belongs_to_updater
   validate :validate_post_exists, on: :create
   validate :validate_creator_is_not_limited, on: :create
-  validate :post_not_comment_locked, on: :create
+  validate :post_not_comment_restricted, on: :create
   validates :body, presence: { message: "has no content" }
   validates :body, length: { minimum: 1, maximum: PawsMovin.config.comment_max_size }
 
@@ -131,7 +131,8 @@ class Comment < ApplicationRecord
     true
   end
 
-  def post_not_comment_locked
+  def post_not_comment_restricted
+    errors.add(:base, "Post has comments disabled") if !CurrentUser.is_moderator? && Post.find_by(id: post_id)&.is_comment_disabled?
     errors.add(:base, "Post has comments locked") if !CurrentUser.is_moderator? && Post.find_by(id: post_id)&.is_comment_locked?
   end
 
@@ -171,7 +172,7 @@ class Comment < ApplicationRecord
 
   def can_reply?(user)
     return false if is_sticky?
-    return false if post.is_comment_locked? && !user.is_moderator?
+    return false if (post.is_comment_disabled? || post.is_comment_locked?) && !user.is_moderator?
     true
   end
 
@@ -190,6 +191,7 @@ class Comment < ApplicationRecord
 
   def visible_to?(user)
     return true if user.is_moderator?
+    return false if post.is_comment_disabled?
     return true if is_hidden? == false
     creator_id == user.id # Can always see your own comments, even if hidden.
   end

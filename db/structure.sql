@@ -1587,7 +1587,8 @@ CREATE TABLE public.posts (
     generated_samples character varying[],
     duration numeric,
     is_comment_disabled boolean DEFAULT false NOT NULL,
-    original_tag_string text DEFAULT ''::text NOT NULL
+    original_tag_string text DEFAULT ''::text NOT NULL,
+    is_comment_locked boolean DEFAULT false NOT NULL
 );
 
 
@@ -4531,6 +4532,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20240113112949'),
 ('20240101042716'),
 ('20231213010430'),
+('20231005213719'),
 ('20231002181447'),
 ('20230531081706'),
 ('20230531080817'),

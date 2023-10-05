@@ -99,7 +99,7 @@ private
   def index_by_post
     tags = params[:tags] || ""
     @posts = Post.tag_match(tags + " order:comment_bumped").paginate(params[:page], :limit => 5, :search_count => params[:search])
-    comment_ids = @posts.flat_map {|post| post.comments.visible(CurrentUser.user).recent.reverse.map(&:id)} if CurrentUser.id
+    comment_ids = @posts.select { |post| post.comments_visible_to?(CurrentUser) }.flat_map {|post| post.comments.visible(CurrentUser.user).recent.reverse.map(&:id)} if CurrentUser.id
     @comment_votes = CommentVote.for_comments_and_user(comment_ids || [], CurrentUser.id)
     respond_with(@posts)
   end
@@ -107,7 +107,7 @@ private
   def index_by_comment
     @comments = Comment.visible(CurrentUser.user)
     @comments = @comments.search(search_params).paginate(params[:page], :limit => params[:limit], :search_count => params[:search])
-    @comment_votes = CommentVote.for_comments_and_user(@comments.map(&:id), CurrentUser.id)
+    @comment_votes = CommentVote.for_comments_and_user(@comments.select { |comment| comment.visible_to?(CurrentUser) }.map(&:id), CurrentUser.id)
     respond_with(@comments)
   end
 
