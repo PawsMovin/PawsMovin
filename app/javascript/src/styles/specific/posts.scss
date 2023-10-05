@@ -63,88 +63,67 @@ article.post-preview {
 }
 
 .post-preview {
-  &.post-status-has-children img {
-    border: 2px solid transparent;
-    border-color: $preview-has-children-color;
-  }
+  background: #00000040;
+  display: block;
+  position: relative;
+  width: min-content;
+  height: min-content;
 
-  &.post-status-has-parent img {
-    border: 2px solid transparent;
-    border-color: $preview-has-parent-color;
-  }
+  div.ribbons {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 0;
+    z-index: 10;
 
-  &.post-status-has-children.post-status-has-parent img {
-    border: 2px solid transparent;
-    border-color: $preview-has-children-color $preview-has-parent-color $preview-has-parent-color $preview-has-children-color;
-  }
+    > div.ribbon {
+      position: absolute;
+      width: 1rem;
+      height: 1rem;
+      overflow: hidden;
+      display: block;
 
+      & > span {
+        display: block;
+        position: absolute;
+        top: -0.6rem;
+        height: 1.25rem;
+        width: 2rem;
+        background: white;
+        transform-origin: bottom;
+        cursor: pointer;
 
-  &.post-status-deleted img {
-    border: 2px solid transparent;
-    border-color: $preview-deleted-color;
-  }
+        box-shadow: 0 0 10px -4px black;
+      }
 
-  &.post-status-has-children.post-status-deleted img {
-    border: 2px solid transparent;
-    border-color: $preview-has-children-color $preview-deleted-color $preview-deleted-color $preview-has-children-color;
-  }
+      &.right {
+        right: 0;
+        border-top-right-radius: 6px;
 
-  &.post-status-has-parent.post-status-deleted img {
-    border: 2px solid transparent;
-    border-color: $preview-has-parent-color $preview-deleted-color $preview-deleted-color $preview-has-parent-color;
-  }
+        span {
+          transform: rotate(45deg);
+          right: -0.6rem;
+        }
+      }
 
-  &.post-status-has-children.post-status-has-parent.post-status-deleted img {
-    border: 2px solid transparent;
-    border-color: $preview-has-children-color $preview-deleted-color $preview-deleted-color $preview-has-parent-color;
-  }
+      &.left {
+        left: 0;
+        border-top-left-radius: 6px;
 
+        span {
+          transform: rotate(-45deg);
+          left: -0.6rem;
+        }
+      }
 
-  &.post-status-pending img,
-  &.post-status-flagged img {
-    border: 2px solid transparent;
-    border-color: $preview-pending-color;
-  }
-
-  &.post-status-has-children.post-status-pending img,
-  &.post-status-has-children.post-status-flagged img {
-    border: 2px solid transparent;
-    border-color: $preview-has-children-color $preview-pending-color $preview-pending-color $preview-has-children-color;
-  }
-
-  &.post-status-has-parent.post-status-pending img,
-  &.post-status-has-parent.post-status-flagged img {
-    border: 2px solid transparent;
-    border-color: $preview-has-parent-color $preview-pending-color $preview-pending-color $preview-has-parent-color;
-  }
-
-  &.post-status-has-children.post-status-has-parent.post-status-pending img,
-  &.post-status-has-children.post-status-has-parent.post-status-flagged img {
-    border: 2px solid transparent;
-    border-color: $preview-has-children-color $preview-pending-color $preview-pending-color $preview-has-parent-color;
-  }
-}
-
-/* Flagged posts have red borders for approvers. */
-body[data-user-can-approve-posts="true"] .post-preview {
-  &.post-status-flagged img {
-    border: 2px solid transparent;
-    border-color: $preview-flagged-color;
-  }
-
-  &.post-status-has-children.post-status-flagged img {
-    border: 2px solid transparent;
-    border-color: $preview-has-children-color $preview-flagged-color $preview-flagged-color $preview-has-children-color;
-  }
-
-  &.post-status-has-parent.post-status-flagged img {
-    border: 2px solid transparent;
-    border-color: $preview-has-parent-color $preview-flagged-color $preview-flagged-color $preview-has-parent-color;
-  }
-
-  &.post-status-has-children.post-status-has-parent.post-status-flagged img {
-    border: 2px solid transparent;
-    border-color: $preview-has-children-color $preview-flagged-color $preview-flagged-color $preview-has-parent-color;
+      &.has-children span { background: $preview-has-children-color; }
+      &.has-parent span { background: $preview-has-parent-color; }
+      &.has-children.has-parent span { background: linear-gradient(90deg,$preview-has-parent-color 50%, $preview-has-children-color 50%); }
+      &.is-flagged span { background: $preview-flagged-color; }
+      &.is-pending span { background: $preview-pending-color; }
+      &.is-flagged.is-pending span { background: linear-gradient(90deg,$preview-pending-color 50%, $preview-flagged-color 50%); }
+    }
   }
 }
 

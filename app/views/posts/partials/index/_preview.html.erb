@@ -6,6 +6,7 @@
       <%= tag.img class: "has-cropped-#{has_cropped}", src: preview_url, title: tooltip, alt: alt_text -%>
     <% end -%>
   <% end -%>
+  <%= render "posts/partials/index/ribbons", post: post %>
   <% if stats -%>
     <div class="desc">
       <%= post_stats_section(post) %>

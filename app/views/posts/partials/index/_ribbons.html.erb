@@ -1,0 +1,33 @@
+<div class="ribbons">
+  <% if post.parent_id.present? %>
+    <% if post.has_visible_children? %>
+      <div class="ribbon left has-parent has-children" title="Has Parent\nHas Children">
+        <span></span>
+      </div>
+    <% else %>
+      <div class="ribbon left has-parent" title="Has Parent">
+        <span></span>
+      </div>
+    <% end %>
+  <% elsif post.has_visible_children? %>
+    <div class="ribbon left has-children" title="Has Children">
+      <span></span>
+    </div>
+  <% end %>
+
+  <% if post.is_flagged? %>
+    <% if post.is_pending? %>
+      <div class="ribbon right is-flagged is-pending" title="Flagged\nPending">
+        <span></span>
+      </div>
+    <% else %>
+      <div class="ribbon right is-flagged" title="Flagged">
+        <span></span>
+      </div>
+    <% end %>
+  <% elsif post.is_pending? %>
+    <div class="ribbon right is-pending" title="Pending">
+      <span></span>
+    </div>
+  <% end %>
+</div>

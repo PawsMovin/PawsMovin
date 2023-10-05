@@ -130,17 +130,17 @@ class PostsDecorator < ApplicationDecorator
     tooltip += "\n\n#{post.tag_string}"
 
     cropped_url = if PawsMovin.config.enable_image_cropping? && options[:show_cropped] && post.has_cropped? && !CurrentUser.user.disable_cropped_thumbnails?
-                             post.crop_file_url
-                           else
-                             post.preview_file_url
-                           end
+      post.crop_file_url
+    else
+      post.preview_file_url
+    end
 
     cropped_url = PawsMovin.config.deleted_preview_url if post.deleteblocked?
     preview_url = if post.deleteblocked?
-                             PawsMovin.config.deleted_preview_url
-                           else
-                             post.preview_file_url
-                           end
+      PawsMovin.config.deleted_preview_url
+    else
+      post.preview_file_url
+    end
 
     alt_text = post.tag_string
 
@@ -160,14 +160,16 @@ class PostsDecorator < ApplicationDecorator
       end
     end
     desc_contents = if options[:stats] || pool || similarity || size
-                      t.tag.div class: "desc" do
-                        stats_section(t) if options[:stats]
-                      end
-                    else
-                      "".html_safe
-                    end
+      t.tag.div class: "desc" do
+        stats_section(t) if options[:stats]
+      end
+    else
+      "".html_safe
+    end
+
+    ribbons = t.render("posts/partials/index/ribbons", post: post).html_safe
     t.tag.article(**article_attrs) do
-      img_contents + desc_contents
+      img_contents + desc_contents + ribbons
     end
   end
 end
