@@ -127,9 +127,10 @@ class UsersController < ApplicationController
       enable_auto_complete
       disable_cropped_thumbnails disable_mobile_gestures
       enable_safe_mode disable_responsive_mode disable_post_tooltips
-      move_related_thumbnails
+      move_related_thumbnails enable_hover_zoom hover_zoom_shift hover_zoom_play_audio hover_zoom_sticky_shift
     ]
 
+    permitted_params += [:enable_hover_zoom_form] if context == :update
     permitted_params += [dmail_filter_attributes: %i[id words]]
     permitted_params += [:profile_about, :profile_artinfo, :avatar_id] if CurrentUser.is_member? # Prevent editing when blocked
     permitted_params += [:enable_compact_uploader] if context != :create && CurrentUser.post_active_count >= PawsMovin.config.compact_uploader_minimum_posts

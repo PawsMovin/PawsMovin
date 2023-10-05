@@ -23,20 +23,28 @@ class PostsDecorator < ApplicationDecorator
   def data_attributes
     post = object
     attributes = {
-        "data-id" => post.id,
-        "data-has-sound" => post.has_tag?("video_with_sound", "flash_with_sound"),
-        "data-tags" => post.tag_string,
-        "data-rating" => post.rating,
-        "data-flags" => post.status_flags,
-        "data-uploader-id" => post.uploader_id,
-        "data-uploader" => post.uploader_name,
-        "data-file-ext" => post.file_ext,
-        "data-score" => post.score,
-        "data-fav-count" => post.fav_count,
-        "data-is-favorited" => post.favorited_by?(CurrentUser.user.id)
+        "data-id": post.id,
+        "data-has-sound": post.has_tag?("sound"),
+        "data-tags": post.tag_string,
+        "data-rating": post.rating,
+        "data-flags": post.status_flags,
+        "data-uploader-id": post.uploader_id,
+        "data-uploader": post.uploader_name,
+        "data-file-ext": post.file_ext,
+        "data-file-size": post.file_size,
+        "data-score": post.score,
+        "data-score-up": post.up_score,
+        "data-score-down": post.down_score,
+        "data-fav-count": post.fav_count,
+        "data-is-favorited": post.favorited_by?(CurrentUser.user.id),
+        "data-created-at": post.created_at.iso8601,
+        "data-created-ago": "#{Class.new.extend(ActionView::Helpers::DateHelper).time_ago_in_words(post.created_at)} ago",
+        "data-width": post.image_width,
+        "data-height": post.image_height,
     }
 
     if post.visible?
+      attributes["data-md5"] = post.md5
       attributes["data-file-url"] = post.file_url
       attributes["data-large-file-url"] = post.large_file_url
       attributes["data-preview-file-url"] = post.preview_file_url
@@ -47,10 +55,10 @@ class PostsDecorator < ApplicationDecorator
 
   def cropped_url(options)
     cropped_url = if PawsMovin.config.enable_image_cropping? && options[:show_cropped] && object.has_cropped? && !CurrentUser.user.disable_cropped_thumbnails?
-                    object.crop_file_url
-                  else
-                    object.preview_file_url
-                  end
+      object.crop_file_url
+    else
+      object.preview_file_url
+    end
 
     cropped_url = PawsMovin.config.deleted_preview_url if object.deleteblocked?
     cropped_url
@@ -93,8 +101,8 @@ class PostsDecorator < ApplicationDecorator
     end
 
     article_attrs = {
-        "id" => "post_#{post.id}",
-        "class" => preview_class(options).join(" ")
+        id: "post_#{post.id}",
+        class: preview_class(options).join(" ")
     }.merge(data_attributes)
 
     link_target = options[:link_target] || post

@@ -1396,26 +1396,32 @@ class Post < ApplicationRecord
     def minimal_attributes
       preview_dims = preview_dimensions
       hash = {
-          status: status,
-          flags: status_flags,
-          file_ext: file_ext,
-          id: id,
-          created_at: created_at,
-          rating: rating,
-          preview_width: preview_dims[1],
-          width: image_width,
-          preview_height: preview_dims[0],
-          height: image_height,
-          tags: tag_string,
-          score: score,
-          uploader_id: uploader_id,
-          uploader: uploader_name
+        created_ago: "#{Class.new.extend(ActionView::Helpers::DateHelper).time_ago_in_words(created_at)} ago",
+        created_at: created_at.iso8601,
+        down_score: down_score,
+        file_ext: file_ext,
+        file_size: file_size,
+        flags: status_flags,
+        height: image_height,
+        id: id,
+        preview_height: preview_dims[0],
+        preview_width: preview_dims[1],
+        rating: rating,
+        score: score,
+        status: status,
+        tags: tag_string,
+        up_score: up_score,
+        uploader: uploader_name,
+        uploader_id: uploader_id,
+        width: image_width,
       }
 
       if visible?
         hash[:md5] = md5
-        hash[:preview_url] = preview_file_url
-        hash[:cropped_url] = crop_file_url
+        hash[:preview_file_url] = preview_file_url
+        hash[:large_file_url] = large_file_url
+        hash[:cropped_file_url] = crop_file_url
+        hash[:file_url] = file_url
       end
       hash
     end

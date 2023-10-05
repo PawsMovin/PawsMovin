@@ -1,8 +1,12 @@
-$fa-font-path: "@fortawesome/fontawesome-free/webfonts"; 
+$fa-font-path: "@fortawesome/fontawesome-free/webfonts";
 
 @import "@fortawesome/fontawesome-free/scss/fontawesome";
 @import "@fortawesome/fontawesome-free/scss/solid";
 @import "@fortawesome/fontawesome-free/scss/regular";
+
+@mixin FontAwesomeFamily() {
+  font-family: "Font Awesome 6 Free";
+}
 
 // https://fontawesome.com/how-to-use/on-the-web/advanced/css-pseudo-elements
 @mixin font-awesome-icon {
@@ -12,7 +16,7 @@ $fa-font-path: "@fortawesome/fontawesome-free/webfonts";
   font-style: normal;
   font-variant: normal;
   text-rendering: auto;
-  
-  font-family: "Font Awesome 6 Free";
+
+  @include FontAwesomeFamily;
   font-weight: 900;
 }

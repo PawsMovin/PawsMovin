@@ -42,10 +42,10 @@ Thumbnails.initialize = function () {
     if (p.hasClass('thumb-placeholder-link'))
       newTag.addClass('dtext');
     const img = $('<img>');
-    img.attr('src', postData.preview_url || '/images/deleted-preview.png');
+    img.attr('src', postData.preview_file_url || '/images/deleted-preview.png');
     img.attr({
-      height: postData.preview_url ? postData.preview_height : 250,
-      width: postData.preview_url ? postData.preview_width : 250,
+      height: postData.preview_file_url ? postData.preview_height : 150,
+      width: postData.preview_file_url ? postData.preview_width : 150,
       title: `Rating: ${postData.rating}\r\nID: ${postData.id}\r\nStatus: ${postData.status}\r\nDate: ${postData.created_at}\r\n\r\n${postData.tags}`,
       alt: postData.tags,
       class: 'post-thumbnail-img'

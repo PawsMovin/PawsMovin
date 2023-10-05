@@ -70,6 +70,10 @@ class User < ApplicationRecord
     enable_compact_uploader
     no_replacements
     move_related_thumbnails
+    enable_hover_zoom
+    hover_zoom_shift
+    hover_zoom_play_audio
+    hover_zoom_sticky_shift
   )
 
   include PawsMovin::HasBitFlags
@@ -931,6 +935,26 @@ class User < ApplicationRecord
 
   def compact_uploader?
     post_upload_count >= 10 && enable_compact_uploader?
+  end
+
+  def enable_hover_zoom_shift?
+    enable_hover_zoom? && hover_zoom_shift?
+  end
+
+  def enable_hover_zoom_form
+    return false unless enable_hover_zoom?
+    return "shift" if enable_hover_zoom_shift?
+    true
+  end
+
+  def enable_hover_zoom_form=(value)
+    if value == "shift"
+      self.enable_hover_zoom = true
+      self.hover_zoom_shift = true
+    else
+      self.enable_hover_zoom = value.to_s.truthy?
+      self.hover_zoom_shift = false
+    end
   end
 
   def initialize_attributes

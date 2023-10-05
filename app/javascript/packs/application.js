@@ -52,6 +52,7 @@ export { default as Takedown } from '../src/javascripts/takedowns.js';
 export { default as Thumbnails } from '../src/javascripts/thumbnails.js';
 export { default as Uploader } from '../src/javascripts/uploader.js';
 export { default as VoteManager } from '../src/javascripts/vote_manager.js';
+export { default as HoverZoom } from '../src/javascripts/hover_zoom.js';
 
 function inError(msg) {
   $(window).trigger("danbooru:error", msg);

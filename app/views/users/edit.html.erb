@@ -116,6 +116,15 @@
 
         <%= f.input :move_related_thumbnails, label: "Move Related Thumbnails", as: :select, collection: [%w[Yes true], %w[No false]], include_blank: false,
                     hint: "Moves the parent/child thumbnails to the sidebar." %>
+
+        <%= f.input :enable_hover_zoom_form, label: "Enable Hover Zoom", as: :select, collection: [["Require Shift", "shift"], %w[Yes true], %w[No false]], include_blank: false,
+                    hint: "Enables showing a larger preview of posts when hovering over them." %>
+
+        <%= f.input :hover_zoom_play_audio, label: "Hover Zoom: Play Audio", as: :select, collection: [%w[No false], %w[Yes true]], include_blank: false,
+                    hint: "Enables playing audio when videos are hovered over, while Hover Zoom is enabled." %>
+
+        <%= f.input :hover_zoom_sticky_shift, label: "Hover Zoom: Sticky Shift", as: :select, collection: [%w[No false], %w[Yes true]], include_blank: false,
+                    hint: "if enabled, shift does not need to continuously be held down while hovering over a post." %>
       </fieldset>
 
       <%= f.button :submit, "Submit" %>

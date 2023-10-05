@@ -5,6 +5,9 @@
 </head>
 <%= tag.body **body_attributes(CurrentUser.user) do %>
   <%= render "layouts/theme_include" %>
+  <% if content_for(:html_body) %>
+    <%= yield :html_body %>
+  <% end %>
 
   <header id="top">
     <div id="maintoggle">

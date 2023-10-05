@@ -1,9 +1,10 @@
+<%= render "posts/partials/common/zoom_container" %>
 <div id="c-posts">
   <div id="a-show">
     <aside id="sidebar">
       <%= render "posts/partials/common/search", :path => posts_path, :tags => params[:q], :tags_dom_id => "tags" %>
       <% if CurrentUser.move_related_thumbnails? %>
-        <%= render "posts/partials/show/parent_children", post: @post, parent_post_set: @parent_post_set, children_post_set: @children_post_set %>\
+        <%= render "posts/partials/show/parent_children", post: @post, parent_post_set: @parent_post_set, children_post_set: @children_post_set %>
       <% end %>
 
       <%= render "posts/partials/index/blacklist" %>

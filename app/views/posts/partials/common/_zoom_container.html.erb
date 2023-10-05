@@ -1,0 +1,18 @@
+<% if CurrentUser.enable_hover_zoom? %>
+  <% content_for(:html_body) do %>
+    <div id="zoom-container" data-status="waiting">
+      <div id="zoom-info"></div>
+      <img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" style="display: none;" id="zoom-image">
+      <video controls autoplay loop<% unless CurrentUser.hover_zoom_play_audio? %> muted<% end %> style="display: none;" id="zoom-video" poster="" src=""></video>
+      <div id="zoom-tags"></div>
+    </div>
+  <% end %>
+
+  <% content_for(:html_header) do %>
+    <%= javascript_tag nonce: true do -%>
+      $(function() {
+        Danbooru.HoverZoom.init(<%= CurrentUser.hover_zoom_shift? %>, <%= CurrentUser.hover_zoom_sticky_shift? %>, <%= CurrentUser.hover_zoom_play_audio? %>);
+      });
+    <% end -%>
+  <% end %>
+<% end %>
