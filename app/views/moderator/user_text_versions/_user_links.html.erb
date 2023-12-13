@@ -1,0 +1,9 @@
+<%= subnav_link_to "Profile", user_path(user) %>
+<% if CurrentUser.is_admin? %>
+  <%= subnav_link_to "Edit User", edit_admin_user_path(user) %>
+<% end %>
+<% if user.is_banned? %>
+  <%= subnav_link_to "Unban", ban_path(user.recent_ban) %>
+<% else %>
+  <%= subnav_link_to "Ban", new_ban_path(ban: { user_id: user.id }) %>
+<% end %>

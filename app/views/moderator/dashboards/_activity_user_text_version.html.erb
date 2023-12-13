@@ -1,0 +1,26 @@
+
+<table class="striped">
+  <caption>User Text Changes</caption>
+  <thead>
+  <tr>
+    <th></th>
+    <th>User</th>
+    <th>Updater</th>
+    <th>Changes</th>
+  </tr>
+  </thead>
+  <tbody>
+  <% @dashboard.user_text_versions.each do |activity| %>
+    <% next if activity.version.empty_for?(CurrentUser) %>
+    <tr>
+      <td><%= link_to "Show", moderator_user_text_version_path(activity.version) %></td>
+      <td><%= link_to_user(activity.version.user) %></td>
+      <td><%= link_to_user(activity.version.updater) %></td>
+      <td><%= activity.version.changes_for_pretty(CurrentUser) %></td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
+
+<p><%= link_to "View all changes", moderator_user_text_versions_path %></p>
+

@@ -1,0 +1,14 @@
+
+<%= form_search(path: request.path) do |f| %>
+  <%= f.user :updater %>
+  <%= f.user :user %>
+  <%= f.input :changes, label: "Changes", collection: UserTextVersion::CHANGE_TYPES.select { |k| UserTextVersion.allowed_for?(CurrentUser, k) }.invert, include_blank: true %>
+  <% UserTextVersion::CHANGE_TYPES.keys.each do |change| %>
+    <% if UserTextVersion.allowed_for?(CurrentUser, change) %>
+      <%= f.input :"#{change}_matches", label: "#{UserTextVersion::CHANGE_TYPES[change]} Matches", hint: "Use * for wildcard" %>
+    <% end %>
+  <% end %>
+  <% if CurrentUser.is_admin? %>
+    <%= f.input :ip_addr, label: "IP Address" %>
+  <% end %>
+<% end %>

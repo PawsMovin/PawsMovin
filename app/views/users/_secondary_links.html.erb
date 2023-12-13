@@ -31,6 +31,7 @@
       <% else %>
         <%= subnav_link_to "Ban", new_ban_path(ban: { user_id: @user.id }) %>
       <% end %>
+      <%= subnav_link_to "Text Versions", user_text_versions_path(@user) %>
     <% end %>
 
     <li>|</li>

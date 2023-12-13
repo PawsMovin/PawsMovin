@@ -53,6 +53,12 @@ module Moderator
           Queries::WikiPage.all(min_date, max_level)
         end
       end
+
+      def user_text_versions
+        ApplicationRecord.without_timeout do
+          Queries::UserTextVersions.all(min_date, max_level)
+        end
+      end
     end
   end
 end

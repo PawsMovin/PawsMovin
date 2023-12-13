@@ -56,6 +56,9 @@ Rails.application.routes.draw do
         end
       end
     end
+    resources :user_text_versions, only: %i[index show] do
+      get :diff, on: :collection
+    end
   end
   resources :popular, only: [:index]
   namespace :maintenance do
@@ -273,6 +276,7 @@ Rails.application.routes.draw do
       post :view
     end
     resources :staff_notes, only: [:index, :new, :create], controller: "admin/staff_notes"
+    resources :text_versions, only: %i[index], to: "moderator/user_text_versions#for_user"
 
     collection do
       get :home

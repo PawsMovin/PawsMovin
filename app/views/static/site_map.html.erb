@@ -107,6 +107,7 @@
         <li><h1>Admin</h1></li>
         <% if CurrentUser.is_moderator? %>
           <li><%= link_to("Mod Dashboard", moderator_dashboard_path) %></li>
+          <li><%= link_to("User Text Versions", moderator_user_text_versions_path) %></li>
         <% end %>
         <% if CurrentUser.is_admin? %>
           <li><%= link_to("Admin Dashboard", admin_dashboard_path) %></li>

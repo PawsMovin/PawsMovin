@@ -107,6 +107,9 @@ class User < ApplicationRecord
   before_create :encrypt_password_on_create
   before_update :encrypt_password_on_update
   after_save :update_cache
+  after_update(if: ->(rec) { rec.saved_change_to_profile_about? || rec.saved_change_to_profile_artinfo? || rec.saved_change_to_blacklisted_tags? }) do |rec|
+    UserTextVersion.create_version(rec)
+  end
   #after_create :notify_sock_puppets
   after_create :create_user_status
 
@@ -130,6 +133,7 @@ class User < ApplicationRecord
   has_many :post_votes
   has_many :staff_notes, -> { order("staff_notes.id desc") }
   has_many :user_name_change_requests, -> { order(id: :asc) }
+  has_many :text_versions, -> { order(id: :desc) }, class_name: "UserTextVersion"
 
   belongs_to :avatar, class_name: 'Post', optional: true
   accepts_nested_attributes_for :dmail_filter

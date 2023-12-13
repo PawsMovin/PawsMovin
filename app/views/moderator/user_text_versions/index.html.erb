@@ -1,0 +1,74 @@
+<div id="c-user-text-versions">
+  <div id="a-index">
+    <h1>User Text History</h1>
+
+    <%= render "search" %>
+    <% if @text_versions.empty? %>
+      <p>Nothing to see here.</p>
+    <% else %>
+      <%= form_tag(diff_moderator_user_text_versions_path, method: :get) do %>
+        <table class="striped">
+          <thead>
+          <tr>
+            <th width="3%"></th>
+            <th width="2%"></th>
+            <th width="2%"></th>
+            <th></th>
+            <th>User</th>
+            <th>Editor</th>
+            <% if CurrentUser.is_admin? %>
+              <th>IP Address</th>
+            <% end %>
+            <th>Date</th>
+            <th>Changes</th>
+          </tr>
+          </thead>
+          <tbody>
+          <% skipped = 0 %>
+          <% @text_versions.each_with_index do |text_version, i| %>
+            <%# skip empty versions, unless we're viewing a user, then skip all empty versions except the first one %>
+            <% if params[:action] == "for_user" %>
+              <% next if text_version.empty_for?(CurrentUser) && !text_version.is_original? && skipped += 1 %>
+            <% else %>
+              <% next if text_version.empty_for?(CurrentUser) && skipped += 1 %>
+            <% end %>
+            <%# correct for skipped versions %>
+            <% i -= skipped %>
+            <tr>
+              <td>
+                <% if i < @text_versions.length - 1 %>
+                  <%= link_to "diff", diff_moderator_user_text_versions_path(thisversion: text_version.id, otherversion: @text_versions[i + 1].id) %>
+                <% else %>
+                  diff
+                <% end %>
+              </td>
+              <td>
+                <%= radio_button_tag "otherversion", text_version.id, (i == 1), title: "Other Version" %>
+              </td>
+              <td>
+                <%= radio_button_tag "thisversion", text_version.id, (i == 0), title: "This Version" %>
+              </td>
+              <td><%= link_to "Show", action: :show, id: text_version.id %></td>
+              <td><%= link_to_user text_version.user %></td>
+              <td><%= link_to_user text_version.updater %></td>
+              <% if CurrentUser.is_admin? %>
+                <td><%= link_to_ip text_version.updater_ip_addr %></td>
+              <% end %>
+              <td><%= compact_time text_version.created_at %></td>
+              <td><%= text_version.changes_for_pretty(CurrentUser.user) %></td>
+            </tr>
+          <% end %>
+          </tbody>
+        </table>
+
+        <%= submit_tag "Diff", name: nil, disabled: @text_versions.length == 1 %>
+      <% end %>
+      <%= numbered_paginator(@text_versions) %>
+    <% end %>
+  </div>
+</div>
+
+<%= render "secondary_links" %>
+<% content_for(:page_title) do %>
+  User Text Versions
+<% end %>
