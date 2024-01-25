@@ -5,7 +5,7 @@
  * Latest version of Docker ([download](https://docs.docker.com/get-docker)).
  * Latest version of Docker Compose ([download](https://docs.docker.com/compose/install))
  * Git ([download](https://git-scm.com/downloads))
- 
+
  If you are on Windows Docker Compose is already included, you do not need to install it yourself.
  If you are on Linux/MacOS you can probably use your package manager.
 
@@ -17,7 +17,7 @@
 1. Copy the sample environment file with `cp .env.sample .env`.
 1. Run the following commands:
     ```
-    docker compose run --rm -e SEED_POST_COUNT=100 e621 /app/bin/setup
+    docker compose run --rm -e SEED_POST_COUNT=100 pawsmovin /app/bin/setup
     docker compose up
     ```
     After running the commands once only `docker compose up` is needed to bring up the containers.
