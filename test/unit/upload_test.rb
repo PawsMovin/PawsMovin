@@ -3,7 +3,7 @@ require "test_helper"
 class UploadTest < ActiveSupport::TestCase
   context "In all cases" do
     setup do
-      user = create(:privileged_user)
+      user = create(:trusted_user)
       CurrentUser.user = user
     end
 

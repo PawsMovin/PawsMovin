@@ -21,8 +21,8 @@ FactoryBot.define do
       level { User::Levels::MEMBER }
     end
 
-    factory(:privileged_user) do
-      level { User::Levels::PRIVILEGED }
+    factory(:trusted_user) do
+      level { User::Levels::TRUSTED }
     end
 
     factory(:janitor_user) do

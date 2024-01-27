@@ -12,13 +12,10 @@ require "net/http"
 module Seeds
 
   def self.run!
-    create_aibur_category!
     begin
       User.system.update!(level: User::Levels::ADMIN)
-      CurrentUser.as_system do
-        Posts.run!
-        Mascots.run!
-      end
+      Posts.run!
+      Mascots.run!
     ensure
       User.system.update!(level: User::Levels::SYSTEM)
     end
@@ -131,8 +128,10 @@ module Seeds
     end
   end
 end
+CurrentUser.as_system do
+  Seeds.create_aibur_category!
 
-
-unless Rails.env.test?
-  Seeds.run!
+  unless Rails.env.test?
+    Seeds.run!
+  end
 end

@@ -3,7 +3,7 @@ require 'test_helper'
 class ApiKeyTest < ActiveSupport::TestCase
   context "in all cases a user" do
     setup do
-      @user = create(:privileged_user, name: "abcdef")
+      @user = create(:trusted_user, name: "abcdef")
       @api_key = ApiKey.generate!(@user)
     end
 

@@ -5,7 +5,7 @@ class PostFlagTest < ActiveSupport::TestCase
     setup do
       travel_to(2.weeks.ago) do
         @bob = create(:user)
-        @alice = create(:privileged_user)
+        @alice = create(:trusted_user)
       end
       as(@alice) do
         @post = create(:post, tag_string: "aaa", uploader: @alice)

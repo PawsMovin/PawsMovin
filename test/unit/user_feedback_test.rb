@@ -45,9 +45,9 @@ class UserFeedbackTest < ActiveSupport::TestCase
     end
 
     should "not validate if the creator has no permissions" do
-      privileged = create(:privileged_user)
+      trusted = create(:trusted_user)
 
-      CurrentUser.user = privileged
+      CurrentUser.user = trusted
       feedback = build(:user_feedback, user: @user)
       feedback.save
       assert_equal(["You must be moderator"], feedback.errors.full_messages)

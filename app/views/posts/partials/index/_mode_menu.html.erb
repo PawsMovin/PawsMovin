@@ -8,7 +8,7 @@
       <option value="remove-fav">Unfavorite</option>
       <option value="add-to-set">Add To Set</option>
       <option value="remove-from-set">Remove From Set</option>
-      <% if CurrentUser.is_privileged? %>
+      <% if CurrentUser.is_trusted? %>
         <option value="vote-up">Vote up</option>
         <option value="vote-down">Vote down</option>
         <option value="rating-s">Rate Safe</option>
@@ -30,7 +30,7 @@
     </select>
   </form>
   <select id="set-id" style="display: none; margin-top: 0.5em;"></select>
-  <% if CurrentUser.is_privileged? %>
+  <% if CurrentUser.is_trusted? %>
     <input id="tag-script-field" data-autocomplete="tag-edit" placeholder="Enter tag script" style="display: none; margin-top: 0.5em;"/>
     <input id="quick-mode-reason" placeholder="Reason" style="display: none; margin-top: 0.5em;"/>
   <% end %>

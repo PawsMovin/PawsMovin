@@ -5,7 +5,7 @@ module Maintenance
     class ApiKeysControllerTest < ActionDispatch::IntegrationTest
       context "An api keys controller" do
         setup do
-          @user = create(:privileged_user, :password => "password")
+          @user = create(:trusted_user, :password => "password")
           ApiKey.generate!(@user)
         end
 

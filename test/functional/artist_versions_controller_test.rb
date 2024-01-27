@@ -3,7 +3,7 @@ require "test_helper"
 class ArtistVersionsControllerTest < ActionDispatch::IntegrationTest
   context "An artist versions controller" do
     setup do
-      @user = create(:privileged_user)
+      @user = create(:trusted_user)
       as(@user) do
         @artist = create(:artist)
       end

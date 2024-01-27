@@ -12,9 +12,14 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
         assert_response :success
       end
 
-      should "redirect for /users?name=<name>" do
-        get users_path, params: { name: "some_username" }
-        assert_redirected_to(user_path(id: "some_username"))
+      should "not redirect for /users?name=<name> if invalid" do
+        get users_path, params: { name: "some_name" }
+        assert_response :not_found
+      end
+
+      should "redirect for /users?name=<name> if valid" do
+        get users_path, params: { name: @user.name }
+        assert_redirected_to(user_path(@user))
       end
 
       should "list all users (with search)" do

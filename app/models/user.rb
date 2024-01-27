@@ -13,7 +13,7 @@ class User < ApplicationRecord
     BLOCKED      = 1
     RESTRICTED   = 5
     MEMBER       = 10
-    PRIVILEGED   = 15
+    TRUSTED      = 15
     FORMER_STAFF = 19
     JANITOR      = 20
     MODERATOR    = 30
@@ -478,7 +478,7 @@ class User < ApplicationRecord
     end
 
     def general_bypass_throttle?
-      is_privileged?
+      is_trusted?
     end
 
     create_user_throttle(:artist_edit, ->{ PawsMovin.config.artist_edit_limit - ArtistVersion.for_user(id).where('updated_at > ?', 1.hour.ago).count },
@@ -561,7 +561,7 @@ class User < ApplicationRecord
           true
       elsif younger_than(7.days)
         :REJ_UPLOAD_NEWBIE
-      elsif !is_privileged? && post_edit_limit <= 0 && !PawsMovin.config.disable_throttles?
+      elsif !is_trusted? && post_edit_limit <= 0 && !PawsMovin.config.disable_throttles?
         :REJ_UPLOAD_EDIT
       elsif upload_limit <= 0 && !PawsMovin.config.disable_throttles?
         :REJ_UPLOAD_LIMIT
@@ -602,7 +602,7 @@ class User < ApplicationRecord
     end
 
     def post_upload_throttle
-      @post_upload_throttle ||= is_privileged? ? hourly_upload_limit : [hourly_upload_limit, post_edit_limit].min
+      @post_upload_throttle ||= is_trusted? ? hourly_upload_limit : [hourly_upload_limit, post_edit_limit].min
     end
 
     def tag_query_limit
@@ -622,7 +622,7 @@ class User < ApplicationRecord
       # api_regen_multiplier refilling your pool
       if is_former_staff?
         120
-      elsif is_privileged?
+      elsif is_trusted?
         90
       else
         60
@@ -636,7 +636,7 @@ class User < ApplicationRecord
     def statement_timeout
       if is_former_staff?
         9_000
-      elsif is_privileged?
+      elsif is_trusted?
         6_000
       else
         3_000

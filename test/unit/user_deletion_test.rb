@@ -33,7 +33,7 @@ class UserDeletionTest < ActiveSupport::TestCase
 
   context "a valid user deletion" do
     setup do
-      @user = create(:privileged_user, created_at: 2.weeks.ago)
+      @user = create(:trusted_user, created_at: 2.weeks.ago)
       CurrentUser.user = @user
 
       @post = create(:post)

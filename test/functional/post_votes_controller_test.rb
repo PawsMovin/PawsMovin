@@ -3,7 +3,7 @@ require 'test_helper'
 class PostVotesControllerTest < ActionDispatch::IntegrationTest
   context "The post vote controller" do
     setup do
-      @user = create(:privileged_user)
+      @user = create(:trusted_user)
       as(@user) do
         @post = create(:post)
       end

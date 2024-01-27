@@ -41,7 +41,7 @@ class UploadsControllerTest < ActionDispatch::IntegrationTest
 
       context "when uploads are disabled" do
         setup do
-          DangerZone.min_upload_level = User::Levels::PRIVILEGED
+          DangerZone.min_upload_level = User::Levels::TRUSTED
         end
 
         teardown do
@@ -54,7 +54,7 @@ class UploadsControllerTest < ActionDispatch::IntegrationTest
         end
 
         should "allow uploads for users of the same or higher level" do
-          get_auth new_upload_path, create(:privileged_user, created_at: 2.weeks.ago)
+          get_auth new_upload_path, create(:trusted_user, created_at: 2.weeks.ago)
           assert_response :success
         end
       end

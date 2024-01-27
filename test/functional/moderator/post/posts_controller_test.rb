@@ -6,7 +6,7 @@ module Moderator
       context "The moderator posts controller" do
         setup do
           @admin = create(:admin_user)
-          @user = create(:privileged_user, created_at: 1.month.ago)
+          @user = create(:trusted_user, created_at: 1.month.ago)
 
           as(@user) do
             @post = create(:post)

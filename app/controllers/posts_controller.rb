@@ -167,7 +167,7 @@ class PostsController < ApplicationController
       rating old_rating
       edit_reason
     ]
-    permitted_params += %i[is_rating_locked] if CurrentUser.is_privileged?
+    permitted_params += %i[is_rating_locked] if CurrentUser.is_trusted?
     permitted_params += %i[is_note_locked bg_color] if CurrentUser.is_janitor?
     permitted_params += %i[is_status_locked is_comment_locked locked_tags hide_from_anonymous hide_from_search_engines] if CurrentUser.is_admin?
 

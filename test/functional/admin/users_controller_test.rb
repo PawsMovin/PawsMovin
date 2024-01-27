@@ -17,15 +17,15 @@ class Admin::UsersControllerTest < ActionDispatch::IntegrationTest
     context "#update" do
       context "on a basic user" do
         should "fail for moderators" do
-          put_auth admin_user_path(@user), create(:moderator_user), params: { user: { level: User::Levels::PRIVILEGED } }
+          put_auth admin_user_path(@user), create(:moderator_user), params: { user: { level: User::Levels::TRUSTED } }
           assert_response :forbidden
         end
 
         should "succeed" do
-          put_auth admin_user_path(@user), @admin, params: { user: { level: User::Levels::PRIVILEGED } }
+          put_auth admin_user_path(@user), @admin, params: { user: { level: User::Levels::TRUSTED } }
           assert_redirected_to(user_path(@user))
           @user.reload
-          assert_equal(User::Levels::PRIVILEGED, @user.level)
+          assert_equal(User::Levels::TRUSTED, @user.level)
         end
 
         should "rename" do
@@ -44,10 +44,10 @@ class Admin::UsersControllerTest < ActionDispatch::IntegrationTest
         end
 
         should "succeed" do
-          put_auth admin_user_path(@user), @admin, params: { user: { level: User::Levels::PRIVILEGED } }
+          put_auth admin_user_path(@user), @admin, params: { user: { level: User::Levels::TRUSTED } }
           assert_redirected_to(user_path(@user))
           @user.reload
-          assert_equal(User::Levels::PRIVILEGED, @user.level)
+          assert_equal(User::Levels::TRUSTED, @user.level)
         end
 
         should "prevent invalid emails" do
@@ -65,9 +65,9 @@ class Admin::UsersControllerTest < ActionDispatch::IntegrationTest
         end
 
         should "allow editing if the email is not changed" do
-          put_auth admin_user_path(@user1), @admin, params: { user: { level: User::Levels::PRIVILEGED } }
+          put_auth admin_user_path(@user1), @admin, params: { user: { level: User::Levels::TRUSTED } }
           @user1.reload
-          assert_equal(User::Levels::PRIVILEGED, @user1.level)
+          assert_equal(User::Levels::TRUSTED, @user1.level)
         end
 
         should "allow changing the email" do

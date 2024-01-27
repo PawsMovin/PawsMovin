@@ -256,7 +256,7 @@ class PostTest < ActiveSupport::TestCase
         should "not reassign favorites to the parent by default" do
           p1 = create(:post)
           c1 = create(:post, parent_id: p1.id)
-          user = create(:privileged_user)
+          user = create(:trusted_user)
           FavoriteManager.add!(user: user, post: c1)
           c1.delete!("test")
           p1.reload
@@ -267,7 +267,7 @@ class PostTest < ActiveSupport::TestCase
         should "reassign favorites to the parent if specified" do
           p1 = create(:post)
           c1 = create(:post, parent_id: p1.id)
-          user = create(:privileged_user)
+          user = create(:trusted_user)
           FavoriteManager.add!(user: user, post: c1)
           with_inline_jobs { c1.delete!("test", move_favorites: true) }
           p1.reload
@@ -284,7 +284,7 @@ class PostTest < ActiveSupport::TestCase
         end
 
         should "clear the has_active_children flag when the 'move favorites' option is set" do
-          user = create(:privileged_user)
+          user = create(:trusted_user)
           p1 = create(:post)
           c1 = create(:post, parent_id: p1.id)
           FavoriteManager.add!(user: user, post: c1)
@@ -1312,7 +1312,7 @@ class PostTest < ActiveSupport::TestCase
   context "Favorites:" do
     context "Removing a post from a user's favorites" do
       setup do
-        @user = create(:privileged_user)
+        @user = create(:trusted_user)
         @post = create(:post)
         FavoriteManager.add!(user: @user, post: @post)
         @user.reload
@@ -1341,7 +1341,7 @@ class PostTest < ActiveSupport::TestCase
 
     context "Adding a post to a user's favorites" do
       setup do
-        @user = create(:privileged_user)
+        @user = create(:trusted_user)
         @post = create(:post)
       end
 
@@ -1395,11 +1395,11 @@ class PostTest < ActiveSupport::TestCase
         @child = create(:post, parent: @parent)
 
         @user1 = create(:user, enable_privacy_mode: true)
-        @privileged1 = create(:privileged_user)
+        @trusted1 = create(:trusted_user)
         @supervoter1 = create(:user)
 
         FavoriteManager.add!(user: @user1, post: @child)
-        FavoriteManager.add!(user: @privileged1, post: @child)
+        FavoriteManager.add!(user: @trusted1, post: @child)
         FavoriteManager.add!(user: @supervoter1, post: @child)
         FavoriteManager.add!(user: @supervoter1, post: @parent)
 
@@ -1904,7 +1904,7 @@ class PostTest < ActiveSupport::TestCase
       post2 = create(:post)
       post3 = create(:post)
 
-      as(create(:privileged_user)) do
+      as(create(:trusted_user)) do
         create(:comment, post: post1)
         create(:comment, post: post2, do_not_bump_post: true)
         create(:comment, post: post3)
@@ -1979,7 +1979,7 @@ class PostTest < ActiveSupport::TestCase
 
   context "Voting:" do
     should "not allow duplicate votes" do
-      user = create(:privileged_user)
+      user = create(:trusted_user)
       post = create(:post)
       as(user) do
         assert_nothing_raised { VoteManager.vote!(user: user, post: post, score: 1) }
@@ -1992,7 +1992,7 @@ class PostTest < ActiveSupport::TestCase
     end
 
     should "allow undoing of votes" do
-      user = create(:privileged_user, created_at: 7.days.ago)
+      user = create(:trusted_user, created_at: 7.days.ago)
       post = create(:post)
 
       # We deliberately don't call post.reload until the end to verify that

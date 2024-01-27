@@ -15,17 +15,17 @@ class UserTest < ActiveSupport::TestCase
       end
 
       should "change the users level and flags" do
-        @user.promote_to!(User::Levels::PRIVILEGED, can_approve_posts: true)
+        @user.promote_to!(User::Levels::TRUSTED, can_approve_posts: true)
         @user.reload
 
-        assert_equal(User::Levels::PRIVILEGED, @user.level)
+        assert_equal(User::Levels::TRUSTED, @user.level)
         assert(@user.can_approve_posts?)
         assert_not(@user.can_upload_free?)
 
-        @user.promote_to!(User::Levels::PRIVILEGED, can_approve_posts: false, can_upload_free: true)
+        @user.promote_to!(User::Levels::TRUSTED, can_approve_posts: false, can_upload_free: true)
         @user.reload
 
-        assert_equal(User::Levels::PRIVILEGED, @user.level)
+        assert_equal(User::Levels::TRUSTED, @user.level)
         assert_not(@user.can_approve_posts?)
         assert(@user.can_upload_free?)
       end
@@ -84,7 +84,7 @@ class UserTest < ActiveSupport::TestCase
     should "limit comments" do
       PawsMovin.config.stubs(:member_comment_limit).returns(2)
       assert_equal(@user.can_comment_with_reason, :REJ_NEWBIE)
-      @user.update_column(:level, User::Levels::PRIVILEGED)
+      @user.update_column(:level, User::Levels::TRUSTED)
       assert(@user.can_comment_with_reason)
       @user.update_column(:level, User::Levels::MEMBER)
       @user.update_column(:created_at, 1.year.ago)
@@ -121,22 +121,22 @@ class UserTest < ActiveSupport::TestCase
     should "normalize its level" do
       user = create(:user, level: User::Levels::ADMIN)
       assert(user.is_moderator?)
-      assert(user.is_privileged?)
+      assert(user.is_trusted?)
 
       user = create(:user, level: User::Levels::MODERATOR)
       assert(!user.is_admin?)
       assert(user.is_moderator?)
-      assert(user.is_privileged?)
+      assert(user.is_trusted?)
 
-      user = create(:user, level: User::Levels::PRIVILEGED)
+      user = create(:user, level: User::Levels::TRUSTED)
       assert(!user.is_admin?)
       assert(!user.is_moderator?)
-      assert(user.is_privileged?)
+      assert(user.is_trusted?)
 
       user = create(:user)
       assert(!user.is_admin?)
       assert(!user.is_moderator?)
-      assert(!user.is_privileged?)
+      assert(!user.is_trusted?)
     end
 
     context "name" do

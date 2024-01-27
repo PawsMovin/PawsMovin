@@ -19,8 +19,8 @@ class Admin::DangerZoneControllerTest < ActionDispatch::IntegrationTest
 
     context "uploading limits action" do
       should "work" do
-        put_auth uploading_limits_admin_danger_zone_index_path, @admin, params: { uploading_limits: { min_level: User::Levels::PRIVILEGED } }
-        assert_equal DangerZone.min_upload_level, User::Levels::PRIVILEGED
+        put_auth uploading_limits_admin_danger_zone_index_path, @admin, params: { uploading_limits: { min_level: User::Levels::TRUSTED } }
+        assert_equal DangerZone.min_upload_level, User::Levels::TRUSTED
       end
     end
   end

@@ -543,7 +543,7 @@ module PawsMovin
 
     # TODO: Investigate what this does and where it is used.
     def is_user_restricted?(user)
-      !user.is_privileged?
+      !user.is_trusted?
     end
 
     def can_user_see_post?(user, post)

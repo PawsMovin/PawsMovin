@@ -3,7 +3,7 @@ require 'test_helper'
 class UserNameChangeRequestsControllerTest < ActionDispatch::IntegrationTest
   context "The user name change requests controller" do
     setup do
-      @user = create(:privileged_user)
+      @user = create(:trusted_user)
       @admin = create(:admin_user)
       as(@user) do
         @change_request = UserNameChangeRequest.create!(

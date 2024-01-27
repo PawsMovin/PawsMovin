@@ -3,7 +3,7 @@ require "test_helper"
 class UploadWhitelistTest < ActiveSupport::TestCase
   context "A upload whitelist" do
     setup do
-      user = create(:privileged_user)
+      user = create(:trusted_user)
       CurrentUser.user = user
 
       @whitelist = create(:upload_whitelist, pattern: "*.pawsmov.in/*", note: "pawsmovin")

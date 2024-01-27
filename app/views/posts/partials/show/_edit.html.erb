@@ -45,7 +45,7 @@
     <%= f.input :description, as: :dtext, limit: PawsMovin.config.post_descr_max_size %>
   </div>
 
-  <% if CurrentUser.is_privileged? %>
+  <% if CurrentUser.is_trusted? %>
     <div class="input">
       <%= f.label :blank, "Lock" %>
 
