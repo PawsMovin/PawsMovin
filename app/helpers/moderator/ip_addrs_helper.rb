@@ -25,8 +25,6 @@ module Moderator
       case type
       when :comment
         comments_path(group_by: "comment", search: { ip_addr: ip_addr })
-      when :blip
-        blips_path(search: { ip_addr: ip_addr })
       when :post_flag
         post_flags_path(search: { ip_addr: ip_addr })
       when :users
@@ -46,8 +44,6 @@ module Moderator
       case type
       when :comment
         comments_path(group_by: "comment", search: { creator_id: user_id })
-      when :blip
-        blips_path(search: { creator_id: user_id })
       when :post_flag
         post_flags_path(search: { creator_id: user_id })
       when :posts

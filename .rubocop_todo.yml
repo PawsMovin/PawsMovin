@@ -440,7 +440,6 @@ Layout/SpaceBeforeFirstArg:
 # This cop supports safe autocorrection (--autocorrect).
 Layout/SpaceBeforeSemicolon:
   Exclude:
-    - 'app/controllers/blips_controller.rb'
     - 'app/controllers/maintenance/user/email_notifications_controller.rb'
     - 'app/jobs/application_job.rb'
     - 'app/logical/downloads/file.rb'
@@ -577,11 +576,6 @@ Layout/SpaceInsideHashLiteralBraces:
     - 'app/views/admin/users/edit_blacklist.html.erb'
     - 'app/views/artist_versions/_standard_listing.html.erb'
     - 'app/views/artists/_form.html.erb'
-    - 'app/views/blips/_form.html.erb'
-    - 'app/views/blips/index.html.erb'
-    - 'app/views/blips/partials/index/_list.html.erb'
-    - 'app/views/blips/partials/show/_blip.html.erb'
-    - 'app/views/blips/show.html.erb'
     - 'app/views/comments/_form.html.erb'
     - 'app/views/comments/_index_by_post.html.erb'
     - 'app/views/comments/partials/index/_list.html.erb'
@@ -768,7 +762,6 @@ Lint/IneffectiveAccessModifier:
 Lint/InheritException:
   Exclude:
     - 'app/controllers/application_controller.rb'
-    - 'app/controllers/blips_controller.rb'
     - 'app/controllers/maintenance/user/email_notifications_controller.rb'
     - 'app/jobs/application_job.rb'
     - 'app/logical/paws_movin/paginator/pagination_error.rb'
@@ -845,7 +838,6 @@ Lint/RescueException:
 # AllowedMethods: present?, blank?, presence, presence_in, try, try!, in?
 Lint/SafeNavigationChain:
   Exclude:
-    - 'app/views/blips/partials/show/_blip.html.erb'
     - 'app/views/comments/partials/show/_comment.html.erb'
     - 'app/views/forum_posts/_forum_post.html.erb'
 
@@ -886,7 +878,6 @@ Lint/SymbolConversion:
     - 'app/presenters/post_set_presenters/popular.rb'
     - 'app/views/artist_versions/_standard_listing.html.erb'
     - 'app/views/artists/_quick_search.html.erb'
-    - 'app/views/blips/partials/show/_blip.html.erb'
     - 'app/views/bulk_update_requests/_bur_edit_links.html.erb'
     - 'app/views/comments/partials/index/_list.html.erb'
     - 'app/views/favorites/index.html.erb'
@@ -1141,7 +1132,6 @@ Rails/ActionOrder:
   Exclude:
     - 'app/controllers/artists_controller.rb'
     - 'app/controllers/bans_controller.rb'
-    - 'app/controllers/blips_controller.rb'
     - 'app/controllers/bulk_update_requests_controller.rb'
     - 'app/controllers/comment_votes_controller.rb'
     - 'app/controllers/comments_controller.rb'
@@ -1793,8 +1783,6 @@ Style/HashSyntax:
     - 'app/views/bans/_form.html.erb'
     - 'app/views/bans/new.html.erb'
     - 'app/views/bans/show.html.erb'
-    - 'app/views/blips/_form.html.erb'
-    - 'app/views/blips/_quick_search.html.erb'
     - 'app/views/bulk_update_requests/_bur_edit_links.html.erb'
     - 'app/views/bulk_update_requests/_form.html.erb'
     - 'app/views/bulk_update_requests/_listing.html.erb'
@@ -2205,7 +2193,6 @@ Style/PercentLiteralDelimiters:
     - 'app/models/user_name_change_request.rb'
     - 'app/presenters/tag_set_presenter.rb'
     - 'app/presenters/user_presenter.rb'
-    - 'app/views/blips/_search.html.erb'
     - 'app/views/uploads/index.html.erb'
     - 'config/default_config.rb'
     - 'config/initializers/content_security_policy.rb'
@@ -2508,7 +2495,6 @@ Style/SoleNestedConditional:
   Exclude:
     - 'app/logical/favorite_manager.rb'
     - 'app/models/application_record.rb'
-    - 'app/models/blip.rb'
     - 'app/models/post.rb'
     - 'app/models/tag.rb'
     - 'app/models/tag_alias.rb'
@@ -2557,7 +2543,6 @@ Style/StringLiterals:
     - 'Gemfile'
     - 'Rakefile'
     - 'app/controllers/admin/staff_notes_controller.rb'
-    - 'app/controllers/blips_controller.rb'
     - 'app/controllers/comments_controller.rb'
     - 'app/controllers/edit_histories_controller.rb'
     - 'app/controllers/emails_controller.rb'
@@ -2604,7 +2589,6 @@ Style/StringLiterals:
     - 'app/models/application_record.rb'
     - 'app/models/artist.rb'
     - 'app/models/ban.rb'
-    - 'app/models/blip.rb'
     - 'app/models/edit_history.rb'
     - 'app/models/email_blacklist.rb'
     - 'app/models/forum_category.rb'
@@ -2632,7 +2616,6 @@ Style/StringLiterals:
     - 'app/views/admin/reowner/new.html.erb'
     - 'app/views/artists/_form.html.erb'
     - 'app/views/bans/_form.html.erb'
-    - 'app/views/blips/partials/show/_blip.html.erb'
     - 'app/views/comments/partials/index/_list.html.erb'
     - 'app/views/comments/partials/show/_comment.html.erb'
     - 'app/views/dmails/show.html.erb'
@@ -2812,7 +2795,6 @@ Style/SymbolArray:
     - 'app/controllers/application_controller.rb'
     - 'app/controllers/artists_controller.rb'
     - 'app/controllers/bans_controller.rb'
-    - 'app/controllers/blips_controller.rb'
     - 'app/controllers/bulk_update_requests_controller.rb'
     - 'app/controllers/comment_votes_controller.rb'
     - 'app/controllers/comments_controller.rb'

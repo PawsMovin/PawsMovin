@@ -5,7 +5,6 @@ class EditHistory < ApplicationRecord
 
   TYPE_MAP = {
       comment: 'Comment',
-      forum: 'ForumPost',
-      blip: 'Blip'
+      forum: 'ForumPost'
   }
 end

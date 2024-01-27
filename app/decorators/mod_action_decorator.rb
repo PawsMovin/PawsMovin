@@ -188,25 +188,6 @@ class ModActionDecorator < ApplicationDecorator
     when "forum_category_delete"
       "Deleted forum category ##{vals['forum_category_id']}"
 
-      ### Blip ###
-
-    when "blip_update"
-      "Edited blip ##{vals['blip_id']} by #{user}"
-    when "blip_delete"
-      if vals['username']
-        "Deleted blip ##{vals['blip_id']} by #{user}"
-      else
-        "Deleted blip ##{vals['blip_id']}"
-      end
-    when "blip_hide"
-      if vals['username']
-        "Hid blip ##{vals['blip_id']} by #{user}"
-      else
-        "Hid blip ##{vals['blip_id']}"
-      end
-    when "blip_unhide"
-      "Unhid blip ##{vals['blip_id']} by #{user}"
-
       ### Alias ###
 
     when "tag_alias_create"

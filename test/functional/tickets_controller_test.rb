@@ -214,26 +214,6 @@ class TicketsControllerTest < ActionDispatch::IntegrationTest
       end
     end
 
-    context "for blip tickets" do
-      setup do
-        as @bad_actor do
-          @content = create(:blip, creator: @bad_actor)
-        end
-      end
-
-      should "dissallow reporting blips you can't see" do
-        assert_ticket_create_permissions([[@bystander, true], [@admin, true], [@bad_actor, true]], qtype: "blip")
-        @content.update_columns(is_hidden: true)
-        assert_ticket_create_permissions([[@bystander, false], [@admin, true], [@bad_actor, true]], qtype: "blip")
-      end
-
-      should "not restrict access" do
-        @ticket = create(:ticket, creator: @reporter, content: @content, qtype: "blip")
-        get_auth ticket_path(@ticket), @bystander
-        assert_response :success
-      end
-    end
-
     context "for user tickets" do
       setup do
         @content = create(:user)

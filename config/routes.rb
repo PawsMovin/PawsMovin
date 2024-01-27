@@ -306,13 +306,6 @@ Rails.application.routes.draw do
       get :diff
     end
   end
-  resources :blips do
-    member do
-      post :hide
-      post :unhide
-      post :warning
-    end
-  end
   resources :post_report_reasons
   resources :post_sets do
     collection do

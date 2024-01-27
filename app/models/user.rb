@@ -499,8 +499,6 @@ class User < ApplicationRecord
                          :general_bypass_throttle?, 7.days)
     create_user_throttle(:forum_post, ->{ PawsMovin.config.member_comment_limit - ForumPost.for_user(id).where('created_at > ?', 1.hour.ago).count },
                          nil, 3.days)
-    create_user_throttle(:blip, ->{ PawsMovin.config.blip_limit - Blip.for_creator(id).where('created_at > ?', 1.hour.ago).count },
-                         :general_bypass_throttle?, 3.days)
     create_user_throttle(:dmail_minute, ->{ PawsMovin.config.dmail_minute_limit - Dmail.sent_by_id(id).where('created_at > ?', 1.minute.ago).count },
                          nil, 7.days)
     create_user_throttle(:dmail, ->{ PawsMovin.config.dmail_limit - Dmail.sent_by_id(id).where('created_at > ?', 1.hour.ago).count },

@@ -1,4 +1,3 @@
-import Blip from './blips.js';
 import Comment from './comments.js';
 import DText from './dtext.js';
 import ForumPost from './forum_posts.js';
@@ -28,11 +27,10 @@ class UserWarnable {
           'record_type': record_type
         },
       }).done(data => {
-        target.closest("article.blip, article.comment, article.forum-post").replaceWith(data.html);
+        target.closest("article.comment, article.forum-post").replaceWith(data.html);
         $(window).trigger("e621:add_deferred_posts", data.posts);
 
         this.reinitialize_click_handlers();
-        Blip.reinitialize_all();
         Comment.reinitialize_all();
         ForumPost.reinitialize_all();
         DText.initialize_all_inputs();

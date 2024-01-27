@@ -169,9 +169,6 @@ protected
     when "post_sets"
       /^\/post_sets/
 
-    when "blips"
-      /^\/blips/
-
     when "forum_posts"
       /^\/forum_topics/
 

@@ -39,11 +39,9 @@ class Ticket < ApplicationRecord
     Comment         | Comment Author| Any
     Forum           | Forum Post    | Forum Visibility / Any
     Wiki            | Wiki Page     | Any
-    Blip            | Blip          | Any
     Pool            | Pool          | Any
     Set             | Set           | Any
     Other           | Any           | N/A(No details shown)
-    Name Change     | Desired Name  | Any
     DMail           | Reason        | Admin+ / Current User
     User Complaint  | Reason        | Admin+ / Current User
     Any             | Reason        | Any
@@ -147,12 +145,6 @@ class Ticket < ApplicationRecord
       end
     end
 
-    module Blip
-      def can_create_for?(user)
-        content&.visible_to?(user)
-      end
-    end
-
     module User
       def can_create_for?(user)
         true
@@ -200,8 +192,6 @@ class Ticket < ApplicationRecord
     def initialize_fields
       self.status = "pending"
       case qtype
-      when "blip"
-        self.accused_id = Blip.find(disp_id).creator_id
       when "forum"
         self.accused_id = ForumPost.find(disp_id).creator_id
       when "comment"

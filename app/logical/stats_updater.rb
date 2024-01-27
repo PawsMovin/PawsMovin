@@ -62,14 +62,6 @@ class StatsUpdater
     stats[:average_posts_per_thread] = (stats[:total_forum_posts] / stats[:total_forum_threads]).round
     stats[:average_forum_posts_per_day] = daily_average.call(stats[:total_forum_posts])
 
-    ### Blips ###
-
-    stats[:total_blips] = Blip.maximum("id") || 0
-    stats[:active_blips] = Blip.where(is_hidden: false).count
-    stats[:hidden_blips] = Blip.where(is_hidden: true).count
-    stats[:deleted_blips] = stats[:total_blips] - (stats[:active_blips] + stats[:hidden_blips])
-    stats[:average_blips_per_day] = daily_average.call(stats[:total_blips])
-
     ### Tags ###
 
     stats[:total_tags] = Tag.count

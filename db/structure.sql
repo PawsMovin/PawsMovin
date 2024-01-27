@@ -238,44 +238,6 @@ ALTER SEQUENCE public.bans_id_seq OWNED BY public.bans.id;
 
 
 --
--- Name: blips; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.blips (
-    id bigint NOT NULL,
-    creator_ip_addr inet NOT NULL,
-    creator_id integer NOT NULL,
-    body character varying NOT NULL,
-    response_to integer,
-    is_hidden boolean DEFAULT false,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
-    warning_type integer,
-    warning_user_id integer,
-    updater_id integer
-);
-
-
---
--- Name: blips_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.blips_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: blips_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.blips_id_seq OWNED BY public.blips.id;
-
-
---
 -- Name: bulk_update_requests; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -2449,13 +2411,6 @@ ALTER TABLE ONLY public.bans ALTER COLUMN id SET DEFAULT nextval('public.bans_id
 
 
 --
--- Name: blips id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.blips ALTER COLUMN id SET DEFAULT nextval('public.blips_id_seq'::regclass);
-
-
---
 -- Name: bulk_update_requests id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -2886,14 +2841,6 @@ ALTER TABLE ONLY public.artists
 
 ALTER TABLE ONLY public.bans
     ADD CONSTRAINT bans_pkey PRIMARY KEY (id);
-
-
---
--- Name: blips blips_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.blips
-    ADD CONSTRAINT blips_pkey PRIMARY KEY (id);
 
 
 --
@@ -3477,20 +3424,6 @@ CREATE INDEX index_bans_on_expires_at ON public.bans USING btree (expires_at);
 --
 
 CREATE INDEX index_bans_on_user_id ON public.bans USING btree (user_id);
-
-
---
--- Name: index_blips_on_lower_body_trgm; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_blips_on_lower_body_trgm ON public.blips USING gin (lower((body)::text) public.gin_trgm_ops);
-
-
---
--- Name: index_blips_on_to_tsvector_english_body; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_blips_on_to_tsvector_english_body ON public.blips USING gin (to_tsvector('english'::regconfig, (body)::text));
 
 
 --
@@ -4490,14 +4423,6 @@ ALTER TABLE ONLY public.staff_audit_logs
 
 
 --
--- Name: blips fk_rails_23e7479aac; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.blips
-    ADD CONSTRAINT fk_rails_23e7479aac FOREIGN KEY (updater_id) REFERENCES public.users(id);
-
-
---
 -- Name: tickets fk_rails_45cd696dba; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4831,6 +4756,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20231213010430'),
 ('20240101042716'),
 ('20240126174807'),
-('20240127134104');
+('20240127134104'),
+('20240127150517');
 
 

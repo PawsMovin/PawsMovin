@@ -212,11 +212,6 @@ module PawsMovin
       50
     end
 
-    # Blips created in the last hour
-    def blip_limit
-      25
-    end
-
     # Artists creator or edited in the last hour
     def artist_edit_limit
       25
@@ -299,10 +294,6 @@ module PawsMovin
     # After this many pages, the paginator will switch to sequential mode.
     def max_numbered_pages
       750
-    end
-
-    def blip_max_size
-      1_000
     end
 
     def comment_max_size

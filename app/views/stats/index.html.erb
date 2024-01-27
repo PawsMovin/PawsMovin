@@ -8,7 +8,6 @@
           ["Average posts per day", "average_posts_per_day"],
           ["Average comments per day", "average_comments_per_day"],
           ["Average forum posts per day", "average_forum_posts_per_day"],
-          ["Average blips per day", "average_blips_per_day"],
         ]
       %>
 
@@ -72,14 +71,6 @@
           ["Thread count", "total_forum_threads"],
           ["Post count", "total_forum_posts"],
           ["Average posts per thread", "average_posts_per_thread"],
-        ]
-      %>
-
-      <%= render "percentage_table", header_title: "Blips", data: [
-          ["Blip count", "total_blips"],
-          ["Active blips", "active_blips", "total_blips"],
-          ["Hidden blips", "hidden_blips", "total_blips"],
-          ["Deleted blips", "deleted_blips", "total_blips"],
         ]
       %>
 
