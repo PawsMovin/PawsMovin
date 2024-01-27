@@ -31,16 +31,26 @@ module Seeds
   end
 
   def self.api_request(path)
-    response = HTTParty.get("https://e621.net#{path}", {
+    response = HTTParty.get("#{read_resources['base_url']}#{path}", {
       headers: { "User-Agent" => "pawmovin/seeding" },
     })
     JSON.parse(response.body)
   end
 
+  def self.read_resources
+    if @resources
+      yield @resources if block_given?
+      return @resources
+    end
+    @resources = YAML.load_file Rails.root.join("db/seeds.yml")
+    @resources["tags"] << "randseed:#{Digest::MD5.hexdigest(Time.now.to_s)}" if @resources["tags"]&.include?("order:random")
+    yield @resources if block_given?
+    @resources
+  end
+
   module Posts
     def self.run!(limit = ENV.fetch("SEED_POST_COUNT", 100))
-      resources = YAML.load_file Rails.root.join("db/seeds.yml")
-      resources["tags"] << "randseed:#{Digest::MD5.hexdigest(Time.now.to_s)}" if resources["tags"]&.include?("order:random")
+      resources = Seeds.read_resources
       search_tags = resources["post_ids"].blank? ? resources["tags"] : ["id:#{resources['post_ids'].join(',')}"]
       json = Seeds.api_request("/posts.json?limit=#{limit}&tags=#{search_tags.join('%20')}")
 
@@ -76,6 +86,16 @@ module Seeds
 
   module Mascots
     def self.run!
+      Seeds.read_resources do |resources|
+        if resources["mascots"].empty?
+          create_from_web
+        else
+          create_from_local
+        end
+      end
+    end
+
+    def self.create_from_web
       Seeds.api_request("/mascots.json").each do |mascot|
         puts mascot["url_path"]
         Mascot.create!(
@@ -87,6 +107,25 @@ module Seeds
           artist_name: mascot["artist_name"],
           available_on_string: PawsMovin.config.app_name,
           active: mascot["active"],
+        )
+      end
+    end
+
+    def self.create_from_local
+      resources = Seeds.read_resources
+
+      resources["mascots"].each do |mascot|
+        puts mascot["file"]
+        Mascot.create!(
+          creator: CurrentUser.user,
+          mascot_file: Downloads::File.new(mascot["file"]).download!,
+          display_name: mascot["name"],
+          background_color: mascot["color"],
+          artist_url: mascot["artist_url"],
+          artist_name: mascot["artist_name"],
+          available_on_string: PawsMovin.config.app_name,
+          active: mascot["active"],
+          hide_anonymous: mascot["hide_anonymous"],
           )
       end
     end

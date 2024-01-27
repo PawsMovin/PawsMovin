@@ -9,16 +9,6 @@
 
 <div class="simple_form">
   <div class="input">
-    <label for="theme_name">Theme</label>
-    <select id="theme_name">
-      <option value="hexagon">Hexagon</option>
-      <option value="bloodlust">Bloodlust</option>
-      <option value="serpent">Serpent</option>
-      <option value="pony">Pony</option>
-      <option value="hotdog">Hotdog</option>
-    </select>
-  </div>
-  <div class="input">
     <label for="theme_extra">Embellishments</label>
     <select id="theme_extra">
       <option value="none">(None)</option>
@@ -58,22 +48,16 @@
       var ls = window.localStorage;
       ls.setItem('test', 'a');
       ls.removeItem('test');
-      var theme = ls.getItem('theme') || 'hexagon';
       var extra = ls.getItem('theme-extra') || 'hexagon';
       var nav = ls.getItem('theme-nav') || 'top';
       var emg = ls.getItem('emg') || 'false';
-      $('#theme_name').val(theme);
+      $('#theme_name').val("none");
       $('#theme_extra').val(extra);
       $('#theme_navbar').val(nav);
       $('#gestures_enable').val(emg);
     } catch(e) {
       $("#no_save_warning").show();
     }
-    $("#theme_name").on('change', function(e) {
-      var theme = e.target.value;
-      $body.attr('data-th-main', theme);
-      window.localStorage.setItem('theme', theme);
-    });
     $("#theme_extra").on('change', function(e) {
       var extra = e.target.value;
       $body.attr('data-th-extra', extra);

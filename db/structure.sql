@@ -938,7 +938,8 @@ CREATE TABLE public.mascots (
     active boolean DEFAULT true NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
-    available_on character varying[] DEFAULT '{}'::character varying[] NOT NULL
+    available_on character varying[] DEFAULT '{}'::character varying[] NOT NULL,
+    hide_anonymous boolean DEFAULT false NOT NULL
 );
 
 
@@ -4754,6 +4755,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20230518182034'),
 ('20230531080817'),
 ('20240101042716'),
-('20240126174807');
+('20240126174807'),
+('20240127134104');
 
 

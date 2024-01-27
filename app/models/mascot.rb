@@ -33,13 +33,19 @@ class Mascot < ApplicationRecord
   end
 
   def self.active_for_browser
-    Cache.fetch("active_mascots", expires_in: 1.day) do
+    mascots = Cache.fetch("active_mascots", expires_in: 1.day) do
       query = Mascot.where(active: true).where("? = ANY(available_on)", PawsMovin.config.app_name)
       mascots = query.map do |mascot|
-        mascot.slice(:id, :background_color, :artist_url, :artist_name).merge(background_url: mascot.url_path)
+        mascot.slice(:id, :background_color, :artist_url, :artist_name, :hide_anonymous).merge(background_url: mascot.url_path)
       end
       mascots.index_by { |mascot| mascot["id"] }
     end
+    if CurrentUser.user.nil? || CurrentUser.user.is_anonymous?
+      mascots.each_pair do |id, mascot|
+        mascots.delete(id) if mascot[:hide_anonymous]
+      end
+    end
+    mascots
   end
 
   def invalidate_cache

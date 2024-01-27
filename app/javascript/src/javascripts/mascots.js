@@ -27,8 +27,16 @@ function changeMascot() {
 }
 
 function initMascots() {
-  $('#change-mascot').on('click', changeMascot);
+  const changeMascotButton = $("#change-mascot");
+  if(Object.keys(window.mascots).length === 0) {
+    console.log("No mascots to display");
+    changeMascotButton.remove();
+    return;
+  }
+
+  changeMascotButton.on('click', changeMascot);
   const mascots = window.mascots;
+
   Mascots.current = LS.get("mascot");
   if (!mascots[Mascots.current]) {
     const availableMascotIds  = Object.keys(mascots);

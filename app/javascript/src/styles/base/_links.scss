@@ -2,7 +2,7 @@ a,
 a:link,
 a:visited,
 .link {
-  color: $hexagon-color-link;
+  color: $base-color-link;
   color: themed('color-link');
   text-decoration: none;
 }

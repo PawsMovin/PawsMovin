@@ -1,36 +1,36 @@
-$hexagon-color-background:        #020f23;
-$hexagon-color-foreground:        #152f56;
-$hexagon-color-link:              #b4c7d9;
-$hexagon-color-link-hover:        #e9f2fa;
-$hexagon-color-text:              #ffffff;
-$hexagon-color-text-muted:        #999999;
-$hexagon-color-section:           #1f3c67;
-$hexagon-color-section-border:    $hexagon-color-background;
+$base-color-background:        #000000;
+$base-color-foreground:        #333333;
+$base-color-link:              #b4c7d9;
+$base-color-link-hover:        #e9f2fa;
+$base-color-text:              #ffffff;
+$base-color-text-muted:        #999999;
+$base-color-section:           #222222;
+$base-color-section-border:    $base-color-background;
 
 body {
   // Theme-specific images
-  --image-background:             url("images/themes/hexagon/background.png");
+  --image-background:             url("images/themes/base/background.png");
 
   // Layout Colors
-  --color-background:             #{$hexagon-color-background}; // Main background (dark blue, large hexagons)
-  --color-foreground:             #{$hexagon-color-foreground}; // Foreground (lighter blue, small hexagons)
-  --color-section:                #{$hexagon-color-section};    // Foreground sections - boxes, sections, etc
-  --color-section-lighten-5:      #{lighten($hexagon-color-section, 5%)};
-  --color-section-lighten-10:     #{lighten($hexagon-color-section, 10%)};
-  --color-section-darken-5:       #{darken($hexagon-color-section, 5%)};
-  --color-table-border:           #{lighten($hexagon-color-section, 10%)};
+  --color-background:             #{$base-color-background}; // Main background (dark blue, large hexagons)
+  --color-foreground:             #{$base-color-foreground}; // Foreground (lighter blue, small hexagons)
+  --color-section:                #{$base-color-section};    // Foreground sections - boxes, sections, etc
+  --color-section-lighten-5:      #{lighten($base-color-section, 5%)};
+  --color-section-lighten-10:     #{lighten($base-color-section, 10%)};
+  --color-section-darken-5:       #{darken($base-color-section, 5%)};
+  --color-table-border:           #{lighten($base-color-section, 10%)};
 
-  --color-section-pending:        #{$hexagon-color-section};
-  --color-section-pending-border: #{$hexagon-color-section-border};
+  --color-section-pending:        #{$base-color-section};
+  --color-section-pending-border: #{$base-color-section-border};
 
   // Main Colors
-  --color-text:                   #{$hexagon-color-text};
+  --color-text:                   #{$base-color-text};
   --color-text-muted:             #999999;
-  --color-text-white:             #{$hexagon-color-text};
-  --color-text-table-header:      #{darken($hexagon-color-text, 10%)};
+  --color-text-white:             #{$base-color-text};
+  --color-text-table-header:      #{darken($base-color-text, 10%)};
 
-  --color-link:                   #{$hexagon-color-link};
-  --color-link-hover:             #{$hexagon-color-link-hover};
+  --color-link:                   #{$base-color-link};
+  --color-link-hover:             #{$base-color-link-hover};
   --color-link-active:            #e8c446;
   --color-button-active:          #e8c446;
 
@@ -113,6 +113,6 @@ body {
   --color-tag-pool-alt:           #d0b27a;
 
   // Spoilers
-  --color-spoiler-link:           #{$hexagon-color-link};
-  --color-spoiler-link-hover:     #{$hexagon-color-link-hover};
+  --color-spoiler-link:           #{$base-color-link};
+  --color-spoiler-link-hover:     #{$base-color-link-hover};
 }
