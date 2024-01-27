@@ -6,7 +6,7 @@
   
   
   <div class="dtext-container">
-    <%= format_text(WikiPage.titled(Danbooru.config.flag_notice_wiki_page).first.try(&:body)) %>
+    <%= format_text(WikiPage.titled(PawsMovin.config.flag_notice_wiki_page).first.try(&:body)) %>
   </div>
 </div>
 
@@ -18,7 +18,7 @@
   <%= custom_form_for(post_flag) do |f| %>
     <%= f.hidden_field :post_id %>
 
-    <% Danbooru.config.flag_reasons.each do |flag_reason| %>
+    <% PawsMovin.config.flag_reasons.each do |flag_reason| %>
       <% if flag_reason[:name] == "uploading_guidelines" && !@post.flaggable_for_guidelines? %>
         <% next %>
       <% end %>

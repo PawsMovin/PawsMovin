@@ -2,7 +2,7 @@ module Maintenance
   module_function
 
   def daily
-    return if Danbooru.config.readonly_mode?
+    return if PawsMovin.config.readonly_mode?
 
     ignoring_exceptions { PostPruner.new.prune! }
     ignoring_exceptions { Upload.where('created_at < ?', 1.week.ago).delete_all }
@@ -21,6 +21,6 @@ module Maintenance
     ActiveRecord::Base.connection.execute("set statement_timeout = 0")
     yield
   rescue StandardError => exception
-    DanbooruLogger.log(exception)
+    PawsMovin::Logger.log(exception)
   end
 end

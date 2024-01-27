@@ -37,11 +37,11 @@
           <h1>Related</h1>
           <ul>
             <li><%= link_to "Sets with this post", post_sets_path(post_id: @post.id), rel: "nofollow" %></li>
-            <% if Danbooru.config.iqdb_server.present? && @post.has_preview? %>
+            <% if PawsMovin.config.iqdb_server.present? && @post.has_preview? %>
               <li><%= link_to "Visually similar on E6", iqdb_queries_path(search: { post_id: @post.id }), rel: "nofollow" %></li>
             <% end %>
             <% if @post.is_image? %>
-              <li><a rel="nofollow" href="https://www.google.com/searchbyimage?image_url=<%= @post.reverse_image_url %>&client=e621">Reverse Google Search</a></li>
+              <li><a rel="nofollow" href="https://www.google.com/searchbyimage?image_url=<%= @post.reverse_image_url %>&client=pawsmovin">Reverse Google Search</a></li>
               <li><a rel="nofollow" href="https://saucenao.com/search.php?url=<%= @post.reverse_image_url %>">Reverse SauceNAO Search</a></li>
               <li><a rel="nofollow" href="https://derpibooru.org/search/reverse?url=<%= @post.reverse_image_url %>">Reverse Derpibooru Search</a></li>
               <li><a rel="nofollow" href="https://kheina.com/?url=<%= @post.reverse_image_url %>">Reverse Kheina Search</a></li>
@@ -126,9 +126,9 @@
               <option value="fit">Fit (Horizontal)</option>
               <option value="fitv">Fit (Vertical)</option>
               <% if !@post.is_video? %>
-                <option value="large">Sample (<%= Danbooru.config.large_image_width %>px)</option>
+                <option value="large">Sample (<%= PawsMovin.config.large_image_width %>px)</option>
               <% end %>
-              <% Danbooru.config.video_rescales.keys.each do |size| %>
+              <% PawsMovin.config.video_rescales.keys.each do |size| %>
                 <% next unless @post.has_sample_size?(size) %>
                 <option value="<%= size %>">Sample (<%= size %>)</option>
               <% end %>
@@ -268,9 +268,9 @@
 
   <%= tag.meta name: "description", content: "View this #{@post.image_width}x#{@post.image_height} #{number_to_human_size(@post.file_size)} image" %>
   <meta name="post-id" content="<%= @post.id %>">
-  <%= tag.meta property: "og:site", content: Danbooru.config.app_name %>
-  <%= tag.meta property: "og:title", content: "#{@post.presenter.humanized_essential_tag_string} - #{Danbooru.config.app_name}" %>
-  <%= tag.meta property: "og:url", content: post_url(@post, host: Danbooru.config.hostname, protocol: "https") %>
+  <%= tag.meta property: "og:site", content: PawsMovin.config.app_name %>
+  <%= tag.meta property: "og:title", content: "#{@post.presenter.humanized_essential_tag_string} - #{PawsMovin.config.app_name}" %>
+  <%= tag.meta property: "og:url", content: post_url(@post, host: PawsMovin.config.hostname, protocol: "https") %>
 
   <% if @post.visible? %>
     <% if @post.is_video? && @post.has_sample_size?('original') %>
@@ -287,12 +287,12 @@
     <meta property="og:image:width" content="<%= @post.image_width %>"/>
   <% end %>
 
-  <%= tag.meta name: "canonical", content: post_url(@post, host: Danbooru.config.hostname, protocol: "https") %>
+  <%= tag.meta name: "canonical", content: post_url(@post, host: PawsMovin.config.hostname, protocol: "https") %>
 
   <%# Twitter properties %>
   <% if @post.twitter_card_supported? && @post.is_image? %>
     <meta name="twitter:card" content="summary_large_image">
-    <%= tag.meta name: "twitter:title", content: "#{@post.presenter.humanized_essential_tag_string} - #{Danbooru.config.app_name}" %>
+    <%= tag.meta name: "twitter:title", content: "#{@post.presenter.humanized_essential_tag_string} - #{PawsMovin.config.app_name}" %>
     <%= tag.meta name: "twitter:description", content: "View this #{@post.image_width}x#{@post.image_height} #{number_to_human_size(@post.file_size)} image" %>
 
     <% if @post.visible? %>

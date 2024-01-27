@@ -23,7 +23,7 @@ module PostSets
       @posts ||= begin
         posts = pool.posts(offset: offset, limit: limit)
         options = { pagination_mode: :numbered, records_per_page: limit, total_count: pool.post_count, current_page: current_page }
-        Danbooru::Paginator::PaginatedArray.new(posts, options)
+        PawsMovin::Paginator::PaginatedArray.new(posts, options)
       end
     end
 

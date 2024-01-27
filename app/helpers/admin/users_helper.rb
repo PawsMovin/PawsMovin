@@ -1,6 +1,6 @@
 module Admin::UsersHelper
   def user_level_select(object, field)
-    options = Danbooru.config.levels.map { |x,y| [x,y] }
+    options = User.level_hash.to_a
     select(object, field, options)
   end
 end

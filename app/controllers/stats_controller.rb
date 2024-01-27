@@ -2,6 +2,11 @@ class StatsController < ApplicationController
   respond_to :html
 
   def index
-    @stats = JSON.parse(Cache.redis.get("e6stats") || "{}")
+    stats = Cache.redis.get("e6stats")
+    if stats.blank?
+      @stats = StatsUpdater.run!
+    else
+      @stats = JSON.parse(stats)
+    end
   end
 end

@@ -8,7 +8,7 @@ module IqdbProxy
   module_function
 
   def make_request(path, request_type, params = {})
-    url = URI.parse(Danbooru.config.iqdb_server)
+    url = URI.parse(PawsMovin.config.iqdb_server)
     url.path = path
     HTTParty.send(request_type, url, { body: params.to_json, headers: { "Content-Type" => "application/json" } })
   rescue Errno::ECONNREFUSED, Errno::EADDRNOTAVAIL, Errno::EHOSTUNREACH

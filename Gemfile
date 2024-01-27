@@ -12,7 +12,7 @@ gem 'bcrypt', :require => "bcrypt"
 gem 'draper'
 gem 'streamio-ffmpeg'
 gem 'responders'
-gem 'dtext_rb', :git => "https://github.com/e621ng/dtext_rb.git", branch: "master", :require => "dtext"
+gem "dtext_rb", git: "https://github.com/PawsMovin/dtext_rb.git", branch: "master", require: "dtext"
 gem 'bootsnap'
 gem 'addressable'
 gem 'httparty'

@@ -1,4 +1,4 @@
-module Danbooru
+module PawsMovin
   module Paginator
     module BaseExtension
       attr_reader :current_page, :pagination_mode
@@ -32,7 +32,7 @@ module Danbooru
           [1, :numbered]
         elsif page =~ /\A\d+\z/
           if page.to_i > max_numbered_pages
-            raise Danbooru::Paginator::PaginationError, "You cannot go beyond page #{max_numbered_pages}. Please narrow your search terms."
+            raise PawsMovin::Paginator::PaginationError, "You cannot go beyond page #{max_numbered_pages}. Please narrow your search terms."
           end
           [[page.to_i, 1].max, :numbered]
         elsif page =~ /b(\d+)/
@@ -40,20 +40,20 @@ module Danbooru
         elsif page =~ /a(\d+)/
           [$1.to_i, :sequential_after]
         else
-          raise Danbooru::Paginator::PaginationError, "Invalid page number."
+          raise PawsMovin::Paginator::PaginationError, "Invalid page number."
         end
       end
 
       def max_numbered_pages
         if @paginator_options[:max_count]
-          [Danbooru.config.max_numbered_pages, @paginator_options[:max_count] / records_per_page].min
+          [PawsMovin.config.max_numbered_pages, @paginator_options[:max_count] / records_per_page].min
         else
-          Danbooru.config.max_numbered_pages
+          PawsMovin.config.max_numbered_pages
         end
       end
 
       def records_per_page
-        limit = @paginator_options.try(:[], :limit) || Danbooru.config.posts_per_page
+        limit = @paginator_options.try(:[], :limit) || PawsMovin.config.posts_per_page
         [limit.to_i, 320].min
       end
 

@@ -650,9 +650,9 @@ CREATE TABLE public.forum_categories (
     name character varying NOT NULL,
     description text,
     cat_order integer,
-    can_view integer DEFAULT 20 NOT NULL,
-    can_create integer DEFAULT 20 NOT NULL,
-    can_reply integer DEFAULT 20 NOT NULL
+    can_view integer DEFAULT 10 NOT NULL,
+    can_create integer DEFAULT 10 NOT NULL,
+    can_reply integer DEFAULT 10 NOT NULL
 );
 
 
@@ -2252,7 +2252,7 @@ CREATE TABLE public.users (
     password_hash character varying NOT NULL,
     email character varying,
     email_verification_key character varying,
-    level integer DEFAULT 20 NOT NULL,
+    level integer DEFAULT 10 NOT NULL,
     base_upload_limit integer DEFAULT 10 NOT NULL,
     last_logged_in_at timestamp without time zone,
     last_forum_read_at timestamp without time zone,
@@ -4753,6 +4753,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20230517155547'),
 ('20230518182034'),
 ('20230531080817'),
-('20240101042716');
+('20240101042716'),
+('20240126174807');
 
 

@@ -36,7 +36,7 @@ class IqdbQueriesController < ApplicationController
   private
 
   def throttle(search_params)
-    return if Danbooru.config.disable_throttles?
+    return if PawsMovin.config.disable_throttles?
 
     if %i[file url post_id hash].any? { |key| search_params[key].present? }
       if RateLimiter.check_limit("img:#{CurrentUser.ip_addr}", 1, 2.seconds)
@@ -48,6 +48,6 @@ class IqdbQueriesController < ApplicationController
   end
 
   def validate_enabled
-    raise FeatureUnavailable if Danbooru.config.iqdb_server.blank?
+    raise FeatureUnavailable if PawsMovin.config.iqdb_server.blank?
   end
 end

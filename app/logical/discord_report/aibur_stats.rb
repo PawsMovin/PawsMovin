@@ -1,7 +1,7 @@
 module DiscordReport
   class AiburStats < Base
     def webhook_url
-      Danbooru.config.aibur_stats_discord_webhook_url
+      PawsMovin.config.aibur_stats_discord_webhook_url
     end
 
     def report

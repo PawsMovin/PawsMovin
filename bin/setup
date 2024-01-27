@@ -14,8 +14,8 @@ FileUtils.chdir APP_ROOT do
   # Add necessary setup steps to this file.
 
   puts "\n== Copying sample files =="
-  unless File.exist?('config/danbooru_local_config.rb')
-    FileUtils.cp 'docker/danbooru_local_config.rb', 'config/danbooru_local_config.rb'
+  unless File.exist?('config/local_config.rb')
+    FileUtils.cp 'docker/local_config.rb', 'config/local_config.rb'
   end
 
   puts "== Creating opensearch indices ==\n"
@@ -25,7 +25,7 @@ FileUtils.chdir APP_ROOT do
   # Create the test database, since only development exists at this point
   system! 'RAILS_ENV=test bin/rails db:create'
   system! 'RAILS_ENV=development bin/rails db:schema:load'
-  system! 'RAILS_ENV=development DANBOORU_DISABLE_THROTTLES=true bin/rails db:seed'
+  system! 'RAILS_ENV=development PAWSMOVIN_DISABLE_THROTTLES=true bin/rails db:seed'
 
   puts "\n== Removing old logs and tempfiles =="
   system! 'bin/rails log:clear tmp:clear'

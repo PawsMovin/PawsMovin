@@ -1,4 +1,4 @@
-module Danbooru
+module PawsMovin
   module Extensions
     module String
       def to_escaped_for_sql_like
@@ -28,5 +28,5 @@ module Danbooru
 end
 
 class String
-  include Danbooru::Extensions::String
+  include PawsMovin::Extensions::String
 end

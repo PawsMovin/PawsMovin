@@ -37,7 +37,7 @@ class PostSerializer < ActiveModel::Serializer
 
   def sample
     alternates = {}
-    Danbooru.config.video_rescales.each do |k,v|
+    PawsMovin.config.video_rescales.each do |k,v|
       next unless object.has_sample_size?(k)
       dims = object.scaled_sample_dimensions(v)
       alternates[k] = {
@@ -56,7 +56,7 @@ class PostSerializer < ActiveModel::Serializer
           urls: object.visible? ? [nil, object.file_url_ext('mp4')] : [nil, nil]
       }
     end
-    Danbooru.config.image_rescales.each do |k,v|
+    PawsMovin.config.image_rescales.each do |k,v|
       next unless object.has_sample_size?(k)
       dims = object.scaled_sample_dimensions(v)
       alternates[k] = {

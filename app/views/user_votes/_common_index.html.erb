@@ -67,7 +67,7 @@
     <% end %>
 
     <%= javascript_tag nonce: true do -%>
-      new Danbooru.VoteManager('<%= type.model_type %>');
+      new PawsMovin.VoteManager('<%= type.model_type %>');
     <% end -%>
 
     <%= numbered_paginator(votes) %>

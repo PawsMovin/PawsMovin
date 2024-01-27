@@ -19,7 +19,7 @@ class Post < ApplicationRecord
   validates :md5, uniqueness: { :on => :create, message: ->(obj, data) {"duplicate: #{Post.find_by_md5(obj.md5).id}"} }
   validates :rating, inclusion: { in: %w(s q e), message: "rating must be s, q, or e" }
   validates :bg_color, format: { with: /\A[A-Fa-f0-9]{6}\z/ }, allow_nil: true
-  validates :description, length: { maximum: Danbooru.config.post_descr_max_size }, if: :description_changed?
+  validates :description, length: { maximum: PawsMovin.config.post_descr_max_size }, if: :description_changed?
   validate :added_tags_are_valid, if: :should_process_tags?
   validate :removed_tags_are_valid, if: :should_process_tags?
   validate :has_artist_tag, if: :should_process_tags?
@@ -72,7 +72,7 @@ class Post < ApplicationRecord
           raise DeletionError.new("Files still in use; skipping deletion.")
         end
 
-        Danbooru.config.storage_manager.delete_post_files(md5, file_ext)
+        PawsMovin.config.storage_manager.delete_post_files(md5, file_ext)
       end
     end
 
@@ -81,15 +81,15 @@ class Post < ApplicationRecord
     end
 
     def move_files_on_delete
-      Danbooru.config.storage_manager.move_file_delete(self)
+      PawsMovin.config.storage_manager.move_file_delete(self)
     end
 
     def move_files_on_undelete
-      Danbooru.config.storage_manager.move_file_undelete(self)
+      PawsMovin.config.storage_manager.move_file_undelete(self)
     end
 
     def storage_manager
-      Danbooru.config.storage_manager
+      PawsMovin.config.storage_manager
     end
 
     def file(type = :original)
@@ -162,7 +162,7 @@ class Post < ApplicationRecord
     end
 
     def file_url_for(user)
-      if user.default_image_size == "large" && image_width > Danbooru.config.large_image_width
+      if user.default_image_size == "large" && image_width > PawsMovin.config.large_image_width
         large_file_url
       else
         file_url
@@ -193,7 +193,7 @@ class Post < ApplicationRecord
       image_width.present? && image_height.present?
     end
 
-    def preview_dimensions(max_px = Danbooru.config.small_image_width)
+    def preview_dimensions(max_px = PawsMovin.config.small_image_width)
       return [max_px, max_px] unless has_dimensions?
       height = width = max_px
       dimension_ratio = image_width.to_f / image_height
@@ -252,7 +252,7 @@ class Post < ApplicationRecord
       return false if is_gif?
       return false if is_flash?
       return false if has_tag?("animated_gif", "animated_png")
-      is_image? && image_width.present? && image_width > Danbooru.config.large_image_width
+      is_image? && image_width.present? && image_width > PawsMovin.config.large_image_width
     end
 
     def has_large
@@ -261,14 +261,14 @@ class Post < ApplicationRecord
 
     def large_image_width
       if has_large?
-        [Danbooru.config.large_image_width, image_width].min
+        [PawsMovin.config.large_image_width, image_width].min
       else
         image_width
       end
     end
 
     def large_image_height
-      ratio = Danbooru.config.large_image_width.to_f / image_width.to_f
+      ratio = PawsMovin.config.large_image_width.to_f / image_width.to_f
       if has_large? && ratio < 1
         (image_height * ratio).to_i
       else
@@ -527,7 +527,7 @@ class Post < ApplicationRecord
     end
 
     def tag_count_not_insane
-      max_count = Danbooru.config.max_tags_per_post
+      max_count = PawsMovin.config.max_tags_per_post
       if TagQuery.scan(tag_string).size > max_count
         self.errors.add(:tag_string, "tag count exceeds maximum of #{max_count}")
         throw :abort
@@ -550,8 +550,8 @@ class Post < ApplicationRecord
       normalized_tags = TagQuery.scan(tag_string)
       # Sanity check input, this is checked again on output as well to prevent bad cases where implications push post
       # over the limit and posts will fail to edit later on.
-      if normalized_tags.size > Danbooru.config.max_tags_per_post
-        self.errors.add(:tag_string, "tag count exceeds maximum of #{Danbooru.config.max_tags_per_post}")
+      if normalized_tags.size > PawsMovin.config.max_tags_per_post
+        self.errors.add(:tag_string, "tag count exceeds maximum of #{PawsMovin.config.max_tags_per_post}")
         throw :abort
       end
       normalized_tags = apply_casesensitive_metatags(normalized_tags)
@@ -635,7 +635,7 @@ class Post < ApplicationRecord
     end
 
     def add_automatic_tags(tags)
-      return tags if !Danbooru.config.enable_dimension_autotagging?
+      return tags if !PawsMovin.config.enable_dimension_autotagging?
 
       tags -= %w[thumbnail low_res hi_res absurd_res superabsurd_res huge_filesize flash webm mp4 wide_image long_image]
 
@@ -1494,7 +1494,7 @@ class Post < ApplicationRecord
 
     module ClassMethods
       def iqdb_enabled?
-        Danbooru.config.iqdb_server.present?
+        PawsMovin.config.iqdb_server.present?
       end
 
       def remove_iqdb(post_id)
@@ -1616,7 +1616,7 @@ class Post < ApplicationRecord
       return if !new_record?
 
       if tags.count {|t| t.category == Tag.categories.general} < 10
-        self.warnings.add(:base, "Uploads must have at least 10 general tags. Read [[e621:tags]] for guidelines on tagging your uploads")
+        self.warnings.add(:base, "Uploads must have at least 10 general tags. Read [[help:tags]] for guidelines on tagging your uploads")
       end
     end
   end
@@ -1643,7 +1643,7 @@ class Post < ApplicationRecord
   include IqdbMethods
   include ValidationMethods
   include PostEventMethods
-  include Danbooru::HasBitFlags
+  include PawsMovin::HasBitFlags
   include DocumentStore::Model
   include PostIndex
 
@@ -1656,16 +1656,16 @@ class Post < ApplicationRecord
   has_bit_flags BOOLEAN_ATTRIBUTES
 
   def safeblocked?
-    return true if Danbooru.config.safe_mode? && rating != "s"
-    CurrentUser.safe_mode? && (rating != "s" || has_tag?(*Danbooru.config.safeblocked_tags))
+    return true if PawsMovin.config.safe_mode? && rating != "s"
+    CurrentUser.safe_mode? && (rating != "s" || has_tag?(*PawsMovin.config.safeblocked_tags))
   end
 
   def deleteblocked?
-    !Danbooru.config.can_user_see_post?(CurrentUser.user, self)
+    !PawsMovin.config.can_user_see_post?(CurrentUser.user, self)
   end
 
   def loginblocked?
-    CurrentUser.is_anonymous? && (hide_from_anonymous? || Danbooru.config.user_needs_login_for_post?(self))
+    CurrentUser.is_anonymous? && (hide_from_anonymous? || PawsMovin.config.user_needs_login_for_post?(self))
   end
 
   def visible?

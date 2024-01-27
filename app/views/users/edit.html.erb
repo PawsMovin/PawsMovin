@@ -34,9 +34,9 @@
 
         <%= f.input :avatar_id, as: :string, label: "Avatar Post ID" %>
 
-        <%= f.input :profile_about, as: :dtext, label: "About Me", limit: Danbooru.config.user_about_max_size %>
+        <%= f.input :profile_about, as: :dtext, label: "About Me", limit: PawsMovin.config.user_about_max_size %>
 
-        <%= f.input :profile_artinfo, as: :dtext, label: "Commission Info", limit: Danbooru.config.user_about_max_size %>
+        <%= f.input :profile_artinfo, as: :dtext, label: "Commission Info", limit: PawsMovin.config.user_about_max_size %>
 
         <%= f.input :time_zone, :include_blank => false %>
 
@@ -44,7 +44,7 @@
 
         <%= f.input :comment_threshold, :hint => "Comments below this score will be hidden by default." %>
 
-        <%= f.input :default_image_size, :hint => "Show original image size, scaled to fit, scaled to fit vertically, or show resized #{Danbooru.config.large_image_width} pixel sample version.", :label => "Default image width", :collection => [["Original", "original"], ["Fit (Horizonal)", "fit"], ["Fit (Vertical)", "fitv"], ["Sample (#{Danbooru.config.large_image_width}px)", "large"]], :include_blank => false %>
+        <%= f.input :default_image_size, :hint => "Show original image size, scaled to fit, scaled to fit vertically, or show resized #{PawsMovin.config.large_image_width} pixel sample version.", :label => "Default image width", :collection => [["Original", "original"], ["Fit (Horizonal)", "fit"], ["Fit (Vertical)", "fitv"], ["Sample (#{PawsMovin.config.large_image_width}px)", "large"]], :include_blank => false %>
 
         <%= f.input :per_page, :label => "Posts per page", :as => :select, :collection => (25..250), :include_blank => false %>
 
@@ -57,7 +57,7 @@
 
       <fieldset id="advanced-settings-section">
         <%= f.input :style_usernames, :as => :select, :label => "Colored usernames",
-                    :hint => raw("Color each user's name depending on their level. See #{link_to 'the legend', wiki_page_path(id: 'e621:colored_usernames')} for what the colors are."),
+                    :hint => raw("Color each user's name depending on their level. See #{link_to 'the legend', wiki_page_path(id: 'help:colored_usernames')} for what the colors are."),
                     :include_blank => false, :collection => [["Yes", "true"], ["No", "false"]] %>
 
         <%= f.input :enable_keyboard_navigation, :as => :select, :include_blank => false, :label => "Enable keyboard shortcuts", :collection => [["Yes", "true"], ["No", "false"]],

@@ -10,7 +10,7 @@ class Ticket < ApplicationRecord
   after_initialize :classify
   validates :qtype, presence: true
   validates :reason, presence: true
-  validates :reason, length: { minimum: 2, maximum: Danbooru.config.ticket_max_size }
+  validates :reason, length: { minimum: 2, maximum: PawsMovin.config.ticket_max_size }
   validates :response, length: { minimum: 2 }, on: :update
   enum status: %i[pending partial approved].index_with(&:to_s)
   after_update :log_update

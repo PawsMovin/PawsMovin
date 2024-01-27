@@ -7,17 +7,17 @@
 Rails.application.configure do
   config.content_security_policy do |policy|
     policy.default_src :self
-    policy.script_src  :self, 'ads.dragonfru.it', 'js-agent.newrelic.com', 'bam.nr-data.net', 'https://www.google.com/recaptcha/', 'https://www.gstatic.com/recaptcha/', 'https://www.recaptcha.net/'
+    policy.script_src  :self, 'js-agent.newrelic.com', 'https://www.google.com/recaptcha/', 'https://www.gstatic.com/recaptcha/', 'https://www.recaptcha.net/'
     policy.style_src   :self, :unsafe_inline
-    policy.connect_src :self, 'ads.dragonfru.it', 'bam.nr-data.net', 'plausible.dragonfru.it'
-    policy.object_src  :self, 'static1.e621.net', 'static1.e926.net'
-    policy.media_src   :self, 'static1.e621.net', 'static1.e926.net'
+    policy.connect_src :self
+    policy.object_src  :self, 'static.pawsmov.in'
+    policy.media_src   :self, 'static.pawsmov.in'
     policy.frame_ancestors :none
     policy.frame_src   'https://www.google.com/recaptcha/', 'https://www.recaptcha.net/'
     policy.font_src    :self
-    policy.img_src     :self, :data, 'static1.e621.net', 'static1.e926.net', 'ads.dragonfru.it'
+    policy.img_src     :self, :data, 'static.pawsmov.in'
     policy.child_src   :none
-    policy.form_action :self, 'discord.e621.net', 'discord.com'
+    policy.form_action :self, 'discord.pawsmov.in', 'discord.com'
     # Specify URI for violation reports
     # policy.report_uri "/csp-violation-report-endpoint"
   end

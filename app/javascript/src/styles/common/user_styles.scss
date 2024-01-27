@@ -1,11 +1,14 @@
 $levels: (
   "blocked"
+  "restricted"
   "member"
   "privileged"
   "former-staff"
   "janitor"
   "moderator"
+  "system"
   "admin"
+  "owner"
 );
 
 @each $level in $levels {

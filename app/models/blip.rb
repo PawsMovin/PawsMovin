@@ -4,7 +4,7 @@ class Blip < ApplicationRecord
   belongs_to_creator
   belongs_to_updater optional: true
   validates :body, presence: true
-  validates :body, length: { minimum: 5, maximum: Danbooru.config.blip_max_size }
+  validates :body, length: { minimum: 5, maximum: PawsMovin.config.blip_max_size }
   validate :validate_parent_exists, on: :create
   validate :validate_creator_is_not_limited, on: :create
 

@@ -1,4 +1,4 @@
-module Danbooru
+module PawsMovin
   module Paginator
     class PaginationError < Exception
     end

@@ -7,7 +7,7 @@
 <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#00549e">
 <meta name="theme-color" content="#00549e">
 <meta name="RATING" content="RTA-5042-1996-1400-1577-RTA" />
-<link rel="top" title="<%= Danbooru.config.app_name %>" href="/">
+<link rel="top" title="<%= PawsMovin.config.app_name %>" href="/">
 <%= csrf_meta_tag %>
 <% unless disable_mobile_mode? %>
   <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -53,8 +53,8 @@
 {
   "@context": "http://schema.org",
   "@type": "WebSite",
-  "name": "<%= Danbooru.config.app_name %>",
-  "alternateName": "<%= Danbooru.config.description %>",
+  "name": "<%= PawsMovin.config.app_name %>",
+  "alternateName": "<%= PawsMovin.config.description %>",
   "url" : "<%= root_url %>"
 }
 </script>
@@ -72,5 +72,5 @@
   </style>
 </noscript>
 
-<%= raw Danbooru.config.custom_html_header_content %>
+<%= raw PawsMovin.config.custom_html_header_content %>
 <%= yield :html_header %>

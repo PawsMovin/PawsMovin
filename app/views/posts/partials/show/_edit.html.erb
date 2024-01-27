@@ -1,6 +1,6 @@
 <% unless CurrentUser.user.is_janitor? %>
   <div style="margin-bottom: 1em;">
-    <p>Before editing, read the <%= link_to "how to tag guide", wiki_page_path(:id => "e621:tags") %>.</p>
+    <p>Before editing, read the <%= link_to "how to tag guide", wiki_page_path(:id => "help:tags") %>.</p>
   </div>
 <% end %>
 
@@ -42,7 +42,7 @@
   <%= f.input :source, as: :text, label: "Sources", input_html: { size: "60x5", spellcheck: false } %>
 
   <div class="input">
-    <%= f.input :description, as: :dtext, limit: Danbooru.config.post_descr_max_size %>
+    <%= f.input :description, as: :dtext, limit: PawsMovin.config.post_descr_max_size %>
   </div>
 
   <% if CurrentUser.is_privileged? %>

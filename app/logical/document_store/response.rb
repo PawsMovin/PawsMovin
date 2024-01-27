@@ -1,6 +1,6 @@
 module DocumentStore
   class Response
-    include Danbooru::Paginator::DocumentStoreExtensions
+    include PawsMovin::Paginator::DocumentStoreExtensions
 
     delegate_missing_to :records
     attr_reader :klass, :search

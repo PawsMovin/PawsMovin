@@ -1,7 +1,7 @@
 module DiscordReport
   class JanitorStats < Base
     def webhook_url
-      Danbooru.config.janitor_reports_discord_webhook_url
+      PawsMovin.config.janitor_reports_discord_webhook_url
     end
 
     def report

@@ -1,24 +1,24 @@
 default: &default
   adapter: postgresql
   timeout: 5000
-  username: e621
+  username: pawsmovin
 
 development:
   <<: *default
-  database: e621_development
+  database: pawsmovin_development
   host: postgres
   pool: 5
 
 test:
   <<: *default
-  database: e621_test
+  database: pawsmovin_test
   host: postgres
   pool: 5
 
 <% if Rails.env.production? %>
 production:
   <<: *default
-  database: e621
+  database: pawsmovin
   password: <%= ENV.fetch("DB_PASSWORD") %>
   host: <%= ENV.fetch("DB_HOST") %>
   port: <%= ENV.fetch("DB_PORT") %>

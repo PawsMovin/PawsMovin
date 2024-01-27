@@ -1,7 +1,7 @@
 require "sidekiq-unique-jobs"
 
 Sidekiq.configure_server do |config|
-  config.redis = { url: Danbooru.config.redis_url }
+  config.redis = { url: PawsMovin.config.redis_url }
 
   config.client_middleware do |chain|
     chain.add SidekiqUniqueJobs::Middleware::Client
@@ -15,7 +15,7 @@ Sidekiq.configure_server do |config|
 end
 
 Sidekiq.configure_client do |config|
-  config.redis = { url: Danbooru.config.redis_url }
+  config.redis = { url: PawsMovin.config.redis_url }
 
   config.client_middleware do |chain|
     chain.add SidekiqUniqueJobs::Middleware::Client

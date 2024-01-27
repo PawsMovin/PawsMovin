@@ -1,4 +1,4 @@
-module Danbooru
+module PawsMovin
   module HasBitFlags
     extend ActiveSupport::Concern
 

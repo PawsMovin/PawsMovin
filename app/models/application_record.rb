@@ -4,7 +4,7 @@ class ApplicationRecord < ActiveRecord::Base
   concerning :SearchMethods do
     class_methods do
       def paginate(page, options = {})
-        extending(Danbooru::Paginator::ActiveRecordExtension).paginate(page, options)
+        extending(PawsMovin::Paginator::ActiveRecordExtension).paginate(page, options)
       end
 
       def qualified_column_for(attr)
@@ -212,7 +212,7 @@ class ApplicationRecord < ActiveRecord::Base
         connection.execute("SET STATEMENT_TIMEOUT = #{n}") unless Rails.env == "test"
         yield
       rescue ::ActiveRecord::StatementInvalid => x
-        DanbooruLogger.log(x, expected: true)
+        PawsMovin::Logger.log(x, expected: true)
         return default_value
       ensure
         connection.execute("SET STATEMENT_TIMEOUT = #{CurrentUser.user.try(:statement_timeout) || 3_000}") unless Rails.env == "test"

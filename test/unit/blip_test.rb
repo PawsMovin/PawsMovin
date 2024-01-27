@@ -9,7 +9,7 @@ class BlipTest < ActiveSupport::TestCase
 
     context "created by a limited user" do
       setup do
-        Danbooru.config.stubs(:disable_throttles?).returns(false)
+        PawsMovin.config.stubs(:disable_throttles?).returns(false)
       end
 
       should "fail creation" do
@@ -21,7 +21,7 @@ class BlipTest < ActiveSupport::TestCase
 
     context "created by an unlimited user" do
       setup do
-        Danbooru.config.stubs(:blip_limit).returns(100)
+        PawsMovin.config.stubs(:blip_limit).returns(100)
       end
 
       should "be created" do

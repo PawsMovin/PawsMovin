@@ -214,7 +214,7 @@ class TagAlias < TagRelationship
         update(status: "error: #{e}")
       end
 
-      DanbooruLogger.log(e, tag_alias_id: id, antecedent_name: antecedent_name, consequent_name: consequent_name)
+      PawsMovin::Logger.log(e, tag_alias_id: id, antecedent_name: antecedent_name, consequent_name: consequent_name)
     end
   end
 

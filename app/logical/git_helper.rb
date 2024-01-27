@@ -14,6 +14,6 @@ module GitHelper
   end
 
   def self.commit_url(commit_hash)
-    "#{Danbooru.config.source_code_url}/commit/#{commit_hash}"
+    "#{PawsMovin.config.source_code_url}/commit/#{commit_hash}"
   end
 end

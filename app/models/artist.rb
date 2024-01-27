@@ -88,6 +88,7 @@ class Artist < ApplicationRecord
         "dropbox.com/u", # http://dl.dropbox.com/u/76682289/daitoHP-WP/pict/
         "e-hentai.org", # https://e-hentai.org/tag/artist:spirale
         "e621.net",
+        "pawsmov.in",
         "e621.net/post/index/1", # https://e621.net/post/index/1/spirale
         "enty.jp", # https://enty.jp/aizawachihiro888
         "enty.jp/users", # https://enty.jp/users/3766

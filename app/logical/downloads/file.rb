@@ -44,7 +44,7 @@ module Downloads
       errors.add(:base, "'#{url}' is not whitelisted and can't be direct downloaded: #{reason}") if !valid
     end
 
-    def http_get_streaming(url, file: Tempfile.new(binmode: true), max_size: Danbooru.config.max_file_size)
+    def http_get_streaming(url, file: Tempfile.new(binmode: true), max_size: PawsMovin.config.max_file_size)
       size = 0
 
       res = HTTParty.get(url, httparty_options) do |chunk|
@@ -69,7 +69,7 @@ module Downloads
       return file_url unless is_cloudflare?(file_url)
 
       url = file_url.dup
-      url.query_values = url.query_values.to_h.merge(danbooru_no_cache: SecureRandom.uuid)
+      url.query_values = url.query_values.to_h.merge(no_cache: SecureRandom.uuid)
       url
     end
 
@@ -87,7 +87,7 @@ module Downloads
         stream_body: true,
         headers: strategy.headers,
         connection_adapter: ValidatingConnectionAdapter,
-      }.deep_merge(Danbooru.config.httparty_options)
+      }.deep_merge(PawsMovin.config.httparty_options)
     end
 
     def is_cloudflare?(url)

@@ -9,8 +9,22 @@ class User < ApplicationRecord
   end
 
   module Levels
-    Danbooru.config.levels.each do |name, level|
-      const_set(name.upcase.tr(' ', '_'), level)
+    ANONYMOUS    = 0
+    BLOCKED      = 1
+    RESTRICTED   = 5
+    MEMBER       = 10
+    PRIVILEGED   = 15
+    FORMER_STAFF = 19
+    JANITOR      = 20
+    MODERATOR    = 30
+    SYSTEM       = 35
+    ADMIN        = 40
+    OWNER        = 50
+
+    def self.level_name(level)
+      name = constants.find { |c| const_get(c) == level }.to_s.titleize
+      return "Unknown: #{level}" if name.blank?
+      name
     end
   end
 
@@ -58,7 +72,7 @@ class User < ApplicationRecord
     is_bd_staff
   )
 
-  include Danbooru::HasBitFlags
+  include PawsMovin::HasBitFlags
   has_bit_flags BOOLEAN_ATTRIBUTES, :field => "bit_prefs"
 
   attr_accessor :password, :old_password, :validate_email_format, :is_admin_edit
@@ -75,20 +89,21 @@ class User < ApplicationRecord
   validates :per_page, inclusion: { :in => 1..320 }
   validates :comment_threshold, presence: true
   validates :comment_threshold, numericality: { only_integer: true, less_than: 50_000, greater_than: -50_000 }
-  validates :password, length: { :minimum => 6, :if => ->(rec) { rec.new_record? || rec.password.present? || rec.old_password.present? } }
-  validates :password, confirmation: true
-  validates :password_confirmation, presence: { if: ->(rec) { rec.new_record? || rec.old_password.present? } }
+  validates :password, length: { minimum: 6, if: ->(rec) { rec.new_record? || rec.password.present? || rec.old_password.present? } }, unless: :is_system?
+  validates :password, confirmation: true, unless: :is_system?
+  validates :password_confirmation, presence: { if: ->(rec) { rec.new_record? || rec.old_password.present? } }, unless: :is_system?
   validate :validate_ip_addr_is_not_banned, :on => :create
-  validate :validate_sock_puppets, :on => :create, :if => -> { Danbooru.config.enable_sock_puppet_validation? }
+  validate :validate_sock_puppets, :on => :create, :if => -> { PawsMovin.config.enable_sock_puppet_validation? && !is_system? }
   before_validation :normalize_blacklisted_tags, if: ->(rec) { rec.blacklisted_tags_changed? }
   before_validation :set_per_page
   before_validation :staff_cant_disable_dmail
   before_validation :blank_out_nonexistent_avatars
   validates :blacklisted_tags, length: { maximum: 150_000 }
   validates :custom_style, length: { maximum: 500_000 }
-  validates :profile_about, length: { maximum: Danbooru.config.user_about_max_size }
-  validates :profile_artinfo, length: { maximum: Danbooru.config.user_about_max_size }
+  validates :profile_about, length: { maximum: PawsMovin.config.user_about_max_size }
+  validates :profile_artinfo, length: { maximum: PawsMovin.config.user_about_max_size }
   validates :time_zone, inclusion: { in: ActiveSupport::TimeZone.all.map(&:name) }
+  before_create :promote_to_owner_if_first_user
   before_create :encrypt_password_on_create
   before_update :encrypt_password_on_update
   after_save :update_cache
@@ -119,6 +134,8 @@ class User < ApplicationRecord
   belongs_to :avatar, class_name: 'Post', optional: true
   accepts_nested_attributes_for :dmail_filter
 
+
+
   module BanMethods
     def validate_ip_addr_is_not_banned
       if IpBan.is_banned?(CurrentUser.ip_addr)
@@ -129,7 +146,7 @@ class User < ApplicationRecord
 
     def unban!
       self.is_banned = false
-      self.level = 20
+      self.level = Levels::MEMBER
       save
     end
 
@@ -169,7 +186,7 @@ class User < ApplicationRecord
           return RequestStore[:id_name_cache][user_id]
         end
         name = Cache.fetch("uin:#{user_id}", expires_in: 4.hours) do
-          User.where(id: user_id).pick(:name) || Danbooru.config.default_guest_name
+          User.where(id: user_id).pick(:name) || PawsMovin.config.default_guest_name
         end
         RequestStore[:id_name_cache][user_id] = name
         name
@@ -268,29 +285,46 @@ class User < ApplicationRecord
   module LevelMethods
     extend ActiveSupport::Concern
 
+    Levels.constants.each do |constant|
+      next if Levels.const_get(constant) < Levels::MEMBER
+
+      define_method("is_#{constant.downcase}?") do
+        level >= Levels.const_get(constant)
+      end
+    end
+
     module ClassMethods
-      def system
-        User.find_by!(name: Danbooru.config.system_user)
+      def anonymous
+        PawsMovin.config.anonymous_user
       end
 
-      def anonymous
-        user = User.new(name: "Anonymous", created_at: Time.now)
-        user.level = Levels::ANONYMOUS
-        user.freeze.readonly!
-        user
+      def system
+        PawsMovin.config.system_user
+      end
+
+      def owner
+        User.find_by!(level: Levels::OWNER)
       end
 
       def level_hash
-        Danbooru.config.levels
+        Levels.constants.to_h { |key| [key.to_s.titleize, Levels.const_get(key)] }.sort_by { |_name, level| level }.to_h
       end
 
       def level_string(value)
-        Danbooru.config.levels.invert[value] || ""
+        level_hash.invert[value] || ""
       end
     end
 
     def promote_to!(new_level, options = {})
       UserPromotion.new(self, CurrentUser.user, new_level, options).promote!
+    end
+
+    def promote_to_owner_if_first_user
+      return if Rails.env.test?
+
+      if name != PawsMovin.config.system_user_name && !User.exists?(level: Levels::OWNER)
+        self.level = Levels::OWNER
+      end
     end
 
     def level_string_was
@@ -301,24 +335,24 @@ class User < ApplicationRecord
       User.level_string(value || level)
     end
 
+    def level_name
+      Levels.level_name(level)
+    end
+
     def is_anonymous?
       level == Levels::ANONYMOUS
     end
 
-    def is_blocked?
-      is_banned? || level == Levels::BLOCKED
+    def is_restricted?
+      level == Levels::RESTRICTED
     end
 
-    # Defines various convenience methods for finding out the user's level
-    Danbooru.config.levels.each do |name, value|
-      # TODO: HACK: Remove this and make the below logic better to work with the new setup.
-      next if [0, 10].include?(value)
-      normalized_name = name.downcase.tr(' ', '_')
+    def is_staff?
+      is_janitor?
+    end
 
-      # Changed from e6 to match new Danbooru semantics.
-      define_method("is_#{normalized_name}?") do
-        is_verified? && self.level >= value && self.id.present?
-      end
+    def is_blocked?
+      is_banned? || level == Levels::BLOCKED
     end
 
     def is_bd_staff?
@@ -329,30 +363,12 @@ class User < ApplicationRecord
       can_approve_posts?
     end
 
-    def set_per_page
-      if per_page.nil?
-        self.per_page = Danbooru.config.posts_per_page
-      end
-
-      return true
-    end
-
-    def blank_out_nonexistent_avatars
-      if avatar_id.present? && avatar.nil?
-        self.avatar_id = nil
-      end
-    end
-
     def staff_cant_disable_dmail
       self.disable_user_dmails = false if self.is_janitor?
     end
 
     def level_css_class
       "user-#{level_string.parameterize}"
-    end
-
-    def create_user_status
-      UserStatus.create!(user_id: id)
     end
   end
 
@@ -372,7 +388,7 @@ class User < ApplicationRecord
     def enable_email_verification?
       # Allow admins to edit users with blank/duplicate emails
       return false if is_admin_edit && !email_changed?
-      Danbooru.config.enable_email_verification? && validate_email_format
+      PawsMovin.config.enable_email_verification? && validate_email_format
     end
 
     def validate_email_address_allowed
@@ -432,12 +448,12 @@ class User < ApplicationRecord
 
   module LimitMethods
     def younger_than(duration)
-      return false if Danbooru.config.disable_age_checks?
+      return false if PawsMovin.config.disable_age_checks?
       created_at > duration.ago
     end
 
     def older_than(duration)
-      return true if Danbooru.config.disable_age_checks?
+      return true if PawsMovin.config.disable_age_checks?
       created_at < duration.ago
     end
 
@@ -445,7 +461,7 @@ class User < ApplicationRecord
       define_method(:"#{name}_limit", limiter)
 
       define_method(:"can_#{name}_with_reason") do
-        return true if Danbooru.config.disable_throttles?
+        return true if PawsMovin.config.disable_throttles?
         return send(checker) if checker && send(checker)
         return :REJ_NEWBIE if newbie_duration && younger_than(newbie_duration)
         return :REJ_LIMITED if send("#{name}_limit") <= 0
@@ -461,43 +477,43 @@ class User < ApplicationRecord
       is_privileged?
     end
 
-    create_user_throttle(:artist_edit, ->{ Danbooru.config.artist_edit_limit - ArtistVersion.for_user(id).where('updated_at > ?', 1.hour.ago).count },
+    create_user_throttle(:artist_edit, ->{ PawsMovin.config.artist_edit_limit - ArtistVersion.for_user(id).where('updated_at > ?', 1.hour.ago).count },
                          :general_bypass_throttle?, 7.days)
-    create_user_throttle(:post_edit, ->{ Danbooru.config.post_edit_limit - PostVersion.for_user(id).where('updated_at > ?', 1.hour.ago).count },
+    create_user_throttle(:post_edit, ->{ PawsMovin.config.post_edit_limit - PostVersion.for_user(id).where('updated_at > ?', 1.hour.ago).count },
                          :general_bypass_throttle?, 7.days)
-    create_user_throttle(:wiki_edit, ->{ Danbooru.config.wiki_edit_limit - WikiPageVersion.for_user(id).where('updated_at > ?', 1.hour.ago).count },
+    create_user_throttle(:wiki_edit, ->{ PawsMovin.config.wiki_edit_limit - WikiPageVersion.for_user(id).where('updated_at > ?', 1.hour.ago).count },
                          :general_bypass_throttle?, 7.days)
-    create_user_throttle(:pool, ->{ Danbooru.config.pool_limit - Pool.for_user(id).where('created_at > ?', 1.hour.ago).count },
+    create_user_throttle(:pool, ->{ PawsMovin.config.pool_limit - Pool.for_user(id).where('created_at > ?', 1.hour.ago).count },
                          :is_janitor?, 7.days)
-    create_user_throttle(:pool_edit, ->{ Danbooru.config.pool_edit_limit - PoolVersion.for_user(id).where('updated_at > ?', 1.hour.ago).count },
+    create_user_throttle(:pool_edit, ->{ PawsMovin.config.pool_edit_limit - PoolVersion.for_user(id).where('updated_at > ?', 1.hour.ago).count },
                          :is_janitor?, 3.days)
-    create_user_throttle(:pool_post_edit, -> { Danbooru.config.pool_post_edit_limit - PoolVersion.for_user(id).where('updated_at > ?', 1.hour.ago).group(:pool_id).count(:pool_id).length },
+    create_user_throttle(:pool_post_edit, -> { PawsMovin.config.pool_post_edit_limit - PoolVersion.for_user(id).where('updated_at > ?', 1.hour.ago).group(:pool_id).count(:pool_id).length },
                           :general_bypass_throttle?, 7.days)
-    create_user_throttle(:note_edit, ->{ Danbooru.config.note_edit_limit - NoteVersion.for_user(id).where('updated_at > ?', 1.hour.ago).count },
+    create_user_throttle(:note_edit, ->{ PawsMovin.config.note_edit_limit - NoteVersion.for_user(id).where('updated_at > ?', 1.hour.ago).count },
                          :general_bypass_throttle?, 3.days)
-    create_user_throttle(:comment, ->{ Danbooru.config.member_comment_limit - Comment.for_creator(id).where('created_at > ?', 1.hour.ago).count },
+    create_user_throttle(:comment, ->{ PawsMovin.config.member_comment_limit - Comment.for_creator(id).where('created_at > ?', 1.hour.ago).count },
                          :general_bypass_throttle?, 7.days)
-    create_user_throttle(:forum_post, ->{ Danbooru.config.member_comment_limit - ForumPost.for_user(id).where('created_at > ?', 1.hour.ago).count },
+    create_user_throttle(:forum_post, ->{ PawsMovin.config.member_comment_limit - ForumPost.for_user(id).where('created_at > ?', 1.hour.ago).count },
                          nil, 3.days)
-    create_user_throttle(:blip, ->{ Danbooru.config.blip_limit - Blip.for_creator(id).where('created_at > ?', 1.hour.ago).count },
+    create_user_throttle(:blip, ->{ PawsMovin.config.blip_limit - Blip.for_creator(id).where('created_at > ?', 1.hour.ago).count },
                          :general_bypass_throttle?, 3.days)
-    create_user_throttle(:dmail_minute, ->{ Danbooru.config.dmail_minute_limit - Dmail.sent_by_id(id).where('created_at > ?', 1.minute.ago).count },
+    create_user_throttle(:dmail_minute, ->{ PawsMovin.config.dmail_minute_limit - Dmail.sent_by_id(id).where('created_at > ?', 1.minute.ago).count },
                          nil, 7.days)
-    create_user_throttle(:dmail, ->{ Danbooru.config.dmail_limit - Dmail.sent_by_id(id).where('created_at > ?', 1.hour.ago).count },
+    create_user_throttle(:dmail, ->{ PawsMovin.config.dmail_limit - Dmail.sent_by_id(id).where('created_at > ?', 1.hour.ago).count },
                          nil, 7.days)
-    create_user_throttle(:dmail_day, ->{ Danbooru.config.dmail_day_limit - Dmail.sent_by_id(id).where('created_at > ?', 1.day.ago).count },
+    create_user_throttle(:dmail_day, ->{ PawsMovin.config.dmail_day_limit - Dmail.sent_by_id(id).where('created_at > ?', 1.day.ago).count },
                          nil, 7.days)
-    create_user_throttle(:comment_vote, ->{ Danbooru.config.comment_vote_limit - CommentVote.for_user(id).where("created_at > ?", 1.hour.ago).count },
+    create_user_throttle(:comment_vote, ->{ PawsMovin.config.comment_vote_limit - CommentVote.for_user(id).where("created_at > ?", 1.hour.ago).count },
                          :general_bypass_throttle?, 3.days)
-    create_user_throttle(:post_vote, ->{ Danbooru.config.post_vote_limit - PostVote.for_user(id).where("created_at > ?", 1.hour.ago).count },
+    create_user_throttle(:post_vote, ->{ PawsMovin.config.post_vote_limit - PostVote.for_user(id).where("created_at > ?", 1.hour.ago).count },
                          :general_bypass_throttle?, nil)
-    create_user_throttle(:post_flag, ->{ Danbooru.config.post_flag_limit - PostFlag.for_creator(id).where("created_at > ?", 1.hour.ago).count },
+    create_user_throttle(:post_flag, ->{ PawsMovin.config.post_flag_limit - PostFlag.for_creator(id).where("created_at > ?", 1.hour.ago).count },
                          :can_approve_posts?, 3.days)
-    create_user_throttle(:ticket, ->{ Danbooru.config.ticket_limit - Ticket.for_creator(id).where("created_at > ?", 1.hour.ago).count },
+    create_user_throttle(:ticket, ->{ PawsMovin.config.ticket_limit - Ticket.for_creator(id).where("created_at > ?", 1.hour.ago).count },
                          :general_bypass_throttle?, 3.days)
-    create_user_throttle(:suggest_tag, -> { Danbooru.config.tag_suggestion_limit - (TagAlias.for_creator(id).where("created_at > ?", 1.hour.ago).count + TagImplication.for_creator(id).where("created_at > ?", 1.hour.ago).count + BulkUpdateRequest.for_creator(id).where("created_at > ?", 1.hour.ago).count) },
+    create_user_throttle(:suggest_tag, -> { PawsMovin.config.tag_suggestion_limit - (TagAlias.for_creator(id).where("created_at > ?", 1.hour.ago).count + TagImplication.for_creator(id).where("created_at > ?", 1.hour.ago).count + BulkUpdateRequest.for_creator(id).where("created_at > ?", 1.hour.ago).count) },
                          :is_janitor?, 7.days)
-    create_user_throttle(:forum_vote, -> { Danbooru.config.forum_vote_limit - ForumPostVote.by(id).where("created_at > ?", 1.hour.ago).count },
+    create_user_throttle(:forum_vote, -> { PawsMovin.config.forum_vote_limit - ForumPostVote.by(id).where("created_at > ?", 1.hour.ago).count },
                          :is_janitor?, 3.days)
 
     def can_remove_from_pools?
@@ -537,15 +553,15 @@ class User < ApplicationRecord
     end
 
     def can_upload_with_reason
-      if hourly_upload_limit <= 0 && !Danbooru.config.disable_throttles?
+      if hourly_upload_limit <= 0 && !PawsMovin.config.disable_throttles?
         :REJ_UPLOAD_HOURLY
       elsif can_upload_free? || is_admin?
           true
       elsif younger_than(7.days)
         :REJ_UPLOAD_NEWBIE
-      elsif !is_privileged? && post_edit_limit <= 0 && !Danbooru.config.disable_throttles?
+      elsif !is_privileged? && post_edit_limit <= 0 && !PawsMovin.config.disable_throttles?
         :REJ_UPLOAD_EDIT
-      elsif upload_limit <= 0 && !Danbooru.config.disable_throttles?
+      elsif upload_limit <= 0 && !PawsMovin.config.disable_throttles?
         :REJ_UPLOAD_LIMIT
       else
         true
@@ -556,7 +572,7 @@ class User < ApplicationRecord
       @hourly_upload_limit ||= begin
         post_count = posts.where("created_at >= ?", 1.hour.ago).count
         replacement_count = can_approve_posts? ? 0 : post_replacements.where("created_at >= ? and status != ?", 1.hour.ago, "original").count
-        Danbooru.config.hourly_upload_limit - post_count - replacement_count
+        PawsMovin.config.hourly_upload_limit - post_count - replacement_count
       end
     end
 
@@ -588,11 +604,11 @@ class User < ApplicationRecord
     end
 
     def tag_query_limit
-      Danbooru.config.tag_query_limit
+      PawsMovin.config.tag_query_limit
     end
 
     def favorite_limit
-      Danbooru.config.legacy_favorite_limit.fetch(id, 80_000)
+      PawsMovin.config.legacy_favorite_limit.fetch(id, 80_000)
     end
 
     def api_regen_multiplier
@@ -853,7 +869,11 @@ class User < ApplicationRecord
   end
 
   concerning :SockPuppetMethods do
+    attr_writer :validate_sock_puppets
+
     def validate_sock_puppets
+      return if @validate_sock_puppets == false
+
       if User.where(last_ip_addr: CurrentUser.ip_addr).where("created_at > ?", 1.day.ago).exists?
         errors.add(:last_ip_addr, "was used recently for another account and cannot be reused for another day")
       end
@@ -873,6 +893,24 @@ class User < ApplicationRecord
   include CountMethods
   extend SearchMethods
   extend ThrottleMethods
+
+  def set_per_page
+    if per_page.nil?
+      self.per_page = PawsMovin.config.posts_per_page
+    end
+
+    return true
+  end
+
+  def blank_out_nonexistent_avatars
+    if avatar_id.present? && avatar.nil?
+      self.avatar_id = nil
+    end
+  end
+
+  def create_user_status
+    UserStatus.create!(user_id: id)
+  end
 
   def dmail_count
     if has_mail?
@@ -894,7 +932,7 @@ class User < ApplicationRecord
 
   def initialize_attributes
     return if Rails.env.test?
-    Danbooru.config.customize_new_user(self)
+    PawsMovin.config.customize_new_user(self)
   end
 
   def presenter

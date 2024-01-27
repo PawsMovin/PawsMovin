@@ -41,14 +41,14 @@ module ApplicationHelper
   def dtext_ragel(text, **)
     parsed = DText.parse(text, **)
     return raw "" if parsed.nil?
-    deferred_post_ids.merge(parsed[1]) if parsed[1].present?
-    raw parsed[0]
+    deferred_post_ids.merge(parsed[:post_ids]) if parsed[:post_ids].present?
+    raw parsed[:dtext]
   rescue DText::Error => e
     raw ""
   end
 
   def format_text(text, **options)
-    # preserve the currrent inline behaviour
+    # preserve the current inline behaviour
     if options[:inline]
       dtext_ragel(text, **options)
     else

@@ -28,13 +28,13 @@ class Mascot < ApplicationRecord
   def write_storage_file
     return if mascot_file.blank?
 
-    Danbooru.config.storage_manager.delete_mascot(md5_previously_was, file_ext_previously_was)
-    Danbooru.config.storage_manager.store_mascot(mascot_file, self)
+    PawsMovin.config.storage_manager.delete_mascot(md5_previously_was, file_ext_previously_was)
+    PawsMovin.config.storage_manager.store_mascot(mascot_file, self)
   end
 
   def self.active_for_browser
     Cache.fetch("active_mascots", expires_in: 1.day) do
-      query = Mascot.where(active: true).where("? = ANY(available_on)", Danbooru.config.app_name)
+      query = Mascot.where(active: true).where("? = ANY(available_on)", PawsMovin.config.app_name)
       mascots = query.map do |mascot|
         mascot.slice(:id, :background_color, :artist_url, :artist_name).merge(background_url: mascot.url_path)
       end
@@ -47,15 +47,15 @@ class Mascot < ApplicationRecord
   end
 
   def remove_storage_file
-    Danbooru.config.storage_manager.delete_mascot(md5, file_ext)
+    PawsMovin.config.storage_manager.delete_mascot(md5, file_ext)
   end
 
   def url_path
-    Danbooru.config.storage_manager.mascot_url(self)
+    PawsMovin.config.storage_manager.mascot_url(self)
   end
 
   def file_path
-    Danbooru.config.storage_manager.mascot_path(self)
+    PawsMovin.config.storage_manager.mascot_path(self)
   end
 
   concerning :ValidationMethods do
@@ -72,7 +72,7 @@ class Mascot < ApplicationRecord
     end
 
     def file_size
-      @file_size ||= Danbooru.config.storage_manager.open(mascot_file.path).size
+      @file_size ||= PawsMovin.config.storage_manager.open(mascot_file.path).size
     end
   end
 

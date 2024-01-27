@@ -1,18 +1,18 @@
 class StaticController < ApplicationController
   def privacy
-    @page = WikiPage.find_by(title: "e621:privacy_policy")
+    @page = WikiPage.find_by(title: "help:privacy_policy")
   end
 
   def terms_of_service
-    @page = WikiPage.find_by(title: "e621:terms_of_service")
+    @page = WikiPage.find_by(title: "help:terms_of_service")
   end
 
   def contact
-    @page = WikiPage.find_by(title: "e621:contact")
+    @page = WikiPage.find_by(title: "help:contact")
   end
 
   def takedown
-    @page = WikiPage.find_by(title: "e621:takedown")
+    @page = WikiPage.find_by(title: "help:takedown")
   end
 
   def not_found
@@ -33,7 +33,7 @@ class StaticController < ApplicationController
   end
 
   def disable_mobile_mode
-    if CurrentUser.is_member? && !Danbooru.config.readonly_mode?
+    if CurrentUser.is_member? && !PawsMovin.config.readonly_mode?
       user = CurrentUser.user
       user.disable_responsive_mode = !user.disable_responsive_mode
       user.save
@@ -54,12 +54,12 @@ class StaticController < ApplicationController
     end
     if request.post?
       time = (Time.now + 5.minute).to_i
-      secret = Danbooru.config.discord_secret
+      secret = PawsMovin.config.discord_secret
       # TODO: Proper HMAC
       hashed_values = Digest::SHA256.hexdigest("#{CurrentUser.name} #{CurrentUser.id} #{time} #{secret}")
       user_hash = "?user_id=#{CurrentUser.id}&username=#{CurrentUser.name}&time=#{time}&hash=#{hashed_values}"
 
-      redirect_to(Danbooru.config.discord_site + user_hash, allow_other_host: true)
+      redirect_to(PawsMovin.config.discord_site + user_hash, allow_other_host: true)
     end
   end
 

@@ -17,15 +17,15 @@ class Admin::UsersControllerTest < ActionDispatch::IntegrationTest
     context "#update" do
       context "on a basic user" do
         should "fail for moderators" do
-          put_auth admin_user_path(@user), create(:moderator_user), params: { user: { level: "30" } }
+          put_auth admin_user_path(@user), create(:moderator_user), params: { user: { level: User::Levels::PRIVILEGED } }
           assert_response :forbidden
         end
 
         should "succeed" do
-          put_auth admin_user_path(@user), @admin, params: { user: { level: "30" } }
+          put_auth admin_user_path(@user), @admin, params: { user: { level: User::Levels::PRIVILEGED } }
           assert_redirected_to(user_path(@user))
           @user.reload
-          assert_equal(30, @user.level)
+          assert_equal(User::Levels::PRIVILEGED, @user.level)
         end
 
         should "rename" do
@@ -40,14 +40,14 @@ class Admin::UsersControllerTest < ActionDispatch::IntegrationTest
       context "on an user with a blank email" do
         setup do
           @user = create(:user, email: "")
-          Danbooru.config.stubs(:enable_email_verification?).returns(true)
+          PawsMovin.config.stubs(:enable_email_verification?).returns(true)
         end
 
         should "succeed" do
-          put_auth admin_user_path(@user), @admin, params: { user: { level: "30" } }
+          put_auth admin_user_path(@user), @admin, params: { user: { level: User::Levels::PRIVILEGED } }
           assert_redirected_to(user_path(@user))
           @user.reload
-          assert_equal(30, @user.level)
+          assert_equal(User::Levels::PRIVILEGED, @user.level)
         end
 
         should "prevent invalid emails" do
@@ -59,21 +59,21 @@ class Admin::UsersControllerTest < ActionDispatch::IntegrationTest
 
       context "on a user with duplicate email" do
         setup do
-          @user1 = create(:user, email: "test@e621.net")
-          @user2 = create(:user, email: "test@e621.net")
-          Danbooru.config.stubs(:enable_email_verification?).returns(true)
+          @user1 = create(:user, email: "test@pawsmov.in")
+          @user2 = create(:user, email: "test@pawsmov.in")
+          PawsMovin.config.stubs(:enable_email_verification?).returns(true)
         end
 
         should "allow editing if the email is not changed" do
-          put_auth admin_user_path(@user1), @admin, params: { user: { level: "30" } }
+          put_auth admin_user_path(@user1), @admin, params: { user: { level: User::Levels::PRIVILEGED } }
           @user1.reload
-          assert_equal(30, @user1.level)
+          assert_equal(User::Levels::PRIVILEGED, @user1.level)
         end
 
         should "allow changing the email" do
-          put_auth admin_user_path(@user1), @admin, params: { user: { email: "abc@e621.net" } }
+          put_auth admin_user_path(@user1), @admin, params: { user: { email: "abc@pawsmov.in" } }
           @user1.reload
-          assert_equal("abc@e621.net", @user1.email)
+          assert_equal("abc@pawsmov.in", @user1.email)
         end
       end
 

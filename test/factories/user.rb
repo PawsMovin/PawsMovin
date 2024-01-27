@@ -8,7 +8,7 @@ FactoryBot.define do
     sequence(:email) { |n| "user_email_#{n}@example.com" }
     default_image_size { "large" }
     base_upload_limit { 10 }
-    level { 20 }
+    level { User::Levels::MEMBER }
     created_at {Time.now}
     last_logged_in_at {Time.now}
 
@@ -18,31 +18,31 @@ FactoryBot.define do
     end
 
     factory(:member_user) do
-      level { 20 }
+      level { User::Levels::MEMBER }
     end
 
     factory(:privileged_user) do
-      level { 30 }
+      level { User::Levels::PRIVILEGED }
     end
 
     factory(:janitor_user) do
-      level { 35 }
+      level { User::Levels::JANITOR }
       can_upload_free { true }
       can_approve_posts { true }
     end
 
     factory(:moderator_user) do
-      level { 40 }
+      level { User::Levels::MODERATOR }
       can_approve_posts { true }
     end
 
     factory(:mod_user) do
-      level { 40 }
+      level { User::Levels::MODERATOR }
       can_approve_posts { true }
     end
 
     factory(:admin_user) do
-      level { 50 }
+      level { User::Levels::ADMIN }
       can_approve_posts { true }
     end
   end

@@ -253,7 +253,7 @@ Layout/FirstHashElementIndentation:
     - 'app/models/user.rb'
     - 'app/presenters/post_presenter.rb'
     - 'app/serializers/post_serializer.rb'
-    - 'config/danbooru_default_config.rb'
+    - 'config/default_config.rb'
     - 'config/environments/production.rb'
 
 # Offense count: 64
@@ -510,7 +510,7 @@ Layout/SpaceInsideBlockBraces:
     - 'app/views/post_disapprovals/_counts.html.erb'
     - 'app/views/post_events/_search.html.erb'
     - 'config/application.rb'
-    - 'config/danbooru_default_config.rb'
+    - 'config/default_config.rb'
     - 'config/routes.rb'
     - 'test/factories/tag.rb'
     - 'test/factories/user.rb'
@@ -630,7 +630,7 @@ Layout/SpaceInsideHashLiteralBraces:
     - 'app/views/users/index.html.erb'
     - 'app/views/users/new.html.erb'
     - 'app/views/wiki_pages/show_or_new.html.erb'
-    - 'config/danbooru_default_config.rb'
+    - 'config/default_config.rb'
     - 'test/factories/mod_action.rb'
     - 'test/functional/artists_controller_test.rb'
     - 'test/functional/bans_controller_test.rb'
@@ -771,7 +771,7 @@ Lint/InheritException:
     - 'app/controllers/blips_controller.rb'
     - 'app/controllers/maintenance/user/email_notifications_controller.rb'
     - 'app/jobs/application_job.rb'
-    - 'app/logical/danbooru/paginator/pagination_error.rb'
+    - 'app/logical/paws_movin/paginator/pagination_error.rb'
     - 'app/logical/downloads/file.rb'
     - 'app/logical/processing_error.rb'
     - 'app/logical/session_loader.rb'
@@ -958,7 +958,7 @@ Lint/UnusedMethodArgument:
     - 'app/models/ticket.rb'
     - 'app/presenters/post_presenter.rb'
     - 'app/presenters/user_presenter.rb'
-    - 'config/danbooru_default_config.rb'
+    - 'config/default_config.rb'
 
 # Offense count: 1
 Lint/UriEscapeUnescape:
@@ -1065,7 +1065,7 @@ Naming/MemoizedInstanceVariableName:
     - 'app/logical/post_sets/post.rb'
     - 'app/models/tag.rb'
     - 'app/presenters/tag_set_presenter.rb'
-    - 'config/danbooru_default_config.rb'
+    - 'config/default_config.rb'
 
 # Offense count: 17
 # Configuration parameters: MinNameLength, AllowNamesEndingInNumbers, AllowedNames, ForbiddenNames.
@@ -1284,9 +1284,9 @@ Rails/EnvironmentComparison:
 # SupportedStyles: slashes, arguments
 Rails/FilePath:
   Exclude:
-    - 'app/logical/danbooru_image_resizer.rb'
+    - 'app/logical/image_resizer.rb'
     - 'app/logical/storage_manager.rb'
-    - 'config/danbooru_default_config.rb'
+    - 'config/default_config.rb'
     - 'test/test_helper.rb'
     - 'test/unit/storage_manager_test.rb'
 
@@ -1660,7 +1660,7 @@ Style/ExpandPathArguments:
 # Configuration parameters: AllowedVars.
 Style/FetchEnvVar:
   Exclude:
-    - 'config/danbooru_default_config.rb'
+    - 'config/default_config.rb'
 
 # Offense count: 1
 # This cop supports safe autocorrection (--autocorrect).
@@ -1976,7 +1976,7 @@ Style/IfInsideElse:
 # AllowedMethods: nonzero?
 Style/IfWithBooleanLiteralBranches:
   Exclude:
-    - 'config/danbooru_default_config.rb'
+    - 'config/default_config.rb'
 
 # Offense count: 1
 # This cop supports unsafe autocorrection (--autocorrect-all).
@@ -2033,7 +2033,7 @@ Style/MissingRespondToMissing:
   Exclude:
     - 'app/inputs/form_field_collector.rb'
     - 'app/logical/current_user.rb'
-    - 'config/danbooru_default_config.rb'
+    - 'config/default_config.rb'
 
 # Offense count: 3
 # This cop supports unsafe autocorrection (--autocorrect-all).
@@ -2041,7 +2041,7 @@ Style/MissingRespondToMissing:
 # SupportedStyles: module_function, extend_self, forbidden
 Style/ModuleFunction:
   Exclude:
-    - 'app/logical/danbooru_image_resizer.rb'
+    - 'app/logical/image_resizer.rb'
     - 'app/logical/post_thumbnailer.rb'
     - 'app/logical/upload_service/utils.rb'
 
@@ -2056,7 +2056,7 @@ Style/MultilineBlockChain:
 # SupportedStyles: literals, strict
 Style/MutableConstant:
   Exclude:
-    - 'app/logical/danbooru_image_resizer.rb'
+    - 'app/logical/image_resizer.rb'
     - 'app/logical/downloads/file.rb'
     - 'app/logical/pbkdf2.rb'
     - 'app/logical/storage_manager.rb'
@@ -2152,7 +2152,7 @@ Style/NumericLiterals:
     - 'app/logical/pbkdf2.rb'
     - 'app/views/ads/_leaderboard.html.erb'
     - 'app/views/takedowns/new.html.erb'
-    - 'config/danbooru_default_config.rb'
+    - 'config/default_config.rb'
     - 'test/functional/application_controller_test.rb'
 
 # Offense count: 1
@@ -2207,7 +2207,7 @@ Style/PercentLiteralDelimiters:
     - 'app/presenters/user_presenter.rb'
     - 'app/views/blips/_search.html.erb'
     - 'app/views/uploads/index.html.erb'
-    - 'config/danbooru_default_config.rb'
+    - 'config/default_config.rb'
     - 'config/initializers/content_security_policy.rb'
     - 'test/unit/bulk_update_importer_importer_test.rb'
     - 'test/unit/post_test.rb'
@@ -2669,7 +2669,7 @@ Style/StringLiterals:
     - 'app/views/users/home.html.erb'
     - 'app/views/users/new.html.erb'
     - 'config.ru'
-    - 'config/danbooru_default_config.rb'
+    - 'config/default_config.rb'
     - 'config/environments/development.rb'
     - 'config/initializers/content_security_policy.rb'
     - 'config/initializers/core_extensions.rb'
@@ -2790,7 +2790,7 @@ Style/StringLiteralsInInterpolation:
     - 'app/logical/bulk_update_request_importer.rb'
     - 'app/models/post.rb'
     - 'app/presenters/tag_set_presenter.rb'
-    - 'config/danbooru_default_config.rb'
+    - 'config/default_config.rb'
 
 # Offense count: 6
 # This cop supports unsafe autocorrection (--autocorrect-all).
@@ -2943,7 +2943,7 @@ Style/TrailingCommaInHashLiteral:
     - 'app/presenters/post_presenter.rb'
     - 'app/serializers/post_serializer.rb'
     - 'config/application.rb'
-    - 'config/danbooru_default_config.rb'
+    - 'config/default_config.rb'
     - 'config/environments/development.rb'
     - 'config/environments/production.rb'
     - 'config/environments/test.rb'

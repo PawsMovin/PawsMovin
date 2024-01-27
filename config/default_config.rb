@@ -1,23 +1,21 @@
 require 'socket'
 
-module Danbooru
+module PawsMovin
   class Configuration
-    # The version of this Danbooru.
     def version
-      "2.1.0"
+      GitHelper.short_hash
     end
 
-    # The name of this Danbooru.
     def app_name
-      "e621"
+      "Paws Movin'"
     end
 
     def description
-      "Find good furry art, fast"
+      "We keep your paws movin'!"
     end
 
     def domain
-      "e621.net"
+      "pawsmov.in"
     end
 
     # Force rating:s on this version of the site.
@@ -39,16 +37,8 @@ module Danbooru
       "management@#{domain}"
     end
 
-    # System actions, such as sending automated dmails, will be performed with
-    # this account. This account must have Moderator privileges.
-    #
-    # Run `rake db:seed` to create this account if it doesn't already exist in your install.
-    def system_user
-      "auto_moderator"
-    end
-
     def source_code_url
-      "https://github.com/e621ng/e621ng"
+      "https://github.com/PawsMovin/PawsMovin"
     end
 
     # Stripped of any special characters.
@@ -56,44 +46,62 @@ module Danbooru
       app_name.gsub(/[^a-zA-Z0-9_-]/, "_")
     end
 
-    # The default name to use for anyone who isn't logged in.
-    def default_guest_name
-      "Anonymous"
-    end
+    module Users
+      def enable_email_verification?
+        true
+      end
 
-    def levels
-      {
-          "Anonymous" => 0,
-          "Blocked" => 10,
-          "Member" => 20,
-          "Privileged" => 30,
-          "Former Staff" => 34,
-          "Janitor" => 35,
-          "Moderator" => 40,
-          "Admin" => 50
-      }
-    end
+      def anonymous_user_name
+        "anonymous"
+      end
 
-    # Prevent new users from going above 80k while allowing those currently above
-    # it to continue adding new favorites with the old limit.
-    # { 123 => 200_000 }
-    def legacy_favorite_limit
-      {}
-    end
+      def anonymous_user
+        user = User.new(name: anonymous_user_name, level: User::Levels::ANONYMOUS, created_at: Time.now)
+        user.readonly!.freeze
+        user
+      end
 
-    # Set the default level, permissions, and other settings for new users here.
-    def customize_new_user(user)
-      user.blacklisted_tags = default_blacklist.join("\n")
-      user.comment_threshold = -10
-      user.enable_auto_complete = true
-      user.enable_keyboard_navigation = true
-      user.per_page = 75
-      user.show_post_statistics = true
-      user.style_usernames = true
-    end
+      def system_user_name
+        "System"
+      end
 
-    def default_blacklist
-      []
+      def system_user
+        User.find_or_create_by!(name: system_user_name) do |user|
+          user.level = User::Levels::SYSTEM
+          user.email = "system@pawsmov.in"
+        end
+      end
+
+      def default_user_timezone
+        "Central Time (US & Canada)"
+      end
+
+      # The default name to use for anyone who isn't logged in.
+      def default_guest_name
+        "Anonymous"
+      end
+
+      # Prevent new users from going above 80k while allowing those currently above
+      # it to continue adding new favorites with the old limit.
+      # { 123 => 200_000 }
+      def legacy_favorite_limit
+        {}
+      end
+
+      # Set the default level, permissions, and other settings for new users here.
+      def customize_new_user(user)
+        user.blacklisted_tags = default_blacklist.join("\n")
+        user.comment_threshold = -10
+        user.enable_auto_complete = true
+        user.enable_keyboard_navigation = true
+        user.per_page = 75
+        user.show_post_statistics = true
+        user.style_usernames = true
+      end
+
+      def default_blacklist
+        []
+      end
     end
 
     def safeblocked_tags
@@ -443,7 +451,7 @@ module Danbooru
         {
           name: "uploading_guidelines",
           reason: "Does not meet the [[uploading_guidelines|uploading guidelines]]",
-          text: "This post fails to meet the site's standards, be it for artistic worth, image quality, relevancy, or something else.\nKeep in mind that your personal preferences have no bearing on this. If you find the content of a post objectionable, simply [[e621:blacklist|blacklist]] it."
+          text: "This post fails to meet the site's standards, be it for artistic worth, image quality, relevancy, or something else.\nKeep in mind that your personal preferences have no bearing on this. If you find the content of a post objectionable, simply [[help:blacklist|blacklist]] it."
         },
         {
           name: 'dnp_artist',
@@ -572,7 +580,7 @@ module Danbooru
     # services will fail if you don't set a valid User-Agent.
     def http_headers
       {
-        "User-Agent" => "#{Danbooru.config.safe_app_name}/#{Danbooru.config.version}",
+        "User-Agent" => "#{PawsMovin.config.safe_app_name}/#{PawsMovin.config.version}",
       }
     end
 
@@ -582,7 +590,7 @@ module Danbooru
       {
         timeout: 10,
         open_timout: 5,
-        headers: Danbooru.config.http_headers,
+        headers: PawsMovin.config.http_headers,
       }
     end
 
@@ -617,7 +625,7 @@ module Danbooru
     # Use a recaptcha on the signup page to protect against spambots creating new accounts.
     # https://developers.google.com/recaptcha/intro
     def enable_recaptcha?
-      Rails.env.production? && Danbooru.config.recaptcha_site_key.present? && Danbooru.config.recaptcha_secret_key.present?
+      Rails.env.production? && PawsMovin.config.recaptcha_site_key.present? && PawsMovin.config.recaptcha_secret_key.present?
     end
 
     def recaptcha_site_key
@@ -683,6 +691,8 @@ module Danbooru
     def aibur_stats_discord_webhook_url
       nil
     end
+
+    include Users
   end
 
   class EnvironmentConfiguration
@@ -698,7 +708,7 @@ module Danbooru
     end
 
     def method_missing(method, *)
-      var = ENV["DANBOORU_#{method.to_s.upcase.chomp("?")}"]
+      var = ENV["PAWSMOVIN_#{method.to_s.upcase.chomp("?")}"]
 
       if var.present?
         env_to_boolean(method, var)

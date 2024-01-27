@@ -1,4 +1,4 @@
-module Danbooru
+module PawsMovin
   module Paginator
     module DocumentStoreExtensions
       include BaseExtension

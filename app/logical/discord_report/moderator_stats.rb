@@ -1,7 +1,7 @@
 module DiscordReport
   class ModeratorStats < Base
     def webhook_url
-      Danbooru.config.moderator_stats_discord_webhook_url
+      PawsMovin.config.moderator_stats_discord_webhook_url
     end
 
     def report

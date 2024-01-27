@@ -8,11 +8,11 @@ module DocumentStore
     end
 
     teardown do
-      WebMock.disable_net_connect!(allow: [Danbooru.config.opensearch_host])
+      WebMock.disable_net_connect!(allow: [PawsMovin.config.opensearch_host])
     end
 
     def stub_opensearch(method, path)
-      stub_request(method, "http://#{Danbooru.config.opensearch_host}:9200#{path}")
+      stub_request(method, "http://#{PawsMovin.config.opensearch_host}:9200#{path}")
     end
 
     test "it deletes the index" do

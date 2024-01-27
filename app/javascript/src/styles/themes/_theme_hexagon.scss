@@ -58,14 +58,18 @@ body {
   --color-dtext-code:             #ffe380;
   --color-dtext-section:          #17a2b8;
 
-  // User Groups
-  --color-user-member:            #b4c7d9;
-  --color-user-member-alt:        #2e76b4;
-  --color-user-privileged:        #b4c7d9;
-  --color-user-privileged-alt:    #2e76b4;
+  $user-color: #b4c7d9;
+  $user-color-alt: #2e76b4;
 
-  --color-user-blocked:           #b4c7d9;
-  --color-user-blocked-alt:       #2e76b4;
+  // User Groups
+  --color-user-blocked:           #{$user-color};
+  --color-user-blocked-alt:       #{$user-color-alt};
+  --color-user-restricted:        #{$user-color};
+  --color-user-restricted-alt:    #{$user-color-alt};
+  --color-user-member:            #{$user-color};
+  --color-user-member-alt:        #{$user-color-alt};
+  --color-user-privileged:        #{$user-color};
+  --color-user-privileged-alt:    #{$user-color-alt};
 
   --color-user-former-staff:      #78dca5;
   --color-user-former-staff-alt:  #4da073;
@@ -73,8 +77,12 @@ body {
   --color-user-janitor-alt:       #cc5151;
   --color-user-moderator:         #d82828;
   --color-user-moderator-alt:     #cc5151;
+  --color-user-system:            #bf6ee0;
+  --color-user-system-alt:        #{darken(#bf6ee0, 10%)};
   --color-user-admin:             #e69500;
   --color-user-admin-alt:         #9d6703;
+  --color-user-owner:             #e69500;
+  --color-user-owner-alt:         #9d6703;
 
   // Tag Categories
   --color-tag-general:            #b4c7d9;

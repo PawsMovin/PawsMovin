@@ -18,10 +18,10 @@ require "rails/test_unit/railtie"
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
-require_relative "danbooru_default_config"
-require_relative "danbooru_local_config"
+require_relative "default_config"
+require_relative "local_config"
 
-module Danbooru
+module PawsMovin
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.1
@@ -40,8 +40,8 @@ module Danbooru
     config.force_ssl = true
     config.active_job.queue_adapter = :sidekiq
 
-    if Rails.env.production? && Danbooru.config.ssl_options.present?
-      config.ssl_options = Danbooru.config.ssl_options
+    if Rails.env.production? && PawsMovin.config.ssl_options.present?
+      config.ssl_options = PawsMovin.config.ssl_options
     else
       config.ssl_options = {
         hsts: false,
@@ -52,7 +52,7 @@ module Danbooru
 
     config.after_initialize do
       Rails.application.routes.default_url_options = {
-        host: Danbooru.config.hostname,
+        host: PawsMovin.config.hostname,
       }
     end
 
@@ -63,7 +63,7 @@ module Danbooru
     # These settings can be overridden in specific environments using the files
     # in config/environments, which are processed later.
     #
-    # config.time_zone = "Central Time (US & Canada)"
+    config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
   end
 end

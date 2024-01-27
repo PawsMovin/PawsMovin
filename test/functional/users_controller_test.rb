@@ -62,7 +62,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
     context "new action" do
       setup do
-        Danbooru.config.stubs(:enable_recaptcha?).returns(false)
+        PawsMovin.config.stubs(:enable_recaptcha?).returns(false)
       end
 
       should "render" do
@@ -83,7 +83,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
       context "with sockpuppet validation enabled" do
         setup do
-          Danbooru.config.unstub(:enable_sock_puppet_validation?)
+          PawsMovin.config.unstub(:enable_sock_puppet_validation?)
           @user.update(last_ip_addr: "127.0.0.1")
         end
 
@@ -109,7 +109,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
       context "with email validation" do
         setup do
-          Danbooru.config.stubs(:enable_email_verification?).returns(true)
+          PawsMovin.config.stubs(:enable_email_verification?).returns(true)
         end
 
         should "reject invalid emails" do
@@ -122,10 +122,10 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
         end
 
         should "reject duplicate emails" do
-          create(:user, email: "valid@e621.net")
+          create(:user, email: "valid@pawsmov.in")
 
           assert_no_difference(-> { User.count }) do
-            post users_path, params: { user: { name: "test2", password: "xxxxxx", password_confirmation: "xxxxxx", email: "VaLid@E621.net" } }
+            post users_path, params: { user: { name: "test2", password: "xxxxxx", password_confirmation: "xxxxxx", email: "VaLid@pawsmov.in" } }
             assert_match(/Email has already been taken/, flash[:notice])
           end
         end
@@ -160,16 +160,16 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
         end
 
         should "not work" do
-          put_auth user_path(@user), @cuser, params: {:user => {:level => 40}}
+          put_auth user_path(@user), @cuser, params: {:user => {:level => User::Levels::MODERATOR}}
           @user.reload
-          assert_equal(20, @user.level)
+          assert_equal(User::Levels::MEMBER, @user.level)
         end
       end
 
       context "for an user with blank email" do
         setup do
           @user = create(:user, email: "")
-          Danbooru.config.stubs(:enable_email_verification?).returns(true)
+          PawsMovin.config.stubs(:enable_email_verification?).returns(true)
         end
 
         should "force them to update their email" do

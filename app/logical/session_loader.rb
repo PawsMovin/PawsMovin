@@ -8,7 +8,7 @@ class SessionLoader
     @session = request.session
     @cookies = request.cookie_jar
     @params = request.parameters
-    @remember_validator = ActiveSupport::MessageVerifier.new(Danbooru.config.remember_key, serializer: JSON, digest: "SHA256")
+    @remember_validator = ActiveSupport::MessageVerifier.new(PawsMovin.config.remember_key, serializer: JSON, digest: "SHA256")
   end
 
   def load
@@ -23,7 +23,7 @@ class SessionLoader
       load_remember_token
     end
 
-    CurrentUser.user.unban! if CurrentUser.user.ban_expired? && !Danbooru.config.readonly_mode?
+    CurrentUser.user.unban! if CurrentUser.user.ban_expired? && !PawsMovin.config.readonly_mode?
     if CurrentUser.user.is_blocked?
       recent_ban = CurrentUser.user.recent_ban
       ban_message = "Account is banned: forever"
@@ -33,12 +33,12 @@ class SessionLoader
       raise AuthenticationFailure.new(ban_message)
     end
     set_statement_timeout
-    update_last_logged_in_at unless Danbooru.config.readonly_mode?
-    update_last_ip_addr unless Danbooru.config.readonly_mode?
+    update_last_logged_in_at unless PawsMovin.config.readonly_mode?
+    update_last_ip_addr unless PawsMovin.config.readonly_mode?
     set_time_zone
     set_safe_mode
     refresh_old_remember_token
-    DanbooruLogger.initialize(CurrentUser.user)
+    PawsMovin::Logger.initialize(CurrentUser.user)
   end
 
   def has_api_authentication?
@@ -125,7 +125,7 @@ private
   end
 
   def set_safe_mode
-    safe_mode = Danbooru.config.safe_mode? || params[:safe_mode].to_s.truthy? || CurrentUser.user.enable_safe_mode?
+    safe_mode = PawsMovin.config.safe_mode? || params[:safe_mode].to_s.truthy? || CurrentUser.user.enable_safe_mode?
     CurrentUser.safe_mode = safe_mode
   end
 end

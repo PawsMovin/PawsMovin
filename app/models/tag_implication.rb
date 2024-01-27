@@ -139,7 +139,7 @@ class TagImplication < TagRelationship
         forum_updater.update(failure_message(e), "FAILED") if update_topic
         update(status: "error: #{e}")
 
-        DanbooruLogger.log(e, tag_implication_id: id, antecedent_name: antecedent_name, consequent_name: consequent_name)
+        PawsMovin::Logger.log(e, tag_implication_id: id, antecedent_name: antecedent_name, consequent_name: consequent_name)
       end
     end
 

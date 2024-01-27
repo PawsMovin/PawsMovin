@@ -54,8 +54,8 @@ class TagQuery
     @tag_count = 0
 
     parse_query(query)
-    if @tag_count > Danbooru.config.tag_query_limit - free_tags_count
-      raise CountExceededError, "You cannot search for more than #{Danbooru.config.tag_query_limit} tags at a time"
+    if @tag_count > PawsMovin.config.tag_query_limit - free_tags_count
+      raise CountExceededError, "You cannot search for more than #{PawsMovin.config.tag_query_limit} tags at a time"
     end
   end
 
@@ -99,7 +99,7 @@ class TagQuery
   end
 
   def self.ad_tag_string(tag_array)
-    fetch_tags(tag_array, *Danbooru.config.ads_keyword_tags).join(" ")
+    fetch_tags(tag_array, *PawsMovin.config.ads_keyword_tags).join(" ")
   end
 
   private
@@ -111,7 +111,7 @@ class TagQuery
 
   def parse_query(query)
     TagQuery.scan(query).each do |token| # rubocop:disable Metrics/BlockLength
-      @tag_count += 1 unless Danbooru.config.is_unlimited_tag?(token)
+      @tag_count += 1 unless PawsMovin.config.is_unlimited_tag?(token)
       metatag_name, g2 = token.split(":", 2)
 
       # Short-circuit when there is no metatag or the metatag has no value
@@ -410,7 +410,7 @@ class TagQuery
   end
 
   def pull_wildcard_tags(tag)
-    matches = Tag.name_matches(tag).limit(Danbooru.config.tag_query_limit).order("post_count DESC").pluck(:name)
+    matches = Tag.name_matches(tag).limit(PawsMovin.config.tag_query_limit).order("post_count DESC").pluck(:name)
     matches = ["~~not_found~~"] if matches.empty?
     matches
   end

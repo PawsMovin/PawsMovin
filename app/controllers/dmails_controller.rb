@@ -28,7 +28,7 @@ class DmailsController < ApplicationController
     @dmail = Dmail.find(params[:id])
     check_privilege(@dmail)
     respond_with(@dmail) do |fmt|
-      fmt.html { @dmail.mark_as_read! unless Danbooru.config.readonly_mode? }
+      fmt.html { @dmail.mark_as_read! unless PawsMovin.config.readonly_mode? }
     end
   end
 

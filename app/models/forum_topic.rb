@@ -108,7 +108,7 @@ class ForumTopic < ApplicationRecord
     end
 
     def mark_as_read!(user = CurrentUser.user)
-      return if user.is_anonymous? || Danbooru.config.readonly_mode?
+      return if user.is_anonymous? || PawsMovin.config.readonly_mode?
 
       match = ForumTopicVisit.where(:user_id => user.id, :forum_topic_id => id).first
       if match
@@ -177,7 +177,7 @@ class ForumTopic < ApplicationRecord
   end
 
   def last_page
-    (response_count / Danbooru.config.posts_per_page.to_f).ceil
+    (response_count / PawsMovin.config.posts_per_page.to_f).ceil
   end
 
   def hide!

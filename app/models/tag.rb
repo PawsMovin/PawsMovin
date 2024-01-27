@@ -375,7 +375,7 @@ class Tag < ApplicationRecord
   def category_editable_by_implicit?(user)
     return false unless user.is_janitor?
     return false if is_locked?
-    return false if post_count >= Danbooru.config.tag_type_change_cutoff
+    return false if post_count >= PawsMovin.config.tag_type_change_cutoff
     true
   end
 
@@ -383,7 +383,7 @@ class Tag < ApplicationRecord
     return true if user.is_admin?
     return false if is_locked?
     return false if TagCategory::ADMIN_ONLY_MAPPING[TagCategory::REVERSE_MAPPING[category]]
-    return true if post_count < Danbooru.config.tag_type_change_cutoff
+    return true if post_count < PawsMovin.config.tag_type_change_cutoff
     false
   end
 

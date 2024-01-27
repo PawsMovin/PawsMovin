@@ -73,7 +73,7 @@ class ApplicationController < ActionController::Base
       render_error_page(405, exception)
     when ActionController::UnknownFormat, ActionView::MissingTemplate
       render_unsupported_format
-    when Danbooru::Paginator::PaginationError
+    when PawsMovin::Paginator::PaginationError
       render_expected_error(410, exception.message)
     when TagQuery::CountExceededError
       render_expected_error(422, exception.message)
@@ -127,7 +127,7 @@ class ApplicationController < ActionController::Base
       @message = "An unexpected error occurred."
     end
 
-    DanbooruLogger.log(@exception, expected: @expected)
+    PawsMovin::Logger.log(@exception, expected: @expected)
     log = ExceptionLog.add(exception, CurrentUser.id, request) if !@expected
     @log_code = log&.code
     render "static/error", status: status, formats: format
@@ -163,7 +163,7 @@ class ApplicationController < ActionController::Base
   def reset_current_user
     CurrentUser.user = nil
     CurrentUser.ip_addr = nil
-    CurrentUser.safe_mode = Danbooru.config.safe_mode?
+    CurrentUser.safe_mode = PawsMovin.config.safe_mode?
   end
 
   def user_access_check(method)
@@ -222,7 +222,7 @@ class ApplicationController < ActionController::Base
   end
 
   def enforce_readonly
-    return unless Danbooru.config.readonly_mode?
+    return unless PawsMovin.config.readonly_mode?
     raise ReadOnlyException.new "The site is in readonly mode" unless allowed_readonly_actions.include? action_name
   end
 

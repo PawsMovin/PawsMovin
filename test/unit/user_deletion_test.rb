@@ -39,7 +39,7 @@ class UserDeletionTest < ActiveSupport::TestCase
       @post = create(:post)
       FavoriteManager.add!(user: @user, post: @post)
 
-      @user.update(email: "ted@danbooru.com")
+      @user.update(email: "gay@pawov.in")
 
       @deletion = UserDeletion.new(@user, "password")
       with_inline_jobs { @deletion.delete! }

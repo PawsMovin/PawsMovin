@@ -101,7 +101,7 @@ Rails/WhereEquals:
   Enabled: false
 
 Rails/WhereExists:
-  EnforcedStyle: where
+  EnforcedStyle: exists
 
 Rails/WhereNotWithMultipleConditions:
   Enabled: false

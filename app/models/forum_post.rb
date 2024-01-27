@@ -15,7 +15,7 @@ class ForumPost < ApplicationRecord
   after_create :update_topic_updated_at_on_create
   after_destroy :update_topic_updated_at_on_destroy
   validates :body, :creator_id, presence: true
-  validates :body, length: { minimum: 1, maximum: Danbooru.config.forum_post_max_size }
+  validates :body, length: { minimum: 1, maximum: PawsMovin.config.forum_post_max_size }
   validate :validate_topic_is_unlocked
   validate :topic_id_not_invalid
   validate :topic_is_not_restricted, :on => :create
@@ -203,7 +203,7 @@ class ForumPost < ApplicationRecord
   end
 
   def forum_topic_page
-    ((ForumPost.where("topic_id = ? and created_at <= ?", topic_id, created_at).count) / Danbooru.config.posts_per_page.to_f).ceil
+    ((ForumPost.where("topic_id = ? and created_at <= ?", topic_id, created_at).count) / PawsMovin.config.posts_per_page.to_f).ceil
   end
 
   def is_original_post?(original_post_id = nil)
