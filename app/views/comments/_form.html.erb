@@ -6,9 +6,6 @@
   <% end %>
   <%= f.input :body, as: :dtext, label: false, limit: PawsMovin.config.comment_max_size %>
   <%= f.button :submit, "Submit", data: { disable_with: "Submitting..." } %>
-  <% if comment.new_record? %>
-    <%= f.input :do_not_bump_post, :label => "No bump" %>
-  <% end %>
   <% if CurrentUser.is_janitor? %>
     <%= f.input :is_sticky, label: "Sticky" %>
   <% end %>

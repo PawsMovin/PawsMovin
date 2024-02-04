@@ -95,7 +95,6 @@ class Comment < ApplicationRecord
 
       q = q.attribute_matches(:is_hidden, params[:is_hidden])
       q = q.attribute_matches(:is_sticky, params[:is_sticky])
-      q = q.attribute_matches(:do_not_bump_post, params[:do_not_bump_post])
 
       case params[:order]
       when "post_id", "post_id_desc"
@@ -161,7 +160,6 @@ class Comment < ApplicationRecord
       post.update_columns(:last_commented_at => other_comments.first.created_at)
     end
 
-    other_comments = other_comments.where("do_not_bump_post = FALSE")
     if other_comments.count == 0
       post.update_columns(:last_comment_bumped_at => nil)
     else

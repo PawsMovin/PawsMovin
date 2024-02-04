@@ -124,7 +124,7 @@ private
   end
 
   def search_params
-    permitted_params = %i[body_matches post_id post_tags_match creator_name creator_id post_note_updater_name post_note_updater_id poster_id poster_name is_sticky do_not_bump_post order]
+    permitted_params = %i[body_matches post_id post_tags_match creator_name creator_id post_note_updater_name post_note_updater_id poster_id poster_name is_sticky order]
     permitted_params += %i[is_hidden] if CurrentUser.is_moderator?
     permitted_params += %i[ip_addr] if CurrentUser.is_admin?
     permit_search_params permitted_params
@@ -132,7 +132,7 @@ private
 
   def comment_params(context)
     permitted_params = %i[body]
-    permitted_params += %i[do_not_bump_post post_id] if context == :create
+    permitted_params += %i[post_id] if context == :create
     permitted_params += %i[is_sticky] if CurrentUser.is_janitor?
     permitted_params += %i[is_hidden] if CurrentUser.is_moderator?
 
