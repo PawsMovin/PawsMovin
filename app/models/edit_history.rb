@@ -66,7 +66,6 @@ class EditHistory < ApplicationRecord
       "Forum Post ##{versionable_id}"
     when "Comment"
       "Comment ##{versionable_id}"
-    when "Blip"
     else
       "#{versionable_type} ##{versionable_id}"
     end

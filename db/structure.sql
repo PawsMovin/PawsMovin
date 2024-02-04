@@ -2175,7 +2175,6 @@ CREATE TABLE public.user_statuses (
     forum_post_count integer DEFAULT 0 NOT NULL,
     comment_count integer DEFAULT 0 NOT NULL,
     pool_edit_count integer DEFAULT 0 NOT NULL,
-    blip_count integer DEFAULT 0 NOT NULL,
     set_count integer DEFAULT 0 NOT NULL,
     artist_edit_count integer DEFAULT 0 NOT NULL,
     own_post_replaced_count integer DEFAULT 0,
