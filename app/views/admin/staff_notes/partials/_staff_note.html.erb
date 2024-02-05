@@ -15,5 +15,25 @@
     <div class="body dtext-container">
       <%= format_text(staff_note.body, allow_color: true) %>
     </div>
+
+    <%= render "application/update_notice", record: staff_note %>
+    <div class="content-menu">
+      <menu>
+        <% if staff_note.can_edit?(CurrentUser.user) %>
+          <li><%= link_to "Edit", user_staff_note_path(staff_note, user_id: staff_note.user_id), id: "edit_staff_note_link_#{staff_note.id}", class: "edit_staff_note_link" %></li>
+        <% end %>
+        <% if staff_note.can_delete?(CurrentUser.user) %>
+          <% if staff_note.is_deleted? %>
+            <li><%= link_to "Undelete", user_staff_note_undelete_path(staff_note, user_id: staff_note.user_id), method: :put %></li>
+          <% else %>
+            <li><%= link_to "Delete", user_staff_note_path(staff_note, user_id: staff_note.user_id), method: :delete %></li>
+          <% end %>
+        <% end %>
+      </menu>
+    </div>
+
+    <% if staff_note.can_edit?(CurrentUser.user) %>
+      <%= render "admin/staff_notes/partials/edit", staff_note: staff_note, hidden: true %>
+    <% end %>
   </div>
 </article>

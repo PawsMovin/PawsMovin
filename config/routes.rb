@@ -22,7 +22,7 @@ Rails.application.routes.draw do
     resources :exceptions, only: [:index, :show]
     resource :reowner, controller: 'reowner', only: [:new, :create]
     resource :stuck_dnp, controller: "stuck_dnp", only: %i[new create]
-    resources :staff_notes, only: [:index]
+    resources :staff_notes, only: %i[index]
     resources :danger_zone, only: [:index] do
       collection do
         put :uploading_limits
@@ -277,7 +277,9 @@ Rails.application.routes.draw do
     resource :api_key, :only => [:show, :view, :update, :destroy], :controller => "maintenance/user/api_keys" do
       post :view
     end
-    resources :staff_notes, only: [:index, :new, :create], controller: "admin/staff_notes"
+    resources :staff_notes, only: %i[index new create destroy undelete update], controller: "admin/staff_notes" do
+      put :undelete
+    end
     resources :text_versions, only: %i[index], to: "moderator/user_text_versions#for_user"
 
     collection do

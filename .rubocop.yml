@@ -153,3 +153,6 @@ Style/TrailingCommaInArrayLiteral:
 
 Style/TrailingCommaInHashLiteral:
   EnforcedStyleForMultiline: consistent_comma
+
+Rails/NotNullColumn:
+  Enabled: false
