@@ -1904,7 +1904,8 @@ CREATE TABLE public.tickets (
     updated_at timestamp without time zone NOT NULL,
     accused_id integer,
     model_type character varying NOT NULL,
-    model_id integer NOT NULL
+    model_id integer NOT NULL,
+    report_type character varying DEFAULT 'report'::character varying NOT NULL
 );
 
 
@@ -4414,6 +4415,7 @@ ALTER TABLE ONLY public.favorites
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20240205165127'),
 ('20240205164313'),
 ('20240205030536'),
 ('20240205015902'),

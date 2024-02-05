@@ -1,7 +1,7 @@
 <div id="c-tickets">
   <div id="a-show">
     <div class='section'>
-      <h3><%= @ticket.type_title %> Ticket</h3>
+      <h3><%= @ticket.type_title %></h3>
 
       <table>
         <% if @ticket.can_see_reporter?(CurrentUser) %>
@@ -127,5 +127,5 @@
 <% render partial: 'secondary_links' %>
 
 <% content_for(:page_title) do %>
-  <%= @ticket.type_title %> Ticket
+  <%= @ticket.type_title %>
 <% end %>

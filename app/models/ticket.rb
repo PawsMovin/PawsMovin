@@ -11,6 +11,8 @@ class Ticket < ApplicationRecord
   validates :reason, presence: true
   validates :reason, length: { minimum: 2, maximum: PawsMovin.config.ticket_max_size }
   validates :response, length: { minimum: 2 }, on: :update
+  validates :report_type, presence: true
+  validate :validate_report_type_for_ticket
   enum status: %i[pending partial approved].index_with(&:to_s)
   after_update :log_update
   after_update :create_dmail
@@ -157,7 +159,13 @@ class Ticket < ApplicationRecord
 
   module ValidationMethods
     def validate_type
-      errors.add(:model_type, "is not valid") if MODEL_TYPES.exclude?(model_type)
+      errors.add(:model_type, "is not valid")
+    end
+
+    def validate_report_type_for_ticket
+      return if report_type == "report"
+      return if report_type == "commendation" && model_type == "User"
+      errors.add(:report_type, "is not valid")
     end
 
     def validate_creator_is_not_limited
@@ -176,12 +184,10 @@ class Ticket < ApplicationRecord
     def initialize_fields
       self.status = "pending"
       case model
-      when Comment
+      when Comment, ForumPost
         self.accused_id = model.creator_id
       when Dmail
         self.accused_id = model.from_id
-      when ForumPost
-        self.accused_id = model.creator_id
       when User
         self.accused_id = model_id
       end
@@ -237,6 +243,17 @@ class Ticket < ApplicationRecord
     end
   end
 
+  def report_type_pretty
+    case report_type
+    when "report"
+      "reporting"
+    when "commendation"
+      "commending"
+    else
+      report_type
+    end
+  end
+
   def bot_target_name
     model&.creator&.name
   end
@@ -254,7 +271,7 @@ class Ticket < ApplicationRecord
   end
 
   def type_title
-    "#{model.class.name.titlecase} Complaint"
+    "#{model.class.name.titlecase} #{report_type.titlecase}"
   end
 
   def subject
@@ -329,7 +346,9 @@ class Ticket < ApplicationRecord
           claimant: claimant_id ? User.id_to_name(claimant_id) : nil,
           target: bot_target_name,
           status: status,
-          category: model_type,
+          model_id: model_id,
+          model_type: model_type,
+          report_type: report_type,
           reason: reason,
         }
       }

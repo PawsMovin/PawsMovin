@@ -28,6 +28,9 @@
       <% if @found_item %>
         <%= f.hidden_field :model_id %>
         <%= f.hidden_field :model_type %>
+        <% if @ticket.model_type == "User" %>
+          <%= f.hidden_field :report_type %>
+        <% end %>
 
         <div class="section">
           <span class="ticket-warning">

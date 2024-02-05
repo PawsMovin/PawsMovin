@@ -15,7 +15,8 @@
       <%= subnav_link_to "Messages #{CurrentUser.user.dmail_count}", dmails_current_folder_path %>
     <% else %>
       <%= subnav_link_to "Send message", new_dmail_path(dmail: { to_id: @user.id }) %>
-      <%= subnav_link_to "Report/Commend", model_new_ticket_path(model: @user) %>
+      <%= subnav_link_to "Report", model_new_ticket_path(model: @user, report_type: "report") %>
+      <%= subnav_link_to "Commend", model_new_ticket_path(model: @user, report_type: "commendation") %>
     <% end %>
 
     <% if CurrentUser.is_admin? %>
