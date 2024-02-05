@@ -4,10 +4,6 @@
 
     <% if @artist.editable_by?(CurrentUser.user) %>
       <%= render "form" %>
-
-    <% elsif !@artist.is_active? %>
-      <p>This artist entry is inactive and cannot be edited.</p>
-
     <% end %>
   </div>
 </div>

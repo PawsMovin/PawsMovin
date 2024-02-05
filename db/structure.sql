@@ -134,8 +134,6 @@ CREATE TABLE public.artist_versions (
     name character varying NOT NULL,
     updater_id integer NOT NULL,
     updater_ip_addr inet NOT NULL,
-    is_active boolean DEFAULT true NOT NULL,
-    group_name character varying DEFAULT ''::character varying NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     other_names text[] DEFAULT '{}'::text[] NOT NULL,
@@ -172,8 +170,6 @@ CREATE TABLE public.artists (
     id integer NOT NULL,
     name character varying NOT NULL,
     creator_id integer NOT NULL,
-    is_active boolean DEFAULT true NOT NULL,
-    group_name character varying DEFAULT ''::character varying NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     other_names text[] DEFAULT '{}'::text[] NOT NULL,
@@ -3371,20 +3367,6 @@ CREATE INDEX index_artist_versions_on_updater_ip_addr ON public.artist_versions 
 
 
 --
--- Name: index_artists_on_group_name; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_artists_on_group_name ON public.artists USING btree (group_name);
-
-
---
--- Name: index_artists_on_group_name_trgm; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_artists_on_group_name_trgm ON public.artists USING gin (group_name public.gin_trgm_ops);
-
-
---
 -- Name: index_artists_on_name; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -4758,6 +4740,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20240101042716'),
 ('20240126174807'),
 ('20240127134104'),
-('20240127150517');
+('20240127150517'),
+('20240204214246');
 
 

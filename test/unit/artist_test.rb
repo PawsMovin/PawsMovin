@@ -158,13 +158,6 @@ class ArtistTest < ActiveSupport::TestCase
       assert_equal(["http://foo.com"], artist.url_array)
     end
 
-    should "hide deleted artists" do
-      as(create(:admin_user)) do
-        create(:artist, name: "warhol", url_string: "http://warhol.com/a/image.jpg", is_active: false)
-      end
-      assert_artist_not_found("http://warhol.com/a/image.jpg")
-    end
-
     context "when finding tumblr artists" do
       setup do
         create(:artist, name: "ilya_kuvshinov", url_string: "http://kuvshinov-ilya.tumblr.com")
@@ -203,16 +196,6 @@ class ArtistTest < ActiveSupport::TestCase
       assert_not_nil(Artist.search(name: "artist").first)
       assert_not_nil(Artist.search(any_name_matches: "aaa").first)
       assert_not_nil(Artist.search(any_name_matches: "*a*").first)
-    end
-
-    should "search on group name and return matches" do
-      cat_or_fish = create(:artist, name: "cat_or_fish")
-      create(:artist, name: "yuu", group_name: "cat_or_fish")
-
-      assert_equal("yuu", cat_or_fish.member_names)
-      assert_not_nil(Artist.search(group_name: "cat_or_fish").first)
-      assert_not_nil(Artist.search(any_name_matches: "cat_or_fish").first)
-      assert_not_nil(Artist.search(any_name_matches: "*cat*").first)
     end
 
     should "search on url and return matches" do
@@ -299,18 +282,6 @@ class ArtistTest < ActiveSupport::TestCase
           @artist.update(url_string: "http://foo.com www.example.com")
           assert_equal(%w[http://foo.com], @artist.versions.last.urls)
         end
-      end
-    end
-
-    context "that is deleted" do
-      setup do
-        @artist = create(:artist, url_string: "https://google.com")
-        @artist.update_attribute(:is_active, false)
-        @artist.reload
-      end
-
-      should "preserve the url string" do
-        assert_equal(1, @artist.urls.count)
       end
     end
 

@@ -25,8 +25,6 @@ class ArtistVersion < ApplicationRecord
         q = q.where(artist_id: params[:artist_id].split(",").map(&:to_i))
       end
 
-      q = q.attribute_matches(:is_active, params[:is_active])
-
       if params[:ip_addr].present?
         q = q.where("updater_ip_addr <<= ?", params[:ip_addr])
       end

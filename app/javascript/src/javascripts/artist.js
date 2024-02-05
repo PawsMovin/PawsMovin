@@ -20,11 +20,6 @@ Artist.update = function (id, params) {
 };
 
 function init() {
-  $("#undelete-artist-link").on('click', e => {
-    if (confirm("Are you sure you want to undelete this artist?"))
-      Artist.update($(e.target).data('aid'), {"artist[is_active]": true});
-    e.preventDefault();
-  });
 }
 
 export default Artist;

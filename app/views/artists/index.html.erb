@@ -4,9 +4,8 @@
     <table class="striped">
       <thead>
         <tr>
-          <th width="45%">Primary Name</th>
-          <th width="45%">Secondary Names</th>
-          <th width="10%">Status</th>
+          <th width="50%">Primary Name</th>
+          <th width="50%">Secondary Names</th>
         </tr>
       </thead>
       <tbody>
@@ -15,12 +14,8 @@
             <%= tag.tr(id: "artist-#{artist.id}") do %>
               <td>
                 <%= link_to h(artist.name), artist_path(artist) %>
-                <% if !artist.group_name.blank? %>
-                  (group: <%= link_to(artist.group_name, artist_path(artist)) %>)
-                <% end %>
               </td>
               <td><%= artist.other_names_string %></td>
-              <td><%= artist.status %></td>
             <% end %>
           <% end %>
         <% end %>

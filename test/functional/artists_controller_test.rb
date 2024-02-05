@@ -45,7 +45,6 @@ class ArtistsControllerTest < ActionDispatch::IntegrationTest
     should "create an artist" do
       attributes = attributes_for(:artist)
       assert_difference("Artist.count", 1) do
-        attributes.delete(:is_active)
         post_auth artists_path, @user, params: {artist: attributes}
       end
       artist = Artist.find_by_name(attributes[:name])
@@ -103,18 +102,9 @@ class ArtistsControllerTest < ActionDispatch::IntegrationTest
     end
 
     should "delete an artist" do
-      @janitor = create(:janitor_user)
-      delete_auth artist_path(@artist.id), @janitor
-      assert_redirected_to(artist_path(@artist.id))
-      @artist.reload
-      assert_equal(false, @artist.is_active)
-    end
-
-    should "undelete an artist" do
-      @janitor = create(:janitor_user)
-      put_auth artist_path(@artist.id), @janitor, params: {artist: {is_active: true}}
-      assert_redirected_to(artist_path(@artist.id))
-      assert_equal(true, @artist.reload.is_active)
+      @admin = create(:admin_user)
+      delete_auth artist_path(@artist.id), @admin
+      assert_redirected_to(artists_path)
     end
 
     context "reverting an artist" do
