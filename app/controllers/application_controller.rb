@@ -218,7 +218,7 @@ class ApplicationController < ActionController::Base
   end
 
   def permit_search_params(permitted_params)
-    params.fetch(:search, {}).permit([:id, :created_at, :updated_at] + permitted_params)
+    params.fetch(:search, {}).permit(%i[id created_at updated_at] + permitted_params)
   end
 
   def enforce_readonly

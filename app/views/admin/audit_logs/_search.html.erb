@@ -1,0 +1,4 @@
+<%= form_search(path: admin_audit_logs_path) do |f| %>
+  <%= f.user :user %>
+  <%= f.input :action, label: "Action", collection: StaffAuditLog::KNOWN_ACTIONS.map {|k| [k.to_s.capitalize.tr("_"," "), k.to_s]}, include_blank: true %>
+<% end %>

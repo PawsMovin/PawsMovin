@@ -1,0 +1,34 @@
+<div id="c-audit-logs">
+  <div id="a-index">
+    <h1>Audit Logs</h1>
+
+    <%= render "search" %>
+
+    <table class="striped">
+      <thead>
+      <tr>
+        <th width="10%">Date</th>
+        <th width="15%">User</th>
+        <th width="75%">Message</th>
+      </tr>
+      </thead>
+      <tbody>
+      <% @audit_logs.each do |mod_action| %>
+        <tr>
+          <td><%= compact_time mod_action.created_at %></td>
+          <td><%= link_to_user mod_action.user %></td>
+          <td class="dtext-container"><%= format_text(mod_action.format_text) %></td>
+        </tr>
+      <% end %>
+      </tbody>
+    </table>
+
+    <%= numbered_paginator(@audit_logs) %>
+  </div>
+</div>
+
+<%= render partial: "moderator/dashboards/secondary_links" %>
+
+<% content_for(:page_title) do %>
+  Audit Logs
+<% end %>

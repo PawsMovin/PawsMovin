@@ -28,6 +28,7 @@ Rails.application.routes.draw do
         put :uploading_limits
       end
     end
+    resources :audit_logs, only: %i[index]
   end
   resources :edit_histories do
     get :diff, on: :collection
