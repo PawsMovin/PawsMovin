@@ -1328,40 +1328,6 @@ ALTER SEQUENCE public.post_replacements2_id_seq OWNED BY public.post_replacement
 
 
 --
--- Name: post_report_reasons; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.post_report_reasons (
-    id bigint NOT NULL,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
-    reason character varying NOT NULL,
-    creator_id integer NOT NULL,
-    creator_ip_addr inet,
-    description character varying NOT NULL
-);
-
-
---
--- Name: post_report_reasons_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.post_report_reasons_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: post_report_reasons_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.post_report_reasons_id_seq OWNED BY public.post_report_reasons.id;
-
-
---
 -- Name: post_set_maintainers; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1931,7 +1897,6 @@ CREATE TABLE public.tickets (
     creator_ip_addr inet NOT NULL,
     status character varying DEFAULT 'pending'::character varying NOT NULL,
     reason character varying,
-    report_reason character varying,
     response character varying DEFAULT ''::character varying NOT NULL,
     handler_id integer DEFAULT 0 NOT NULL,
     claimant_id integer,
@@ -2606,13 +2571,6 @@ ALTER TABLE ONLY public.post_replacements2 ALTER COLUMN id SET DEFAULT nextval('
 
 
 --
--- Name: post_report_reasons id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.post_report_reasons ALTER COLUMN id SET DEFAULT nextval('public.post_report_reasons_id_seq'::regclass);
-
-
---
 -- Name: post_set_maintainers id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -3073,14 +3031,6 @@ ALTER TABLE ONLY public.post_flags
 
 ALTER TABLE ONLY public.post_replacements2
     ADD CONSTRAINT post_replacements2_pkey PRIMARY KEY (id);
-
-
---
--- Name: post_report_reasons post_report_reasons_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.post_report_reasons
-    ADD CONSTRAINT post_report_reasons_pkey PRIMARY KEY (id);
 
 
 --
@@ -4464,6 +4414,7 @@ ALTER TABLE ONLY public.favorites
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20240205164313'),
 ('20240205030536'),
 ('20240205015902'),
 ('20240204214246'),

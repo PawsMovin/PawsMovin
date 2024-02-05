@@ -250,22 +250,6 @@ class ModActionDecorator < ApplicationDecorator
     when "deleted_flag_reason"
       "Deleted flag reason ##{vals['flag_reason_id']} (#{vals['flag_reason']})"
 
-      ### Post Report Reasons ###
-
-    when "report_reason_create"
-      "Created post report reason #{vals['reason']}"
-    when "report_reason_update"
-      text = "Edited post report reason #{vals['reason']}"
-      if vals["reason"] != vals["reason_was"]
-        text += "\nChanged reason from \"#{vals['reason_was']}\" to \"#{vals['reason']}\""
-      end
-      if vals["description"] != vals["description_was"]
-        text += "\nChanged description from \"#{vals['description_was']}\" to \"#{vals['description']}\""
-      end
-      text
-    when "report_reason_delete"
-      "Deleted post report reason #{vals['reason']} by #{user}"
-
       ### Whitelist ###
 
     when "upload_whitelist_create"

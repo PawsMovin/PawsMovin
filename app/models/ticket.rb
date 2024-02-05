@@ -5,7 +5,6 @@ class Ticket < ApplicationRecord
   belongs_to :claimant, class_name: "User", optional: true
   belongs_to :handler, class_name: "User", optional: true
   belongs_to :accused, class_name: "User", optional: true
-  belongs_to :post_report_reason, foreign_key: "report_reason", optional: true
   before_validation :initialize_fields, on: :create
   after_initialize :validate_type
   after_initialize :classify
@@ -112,12 +111,6 @@ class Ticket < ApplicationRecord
     end
 
     module Post
-      def self.extended(m)
-        m.class_eval do
-          validates :report_reason, presence: true
-        end
-      end
-
       def subject
         reason.split("\n")[0] || "Unknown Report Type"
       end

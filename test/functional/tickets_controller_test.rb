@@ -195,20 +195,12 @@ class TicketsControllerTest < ActionDispatch::IntegrationTest
         end
       end
 
-      should "require a post reason" do
-        assert_no_difference(-> { Ticket.count }) do
-          post_auth tickets_path, @bystander, params: { ticket: { model_type: "Post", model_id: @content.id, reason: "test" } }
-        end
-      end
-
       should "allow reports" do
-        create(:post_report_reason, reason: "test")
-        assert_ticket_create_permissions([[@bystander, true], [@admin, true], [@bad_actor, true]], model: @content, report_reason: "test")
+        assert_ticket_create_permissions([[@bystander, true], [@admin, true], [@bad_actor, true]], model: @content)
       end
 
       should "not restrict access" do
-        create(:post_report_reason, reason: "test")
-        @ticket = create(:ticket, creator: @reporter, model: @content, report_reason: "test")
+        @ticket = create(:ticket, creator: @reporter, model: @content)
         get_auth ticket_path(@ticket), @bystander
         assert_response :success
       end

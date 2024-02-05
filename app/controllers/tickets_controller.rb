@@ -97,7 +97,7 @@ class TicketsController < ApplicationController
 
   def ticket_params(context = nil)
     return params.slice(:model_id, :model_type).permit! if context == :new
-    params.require(:ticket).permit(%i[model_id model_type reason report_reason])
+    params.require(:ticket).permit(%i[model_id model_type reason])
   end
 
   def update_ticket_params
