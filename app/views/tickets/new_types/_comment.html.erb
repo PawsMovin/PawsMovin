@@ -1,4 +1,4 @@
-<% @comment = @ticket.content %>
+<% @comment = @ticket.model %>
 <h4>You are reporting the following comment:</h4>
 <div class="author"><%= link_to_user @comment.creator %></div>
 <span class="date"><%= time_ago_in_words_tagged(@comment.created_at) %></span>

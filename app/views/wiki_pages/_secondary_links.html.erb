@@ -37,7 +37,7 @@
       <% end %>
 
       <% if CurrentUser.is_member? %>
-        <%= subnav_link_to "Report", new_ticket_path(disp_id: @wiki_page.id, qtype: "wiki") %>
+        <%= subnav_link_to "Report", model_new_ticket_path(model: @wiki_page) %>
       <% end %>
     <% end %>
   <% elsif @wiki_page_version %>

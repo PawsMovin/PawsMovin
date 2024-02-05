@@ -1,6 +1,7 @@
 class Ticket < ApplicationRecord
   belongs_to_creator
   user_status_counter :ticket_count
+  belongs_to :model, polymorphic: true
   belongs_to :claimant, class_name: "User", optional: true
   belongs_to :handler, class_name: "User", optional: true
   belongs_to :accused, class_name: "User", optional: true
@@ -8,14 +9,13 @@ class Ticket < ApplicationRecord
   before_validation :initialize_fields, on: :create
   after_initialize :validate_type
   after_initialize :classify
-  validates :qtype, presence: true
   validates :reason, presence: true
   validates :reason, length: { minimum: 2, maximum: PawsMovin.config.ticket_max_size }
   validates :response, length: { minimum: 2 }, on: :update
   enum status: %i[pending partial approved].index_with(&:to_s)
   after_update :log_update
   after_update :create_dmail
-  validate :validate_content_exists, on: :create
+  validate :validate_model_exists, on: :create
   validate :validate_creator_is_not_limited, on: :create
 
   scope :for_creator, ->(uid) {where('creator_id = ?', uid)}
@@ -51,35 +51,19 @@ class Ticket < ApplicationRecord
     Any             | Handled By    | Any
 =end
 
+  MODEL_TYPES = %w[Artist Comment Dmail ForumPost Pool Post PostSet User WikiPage].freeze
+
   module TicketTypes
-    module Forum
-      # FIXME: Remove this by renaming the qtype value to the correct one
-      def model
-        ::ForumPost
-      end
-
-      def can_create_for?(user)
-        content.visible?(user)
-      end
-
-      def can_see_details?(user)
-        if content
-          content.visible?(user) || (user.id == creator_id)
-        else
-          true
-        end
-      end
-    end
 
     module Comment
       def can_create_for?(user)
-        content&.visible_to?(user)
+        model&.visible_to?(user)
       end
     end
 
     module Dmail
       def can_create_for?(user)
-        content&.visible_to?(user) && content.to_id == user.id
+        model&.visible_to?(user) && model.to_id == user.id
       end
 
       def can_see_details?(user)
@@ -87,21 +71,33 @@ class Ticket < ApplicationRecord
       end
 
       def bot_target_name
-        content&.from&.name
+        model&.from&.name
       end
     end
 
-    module Wiki
-      def model
-        ::WikiPage
+    module ForumPost
+
+      def can_create_for?(user)
+        model.visible?(user)
       end
+
+      def can_see_details?(user)
+        if model
+          model.visible?(user) || (user.id == creator_id)
+        else
+          true
+        end
+      end
+    end
+
+    module WikiPage
 
       def can_create_for?(user)
         true
       end
 
       def bot_target_name
-        content&.title
+        model&.title
       end
     end
 
@@ -111,17 +107,7 @@ class Ticket < ApplicationRecord
       end
 
       def bot_target_name
-        content&.name
-      end
-    end
-
-    module Set
-      def model
-        ::PostSet
-      end
-
-      def can_create_for?(user)
-        content&.can_view?(user)
+        model&.name
       end
     end
 
@@ -141,7 +127,13 @@ class Ticket < ApplicationRecord
       end
 
       def bot_target_name
-        content&.uploader&.name
+        model&.uploader&.name
+      end
+    end
+
+    module PostSet
+      def can_create_for?(user)
+        model&.can_view?(user)
       end
     end
 
@@ -155,7 +147,7 @@ class Ticket < ApplicationRecord
       end
 
       def bot_target_name
-        content&.name
+        model&.name
       end
     end
   end
@@ -165,15 +157,14 @@ class Ticket < ApplicationRecord
       hidden = []
       hidden += %i[claimant_id] unless CurrentUser.is_moderator?
       hidden += %i[creator_id] unless can_see_reporter?(CurrentUser)
-      hidden += %i[disp_id reason] unless can_see_details?(CurrentUser)
+      hidden += %i[model_type model_id reason] unless can_see_details?(CurrentUser)
       super + hidden
     end
   end
 
   module ValidationMethods
     def validate_type
-      valid_types = TicketTypes.constants.map { |v| v.to_s.downcase }
-      errors.add(:qtype, "is not valid") if valid_types.exclude?(qtype)
+      errors.add(:model_type, "is not valid") if MODEL_TYPES.exclude?(model_type)
     end
 
     def validate_creator_is_not_limited
@@ -185,21 +176,21 @@ class Ticket < ApplicationRecord
       true
     end
 
-    def validate_content_exists
-      errors.add model.name.underscore.to_sym, "does not exist" if content.nil?
+    def validate_model_exists
+      errors.add(model.name.underscore.to_sym, "does not exist") if model.nil?
     end
 
     def initialize_fields
       self.status = "pending"
-      case qtype
-      when "forum"
-        self.accused_id = ForumPost.find(disp_id).creator_id
-      when "comment"
-        self.accused_id = Comment.find(disp_id).creator_id
-      when "dmail"
-        self.accused_id = Dmail.find(disp_id).from_id
-      when "user"
-        self.accused_id = disp_id
+      case model
+      when Comment
+        self.accused_id = model.creator_id
+      when Dmail
+        self.accused_id = model.from_id
+      when ForumPost
+        self.accused_id = model.creator_id
+      when User
+        self.accused_id = model_id
       end
     end
   end
@@ -220,8 +211,12 @@ class Ticket < ApplicationRecord
       q = q.where_user(:claimant_id, :claimant, params)
       q = q.where_user(:accused_id, :accused, params)
 
-      if params[:qtype].present?
-        q = q.where('qtype = ?', params[:qtype])
+      if params[:model_type].present?
+        q = q.where(model_type: params[:model_type])
+      end
+
+      if params[:model_id].present?
+        q = q.where(model_id: params[:model_id])
       end
 
       if params[:reason].present?
@@ -245,21 +240,12 @@ class Ticket < ApplicationRecord
 
   module ClassifyMethods
     def classify
-      extend(TicketTypes.const_get(qtype.camelize)) if TicketTypes.constants.map(&:to_s).include?(qtype&.camelize)
+      extend(TicketTypes.const_get(model_type)) if TicketTypes.constants.map(&:to_s).include?(model_type)
     end
   end
 
-  def content=(new_content)
-    @content = new_content
-    self.disp_id = content&.id
-  end
-
-  def content
-    @content ||= model.find_by(id: disp_id)
-  end
-
   def bot_target_name
-    content&.creator&.name
+    model&.creator&.name
   end
 
   def can_see_details?(user)
@@ -274,12 +260,8 @@ class Ticket < ApplicationRecord
     false
   end
 
-  def model
-    qtype.classify.constantize
-  end
-
   def type_title
-    "#{model.name.titlecase} Complaint"
+    "#{model.class.name.titlecase} Complaint"
   end
 
   def subject
@@ -291,11 +273,11 @@ class Ticket < ApplicationRecord
   end
 
   def open_duplicates
-    Ticket.where('qtype = ? and disp_id = ? and status = ?', qtype, disp_id, 'pending')
+    Ticket.where(model: model, status: "pending")
   end
 
   def warnable?
-    content.respond_to?(:user_warned!) && !content.was_warned? && pending?
+    model.respond_to?(:user_warned!) && !model.was_warned? && pending?
   end
 
   module ClaimMethods
@@ -354,7 +336,7 @@ class Ticket < ApplicationRecord
           claimant: claimant_id ? User.id_to_name(claimant_id) : nil,
           target: bot_target_name,
           status: status,
-          category: qtype,
+          category: model_type,
           reason: reason,
         }
       }

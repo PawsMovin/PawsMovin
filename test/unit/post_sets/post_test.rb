@@ -1,5 +1,4 @@
 require "test_helper"
-require "paws_movin/paginator/pagination_error"
 
 module PostSets
   class PostTest < ActiveSupport::TestCase

@@ -70,12 +70,12 @@
           </tr>
         <% end %>
 
-        <%= render partial: "tickets/types/#{@ticket.qtype}" %>
+        <%= render partial: "tickets/types/#{@ticket.model_type.underscore}" %>
 
         <tr>
           <td><span class='title'>Reason</span></td>
           <td class="dtext-container">
-            <% if @ticket.qtype == "post" && @ticket.post_report_reason.present? %>
+            <% if @ticket.model_type == "Post" && @ticket.post_report_reason.present? %>
               <p><%= @ticket.post_report_reason.reason %></p>
             <% end %>
             <%= format_text(@ticket.reason) %>
@@ -103,9 +103,9 @@
     <% if CurrentUser.is_moderator? %>
       <div class="section">
         <%= custom_form_for(@ticket) do |f| %>
-          <%= f.input :status, collection: [["Investigated", "approved"], ["Under Investigation", "partial"]], selected: @ticket.status || "approved" %>
+          <%= f.input :status, collection: [%w[Investigated approved], ["Under Investigation", "partial"]], selected: @ticket.status || "approved" %>
           <% if @ticket.warnable? %>
-            <%= f.input :record_type, label: "Mark the #{@ticket.content.model_name.singular.humanize(capitalize: false)} as having recieved", collection: @ticket.content.class.warning_types.to_h { |k, v| ["A #{k}", v] }, include_blank: "Nothing" %>
+            <%= f.input :record_type, label: "Mark the #{@ticket.model.model_name.singular.humanize(capitalize: false)} as having recieved", collection: @ticket.model.class.warning_types.to_h { |k, v| ["A #{k}", v] }, include_blank: "Nothing" %>
           <% end %>
           <% unless @ticket.pending? %>
             <%= f.input :send_update_dmail, label: "Send update DMail", as: :boolean, hint: "A DMail is always sent if the status is changed" %>

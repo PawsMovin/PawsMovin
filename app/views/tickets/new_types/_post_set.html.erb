@@ -1,4 +1,4 @@
-<% @set = @ticket.content %>
+<% @set = @ticket.model %>
 <h4>You are reporting the following set:</h4>
 <div class='page'><%= link_to(@set.name, post_set_path(@set)) %></div>
 <div class='author'><%= link_to_user(@set.creator) %></div>

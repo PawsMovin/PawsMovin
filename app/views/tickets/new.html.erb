@@ -3,7 +3,7 @@
 
     <%= custom_form_for(@ticket) do |f| %>
       <% @found_item = true %>
-      <% if @ticket.qtype.nil? %>
+      <% if @ticket.model_type.nil? %>
         <% @found_item = false %>
         <div class="section">
           To submit a ticket about a problematic comment, click "Report" on the comment itself.<br/>
@@ -11,23 +11,23 @@
           To submit a ticket about a problematic pool, click "Report" on the pool page itself.<br/>
           To submit a ticket about a problematic set, click "Report" on the set page itself.<br/>
           To submit a ticket about a problematic user, click "Report" on the user's profile page.<br/>
-          To submit a ticket about a problematic private message, click "Report PM" above the PM itself.<br/>
+          To submit a ticket about a problematic private message, click "Report" on the DMail.<br/>
           To submit a username request, click "Request Username Change" on <a href='/user/home'>the user home page</a>.<br/>
         </div>
       <% else %>
-        <% if @ticket.content %>
+        <% if @ticket.model %>
           <div class="section">
-            <%= render partial: "tickets/new_types/#{@ticket.qtype}" %>
+            <%= render partial: "tickets/new_types/#{@ticket.model_type.underscore}" %>
           </div>
         <% else %>
           <% @found_item = false %>
-          <div class="section">That <%= @ticket.model.name.underscore.tr("_", " ") %> does not exist.</div>
+          <div class="section">That <%= @ticket.model_type.underscore.tr("_", " ") %> does not exist.</div>
         <% end %>
       <% end %>
 
       <% if @found_item %>
-        <%= f.hidden_field :disp_id %>
-        <%= f.hidden_field :qtype %>
+        <%= f.hidden_field :model_id %>
+        <%= f.hidden_field :model_type %>
 
         <div class="section">
           <span class="ticket-warning">
@@ -37,7 +37,7 @@
           <%= f.input :reason, as: :dtext, limit: PawsMovin.config.ticket_max_size %>
 
         </div>
-        <%= submit_tag "Submit Complaint" %>
+        <%= submit_tag "Submit" %>
       <% end %>
     <% end %>
   </div>

@@ -1,4 +1,4 @@
-<% @post = @ticket.content %>
+<% @post = @ticket.model %>
 You are reporting <%= PostPresenter.preview(@post, show_deleted: true, no_blacklist: true) %>
 
 <p class="nomargin">Reason:

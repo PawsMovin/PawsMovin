@@ -48,7 +48,7 @@
             <% end %>
             <% if CurrentUser.is_member? && !comment.is_sticky %>
               <li>|</li>
-              <li><%= link_to "Report", new_ticket_path(disp_id: comment.id, qtype: 'comment') %></li>
+              <li><%= link_to "Report", model_new_ticket_path(model: comment) %></li>
             <% end %>
             <% if CurrentUser.is_moderator? %>
               <li>|</li>

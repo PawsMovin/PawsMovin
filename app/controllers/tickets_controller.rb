@@ -9,7 +9,7 @@ class TicketsController < ApplicationController
   end
 
   def new
-    @ticket = Ticket.new(qtype: params[:qtype], disp_id: params[:disp_id])
+    @ticket = Ticket.new(ticket_params(:new))
     check_new_permission(@ticket)
   end
 
@@ -95,8 +95,9 @@ class TicketsController < ApplicationController
 
   private
 
-  def ticket_params
-    params.require(:ticket).permit(%i[qtype disp_id reason report_reason])
+  def ticket_params(context = nil)
+    return params.slice(:model_id, :model_type).permit! if context == :new
+    params.require(:ticket).permit(%i[model_id model_type reason report_reason])
   end
 
   def update_ticket_params
@@ -105,8 +106,8 @@ class TicketsController < ApplicationController
 
   def search_params
     current_search_params = params.fetch(:search, {})
-    permitted_params = %i[qtype status order]
-    permitted_params += %i[creator_id] if CurrentUser.is_moderator? || (current_search_params[:creator_id].present? && current_search_params[:creator_id].to_i == CurrentUser.id)
+    permitted_params = %i[model_type status order]
+    permitted_params += %i[model_id creator_id] if CurrentUser.is_moderator? || (current_search_params[:creator_id].present? && current_search_params[:creator_id].to_i == CurrentUser.id)
     permitted_params += %i[creator_name accused_name accused_id claimant_id claimant_name reason] if CurrentUser.is_moderator?
     permit_search_params permitted_params
   end

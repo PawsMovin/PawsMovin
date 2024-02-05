@@ -20,4 +20,8 @@ module TicketHelper
 
     warnings
   end
+
+  def model_new_ticket_path(model:, **)
+    new_ticket_path(model_id: model.id, model_type: model.class.name, **)
+  end
 end

@@ -5,16 +5,7 @@
     <%= f.user :claimant %>
     <%= f.input :reason %>
   <% end %>
-  <%= f.input :qtype, label: "Type", collection: [
-      ["User complaint", "user"],
-      ["Private message complaint", "dmail"],
-      ["Comment complaint", "comment"],
-      ["Forum post complaint", "forum"],
-      ["Wiki complaint", "wiki"],
-      ["Pool complaint", "pool"],
-      ["Set complaint", "set"],
-      ["Post complaint", "post"]
-  ], include_blank: true %>
+  <%= f.input :model_type, label: "Type", collection: Ticket::MODEL_TYPES.index_by { |k| k }.to_a, include_blank: true %>
   <%= f.input :status, collection: [
       ["Pending + Unclaimed", "pending_unclaimed"],
       ["Pending + Claimed", "pending_claimed"],

@@ -1,4 +1,4 @@
-<% @dmail = @ticket.content %>
+<% @dmail = @ticket.model %>
 <h4>You are reporting the following private message:</h4>
 <div class='author'><%= link_to_user @dmail.from %></div>
 <span class="date"><%= time_ago_in_words_tagged(@dmail.created_at) %></span>
