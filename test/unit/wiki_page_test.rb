@@ -38,7 +38,7 @@ class WikiPageTest < ActiveSupport::TestCase
       setup do
         @user = create(:user)
         CurrentUser.user = @user
-        @wiki_page = create(:wiki_page, title: "HOT POTATO", other_names: "foo*bar baz")
+        @wiki_page = create(:wiki_page, title: "HOT POTATO")
       end
 
       should "not allow the is_locked attribute to be updated" do
@@ -52,20 +52,10 @@ class WikiPageTest < ActiveSupport::TestCase
         assert_equal("hot_potato", @wiki_page.title)
       end
 
-      should "normalize its other names" do
-        @wiki_page.update(:other_names => "foo*bar baz baz 加賀（艦これ）")
-        assert_equal(%w[foo*bar baz 加賀(艦これ)], @wiki_page.other_names)
-      end
-
       should "search by title" do
         matches = WikiPage.titled("hot potato")
         assert_equal(1, matches.count)
         assert_equal("hot_potato", matches.first.title)
-      end
-
-      should "search other names with wildcards" do
-        matches = WikiPage.search(other_names_match: "fo*")
-        assert_equal([@wiki_page.id], matches.map(&:id))
       end
 
       should "create versions" do

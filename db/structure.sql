@@ -2307,8 +2307,6 @@ CREATE TABLE public.wiki_page_versions (
     is_locked boolean NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    other_names text[] DEFAULT '{}'::text[] NOT NULL,
-    is_deleted boolean DEFAULT false NOT NULL,
     reason character varying
 );
 
@@ -2345,9 +2343,7 @@ CREATE TABLE public.wiki_pages (
     is_locked boolean DEFAULT false NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    updater_id integer,
-    other_names text[] DEFAULT '{}'::text[] NOT NULL,
-    is_deleted boolean DEFAULT false NOT NULL
+    updater_id integer
 );
 
 
@@ -4355,13 +4351,6 @@ CREATE INDEX index_wiki_pages_on_lower_title_trgm ON public.wiki_pages USING gin
 
 
 --
--- Name: index_wiki_pages_on_other_names; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_wiki_pages_on_other_names ON public.wiki_pages USING gin (other_names);
-
-
---
 -- Name: index_wiki_pages_on_title; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -4741,6 +4730,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20240126174807'),
 ('20240127134104'),
 ('20240127150517'),
-('20240204214246');
+('20240204214246'),
+('20240205015902');
 
 

@@ -134,11 +134,6 @@ class WikiPagesControllerTest < ActionDispatch::IntegrationTest
         put_auth wiki_page_path(@wiki_page), @mod, params: {:wiki_page => {:title => "bar", :skip_secondary_validations => "1"}}
         assert_equal("bar", @wiki_page.reload.title)
       end
-
-      should "not allow non-Builders to delete wiki pages" do
-        put_auth wiki_page_path(@wiki_page), @user, params: {wiki_page: { is_deleted: true }}
-        assert_equal(false, @wiki_page.reload.is_deleted?)
-      end
     end
 
     context "destroy action" do

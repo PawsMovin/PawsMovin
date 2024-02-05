@@ -16,9 +16,6 @@
         <tr>
           <td class="category-<%= wiki_page_version.category_id %>">
             <%= link_to wiki_page_version.title, wiki_page_version_path(wiki_page_version) %>
-            <% if wiki_page_version.is_deleted? %>
-              (deleted)
-            <% end %>
           </td>
           <td><%= link_to "wiki", wiki_page_path(wiki_page_version.wiki_page_id) %></td>
           <% if CurrentUser.is_admin? %>

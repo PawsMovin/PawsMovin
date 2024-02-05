@@ -12,10 +12,6 @@
 
     <%= f.input :body, as: :dtext, limit: PawsMovin.config.wiki_page_max_size %>
 
-    <% if CurrentUser.is_janitor? && @wiki_page.is_deleted? %>
-      <%= f.input :is_deleted, :label => "Deleted", :hint => "Uncheck to restore this wiki page" %>
-    <% end %>
-
     <% if CurrentUser.is_janitor? %>
       <%= f.input :is_locked, :label => "Locked" %>
     <% end %>

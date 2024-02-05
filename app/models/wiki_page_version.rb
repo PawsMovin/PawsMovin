@@ -1,5 +1,4 @@
 class WikiPageVersion < ApplicationRecord
-  array_attribute :other_names
   belongs_to :wiki_page
   belongs_to_updater
   user_status_counter :wiki_edit_count, foreign_key: :updater_id
@@ -23,7 +22,6 @@ class WikiPageVersion < ApplicationRecord
       q = q.attribute_matches(:title, params[:title])
       q = q.attribute_matches(:body, params[:body])
       q = q.attribute_matches(:is_locked, params[:is_locked])
-      q = q.attribute_matches(:is_deleted, params[:is_deleted])
 
       if params[:ip_addr].present?
         q = q.where("updater_ip_addr <<= ?", params[:ip_addr])

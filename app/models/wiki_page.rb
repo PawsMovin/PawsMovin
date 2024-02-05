@@ -2,12 +2,11 @@ class WikiPage < ApplicationRecord
   class RevertError < Exception ; end
 
   before_validation :normalize_title
-  before_validation :normalize_other_names
   after_save :create_version
   validates :title, uniqueness: { :case_sensitive => false }
   validates :title, presence: true
   validates :title, tag_name: true, if: :title_changed?
-  validates :body, presence: { :unless => -> { is_deleted? || other_names.present? } }
+  validates :body, presence: true
   validates :title, length: { minimum: 1, maximum: 100 }
   validates :body, length: { maximum: PawsMovin.config.wiki_page_max_size }
   validate :user_not_limited
@@ -19,7 +18,6 @@ class WikiPage < ApplicationRecord
   before_save :log_changes
 
   attr_accessor :skip_secondary_validations, :edit_reason
-  array_attribute :other_names
   belongs_to_creator
   belongs_to_updater
   has_one :tag, :foreign_key => "name", :primary_key => "title"
@@ -51,27 +49,8 @@ class WikiPage < ApplicationRecord
       where("title = ?", title.downcase.tr(" ", "_"))
     end
 
-    def active
-      where("is_deleted = false")
-    end
-
     def recent
       order("updated_at DESC").limit(25)
-    end
-
-    def other_names_include(name)
-      name = normalize_other_name(name).downcase
-      subquery = WikiPage.from("unnest(other_names) AS other_name").where("lower(other_name) = ?", name)
-      where(id: subquery)
-    end
-
-    def other_names_match(name)
-      if name =~ /\*/
-        subquery = WikiPage.from("unnest(other_names) AS other_name").where("other_name ILIKE ?", name.to_escaped_for_sql_like)
-        where(id: subquery)
-      else
-        other_names_include(name)
-      end
     end
 
     def default_order
@@ -87,24 +66,13 @@ class WikiPage < ApplicationRecord
 
       q = q.attribute_matches(:body, params[:body_matches])
 
-      if params[:other_names_match].present?
-        q = q.other_names_match(params[:other_names_match])
-      end
-
       q = q.where_user(:creator_id, :creator, params)
 
       if params[:hide_deleted].to_s.truthy?
         q = q.where("is_deleted = false")
       end
 
-      if params[:other_names_present].to_s.truthy?
-        q = q.where("other_names is not null and other_names != '{}'")
-      elsif params[:other_names_present].to_s.falsy?
-        q = q.where("other_names is null or other_names = '{}'")
-      end
-
       q = q.attribute_matches(:is_locked, params[:is_locked])
-      q = q.attribute_matches(:is_deleted, params[:is_deleted])
 
       case params[:order]
       when "title"
@@ -160,7 +128,6 @@ class WikiPage < ApplicationRecord
 
     self.title = version.title
     self.body = version.body
-    self.other_names = version.other_names
   end
 
   def revert_to!(version)
@@ -170,10 +137,6 @@ class WikiPage < ApplicationRecord
 
   def normalize_title
     self.title = title.downcase.tr(" ", "_")
-  end
-
-  def normalize_other_names
-    self.other_names = other_names.map { |name| WikiPage.normalize_other_name(name) }.uniq
   end
 
   def self.normalize_other_name(name)
@@ -198,7 +161,7 @@ class WikiPage < ApplicationRecord
   end
 
   def wiki_page_changed?
-    saved_change_to_title? || saved_change_to_body? || saved_change_to_is_locked? || saved_change_to_is_deleted? || saved_change_to_other_names?
+    saved_change_to_title? || saved_change_to_body? || saved_change_to_is_locked?
   end
 
   def create_new_version
@@ -208,8 +171,6 @@ class WikiPage < ApplicationRecord
       :title => title,
       :body => body,
       :is_locked => is_locked,
-      :is_deleted => is_deleted,
-      :other_names => other_names,
       reason: edit_reason
     )
   end

@@ -119,7 +119,7 @@ class WikiPagesController < ApplicationController
 
   def wiki_page_params(context)
     permitted_params = %i[body skip_secondary_validations edit_reason]
-    permitted_params += %i[is_locked is_deleted] if CurrentUser.is_janitor?
+    permitted_params += %i[is_locked] if CurrentUser.is_janitor?
     permitted_params += %i[title] if context == :create || CurrentUser.is_janitor?
 
     params.fetch(:wiki_page, {}).permit(permitted_params)
