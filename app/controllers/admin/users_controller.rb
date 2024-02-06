@@ -67,7 +67,7 @@ module Admin
     def update_blacklist
       @user = User.find(params[:id])
       @user.update!(params[:user].permit([:blacklisted_tags]))
-      ModAction.log(:user_blacklist_changed, {user_id: @user.id})
+      ModAction.log(:user_blacklist_change, {user_id: @user.id})
       redirect_to edit_blacklist_admin_user_path(@user), notice: "Blacklist updated"
     end
 

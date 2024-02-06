@@ -80,12 +80,6 @@ class StaffAuditLog < ApplicationRecord
 
   KNOWN_ACTIONS = FORMATTERS.keys.freeze
 
-  def serializable_hash(*args)
-    hash = super
-    hash[:values] = format_json
-    hash
-  end
-
   module SearchMethods
     def search(params)
       q = super

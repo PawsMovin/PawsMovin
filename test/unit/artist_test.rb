@@ -300,13 +300,13 @@ class ArtistTest < ActiveSupport::TestCase
 
         @artist.update(linked_user: user)
         mod_action = ModAction.last
-        assert_equal("artist_user_linked", mod_action.action)
-        assert_equal({ "artist_page" => @artist.id, "user_id" => user.id }, mod_action.values)
+        assert_equal("artist_user_link", mod_action.action)
+        assert_equal({ "artist_id" => @artist.id, "user_id" => user.id }, mod_action.values)
 
         @artist.update(linked_user: nil)
         mod_action = ModAction.last
-        assert_equal("artist_user_unlinked", mod_action.action)
-        assert_equal({ "artist_page" => @artist.id, "user_id" => user.id }, mod_action.values)
+        assert_equal("artist_user_unlink", mod_action.action)
+        assert_equal({ "artist_id" => @artist.id, "user_id" => user.id }, mod_action.values)
       end
 
       should "fail if the user is limited" do

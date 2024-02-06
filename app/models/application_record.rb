@@ -319,10 +319,8 @@ class ApplicationRecord < ActiveRecord::Base
         class_eval do
           belongs_to :creator, **options.merge(class_name: "User")
           before_validation(on: :create) do |rec|
-            if rec.creator_id.nil?
-              rec.creator_id = CurrentUser.id
-              rec.creator_ip_addr = CurrentUser.ip_addr if rec.respond_to?(:creator_ip_addr=)
-            end
+            rec.creator_id = CurrentUser.id if rec.creator_id.nil?
+            rec.creator_ip_addr = CurrentUser.ip_addr if rec.respond_to?(:creator_ip_addr=) && rec.creator_ip_addr.nil?
           end
 
           define_method :creator_name do

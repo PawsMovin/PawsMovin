@@ -32,15 +32,15 @@ class WikiPage < ApplicationRecord
   end
 
   def log_destroy
-    ModAction.log(:wiki_page_delete, {wiki_page: title, wiki_page_id: id})
+    ModAction.log(:wiki_page_delete, { wiki_page_title: title, wiki_page_id: id })
   end
 
   def log_changes
     if title_changed? && !new_record?
-      ModAction.log(:wiki_page_rename, {new_title: title, old_title: title_was})
+      ModAction.log(:wiki_page_rename, { new_title: title, old_title: title_was })
     end
     if is_locked_changed?
-      ModAction.log(is_locked ? :wiki_page_lock : :wiki_page_unlock, {wiki_page: title})
+      ModAction.log(is_locked ? :wiki_page_lock : :wiki_page_unlock, { wiki_page_id: id, wiki_page_title: title })
     end
   end
 

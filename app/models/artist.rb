@@ -29,17 +29,17 @@ class Artist < ApplicationRecord
 
   def log_changes
     if saved_change_to_name? && !previously_new_record?
-      ModAction.log(:artist_page_rename, { new_name: name, old_name: name_before_last_save })
+      ModAction.log(:artist_rename, { new_name: name, old_name: name_before_last_save })
     end
     if saved_change_to_is_locked?
-      ModAction.log(is_locked ? :artist_page_lock : :artist_page_unlock, { artist_page: id })
+      ModAction.log(is_locked ? :artist_lock : :artist_unlock, { artist_id: id })
     end
     if saved_change_to_linked_user_id?
       # FIXME: This should also go in artist_versions
       if linked_user_id.present?
-        ModAction.log(:artist_user_linked, { artist_page: id, user_id: linked_user_id })
+        ModAction.log(:artist_user_link, { artist_id: id, user_id: linked_user_id })
       else
-        ModAction.log(:artist_user_unlinked, { artist_page: id, user_id: linked_user_id_before_last_save })
+        ModAction.log(:artist_user_unlink, { artist_id: id, user_id: linked_user_id_before_last_save })
       end
     end
   end
