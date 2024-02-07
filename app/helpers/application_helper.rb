@@ -32,10 +32,10 @@ module ApplicationHelper
     li_link_to(text, url, id_prefix: "subnav-", **)
   end
 
-  def li_link_to(text, url, id_prefix: "", **options)
+  def li_link_to(text, url, id_prefix: "", li_options: {}, **options)
     klass = options.delete(:class)
     id = id_prefix + text.downcase.gsub(/[^a-z ]/, "").parameterize
-    tag.li(link_to(text, url, id: "#{id}-link", **options), id: id, class: klass)
+    tag.li(link_to(text, url, id: "#{id}-link", **options), id: id, class: klass, **li_options)
   end
 
   def dtext_ragel(text, **)

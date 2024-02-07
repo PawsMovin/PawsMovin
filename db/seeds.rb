@@ -3,6 +3,7 @@
 require "digest/md5"
 require "tempfile"
 require "net/http"
+require_relative "seeds/post_deletion_reasons"
 
 # Uncomment to see detailed logs
 # ActiveRecord::Base.logger = ActiveSupport::Logger.new($stdout)

@@ -323,6 +323,9 @@ Rails.application.routes.draw do
       post :remove_posts
     end
   end
+  resources :post_deletion_reasons, only: %i[index new create edit update destroy] do
+    post :reorder, on: :collection
+  end
   resources :post_set_maintainers do
     member do
       get :approve

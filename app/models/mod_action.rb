@@ -5,6 +5,7 @@ class ModAction < ApplicationRecord
   VALUES = %i[
     user_id
     name
+    total
     mascot_id
     takedown_id
     tag_name
@@ -104,6 +105,29 @@ class ModAction < ApplicationRecord
     comment_update: {
       text: ->(mod, user) { "Edited comment ##{mod.comment_id} by #{user}" },
       json: %i[comment_id user_id],
+    },
+
+    ### Post Deletion Reason ###
+    post_deletion_reason_create: {
+      text: ->(mod, _user) { "Created post deletion reason #{mod.reason}" },
+      json: %i[report_reason_id reason],
+    },
+    post_deletion_reason_delete: {
+      text: ->(mod, user) { "Deleted post deletion reason #{mod.reason} by #{user}" },
+      json: %i[report_reason_id reason user_id],
+    },
+    post_deletion_reasons_reorder: {
+      text: ->(mod, _user) { "Changed the order of #{mod.total} post deletion reasons." },
+      json: %i[total],
+    },
+    post_deletion_reason_update: {
+      text: ->(mod, _user) do
+        text = "Edited post deletion reason #{mod.reason}"
+        text += "\nChanged reason from \"#{mod.reason_was}\" to \"#{mod.reason}\"" if mod.reason != mod.reason_was
+        text += "\nChanged description from \"#{mod.description_was}\" to \"#{mod.description}\"" if mod.description != mod.description_was
+        text
+      end,
+      json: %i[report_reason_id reason reason_was description description_was],
     },
 
     ### Forum Category ###

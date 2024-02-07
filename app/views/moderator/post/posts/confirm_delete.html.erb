@@ -38,18 +38,23 @@
 
   <div id="delreason-prebuilt" class="simple_form">
     <b>Reason</b>
-    <% PawsMovin.config.deletion_reasons.each do |deletion_reason| %>
-      <% if deletion_reason.nil? || deletion_reason.empty? %>
-        <br />
-      <% else %>
-        <a class="button delreason-button" data-text="<%= deletion_reason.gsub(/%(PARENT|OTHER)_ID%/, "%ID%") %>">
-          <%= deletion_reason
-                .gsub("%PARENT_ID%", "<input type=\"text\" value=\"" + (@post.parent_id || "").to_s + "\" />")
-                .gsub("%OTHER_ID%", "<input type=\"text\" />")
-                .html_safe
-          %>
-        </a>
+    <% last_order = 0 %>
+    <% PostDeletionReason.order(order: :desc).find_each do |reason| %>
+      <% # the latter should never happen, but if it did, this loop would tear down the site %>
+      <% if (last_order + 1) != reason.order && last_order != reason.order %>
+        <% while (last_order + 1) < reason.order %>
+          <br>
+          <% last_order += 1 %>
+        <% end %>
       <% end %>
+      <% last_order = reason.order %>
+      <a class="button delreason-button" data-text="<%= reason.reason.gsub(/%(PARENT|OTHER)_ID%/, "%ID%") %>">
+        <%= reason.reason
+              .gsub("%PARENT_ID%", "<input type=\"text\" value=\"" + (@post.parent_id || "").to_s + "\" />")
+              .gsub("%OTHER_ID%", "<input type=\"text\" />")
+              .html_safe
+        %>
+      </a>
     <% end %>
   </div>
 </div>

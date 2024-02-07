@@ -1177,6 +1177,41 @@ ALTER SEQUENCE public.post_approvals_id_seq OWNED BY public.post_approvals.id;
 
 
 --
+-- Name: post_deletion_reasons; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.post_deletion_reasons (
+    id bigint NOT NULL,
+    creator_id bigint NOT NULL,
+    reason character varying NOT NULL,
+    title character varying,
+    prompt character varying,
+    "order" integer NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: post_deletion_reasons_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.post_deletion_reasons_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: post_deletion_reasons_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.post_deletion_reasons_id_seq OWNED BY public.post_deletion_reasons.id;
+
+
+--
 -- Name: post_disapprovals; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -2545,6 +2580,13 @@ ALTER TABLE ONLY public.post_approvals ALTER COLUMN id SET DEFAULT nextval('publ
 
 
 --
+-- Name: post_deletion_reasons id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.post_deletion_reasons ALTER COLUMN id SET DEFAULT nextval('public.post_deletion_reasons_id_seq'::regclass);
+
+
+--
 -- Name: post_disapprovals id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -3001,6 +3043,14 @@ ALTER TABLE ONLY public.pools
 
 ALTER TABLE ONLY public.post_approvals
     ADD CONSTRAINT post_approvals_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: post_deletion_reasons post_deletion_reasons_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.post_deletion_reasons
+    ADD CONSTRAINT post_deletion_reasons_pkey PRIMARY KEY (id);
 
 
 --
@@ -3798,6 +3848,13 @@ CREATE INDEX index_post_approvals_on_user_id ON public.post_approvals USING btre
 
 
 --
+-- Name: index_post_deletion_reasons_on_creator_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_post_deletion_reasons_on_creator_id ON public.post_deletion_reasons USING btree (creator_id);
+
+
+--
 -- Name: index_post_disapprovals_on_post_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -4353,6 +4410,14 @@ ALTER TABLE ONLY public.staff_audit_logs
 
 
 --
+-- Name: post_deletion_reasons fk_rails_1d9b3de04b; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.post_deletion_reasons
+    ADD CONSTRAINT fk_rails_1d9b3de04b FOREIGN KEY (creator_id) REFERENCES public.users(id);
+
+
+--
 -- Name: tickets fk_rails_45cd696dba; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4431,6 +4496,7 @@ ALTER TABLE ONLY public.staff_notes
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20240206035357'),
 ('20240205174652'),
 ('20240205165127'),
 ('20240205164313'),
