@@ -5,13 +5,20 @@ module PostSets
 
     def initialize(tags, page = 1, per_page = nil, random: nil)
       tags ||= ""
-      @public_tag_array = TagQuery.scan(tags)
+      @public_tag_array = apply_ratio_tags(TagQuery.scan(tags))
       tags += " rating:s" if CurrentUser.safe_mode?
       tags += " -status:deleted" unless TagQuery.has_metatag?(tags, "status", "-status")
-      @tag_array = TagQuery.scan(tags)
+      @tag_array = apply_ratio_tags(TagQuery.scan(tags))
       @page = page
       @per_page = per_page
       @random = random.present?
+    end
+
+    def apply_ratio_tags(tags)
+      tags.map do |tag|
+        next "#{$1}ratio:#{$2}:#{$3}" if tag =~ /^([~-])?([\d.]+):([\d.]+)$/
+        tag
+      end
     end
 
     def tag_string

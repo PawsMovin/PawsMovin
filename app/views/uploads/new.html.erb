@@ -43,7 +43,7 @@
     allowUploadAsPending: <%= CurrentUser.can_upload_free?.to_json %>,
     maxFileSize: <%= PawsMovin.config.max_file_size %>,
   };
-  PawsMovin.Uploader.init();
+  Danbooru.Uploader.init();
 <% end -%>
 <%= render "posts/partials/common/secondary_links" %>
 

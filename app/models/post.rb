@@ -5,6 +5,7 @@ class Post < ApplicationRecord
 
   # Tags to copy when copying notes.
   NOTE_COPY_TAGS = %w[translated partially_translated translation_check translation_request]
+  ASPECT_RATIO_REGEX = /^\d+:\d+$/
 
   before_validation :initialize_uploader, :on => :create
   before_validation :merge_old_changes
@@ -556,6 +557,7 @@ class Post < ApplicationRecord
       end
       normalized_tags = apply_casesensitive_metatags(normalized_tags)
       normalized_tags = normalized_tags.map {|tag| tag.downcase}
+      normalized_tags = remove_aspect_ratio_tags(normalized_tags)
       normalized_tags = filter_metatags(normalized_tags)
       normalized_tags = remove_negated_tags(normalized_tags)
       normalized_tags = remove_dnp_tags(normalized_tags)
@@ -570,6 +572,19 @@ class Post < ApplicationRecord
       normalized_tags = Tag.find_or_create_by_name_list(normalized_tags)
       normalized_tags = remove_invalid_tags(normalized_tags)
       set_tag_string(normalized_tags.map(&:name).uniq.sort.join(" "))
+    end
+
+    def remove_aspect_ratio_tags(tags)
+      rejected = []
+      tags = tags.reject do |tag|
+        if tag =~ Post::ASPECT_RATIO_REGEX
+          rejected << tag
+          next true
+        end
+        false
+      end
+      self.warnings.add(:base, "Aspect ratios cannot be added to posts: #{rejected.join(', ')}") if rejected.any?
+      tags
     end
 
     # Prevent adding these without an implication

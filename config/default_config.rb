@@ -69,6 +69,8 @@ module PawsMovin
         User.find_or_create_by!(name: system_user_name) do |user|
           user.level = User::Levels::SYSTEM
           user.email = "system@pawsmov.in"
+          user.can_approve_posts = true
+          user.can_upload_free = true
         end
       end
 
@@ -598,7 +600,7 @@ module PawsMovin
     end
 
     def bypass_upload_whitelist?(user)
-      user.is_admin?
+      user.is_admin? || user == User.system
     end
 
     def ads_enabled?

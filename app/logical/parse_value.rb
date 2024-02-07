@@ -111,10 +111,10 @@ module ParseValue
       time_string(object)
 
     when :ratio
-      left, right = object.split(":", 2)
+      left, right = object.split(":", 10)
 
       if right && right.to_f != 0.0
-        (left.to_f / right.to_f).round(2)
+        (left.to_f / right.to_f).round(10)
       elsif right
         0.0
       else

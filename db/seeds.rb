@@ -14,11 +14,12 @@ module Seeds
 
   def self.run!
     begin
-      User.system.update!(level: User::Levels::ADMIN)
+      User.system.update_column(:level, User::Levels::ADMIN)
+      CurrentUser.user = User.system
       Posts.run!
       Mascots.run!
     ensure
-      User.system.update!(level: User::Levels::SYSTEM)
+      User.system.update_column(:level, User::Levels::SYSTEM)
     end
   end
 
@@ -70,7 +71,15 @@ module Seeds
           rating: post["rating"],
         })
 
-        service.start!
+        upload = service.start!
+
+        if upload.errors.any?
+          puts "Failed to create upload: #{upload.errors.full_messages}"
+        end
+
+        if upload.post&.errors&.any?
+          puts "Failed to create post: #{upload.post.errors.full_messages}"
+        end
       end
     end
 
@@ -96,35 +105,34 @@ module Seeds
     def self.create_from_web
       Seeds.api_request("/mascots.json").each do |mascot|
         puts mascot["url_path"]
-        Mascot.create!(
-          creator: CurrentUser.user,
-          mascot_file: Downloads::File.new(mascot["url_path"]).download!,
-          display_name: mascot["display_name"],
-          background_color: mascot["background_color"],
-          artist_url: mascot["artist_url"],
-          artist_name: mascot["artist_name"],
-          available_on_string: PawsMovin.config.app_name,
-          active: mascot["active"],
-        )
+        Mascot.find_or_create_by!(display_name: mascot["display_name"]) do |masc|
+          masc.mascot_file = Downloads::File.new(mascot["url_path"]).download!
+          masc.background_color = mascot["background_color"]
+          masc.artist_url = mascot["artist_url"]
+          masc.artist_name = mascot["artist_name"]
+          masc.available_on_string = PawsMovin.config.app_name
+          masc.active = mascot["active"]
+        end
       end
     end
 
     def self.create_from_local
       resources = Seeds.read_resources
+      UploadWhitelist.find_or_create_by!(note: "yiff.rocks") do |wl|
+        wl.pattern = "https://*yiff.rocks/*"
+      end
 
       resources["mascots"].each do |mascot|
         puts mascot["file"]
-        Mascot.create!(
-          creator: CurrentUser.user,
-          mascot_file: Downloads::File.new(mascot["file"]).download!,
-          display_name: mascot["name"],
-          background_color: mascot["color"],
-          artist_url: mascot["artist_url"],
-          artist_name: mascot["artist_name"],
-          available_on_string: PawsMovin.config.app_name,
-          active: mascot["active"],
-          hide_anonymous: mascot["hide_anonymous"],
-          )
+        Mascot.find_or_create_by!(display_name: mascot["name"]) do |masc|
+          masc.mascot_file = Downloads::File.new(mascot["file"]).download!
+          masc.background_color = mascot["color"]
+          masc.artist_url = mascot["artist_url"]
+          masc.artist_name = mascot["artist_name"]
+          masc.available_on_string = PawsMovin.config.app_name
+          masc.active = mascot["active"]
+          masc.hide_anonymous = mascot["hide_anonymous"]
+        end
       end
     end
   end
