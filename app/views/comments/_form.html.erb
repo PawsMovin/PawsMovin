@@ -6,7 +6,7 @@
   <% end %>
   <%= f.input :body, as: :dtext, label: false, limit: PawsMovin.config.comment_max_size %>
   <%= f.button :submit, "Submit", data: { disable_with: "Submitting..." } %>
-  <% if CurrentUser.is_janitor? %>
+  <% if CurrentUser.is_moderator? %>
     <%= f.input :is_sticky, label: "Sticky" %>
   <% end %>
 <% end %>
