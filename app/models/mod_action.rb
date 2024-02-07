@@ -206,24 +206,6 @@ class ModAction < ApplicationRecord
       json: %i[name wiki_page],
     },
 
-    ### IP Ban ###
-    ip_ban_create: {
-      text: ->(mod, _user) do
-        text = "Created ip ban"
-        text += " #{mod.ip_addr}\nBan reason: #{mod.reason}" if CurrentUser.is_admin?
-        text
-      end,
-      json: %i[],
-    },
-    ip_ban_delete: {
-      text: ->(mod, _user) do
-        text = "Deleted ip ban"
-        text += " #{mod.ip_addr}\nBan reason: #{mod.reason}" if CurrentUser.is_admin?
-        text
-      end,
-      json: %i[],
-    },
-
     ### Mascot ###
     mascot_create: {
       text: ->(mod, _user) { "Created mascot ##{mod.mascot_id}" },
@@ -426,7 +408,9 @@ class ModAction < ApplicationRecord
       q = super
 
       q = q.where_user(:creator_id, :creator, params)
-      q = q.attribute_matches(:action, params[:action])
+      if params[:action].present?
+        q = q.where(action: params[:action].split(","))
+      end
 
       q.apply_basic_order(params)
     end
