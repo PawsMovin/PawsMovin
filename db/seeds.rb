@@ -30,6 +30,7 @@ module Seeds
   end
 
   def self.api_request(path)
+    puts "-> GET #{read_resources['base_url']}#{path}"
     response = HTTParty.get("#{read_resources['base_url']}#{path}", {
       headers: { "User-Agent" => "pawmovin/seeding" },
     })
@@ -48,12 +49,27 @@ module Seeds
   end
 
   module Posts
-    def self.run!(limit = ENV.fetch("SEED_POST_COUNT", 100))
+
+    def self.get_posts(tags, limit = ENV.fetch("SEED_POST_COUNT", 100), page = 1)
+      posts = Seeds.api_request("/posts.json?limit=#{[320, limit].min}&tags=#{tags.join('%20')}&page=#{page}")["posts"]
+      puts "Get Page #{page}"
+      limit -= posts.length
+      if posts.length == 320 && limit > 0
+        posts += get_posts(tags, limit, page + 1)
+      end
+      posts
+    end
+
+    def self.run!(limit = ENV.fetch("SEED_POST_COUNT", 100).to_i)
       resources = Seeds.read_resources
       search_tags = resources["post_ids"].blank? ? resources["tags"] : ["id:#{resources['post_ids'].join(',')}"]
-      json = Seeds.api_request("/posts.json?limit=#{limit}&tags=#{search_tags.join('%20')}")
+      if search_tags.include?("order:random") && search_tags.none? { |tag| tag.starts_with?("randseed:") }
+        search_tags << "randseed:#{SecureRandom.hex(16)}"
+      end
+      posts = get_posts(search_tags, limit)
 
-      json["posts"].each do |post|
+      posts.each do |post|
+        next if Post.find_by(md5: post["file"]["md5"]).present?
         url = get_url(post, resources["base_url"])
         puts url
         post["sources"] << "#{resources['base_url']}/posts/#{post['id']}"
