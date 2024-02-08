@@ -74,3 +74,10 @@ correct.
 debug your Nginx configuration file.
 
 4) Check all log files.
+
+### Recommender
+To have recommendations, a user must have at least 50 favorites. A post must have at least 5 favorites to have recommendations.
+There are some scripts in `db/seeds` to generate both users and favorites.
+
+To train the model, simply run:
+`docker compose run --rm recommender python -m poetry run python train`

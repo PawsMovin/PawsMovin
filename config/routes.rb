@@ -217,8 +217,11 @@ Rails.application.routes.draw do
     end
   end
   resources :deleted_posts, only: [:index]
+  resource :post_recommendations, only: %i[show]
   resources :posts, :only => [:index, :show, :update] do
     resources :replacements, :only => [:index, :new, :create], :controller => "post_replacements"
+    resource :recommended, only: %i[show], controller: "post_recommendations"
+    resource :similar, only: %i[show], controller: "iqdb_queries"
     resource :votes, :controller => "post_votes", :only => [:create, :destroy]
     resource :flag, controller: 'post_flags', only: [:destroy]
     resources :favorites, :controller => "post_favorites", :only => [:index]
@@ -233,7 +236,6 @@ Rails.application.routes.draw do
       put :mark_as_translated
       get :comments, to: "comments#for_post"
     end
-    get :similar, :to => "iqdb_queries#index"
   end
   resources :post_votes, only: [:index, :delete, :lock] do
     collection do

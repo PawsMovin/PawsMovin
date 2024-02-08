@@ -1,0 +1,3 @@
+<% @posts.each do |match| %>
+  <%= PostPresenter.preview(match, show_deleted: false, recommendation: true) %>
+<% end %>

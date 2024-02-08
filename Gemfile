@@ -64,3 +64,5 @@ group :test do
   gem "mocha", require: false
   gem "webmock", require: false
 end
+
+gem "faker", "~> 3.2"

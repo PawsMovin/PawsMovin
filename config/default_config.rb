@@ -571,7 +571,10 @@ module PawsMovin
 
     # disable this for tests
     def enable_sock_puppet_validation?
-      true
+      Rails.env.production?
+    end
+
+    def recommender_server
     end
 
     def iqdb_server

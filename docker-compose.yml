@@ -6,6 +6,7 @@ x-environment: &common-env
   PAWSMOVIN_OPENSEARCH_HOST: opensearch
   PAWSMOVIN_MEMCACHED_SERVERS: memcached
   PAWSMOVIN_IQDB_SERVER: http://iqdb:5588
+  PAWSMOVIN_RECOMMENDER_SERVER: http://recommender:5000
   PAWSMOVIN_DISCORD_SITE: http://localhost:8000
   PAWSMOVIN_DISCORD_SECRET: super_secret_for_url_discord
   NEW_RELIC_AGENT_ENABLED: ${NEW_RELIC_AGENT_ENABLED:-false}
@@ -31,7 +32,7 @@ x-depends-on: &common-depends-on
 services:
   pawsmovin:
     build:
-      context: ./
+      context: .
       args:
         HOST_UID: ${HOST_UID:-1000}
         HOST_GID: ${HOST_GID:-1000}
@@ -116,10 +117,21 @@ services:
       test: curl "opensearch:9200/_cluster/health?wait_for_status=yellow&timeout=2s"
 
   iqdb:
-    image: ghcr.io/e621ng/iqdb:b988f000f17008677c7546c0c13623bc956b585d
+    image: ghcr.io/e621ng/iqdb:ad5e363879d4e4b80a0821253ae610b7859c5d32
     command: iqdb http 0.0.0.0 5588 /iqdb/iqdb.db
     volumes:
       - iqdb_data:/iqdb
+
+  recommender:
+    image: ghcr.io/pawsmovin/recommender:e3f1089cc2615dcbc19ce4b29cfd319a257df14c
+    volumes:
+      - recommender_data:/data
+    environment:
+      - MODEL_PATH=/data/recommender.pickle
+      - DATABASE_URL=postgres://pawsmovin:@postgres/pawsmovin_development
+      - FAVS_PATH=/tmp/favs.csv
+      - OPENBLAS_NUM_THREADS=1
+      - TRAINING_THREADS=4
 
   # Discord integration
 
@@ -176,3 +188,4 @@ volumes:
   node_modules:
   rubocop_cache:
   discord_joiner_data:
+  recommender_data:
