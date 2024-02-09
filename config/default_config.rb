@@ -127,7 +127,7 @@ module PawsMovin
     end
 
     def large_image_prefix
-      "sample-"
+      ""
     end
 
     def protected_path_prefix
@@ -352,15 +352,32 @@ module PawsMovin
 
     def max_file_sizes
       {
-        'jpg' => 100.megabytes,
-        'png' => 100.megabytes,
-        'gif' => 20.megabytes,
-        'webm' => 100.megabytes
+        "jpg" => 100.megabytes,
+        "png" => 100.megabytes,
+        "webp" => 100.megabytes,
+        "gif" => 20.megabytes,
+        "webm" => 100.megabytes
       }
     end
 
     def max_apng_file_size
       20.megabytes
+    end
+
+    def max_mascot_file_sizes
+      {
+        "png" => 1.megabyte,
+        "jpg" => 1.megabyte,
+        "webp" => 1.megabyte,
+      }
+    end
+
+    def max_mascot_width
+      1000
+    end
+
+    def max_mascot_height
+      1000
     end
 
     # Measured in seconds
@@ -571,7 +588,7 @@ module PawsMovin
 
     # disable this for tests
     def enable_sock_puppet_validation?
-      Rails.env.production?
+      !Rails.env.development?
     end
 
     def recommender_server

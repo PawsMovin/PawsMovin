@@ -27,7 +27,7 @@ class ParseValueTest < ActiveSupport::TestCase
 
   should "parse ratios" do
     assert_equal(10.0, eq_value("10", :ratio))
-    assert_equal(0.63, eq_value("5:8", :ratio))
+    assert_equal(0.625, eq_value("5:8", :ratio))
     assert_equal(0.0, eq_value("10:0", :ratio))
   end
 

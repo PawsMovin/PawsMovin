@@ -1,13 +1,13 @@
-@import "base/functions";
-@import "base/themable"; //Drags in themes automatically
-@import "base/colors";
-@import "base/vars";
-@import "base/reset";
-@import "base/base";
-@import "base/links";
-@import "base/fontawesome";
+@import "base/functions.scss";
+@import "base/themable.scss"; //Drags in themes automatically
+@import "base/colors.scss";
+@import "base/vars.scss";
+@import "base/reset.scss";
+@import "base/base.scss";
+@import "base/links.scss";
+@import "base/fontawesome.scss";
 
-@import "common/helper_classes";
+@import "common/helper_classes.scss";
 @import "common/ads.scss";
 @import "common/autocomplete.scss";
 @import "common/blacklists.scss";

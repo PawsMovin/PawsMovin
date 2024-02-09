@@ -231,7 +231,7 @@ class Artist < ApplicationRecord
     # A domain only gets counted once per post, direct image urls are filtered out.
     def domains
       Cache.fetch("artist-domains-#{id}", expires_in: 1.day) do
-        re = /\.(png|jpeg|jpg|webm|mp4)$/m
+        re = /\.(png|jpeg|jpg|webp|webm|mp4)$/m
         counted = Hash.new(0)
         sources = Post.tag_match(name, resolve_aliases: false).limit(100).pluck(:source).each do |source_string|
           sources = source_string.split("\n")

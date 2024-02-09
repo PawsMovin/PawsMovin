@@ -6,7 +6,7 @@
 article.post-preview {
   box-sizing: border-box;
   height: auto;
-  width: 154px;
+  width: 194px;
   margin: 0 10px 10px 0;
   overflow: hidden;
   text-align: center;
@@ -44,8 +44,8 @@ article.post-preview {
   img {
     box-sizing: border-box;
     margin: auto;
-    max-height: 10rem; // Roughly 160px with 16pt font size
-    max-width: 10rem;
+    max-height: 12.5rem; // Roughly 200px with 16pt font size
+    max-width: 12.5rem;
     border-radius: $border-radius-half $border-radius-half 0 0;
   }
 
@@ -210,7 +210,7 @@ div#c-posts {
     #image-extra-controls {
       justify-content: center;
     }
-    
+
     .fav-buttons,
     #image-download-link {
       .button > i {
@@ -527,7 +527,7 @@ body[data-user-can-approve-posts="true"] .notice {
   @media only screen and (min-width: 550px) {
     display: flex;
   }
-  
+
   // Overwrite some DText styles to make the header look better
   blockquote {
     border: 0;
@@ -538,25 +538,25 @@ body[data-user-can-approve-posts="true"] .notice {
 }
 
 .flag-dialog-body {
-  
+
   // Option label
   label {
     font-weight: normal;
     font-size: 1rem;
     cursor: pointer;
   }
-  
+
   // Option explanation
   div.styled-dtext {
     margin: 0.125rem 1.25rem;
     filter: brightness(85%);
   }
-  
+
   // Align label with the explanation
   input[type="radio"] {
     width: 1rem;
   }
-  
+
   // Post ID input
   form.simple_form div.input {
     margin: -0.5rem 0 0 1.25rem;
@@ -568,7 +568,7 @@ body[data-user-can-approve-posts="true"] .notice {
     &.post_flag_parent_id { display: flex }
     span.error { margin-left: 1rem; }
   }
-  
+
   hr { margin: 0.75rem 1.25rem; }
   h3 {
     margin: 0.5rem 1.25rem;

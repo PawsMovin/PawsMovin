@@ -4,14 +4,14 @@ module PawsMovin
 
     # https://www.libvips.org/API/current/libvips-resample.html#vips-thumbnail
     THUMBNAIL_OPTIONS = { size: :down, linear: false, no_rotate: true, export_profile: "srgb", import_profile: "srgb" }.freeze
-    # https://www.libvips.org/API/current/VipsForeignSave.html#vips-jpegsave
-    JPEG_OPTIONS = { background: 0, strip: true, interlace: true, optimize_coding: true }.freeze
+    # https://www.libvips.org/API/current/VipsForeignSave.html#vips-webpsave
+    WEBP_OPTIONS = { strip: true }
     CROP_OPTIONS = { linear: false, no_rotate: true, export_profile: "srgb", import_profile: "srgb", crop: :attention }.freeze
 
     def resize(file, width, height, resize_quality = 90)
       output_file = Tempfile.new
       resized_image = thumbnail(file, width, height, THUMBNAIL_OPTIONS)
-      resized_image.jpegsave(output_file.path, Q: resize_quality, **JPEG_OPTIONS)
+      resized_image.webpsave(output_file.path, Q: resize_quality, **WEBP_OPTIONS)
 
       output_file
     end
@@ -21,7 +21,7 @@ module PawsMovin
 
       output_file = Tempfile.new
       resized_image = thumbnail(file, width, height, CROP_OPTIONS)
-      resized_image.jpegsave(output_file.path, Q: resize_quality, **JPEG_OPTIONS)
+      resized_image.webpsave(output_file.path, Q: resize_quality, **WEBP_OPTIONS)
 
       output_file
     end

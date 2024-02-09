@@ -33,8 +33,11 @@ class UserTest < ActiveSupport::TestCase
 
     should "not validate if the originating ip address is banned" do
       assert_raises ActiveRecord::RecordInvalid do
-        as(User.anonymous, "1.2.3.4") do
+        as(create(:user)) do
           create(:ip_ban, ip_addr: '1.2.3.4')
+        end
+
+        as(User.anonymous, "1.2.3.4") do
           create(:user, last_ip_addr: '1.2.3.4')
         end
       end
