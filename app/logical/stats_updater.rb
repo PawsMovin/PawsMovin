@@ -32,7 +32,6 @@ class StatsUpdater
     stats[:png_posts] = Post.tag_match("status:any type:png").count_only
     stats[:gif_posts] = Post.tag_match("status:any type:gif").count_only
     stats[:webp_posts] = Post.tag_match("status:any type:webp").count_only
-    stats[:swf_posts] = Post.tag_match("status:any type:swf").count_only
     stats[:webm_posts] = Post.tag_match("status:any type:webm").count_only
     stats[:average_file_size] = Post.average("file_size")
     stats[:total_file_size] = Post.sum("file_size")

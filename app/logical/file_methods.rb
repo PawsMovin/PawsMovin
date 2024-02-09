@@ -19,10 +19,6 @@ module FileMethods
     file_ext == "webp"
   end
 
-  def is_flash?
-    file_ext == "swf"
-  end
-
   def is_webm?
     file_ext == "webm"
   end
