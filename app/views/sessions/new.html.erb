@@ -3,21 +3,21 @@
     <section>
       <h1>Sign in</h1>
       <%= form_tag(session_path, :class => "simple_form") do %>
-        <%= hidden_field_tag "url", params[:url] %>
+        <%= hidden_field_tag :"session[url]", params[:url] %>
 
         <div class="input">
           <label for="name">Username</label>
-          <%= text_field_tag :name %>
+          <%= text_field_tag :"session[name]" %>
         </div>
 
         <div class="input">
           <label for="password">Password</label>
-          <%= password_field_tag :password %>
+          <%= password_field_tag :"session[password]" %>
         </div>
 
         <div class="input">
-          <%= check_box_tag :remember, "1", true %>
-          <label for="remember" id="remember-label">Remember</label>
+          <%= check_box_tag :"session[remember]", "1", true %>
+          <label for="session_remember">Remember</label>
         </div>
 
         <div class="input">
@@ -27,7 +27,7 @@
     </section>
 
     <section class="box-section">
-      <h2><%= link_to "Don't have an account? Sign up here.", new_user_path() %></h2>
+      <h2><%= link_to "Don't have an account? Sign up here.", new_user_path %></h2>
       <h2><%= link_to "Reset Password", new_maintenance_user_password_reset_path %></h2>
       <h2><%= link_to "Login Reminder", new_maintenance_user_login_reminder_path %></h2>
     </section>

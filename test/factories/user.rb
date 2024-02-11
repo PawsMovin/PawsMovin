@@ -45,5 +45,10 @@ FactoryBot.define do
       level { User::Levels::ADMIN }
       can_approve_posts { true }
     end
+
+    factory(:owner_user) do
+      level { User::Levels::OWNER }
+      can_approve_posts { true }
+    end
   end
 end

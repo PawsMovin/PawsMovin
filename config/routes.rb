@@ -63,6 +63,7 @@ Rails.application.routes.draw do
       get :diff, on: :collection
     end
   end
+  resources :api_keys
   resources :popular, only: [:index]
   namespace :maintenance do
     namespace :user do
@@ -73,9 +74,6 @@ Rails.application.routes.draw do
       resource :deletion, :only => [:show, :destroy]
       resource :email_change, :only => [:new, :create]
       resource :dmail_filter, :only => [:edit, :update]
-      resource :api_key, only: %i[show update destroy] do
-        post :view
-      end
     end
   end
 
@@ -253,7 +251,9 @@ Rails.application.routes.draw do
   end
   resource :related_tag, :only => [:show, :update]
   match "related_tag/bulk", to: "related_tags#bulk", via: [:get, :post]
-  resource :session, only: [:new, :create, :destroy]
+  resource :session, only: %i[new create destroy confirm_password] do
+    get :confirm_password, on: :collection
+  end
   resources :stats, only: [:index]
   resources :tags, constraints: id_name_constraint do
     resource :correction, :only => [:new, :create, :show], :controller => "tag_corrections"
@@ -277,9 +277,7 @@ Rails.application.routes.draw do
   resources :uploads
   resources :users do
     resource :password, :only => [:edit], :controller => "maintenance/user/passwords"
-    resource :api_key, :only => [:show, :view, :update, :destroy], :controller => "maintenance/user/api_keys" do
-      post :view
-    end
+    resources :api_keys, controller: "api_keys"
     resources :staff_notes, only: %i[index new create destroy undelete update], controller: "admin/staff_notes" do
       put :undelete
     end

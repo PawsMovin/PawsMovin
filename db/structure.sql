@@ -53,7 +53,13 @@ CREATE TABLE public.api_keys (
     user_id integer NOT NULL,
     key character varying NOT NULL,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    name character varying DEFAULT ''::character varying NOT NULL,
+    permissions character varying[] DEFAULT '{}'::character varying[] NOT NULL,
+    permitted_ip_addresses inet[] DEFAULT '{}'::inet[] NOT NULL,
+    uses integer DEFAULT 0 NOT NULL,
+    last_used_at timestamp(6) without time zone,
+    last_ip_address inet
 );
 
 
@@ -3295,13 +3301,6 @@ CREATE UNIQUE INDEX index_api_keys_on_key ON public.api_keys USING btree (key);
 
 
 --
--- Name: index_api_keys_on_user_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX index_api_keys_on_user_id ON public.api_keys USING btree (user_id);
-
-
---
 -- Name: index_artist_urls_on_artist_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -4496,6 +4495,7 @@ ALTER TABLE ONLY public.staff_notes
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20240210054643'),
 ('20240206035357'),
 ('20240205174652'),
 ('20240205165127'),

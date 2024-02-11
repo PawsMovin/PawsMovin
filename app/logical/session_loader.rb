@@ -42,7 +42,7 @@ class SessionLoader
   end
 
   def has_api_authentication?
-    request.authorization.present? || params[:login].present? || params[:api_key].present?
+    request.authorization.present? || params[:login].present? || (params[:api_key].present? && params[:api_key].is_a?(String))
   end
 
   def has_remember_token?
@@ -95,9 +95,11 @@ private
     authenticate_api_key(login, api_key)
   end
 
-  def authenticate_api_key(name, api_key)
-    user = User.authenticate_api_key(name, api_key)
-    raise AuthenticationFailure if user.nil?
+  def authenticate_api_key(name, key)
+    user, api_key = User.find_by_name(name)&.authenticate_api_key(key)
+    raise AuthenticationFailure, "Invalid API key" if user.blank?
+    update_api_key(api_key)
+    raise User::PrivilegeError unless api_key.has_permission?(request.remote_ip, request.params[:controller], request.params[:action])
     CurrentUser.user = user
   end
 
@@ -118,6 +120,11 @@ private
     return if CurrentUser.is_anonymous?
     return if CurrentUser.user.last_ip_addr == @request.remote_ip
     CurrentUser.user.update_attribute(:last_ip_addr, @request.remote_ip)
+  end
+
+  def update_api_key(api_key)
+    api_key.increment!(:uses, touch: :last_used_at)
+    api_key.update!(last_ip_address: request.remote_ip)
   end
 
   def set_time_zone

@@ -113,7 +113,7 @@ class User < ApplicationRecord
   #after_create :notify_sock_puppets
   after_create :create_user_status
 
-  has_one :api_key
+  has_many :api_keys, dependent: :destroy
   has_one :dmail_filter
   has_one :user_status
   has_one :recent_ban, -> { order("bans.id desc") }, class_name: "Ban"
@@ -271,18 +271,15 @@ class User < ApplicationRecord
         end
       end
 
-      def authenticate_api_key(name, api_key)
-        key = ApiKey.where(:key => api_key).first
-        return nil if key.nil?
-        user = find_by_name(name)
-        return nil if user.nil?
-        return user if key.user_id == user.id
-        nil
-      end
-
       def bcrypt(pass)
         BCrypt::Password.create(pass)
       end
+    end
+
+    def authenticate_api_key(key)
+      return false unless is_verified?
+      api_key = api_keys.find_by(key: key)
+      api_key.present? && ActiveSupport::SecurityUtils.secure_compare(api_key.key, key) && [self, api_key]
     end
   end
 

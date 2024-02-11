@@ -10,6 +10,10 @@ module PawsMovin
       "Paws Movin'"
     end
 
+    def canonical_app_name
+      "Paws Movin'"
+    end
+
     def description
       "We keep your paws movin'!"
     end

@@ -166,6 +166,15 @@ class ApplicationController < ActionController::Base
     CurrentUser.safe_mode = PawsMovin.config.safe_mode?
   end
 
+  def requires_reauthentication
+    return if CurrentUser.user.is_anonymous?
+
+    last_authenticated_at = session[:last_authenticated_at]
+    if last_authenticated_at.blank? || Time.zone.parse(last_authenticated_at) < 60.minutes.ago
+      redirect_to confirm_password_session_path(url: request.fullpath)
+    end
+  end
+
   def user_access_check(method)
     if !CurrentUser.user.send(method) || CurrentUser.user.is_banned? || IpBan.is_banned?(CurrentUser.ip_addr)
       access_denied

@@ -157,9 +157,9 @@
           <% end %>
 
         <% if CurrentUser.id == user.id %>
-          <span>API Key</span>
+          <span>API Keys</span>
           <span>
-            <%= link_to (CurrentUser.api_key ? "View" : "Generate"), user_api_key_path(CurrentUser.user) %>
+            <%= link_to "Manage", user_api_keys_path(CurrentUser.user) %>
             (<%= link_to "help", help_page_path(id: "api") %>)
           </span>
 

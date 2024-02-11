@@ -77,7 +77,9 @@ module ApplicationHelper
   end
 
   def time_ago_in_words_tagged(time, compact: false)
-    if time.past?
+    if time.nil?
+      tag.em(tag.time("unknown"))
+    elsif time.past?
       text = time_ago_in_words(time) + " ago"
       text = text.gsub(/almost|about|over/, "") if compact
       raw time_tag(text, time)
@@ -107,6 +109,18 @@ module ApplicationHelper
     link_to ip, moderator_ip_addrs_path(:search => {:ip_addr => ip})
   end
 
+  def link_to_wiki(text, title = text, classes: nil, **)
+    link_to text, wiki_page_path(title), class: "wiki-link #{classes}", **
+  end
+
+  def link_to_wikis(*wiki_titles, **)
+    links = wiki_titles.map do |title|
+      link_to_wiki title.tr("_", " "), title
+    end
+
+    to_sentence(links, **)
+  end
+
   def link_to_user(user, include_activation: false)
     return "anonymous" if user.blank?
 
@@ -118,6 +132,11 @@ module ApplicationHelper
     html = link_to(user.pretty_name, user_path(user), class: user_class, rel: "nofollow")
     html << " (Unactivated)" if include_activation && !user.is_verified?
     html
+  end
+
+  def table_for(...)
+    table = TableBuilder.new(...)
+    render partial: "table_builder/table", locals: { table: table }
   end
 
   def body_attributes(user = CurrentUser.user)
