@@ -28,6 +28,7 @@ class PoolsController < ApplicationController
 
     @pools = Pool.search(search_params).paginate(params[:page], :limit => params[:limit], :search_count => params[:search])
     @post_set = PostSets::PoolGallery.new(@pools)
+    respond_with(@post_set)
   end
 
   def show

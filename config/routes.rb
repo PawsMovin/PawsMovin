@@ -30,7 +30,7 @@ Rails.application.routes.draw do
     end
     resources :audit_logs, only: %i[index]
   end
-  resources :edit_histories do
+  resources :edit_histories, only: %i[index show] do
     get :diff, on: :collection
   end
   namespace :moderator do
@@ -51,9 +51,6 @@ Rails.application.routes.draw do
           post :undelete
           get :confirm_move_favorites
           post :move_favorites
-          get :confirm_ban
-          post :ban
-          post :unban
           post :regenerate_thumbnails
           post :regenerate_videos
         end
@@ -143,7 +140,7 @@ Rails.application.routes.draw do
   resource :dtext_preview, :only => [:create]
   resources :favorites, :only => [:index, :create, :destroy]
   resources :forum_posts do
-    resource :votes, controller: "forum_post_votes"
+    resource :votes, controller: "forum_post_votes", only: %i[create destroy]
     member do
       post :hide
       post :unhide
@@ -163,11 +160,10 @@ Rails.application.routes.draw do
     collection do
       post :mark_all_as_read
     end
-    resource :visit, :controller => "forum_topic_visits"
   end
-  resources :forum_categories
+  resources :forum_categories, only: %i[index show create destroy]
   resources :help_pages, controller: "help", path: "help"
-  resources :ip_bans
+  resources :ip_bans, only: %i[index new create destroy]
   resources :upload_whitelists, except: %i[show] do
     collection do
       get :is_allowed
@@ -179,8 +175,8 @@ Rails.application.routes.draw do
       post :show
     end
   end
-  resources :mod_actions
-  resources :news_updates
+  resources :mod_actions, only: %i[index show]
+  resources :news_updates, except: %i[show]
   resources :notes do
     collection do
       get :search
@@ -242,39 +238,35 @@ Rails.application.routes.draw do
     end
   end
   resources :post_events, only: :index
-  resources :post_flags, except: [:destroy]
+  resources :post_flags, except: %i[edit update]
   resources :post_approvals, only: [:index]
   resources :post_versions, :only => [:index] do
     member do
       put :undo
     end
   end
-  resource :related_tag, :only => [:show, :update]
+  resource :related_tag, :only => %i[show]
   match "related_tag/bulk", to: "related_tags#bulk", via: [:get, :post]
   resource :session, only: %i[new create destroy confirm_password] do
     get :confirm_password, on: :collection
   end
   resources :stats, only: [:index]
-  resources :tags, constraints: id_name_constraint do
-    resource :correction, :only => [:new, :create, :show], :controller => "tag_corrections"
+  resources :tags, constraints: id_name_constraint, only: %i[index show edit update] do
+    resource :correction, :only => %i[new create show], :controller => "tag_corrections"
     collection do
       post :preview
     end
   end
-  resources :tag_type_versions
-  resources :tag_aliases do
-    member do
-      post :approve
-    end
+  resources :tag_type_versions, only: %i[index]
+  resources :tag_aliases, except: %i[new create] do
+    post :approve, on: :member
   end
-  resource :tag_alias_request, :only => [:new, :create]
-  resources :tag_implications do
-    member do
-      post :approve
-    end
+  resource :tag_alias_request, only: %i[new create]
+  resources :tag_implications, except: %i[new create] do
+    post :approve, on: :member
   end
-  resource :tag_implication_request, :only => [:new, :create]
-  resources :uploads
+  resource :tag_implication_request, only: %i[new create]
+  resources :uploads, only: %i[index show new create]
   resources :users do
     resource :password, :only => [:edit], :controller => "maintenance/user/passwords"
     resources :api_keys, controller: "api_keys"
@@ -295,8 +287,8 @@ Rails.application.routes.draw do
       get :search
     end
   end
-  resources :user_name_change_requests
-  resource :user_revert, :only => [:new, :create]
+  resources :user_name_change_requests, only: %i[index show new create]
+  resource :user_revert, only: %i[new create]
   resources :wiki_pages, constraints: id_name_constraint do
     member do
       put :revert
@@ -326,14 +318,14 @@ Rails.application.routes.draw do
   resources :post_deletion_reasons, only: %i[index new create edit update destroy] do
     post :reorder, on: :collection
   end
-  resources :post_set_maintainers do
+  resources :post_set_maintainers, only: %i[index create] do
     member do
       get :approve
       get :block
       get :deny
     end
   end
-  resource :email do
+  resource :email,only: %i[] do
     collection do
       get :activate_user
       get :resend_confirmation
@@ -446,6 +438,7 @@ Rails.application.routes.draw do
   get "/static/toggle_mobile_mode" => "static#disable_mobile_mode", as: "disable_mobile_mode"
   get "/static/theme" => "static#theme", as: "theme"
   get "/meta_searches/tags" => "meta_searches#tags", :as => "meta_searches_tags"
+  get "/route", to: "application#dump_route"
 
   root :to => "static#home"
 

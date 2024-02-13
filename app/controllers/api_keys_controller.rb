@@ -1,7 +1,7 @@
 class ApiKeysController < ApplicationController
   before_action :requires_reauthentication
   before_action :member_only
-  before_action :load_apikey, except: %i[index new create]
+  before_action :load_api_key, except: %i[index new create]
   respond_to :html, :json
 
   def index
@@ -40,7 +40,7 @@ class ApiKeysController < ApplicationController
 
   private
 
-  def load_apikey
+  def load_api_key
     @api_key = ApiKey.visible(CurrentUser.user).find(params[:id])
   end
 

@@ -38,7 +38,7 @@
         <% t.column :key, td: { class: "col-expand" } %>
 
         <% t.column :permissions do |api_key| %>
-          <%= safe_join(api_key.permissions, "<br>".html_safe).presence || "All" %>
+          <%= safe_join(api_key.pretty_permissions, "<br>".html_safe).presence || "All" %>
         <% end %>
 
         <% t.column "IPs" do |api_key| %>
@@ -58,9 +58,9 @@
         <% t.column "Created" do |api_key| %>
           <%= time_ago_in_words_tagged api_key.created_at %>
 
-          <% if !params[:user_id].present? %>
-            <br> by <%= link_to_user api_key.user %>
-          <% end %>
+          <% unless params[:user_id].present? %>
+            <br> by <%=  link_to_user api_key.user  %>
+          <%  end %>
         <% end %>
 
         <% t.column column: "control" do |api_key| %>

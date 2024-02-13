@@ -35,7 +35,7 @@ class ApiKey < ApplicationRecord
 
     def validate_permissions
       permissions.each do |permission|
-        unless permission.in?(ApiKey.permissions_list)
+        unless permission.in?(Permissions.list)
           errors.add(:permissions, "contains invalid permission '#{permission}'")
         end
       end
@@ -66,13 +66,7 @@ class ApiKey < ApplicationRecord
     self.permissions = permissions.compact_blank
   end
 
-  def self.permissions_list
-    routes = Rails.application.routes.routes.select do |route|
-      route.defaults[:controller].present? && !route.internal
-    end
-
-    routes.map do |route|
-      "#{route.defaults[:controller]}:#{route.defaults[:action]}"
-    end.uniq.sort
+  def pretty_permissions
+    permissions.map { |perm| Permissions.route(perm) }
   end
 end
