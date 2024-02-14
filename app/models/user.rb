@@ -323,6 +323,7 @@ class User < ApplicationRecord
 
       if name != PawsMovin.config.system_user_name && !User.exists?(level: Levels::OWNER)
         self.level = Levels::OWNER
+        self.created_at = 2.weeks.ago
       end
     end
 
