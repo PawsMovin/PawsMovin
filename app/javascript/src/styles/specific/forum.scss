@@ -85,11 +85,6 @@ div#c-forum-topics {
 }
 
 #c-forum-posts #a-index {
-  tr[data-topic-is-hidden="true"] .forum-post-topic-title::after,
-  tr[data-is-hidden="true"] .forum-post-excerpt::after {
-    content: " (hidden)";
-    color: $forum-topic-except-color;
-  }
   tr[data-is-hidden="true"], tr[data-topic-is-hidden="true"] {
     background-color: $forum-topic-hidden-background;
   }

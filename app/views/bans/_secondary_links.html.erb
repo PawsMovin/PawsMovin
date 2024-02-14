@@ -1,7 +1,19 @@
+<% if @ban %>
+  <% user_id = @ban.user_id %>
+<% elsif params[:search] && params[:search][:user_id] %>
+  <% user_id = params[:search][:user_id] %>
+<% end %>
 <% content_for(:secondary_links) do %>
   <%= subnav_link_to "Listing", bans_path %>
   <% if CurrentUser.is_moderator? %>
-    <%= subnav_link_to "Ban", new_ban_path %>
+    <% if user_id %>
+      <%= subnav_link_to "Ban", new_ban_path(ban: { user_id: user_id }) %>
+    <% else %>
+      <%= subnav_link_to "Ban", new_ban_path %>
+    <% end %>
+  <% end %>
+  <% if user_id %>
+    <%= subnav_link_to "User", user_path(user_id) %>
   <% end %>
   <% if @ban&.id %>
     |
