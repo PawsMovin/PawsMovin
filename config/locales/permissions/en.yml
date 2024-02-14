@@ -18,6 +18,7 @@ en:
       remove_posts: "Remove Posts From %s"
       list_posts: "List %s Posts"
       update_posts: "Update %s Posts"
+      update_iqdb: "Update %s IQDB"
       for_select: "%s For Select"
       for_post: "%s For Post"
       copy_notes: "Copy %s Notes"

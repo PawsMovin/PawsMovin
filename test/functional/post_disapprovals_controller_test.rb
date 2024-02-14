@@ -31,4 +31,3 @@ class PostDisapprovalsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 end
-

@@ -33,7 +33,7 @@
 
     <%= submit_tag "Delete" %>
     <%= submit_tag "Cancel" %>
-    <%= button_tag "Clear", :type => "button", :id => "delreason-clear" %>
+    <%= button_tag "Clear", type: "button", id: "delreason-clear" %>
   <% end %>
 
   <div id="delreason-prebuilt" class="simple_form">
@@ -50,7 +50,7 @@
       <% last_order = reason.order %>
       <a class="button delreason-button" data-text="<%= reason.reason.gsub(/%(PARENT|OTHER)_ID%/, "%ID%") %>">
         <%= reason.reason
-              .gsub("%PARENT_ID%", "<input type=\"text\" value=\"" + (@post.parent_id || "").to_s + "\" />")
+              .gsub("%PARENT_ID%", "<input type=\"text\" value=\"#{@post.parent_id || ''}\" />")
               .gsub("%OTHER_ID%", "<input type=\"text\" />")
               .html_safe
         %>

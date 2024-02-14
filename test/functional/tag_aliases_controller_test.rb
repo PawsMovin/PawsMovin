@@ -3,7 +3,31 @@ require "test_helper"
 class TagAliasesControllerTest < ActionDispatch::IntegrationTest
   context "The tag aliases controller" do
     setup do
+      @user = create(:user)
       @admin = create(:admin_user)
+    end
+
+    context "new action" do
+      should "render" do
+        get_auth new_tag_alias_path, @user
+        assert_response :success
+      end
+    end
+
+    context "create action" do
+      should "create a forum post" do
+        assert_difference("ForumTopic.count", 1) do
+          post_auth tag_aliases_path, @user, params: { tag_alias: { antecedent_name: "aaa", consequent_name: "bbb", reason: "ccccc" } }
+        end
+        assert_redirected_to(forum_topic_path(ForumTopic.last))
+      end
+
+      should "create a pending alias" do
+        assert_difference("ForumTopic.count") do
+          post_auth tag_aliases_path, @user, params: { tag_alias: { antecedent_name: "aaa", consequent_name: "bbb", reason: "ccccc" } }
+        end
+        assert_redirected_to(forum_topic_path(ForumTopic.last))
+      end
     end
 
     context "edit action" do

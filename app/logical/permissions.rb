@@ -3,12 +3,11 @@ module Permissions
 
   mattr_accessor :names, default: {}
 
-  # TODO
   IGNORED_CONTROLLERS = %w[
     admin/dashboards admin/exceptions admin/danger_zone
-    moderator/dashboards moderator/ip_addrs
+    moderator/dashboards moderator/ip_addrs moderator/user_text_versions
     users/email_notifications users/password_resets users/passwords users/login_reminders users/deletions users/email_changes
-    static application sessions emails moderator/user_text_versions
+    static application sessions emails
   ].freeze
   IGNORED_ACTIONS = %w[new edit search diff show_or_new custom_style edit_user edit_blacklist confirm_move_favorites request_password_reset].freeze
   IGNORED_ROUTES = %w[related_tags:show users:create users:destroy users:home].freeze

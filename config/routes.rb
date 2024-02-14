@@ -250,14 +250,12 @@ Rails.application.routes.draw do
     end
   end
   resources :tag_type_versions, only: %i[index]
-  resources :tag_aliases, except: %i[new create] do
+  resources :tag_aliases do
     post :approve, on: :member
   end
-  resource :tag_alias_request, only: %i[new create]
-  resources :tag_implications, except: %i[new create] do
+  resources :tag_implications do
     post :approve, on: :member
   end
-  resource :tag_implication_request, only: %i[new create]
   resources :uploads, only: %i[index show new create]
   resources :users do
     resource :password, only: [:edit], controller: "users/passwords"

@@ -14,8 +14,12 @@ class TagRelationshipRequest
     self.skip_forum = attributes[:skip_forum]
   end
 
+  def self.create(...)
+    new(...).create
+  end
+
   def create
-    return false if invalid?
+    return self if invalid?
 
     tag_relationship_class.transaction do
       @tag_relationship = build_tag_relationship
@@ -30,6 +34,8 @@ class TagRelationshipRequest
         @tag_relationship.save
       end
     end
+
+    self
   end
 
   def build_tag_relationship

@@ -1,14 +1,35 @@
 class TagImplicationsController < ApplicationController
-  before_action :admin_only, except: [:index, :show, :destroy]
-  respond_to :html, :json, :js
+  before_action :member_only, except: %i[index show]
+  before_action :admin_only, only: %i[edit update approve]
+  respond_to :html, :json
+
+  def index
+    @tag_implications = TagImplication.includes(:antecedent_tag, :consequent_tag, :approver).search(search_params).paginate(params[:page], limit: params[:limit])
+    respond_with(@tag_implications)
+  end
 
   def show
     @tag_implication = TagImplication.find(params[:id])
     respond_with(@tag_implication)
   end
 
+  def new
+  end
+
   def edit
     @tag_implication = TagImplication.find(params[:id])
+  end
+
+  def create
+    @tag_implication_request = TagImplicationRequest.create(tag_implication_params(:create))
+
+    if @tag_implication_request.invalid?
+      render action: "new"
+    elsif @tag_implication_request.forum_topic
+      redirect_to forum_topic_path(@tag_implication_request.forum_topic)
+    else
+      redirect_to tag_implication_path(@tag_implication_request.tag_relationship)
+    end
   end
 
   def update
@@ -21,17 +42,12 @@ class TagImplicationsController < ApplicationController
     respond_with(@tag_implication)
   end
 
-  def index
-    @tag_implications = TagImplication.includes(:antecedent_tag, :consequent_tag, :approver).search(search_params).paginate(params[:page], :limit => params[:limit])
-    respond_with(@tag_implications)
-  end
-
   def destroy
     @tag_implication = TagImplication.find(params[:id])
     if @tag_implication.deletable_by?(CurrentUser.user)
       @tag_implication.reject!
       if @tag_implication.errors.any?
-        flash[:notice] = @tag_implication.errors.full_messages.join('; ')
+        flash[:notice] = @tag_implication.errors.full_messages.join("; ")
         redirect_to(tag_implications_path)
         return
       end
@@ -49,12 +65,14 @@ class TagImplicationsController < ApplicationController
   def approve
     @tag_implication = TagImplication.find(params[:id])
     @tag_implication.approve!(approver: CurrentUser.user)
-    respond_with(@tag_implication, :location => tag_implication_path(@tag_implication))
+    respond_with(@tag_implication, location: tag_implication_path(@tag_implication))
   end
 
-private
+  private
 
-  def tag_implication_params
-    params.require(:tag_implication).permit(%i[antecedent_name consequent_name forum_topic_id])
+  def tag_implication_params(context = nil)
+    permitted_params = %i[antecedent_name consequent_name forum_topic_id]
+    permitted_params += %i[reason skip_forum] if context == :create
+    params.require(:tag_implication).permit(permitted_params)
   end
 end

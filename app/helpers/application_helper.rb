@@ -203,7 +203,7 @@ protected
     when "artists", "artist_versions"
       /^\/artist/
 
-    when "tags", "meta_searches", "tag_aliases", "tag_alias_requests", "tag_implications", "tag_implication_requests", "related_tags"
+    when "tags", "meta_searches", "tag_aliases", "tag_implications", "related_tags"
       /^\/tags/
 
     when "pools", "pool_versions"
