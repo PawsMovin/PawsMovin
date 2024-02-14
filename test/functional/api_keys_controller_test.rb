@@ -60,7 +60,7 @@ class ApiKeysControllerTest < ActionDispatch::IntegrationTest
 
     context "#create action" do
       should "create a new API key" do
-        post_auth user_api_keys_path(@user.id), @user, params: { api_key: { name: "blah" }}
+        post_auth user_api_keys_path(@user.id), @user, params: { api_key: { name: "blah" } }
 
         assert_redirected_to user_api_keys_path(@user.id)
         assert_equal("blah", @user.api_keys.last.name)
@@ -81,7 +81,7 @@ class ApiKeysControllerTest < ActionDispatch::IntegrationTest
 
     context "#update action" do
       should "render for the API key owner" do
-        put_auth api_key_path(@api_key.id), @user, params: { api_key: { name: "blah" }}
+        put_auth api_key_path(@api_key.id), @user, params: { api_key: { name: "blah" } }
 
         assert_redirected_to user_api_keys_path(@user.id)
         assert_equal("blah", @api_key.reload.name)

@@ -19,7 +19,7 @@ class UsersController < ApplicationController
 
   def index
     if params[:name].present?
-      @user = User.find_by_name(params[:name])
+      @user = User.find_by(name: params[:name])
       raise ActiveRecord::RecordNotFound if @user.blank?
       redirect_to user_path(@user)
     else
@@ -68,7 +68,7 @@ class UsersController < ApplicationController
           session[:user_id] = @user.id
           session[:ph] = @user.password_token
           if PawsMovin.config.enable_email_verification?
-            Maintenance::User::EmailConfirmationMailer.confirmation(@user).deliver_now
+            User::EmailConfirmationMailer.confirmation(@user).deliver_now
           end
         else
           flash[:notice] = "Sign up failed: #{@user.errors.full_messages.join("; ")}"

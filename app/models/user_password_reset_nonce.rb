@@ -9,12 +9,12 @@ class UserPasswordResetNonce < ApplicationRecord
 
   def deliver_notice
     if user.email.present?
-      Maintenance::User::PasswordResetMailer.reset_request(user, self).deliver_now
+      Users::PasswordResetMailer.reset_request(user, self).deliver_now
     end
   end
 
   def reset_user!(pass, confirm)
-    return false if !ActiveSupport::SecurityUtils.secure_compare(pass, confirm)
+    return false unless ActiveSupport::SecurityUtils.secure_compare(pass, confirm)
     user.upgrade_password(pass)
     true
   end

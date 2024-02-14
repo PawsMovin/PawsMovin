@@ -52,7 +52,7 @@ class UserDeletion
   def rename_user
     name = "user_#{user.id}"
     n = 0
-    while User.where(:name => name).exists? && (n < 10)
+    while User.exists?(:name => name) && (n < 10)
       name += "~"
     end
 

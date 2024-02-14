@@ -172,8 +172,8 @@ class DmailTest < ActiveSupport::TestCase
       should "only create a copy for the recipient" do
         Dmail.create_automated(to: @user, title: "test", body: "test")
 
-        assert @user.dmails.where(from: @bot, title: "test", body: "test").exists?
-        assert_not @bot.dmails.where(from: @bot, title: "test", body: "test").exists?
+        assert @user.dmails.exists?(from: @bot, title: "test", body: "test")
+        assert_not @bot.dmails.exists?(from: @bot, title: "test", body: "test")
       end
 
       should "fail gracefully if recipient doesn't exist" do

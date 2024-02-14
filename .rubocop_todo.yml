@@ -16,7 +16,6 @@ Layout/AccessModifierIndentation:
     - 'app/controllers/comments_controller.rb'
     - 'app/controllers/forum_post_votes_controller.rb'
     - 'app/controllers/forum_topics_controller.rb'
-    - 'app/controllers/maintenance/user/email_notifications_controller.rb'
     - 'app/controllers/tag_alias_requests_controller.rb'
     - 'app/controllers/tag_implication_requests_controller.rb'
     - 'app/controllers/tag_implications_controller.rb'
@@ -141,7 +140,6 @@ Layout/EmptyLinesAroundAttributeAccessor:
 # SupportedStyles: empty_lines, no_empty_lines
 Layout/EmptyLinesAroundBlockBody:
   Exclude:
-    - 'config/routes.rb'
     - 'test/unit/post_test.rb'
 
 # Offense count: 4
@@ -438,7 +436,6 @@ Layout/SpaceBeforeFirstArg:
 # This cop supports safe autocorrection (--autocorrect).
 Layout/SpaceBeforeSemicolon:
   Exclude:
-    - 'app/controllers/maintenance/user/email_notifications_controller.rb'
     - 'app/jobs/application_job.rb'
     - 'app/logical/downloads/file.rb'
     - 'app/logical/session_loader.rb'
@@ -507,7 +504,6 @@ Layout/SpaceInsideBlockBraces:
     - 'app/views/post_events/_search.html.erb'
     - 'config/application.rb'
     - 'config/default_config.rb'
-    - 'config/routes.rb'
     - 'test/factories/tag.rb'
     - 'test/factories/user.rb'
     - 'test/functional/forum_topics_controller_test.rb'
@@ -581,8 +577,6 @@ Layout/SpaceInsideHashLiteralBraces:
     - 'app/views/forum_topics/_form.html.erb'
     - 'app/views/forum_topics/index.html.erb'
     - 'app/views/forum_topics/show.html.erb'
-    - 'app/views/maintenance/user/api_keys/show.html.erb'
-    - 'app/views/maintenance/user/passwords/edit.html.erb'
     - 'app/views/moderator/dashboards/_activity_artist.html.erb'
     - 'app/views/moderator/dashboards/_activity_note.html.erb'
     - 'app/views/moderator/dashboards/_activity_tag.html.erb'
@@ -630,9 +624,6 @@ Layout/SpaceInsideHashLiteralBraces:
     - 'test/functional/favorites_controller_test.rb'
     - 'test/functional/forum_posts_controller_test.rb'
     - 'test/functional/forum_topics_controller_test.rb'
-    - 'test/functional/maintenance/user/api_keys_controller_test.rb'
-    - 'test/functional/maintenance/user/login_reminders_controller_test.rb'
-    - 'test/functional/maintenance/user/password_resets_controller_test.rb'
     - 'test/functional/meta_searches_controller_test.rb'
     - 'test/functional/news_updates_controller_test.rb'
     - 'test/functional/note_versions_controller_test.rb'
@@ -757,7 +748,6 @@ Lint/IneffectiveAccessModifier:
 Lint/InheritException:
   Exclude:
     - 'app/controllers/application_controller.rb'
-    - 'app/controllers/maintenance/user/email_notifications_controller.rb'
     - 'app/jobs/application_job.rb'
     - 'app/logical/paws_movin/paginator/pagination_error.rb'
     - 'app/logical/downloads/file.rb'
@@ -922,7 +912,6 @@ Lint/UnusedBlockArgument:
     - 'app/views/admin/danger_zone/index.html.erb'
     - 'config/application.rb'
     - 'config/initializers/content_security_policy.rb'
-    - 'config/routes.rb'
     - 'config/unicorn/production.rb'
     - 'test/factories/ban.rb'
     - 'test/factories/bulk_update_request.rb'
@@ -1097,7 +1086,6 @@ Naming/VariableName:
 Naming/VariableNumber:
   Exclude:
     - 'app/controllers/application_controller.rb'
-    - 'app/controllers/maintenance/user/email_notifications_controller.rb'
     - 'app/logical/elastic_post_query_builder.rb'
     - 'test/functional/dmails_controller_test.rb'
     - 'test/functional/note_versions_controller_test.rb'
@@ -1136,7 +1124,6 @@ Rails/ActionOrder:
     - 'app/controllers/forum_topics_controller.rb'
     - 'app/controllers/help_controller.rb'
     - 'app/controllers/ip_bans_controller.rb'
-    - 'app/controllers/maintenance/user/password_resets_controller.rb'
     - 'app/controllers/mascots_controller.rb'
     - 'app/controllers/moderator/post/disapprovals_controller.rb'
     - 'app/controllers/news_updates_controller.rb'
@@ -1178,9 +1165,6 @@ Rails/ActiveRecordCallbacksOrder:
 # This cop supports unsafe autocorrection (--autocorrect-all).
 Rails/ApplicationMailer:
   Exclude:
-    - 'app/mailers/maintenance/user/email_confirmation_mailer.rb'
-    - 'app/mailers/maintenance/user/login_reminder_mailer.rb'
-    - 'app/mailers/maintenance/user/password_reset_mailer.rb'
     - 'app/mailers/user_mailer.rb'
 
 # Offense count: 23
@@ -1192,7 +1176,6 @@ Rails/AssertNot:
     - 'test/functional/forum_topics_controller_test.rb'
     - 'test/functional/post_replacements_controller_test.rb'
     - 'test/unit/ban_test.rb'
-    - 'test/unit/maintenance/user/login_reminder_mailer_test.rb'
     - 'test/unit/post_test.rb'
     - 'test/unit/user_test.rb'
 
@@ -1562,7 +1545,6 @@ Style/ColonMethodCall:
     - 'app/jobs/upload_delete_files_job.rb'
     - 'app/logical/pbkdf2.rb'
     - 'app/models/user.rb'
-    - 'config/routes.rb'
 
 # Offense count: 2
 # This cop supports safe autocorrection (--autocorrect).
@@ -1706,10 +1688,6 @@ Style/HashSyntax:
     - 'app/controllers/favorites_controller.rb'
     - 'app/controllers/forum_posts_controller.rb'
     - 'app/controllers/forum_topics_controller.rb'
-    - 'app/controllers/maintenance/user/deletions_controller.rb'
-    - 'app/controllers/maintenance/user/email_changes_controller.rb'
-    - 'app/controllers/maintenance/user/email_notifications_controller.rb'
-    - 'app/controllers/maintenance/user/password_resets_controller.rb'
     - 'app/controllers/news_updates_controller.rb'
     - 'app/controllers/note_previews_controller.rb'
     - 'app/controllers/notes_controller.rb'
@@ -1738,9 +1716,6 @@ Style/HashSyntax:
     - 'app/logical/post_thumbnailer.rb'
     - 'app/logical/related_tag_calculator.rb'
     - 'app/logical/user_deletion.rb'
-    - 'app/mailers/maintenance/user/email_confirmation_mailer.rb'
-    - 'app/mailers/maintenance/user/login_reminder_mailer.rb'
-    - 'app/mailers/maintenance/user/password_reset_mailer.rb'
     - 'app/mailers/user_mailer.rb'
     - 'app/models/api_key.rb'
     - 'app/models/artist.rb'
@@ -1807,17 +1782,7 @@ Style/HashSyntax:
     - 'app/views/forum_topics/new.html.erb'
     - 'app/views/forum_topics/show.html.erb'
     - 'app/views/layouts/_head.html.erb'
-    - 'app/views/maintenance/user/api_keys/show.html.erb'
-    - 'app/views/maintenance/user/deletions/show.html.erb'
-    - 'app/views/maintenance/user/dmail_filters/edit.html.erb'
-    - 'app/views/maintenance/user/email_changes/new.html.erb'
-    - 'app/views/maintenance/user/email_notifications/show.html.erb'
-    - 'app/views/maintenance/user/login_reminders/new.html.erb'
-    - 'app/views/maintenance/user/password_reset_mailer/confirmation.html.erb'
-    - 'app/views/maintenance/user/password_reset_mailer/reset_request.html.erb'
-    - 'app/views/maintenance/user/password_resets/edit.html.erb'
-    - 'app/views/maintenance/user/password_resets/new.html.erb'
-    - 'app/views/maintenance/user/passwords/edit.html.erb'
+    - 'app/views/users/passwords/edit.html.erb'
     - 'app/views/meta_searches/tags.html.erb'
     - 'app/views/moderator/dashboards/_activity_artist.html.erb'
     - 'app/views/moderator/dashboards/_activity_note.html.erb'
@@ -1888,16 +1853,15 @@ Style/HashSyntax:
     - 'app/views/wiki_pages/show.html.erb'
     - 'app/views/wiki_pages/show_or_new.html.erb'
     - 'config/initializers/secret_token.rb'
-    - 'config/routes.rb'
     - 'test/factories/mod_action.rb'
     - 'test/functional/dmails_controller_test.rb'
     - 'test/functional/favorites_controller_test.rb'
     - 'test/functional/forum_posts_controller_test.rb'
     - 'test/functional/forum_topics_controller_test.rb'
-    - 'test/functional/maintenance/user/api_keys_controller_test.rb'
-    - 'test/functional/maintenance/user/dmail_filters_controller_test.rb'
-    - 'test/functional/maintenance/user/login_reminders_controller_test.rb'
-    - 'test/functional/maintenance/user/password_resets_controller_test.rb'
+    - 'test/functional/users/api_keys_controller_test.rb'
+    - 'test/functional/users/dmail_filters_controller_test.rb'
+    - 'test/functional/users/login_reminders_controller_test.rb'
+    - 'test/functional/users/password_resets_controller_test.rb'
     - 'test/functional/news_updates_controller_test.rb'
     - 'test/functional/note_versions_controller_test.rb'
     - 'test/functional/notes_controller_test.rb'
@@ -2213,7 +2177,6 @@ Style/RaiseArgs:
     - 'app/controllers/emails_controller.rb'
     - 'app/controllers/forum_post_votes_controller.rb'
     - 'app/controllers/forum_topics_controller.rb'
-    - 'app/controllers/maintenance/user/dmail_filters_controller.rb'
     - 'app/controllers/post_versions_controller.rb'
     - 'app/controllers/posts_controller.rb'
     - 'app/controllers/static_controller.rb'
@@ -2544,7 +2507,6 @@ Style/StringLiterals:
     - 'app/controllers/forum_post_votes_controller.rb'
     - 'app/controllers/forum_posts_controller.rb'
     - 'app/controllers/help_controller.rb'
-    - 'app/controllers/maintenance/user/password_resets_controller.rb'
     - 'app/controllers/post_set_maintainers_controller.rb'
     - 'app/controllers/post_sets_controller.rb'
     - 'app/controllers/posts_controller.rb'
@@ -2650,7 +2612,6 @@ Style/StringLiterals:
     - 'config/initializers/secret_token.rb'
     - 'config/initializers/session_store.rb'
     - 'config/initializers/simple_form.rb'
-    - 'config/routes.rb'
     - 'db/fixes/100_new_iqdb_import.rb'
     - 'db/fixes/101_migrate_mod_actions.rb'
     - 'db/fixes/102_generate_missing_post_version_fields.rb'
@@ -2678,7 +2639,7 @@ Style/StringLiterals:
     - 'test/functional/forum_topics_controller_test.rb'
     - 'test/functional/ip_bans_controller_test.rb'
     - 'test/functional/iqdb_queries_controller_test.rb'
-    - 'test/functional/maintenance/user/api_keys_controller_test.rb'
+    - 'test/functional/users/api_keys_controller_test.rb'
     - 'test/functional/meta_searches_controller_test.rb'
     - 'test/functional/mod_actions_controller_test.rb'
     - 'test/functional/moderator/dashboards_controller_test.rb'
@@ -2828,7 +2789,6 @@ Style/SymbolArray:
     - 'app/models/wiki_page.rb'
     - 'app/views/takedowns/_editor.html.erb'
     - 'config/initializers/filter_parameter_logging.rb'
-    - 'config/routes.rb'
     - 'test/factories/user.rb'
     - 'test/unit/post_event_test.rb'
     - 'test/unit/storage_manager_test.rb'
@@ -2923,7 +2883,7 @@ Style/TrailingCommaInHashLiteral:
     - 'config/initializers/secret_token.rb'
     - 'test/functional/artist_urls_controller_test.rb'
     - 'test/functional/iqdb_queries_controller_test.rb'
-    - 'test/functional/maintenance/user/dmail_filters_controller_test.rb'
+    - 'test/functional/users/dmail_filters_controller_test.rb'
     - 'test/functional/notes_controller_test.rb'
     - 'test/functional/post_replacements_controller_test.rb'
     - 'test/functional/tag_implication_requests_controller_test.rb'

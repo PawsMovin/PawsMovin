@@ -42,7 +42,7 @@ class StaffNote < ApplicationRecord
 
       if params[:is_deleted].present?
         q = q.attribute_matches(:is_deleted, params[:is_deleted])
-      elsif !params[:include_deleted]&.truthy? && !params[:id].present?
+      elsif !params[:include_deleted]&.truthy? && params[:id].blank?
         q = q.active
       end
 

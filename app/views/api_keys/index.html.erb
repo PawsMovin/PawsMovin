@@ -30,7 +30,7 @@
       </div>
     <% end %>
 
-    <% if params[:user_id].present? && !@api_keys.present? %>
+    <% if params[:user_id].present? && @api_keys.blank? %>
       <%= link_to "Create API key", new_user_api_key_path(CurrentUser.user.id) %>
     <% else %>
       <%= table_for @api_keys, width: "100%", class: "striped autofit" do |t| %>

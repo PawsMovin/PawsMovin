@@ -110,7 +110,7 @@ module ApplicationHelper
   end
 
   def link_to_wiki(text, title = text, classes: nil, **)
-    link_to text, wiki_page_path(title), class: "wiki-link #{classes}", **
+    link_to(text, wiki_page_path(title), class: "wiki-link #{classes}", **)
   end
 
   def link_to_wikis(*wiki_titles, **)
@@ -182,7 +182,7 @@ protected
     return url == request.path if controller == "static"
 
     url =~ case controller
-    when "sessions", "users", "maintenance/user/login_reminders", "maintenance/user/password_resets", "admin/users", "dmails"
+    when "sessions", "users", "users/login_reminders", "users/password_resets", "admin/users", "dmails"
       /^\/(session|users)/
 
     when "post_sets"

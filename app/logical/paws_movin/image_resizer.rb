@@ -5,7 +5,7 @@ module PawsMovin
     # https://www.libvips.org/API/current/libvips-resample.html#vips-thumbnail
     THUMBNAIL_OPTIONS = { size: :down, linear: false, no_rotate: true, export_profile: "srgb", import_profile: "srgb" }.freeze
     # https://www.libvips.org/API/current/VipsForeignSave.html#vips-webpsave
-    WEBP_OPTIONS = { strip: true }
+    WEBP_OPTIONS = { strip: true }.freeze
     CROP_OPTIONS = { linear: false, no_rotate: true, export_profile: "srgb", import_profile: "srgb", crop: :attention }.freeze
 
     def resize(file, width, height, resize_quality = 90)

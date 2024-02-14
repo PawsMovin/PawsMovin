@@ -29,7 +29,7 @@ class FavoriteManager
     retries = 5
     begin
       Favorite.transaction(**ISOLATION) do
-        unless Favorite.for_user(user.id).where(user_id: user.id, post_id: post.id).exists?
+        unless Favorite.for_user(user.id).exists?(user_id: user.id, post_id: post.id)
           return
         end
 

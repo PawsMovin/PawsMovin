@@ -93,7 +93,7 @@
         <% else %>
           <li><%= link_to("Profile", user_path(CurrentUser.user)) %></li>
           <li><%= link_to("Settings", edit_user_path(CurrentUser.user)) %></li>
-          <li><%= link_to("Refresh counts", new_maintenance_user_count_fixes_path) %>
+          <li><%= link_to("Refresh counts", new_users_count_fixes_path) %>
         <% end %>
         <li><%= link_to("Feedback", user_feedbacks_path) %></li>
         <li><%= link_to("Terms of Service", terms_of_service_path) %></li>

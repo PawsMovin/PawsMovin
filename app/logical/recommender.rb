@@ -1,11 +1,13 @@
 module Recommender
   module_function
+
   MIN_POST_FAVS = 5
   MIN_USER_FAVS = 50
 
   def enabled?
     PawsMovin.config.recommender_server.present?
   end
+
   def available_for_post?(post)
     enabled? && post.fav_count > MIN_POST_FAVS
   end
@@ -28,22 +30,21 @@ module Recommender
     process_recs(response.parsed_response, post: post, tags: tags)
   end
 
-  def process_recs(recs, post: nil, uploader: nil, favoriter: nil, tags: nil)
+  def process_recs(recs, ogpost: nil, uploader: nil, favoriter: nil, tags: nil)
     posts = Post.where(id: recs.map(&:first))
-    posts = posts.where.not(id: post.id) if post
+    posts = posts.where.not(id: ogpost.id) if ogpost
     posts = posts.where.not(uploader_id: uploader.id) if uploader
     posts = posts.where.not(id: favoriter.favorites.select(:post_id)) if favoriter
     posts = posts.where(id: Post.tag_match_sql(tags).reorder(nil).select(:id)) if tags.present?
 
     id_to_score = recs.to_h
     recs = posts.map { |post| { score: id_to_score[post.id], post: post } }
-    recs = recs.sort_by { |rec| -rec[:score] }
-    recs
+    recs.sort_by { |rec| -rec[:score] }
   end
 
   def search(params)
     if params[:user_name].present?
-      user = User.find_by_name(params[:user_name])
+      user = User.find_by(name: params[:user_name])
     elsif params[:user_id].present?
       user = User.find(params[:user_id])
     elsif params[:post_id].present?

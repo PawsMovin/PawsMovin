@@ -35,7 +35,7 @@ class TableBuilder
     # @param td [Hash] the HTML attributes for the column's <td> tag.
     # @param width [String] the HTML width value for the <th> tag.
     # @yieldparam item a block that returns the column value based on the item.
-    def initialize(attribute = nil, column: nil, th: {}, td: {}, width: nil, name: nil, &block)
+    def initialize(attribute = nil, column: nil, th: {}, td: {}, width: nil, name: nil, &block) # rubocop:disable Metrics/ParameterLists, Naming/MethodParameterName
       @attribute = attribute
       @column = column
       @header_attributes = { width: width, **th }
@@ -58,12 +58,12 @@ class TableBuilder
 
     # Returns the value of the table cell.
     # @param item [ApplicationRecord] the table cell item
-    # @param i [Integer] the table row number
-    # @param j [Integer] the table column number
+    # @param row [Integer] the table row number
+    # @param column [Integer] the table column number
     # @return [#to_s] the value of the table cell
-    def value(item, i, j)
+    def value(item, row, column)
       if block.present?
-        block.call(item, i, j, self)
+        block.call(item, row, column, self)
         nil
       elsif attribute.is_a?(Symbol)
         item.send(attribute)
@@ -89,7 +89,7 @@ class TableBuilder
   # @param tr [Hash] optional HTML attributes for the <tr> tag for each row
   # @param table_attributes [Hash] optional HTML attributes for the <table> tag
   # @yieldparam table [self] the table being built
-  def initialize(items, tr: {}, **table_attributes)
+  def initialize(items, tr: {}, **table_attributes) # rubocop:disable Naming/MethodParameterName
     @items = items
     @columns = []
     @table_attributes = { class: "striped", **table_attributes }

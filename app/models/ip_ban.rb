@@ -11,7 +11,7 @@ class IpBan < ApplicationRecord
   end
 
   def self.is_banned?(ip_addr)
-    where("ip_addr >>= ?", ip_addr).exists?
+    exists?(["ip_addr >>= ?", ip_addr])
   end
 
   def self.search(params)

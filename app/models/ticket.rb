@@ -55,7 +55,6 @@ class Ticket < ApplicationRecord
   MODEL_TYPES = %w[Artist Comment Dmail ForumPost Pool Post PostSet User WikiPage].freeze
 
   module TicketTypes
-
     module Comment
       def can_create_for?(user)
         model&.visible_to?(user)
@@ -77,7 +76,6 @@ class Ticket < ApplicationRecord
     end
 
     module ForumPost
-
       def can_create_for?(user)
         model.visible?(user)
       end
@@ -92,7 +90,6 @@ class Ticket < ApplicationRecord
     end
 
     module WikiPage
-
       def can_create_for?(user)
         true
       end

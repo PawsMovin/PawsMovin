@@ -16,7 +16,7 @@ class EmailsController < ApplicationController
     RateLimiter.hit("emailconfirm:#{CurrentUser.id}", 12.hours)
 
 
-    Maintenance::User::EmailConfirmationMailer.confirmation(CurrentUser.user).deliver_now
+    Users::EmailConfirmationMailer.confirmation(CurrentUser.user).deliver_now
     redirect_to home_users_path, notice: "Activation email resent"
   end
 

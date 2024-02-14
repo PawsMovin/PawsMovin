@@ -138,8 +138,6 @@ class User < ApplicationRecord
   belongs_to :avatar, class_name: 'Post', optional: true
   accepts_nested_attributes_for :dmail_filter
 
-
-
   module BanMethods
     def validate_ip_addr_is_not_banned
       if IpBan.is_banned?(CurrentUser.ip_addr)
@@ -873,7 +871,7 @@ class User < ApplicationRecord
     def validate_sock_puppets
       return if @validate_sock_puppets == false
 
-      if User.where(last_ip_addr: CurrentUser.ip_addr).where("created_at > ?", 1.day.ago).exists?
+      if User.where(last_ip_addr: CurrentUser.ip_addr).exists?(["created_at > ?", 1.day.ago])
         errors.add(:last_ip_addr, "was used recently for another account and cannot be reused for another day")
       end
     end

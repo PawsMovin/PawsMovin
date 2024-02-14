@@ -6,7 +6,7 @@ module Permissions
   IGNORED_CONTROLLERS = %w[
     admin/dashboards admin/exceptions admin/danger_zone
     moderator/dashboards moderator/ip_addrs
-    maintenance/user/email_notifications maintenance/user/password_resets maintenance/user/passwords maintenance/user/login_reminders maintenance/user/deletions maintenance/user/email_changes
+    users/email_notifications users/password_resets users/passwords users/login_reminders users/deletions users/email_changes
     static application sessions emails moderator/user_text_versions
   ].freeze
   IGNORED_ACTIONS = %w[new edit search diff show_or_new custom_style edit_user edit_blacklist confirm_delete confirm_move_favorites request_password_reset].freeze

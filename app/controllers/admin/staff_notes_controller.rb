@@ -47,7 +47,6 @@ module Admin
       redirect_back(fallback_location: admin_staff_notes_path)
     end
 
-
     private
 
     def staff_note_params

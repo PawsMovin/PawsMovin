@@ -6,8 +6,8 @@ class UploadService
     IMAGE_TYPES = %i[original large preview crop]
 
     def delete_file(md5, file_ext, upload_id = nil)
-      if Post.where(md5: md5).exists?
-        if upload_id.present? && Upload.where(id: upload_id).exists?
+      if Post.exists?(md5: md5)
+        if upload_id.present? && Upload.exists?(id: upload_id)
           CurrentUser.as_system do
             Upload.find(upload_id).update(status: "completed")
           end

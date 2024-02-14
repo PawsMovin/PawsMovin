@@ -8,7 +8,7 @@
         | <%= link_to "Advanced", "#advanced-settings" %>
         <% if CurrentUser.user.id == @user.id %>
           | <%= link_to "Change password", edit_user_password_path(:user_id => @user.id), :id => "change-password" %>
-          | <%= link_to "Delete account", maintenance_user_deletion_path, :id => "delete-account" %>
+          | <%= link_to "Delete account", users_deletion_path, :id => "delete-account" %>
         <% end %>
       </h2>
 
@@ -28,7 +28,7 @@
               <em>blank</em>
             <% end %>
             –
-            <%= link_to "Change your email", new_maintenance_user_email_change_path %>
+            <%= link_to "Change your email", new_users_email_change_path %>
           </p>
         </div>
 

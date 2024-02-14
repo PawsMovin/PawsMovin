@@ -43,7 +43,7 @@ class PostDeletionReasonsController < ApplicationController
   def reorder
     new_orders = params[:_json].reject { |o| o[:id].nil? }
     new_ids = new_orders.pluck(:id)
-    current_ids = PostDeletionReason.all.select(:id).map(&:id)
+    current_ids = PostDeletionReason..pluck(:id)
     missing = current_ids - new_ids
     extra = new_ids - current_ids
     duplicate = new_ids.select { |id| new_ids.count(id) > 1 }.uniq

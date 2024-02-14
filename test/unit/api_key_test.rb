@@ -27,9 +27,9 @@ class ApiKeyTest < ActiveSupport::TestCase
         should allow_value(["0.0.0.0/0"]).for(:permitted_ip_addresses)
         should allow_value(["2600::1/64"]).for(:permitted_ip_addresses)
 
-        #should allow_value(["1.2.3.4/24 4.5.6.7/24"]).for(:permitted_ip_addresses)
-        #should_not allow_value(["blah"]).for(:permitted_ip_addresses)
-        #should_not allow_value(["1.2.3.4/64"]).for(:permitted_ip_addresses)
+        # should allow_value(["1.2.3.4/24 4.5.6.7/24"]).for(:permitted_ip_addresses)
+        # should_not allow_value(["blah"]).for(:permitted_ip_addresses)
+        # should_not allow_value(["1.2.3.4/64"]).for(:permitted_ip_addresses)
       end
     end
 

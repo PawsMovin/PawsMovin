@@ -8,19 +8,14 @@ require_relative "seeds/post_deletion_reasons"
 # Uncomment to see detailed logs
 # ActiveRecord::Base.logger = ActiveSupport::Logger.new($stdout)
 
-
-
 module Seeds
-
   def self.run!
-    begin
-      User.system.update_column(:level, User::Levels::ADMIN)
-      CurrentUser.user = User.system
-      Posts.run!
-      Mascots.run!
-    ensure
-      User.system.update_column(:level, User::Levels::SYSTEM)
-    end
+    User.system.update_column(:level, User::Levels::ADMIN)
+    CurrentUser.user = User.system
+    Posts.run!
+    Mascots.run!
+  ensure
+    User.system.update_column(:level, User::Levels::SYSTEM)
   end
 
   def self.create_aibur_category!
@@ -49,7 +44,6 @@ module Seeds
   end
 
   module Posts
-
     def self.get_posts(tags, limit = ENV.fetch("SEED_POST_COUNT", 100), page = 1)
       posts = Seeds.api_request("/posts.json?limit=#{[320, limit].min}&tags=#{tags.join('%20')}&page=#{page}")["posts"]
       puts "Get Page #{page}"

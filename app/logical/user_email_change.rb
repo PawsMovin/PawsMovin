@@ -28,7 +28,7 @@ class UserEmailChange
       if user.errors.empty?
         RateLimiter.hit("email:#{user.id}", 24.hours)
         if PawsMovin.config.enable_email_verification?
-          Maintenance::User::EmailConfirmationMailer.confirmation(user).deliver_now
+          Users::EmailConfirmationMailer.confirmation(user).deliver_now
         end
       end
     end

@@ -4,20 +4,20 @@ module BulkUpdateRequestsHelper
 
     case command
     when :create_alias
-      TagAlias.where(antecedent_name: antecedent, consequent_name: consequent, status: %w(active processing queued)).exists?
+      TagAlias.exists?(antecedent_name: antecedent, consequent_name: consequent, status: %w(active processing queued))
 
     when :create_implication
-      TagImplication.where(antecedent_name: antecedent, consequent_name: consequent, status: %w(active processing queued)).exists?
+      TagImplication.exists?(antecedent_name: antecedent, consequent_name: consequent, status: %w(active processing queued))
 
     when :remove_alias
-      TagAlias.where(antecedent_name: antecedent, consequent_name: consequent, status: "deleted").exists? || !TagAlias.where(antecedent_name: antecedent, consequent_name: consequent).exists?
+      TagAlias.exists?(antecedent_name: antecedent, consequent_name: consequent, status: "deleted") || !TagAlias.exists?(antecedent_name: antecedent, consequent_name: consequent)
 
     when :remove_implication
-      TagImplication.where(antecedent_name: antecedent, consequent_name: consequent, status: "deleted").exists? || !TagImplication.where(antecedent_name: antecedent, consequent_name: consequent).exists?
+      TagImplication.exists?(antecedent_name: antecedent, consequent_name: consequent, status: "deleted") || !TagImplication.exists?(antecedent_name: antecedent, consequent_name: consequent)
 
     when :change_category
       tag, category = antecedent, consequent
-      Tag.where(name: tag, category: Tag.categories.value_for(category)).exists?
+      Tag.exists?(name: tag, category: Tag.categories.value_for(category))
 
     else
       false
@@ -29,10 +29,10 @@ module BulkUpdateRequestsHelper
 
     case command
     when :create_alias
-      TagAlias.where(antecedent_name: antecedent, consequent_name: consequent).where("status like ?", "error: %").exists?
+      TagAlias.where(antecedent_name: antecedent, consequent_name: consequent).exists?(["status like ?", "error: %"])
 
     when :create_implication
-      TagImplication.where(antecedent_name: antecedent, consequent_name: consequent).where("status like ?", "error: %").exists?
+      TagImplication.where(antecedent_name: antecedent, consequent_name: consequent).exists?(["status like ?", "error: %"])
 
     else
       false
