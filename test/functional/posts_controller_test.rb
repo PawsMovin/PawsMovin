@@ -3,6 +3,7 @@ require "test_helper"
 class PostsControllerTest < ActionDispatch::IntegrationTest
   context "The posts controller" do
     setup do
+      @admin = create(:admin_user)
       @user = create(:user, created_at: 1.month.ago)
       as(@user) do
         @post = create(:post, tag_string: "aaaa")
@@ -104,6 +105,79 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
         @post.reload
         assert_not_equal(@post.tag_string, @post2.tag_string)
         assert_response :missing
+      end
+    end
+
+    context "delete action" do
+      should "render" do
+        get_auth delete_post_path(@post), @admin
+        assert_response :success
+      end
+    end
+
+    context "destroy action" do
+      should "render" do
+        post_auth post_path(@post), @admin, params: { reason: "xxx", format: "js", _method: "delete" }
+        assert(@post.reload.is_deleted?)
+      end
+
+      should "work even if the deleter has flagged the post previously" do
+        as(@user) do
+          PostFlag.create(post: @post, reason: "aaa", is_resolved: false)
+        end
+        post_auth post_path(@post), @admin, params: { reason: "xxx", format: "js", _method: "delete" }
+        assert(@post.reload.is_deleted?)
+      end
+    end
+
+    context "undelete action" do
+      should "render" do
+        as(@user) do
+          @post.delete! "test delete"
+        end
+        assert_difference(-> { PostEvent.count }, 1) do
+          post_auth undelete_post_path(@post), @admin, params: { format: :json }
+        end
+
+        assert_response :success
+        assert_not(@post.reload.is_deleted?)
+      end
+    end
+
+    context "move_favorites action" do
+      setup do
+        @admin = create(:admin_user)
+      end
+
+      should "render" do
+        as(@user) do
+          @parent = create(:post)
+          @child = create(:post, parent: @parent)
+        end
+        users = create_list(:user, 2)
+        users.each do |u|
+          FavoriteManager.add!(user: u, post: @child)
+          @child.reload
+        end
+
+        post_auth move_favorites_post_path(@child.id), @admin, params: { commit: "Submit" }
+        assert_redirected_to(@child)
+        perform_enqueued_jobs(only: TransferFavoritesJob)
+        @parent.reload
+        @child.reload
+        as(@admin) do
+          assert_equal(users.map(&:id).sort, @parent.favorited_users.map(&:id).sort)
+          assert_equal([], @child.favorited_users.map(&:id))
+        end
+      end
+    end
+
+    context "expunge action" do
+      should "render" do
+        post_auth expunge_post_path(@post), @admin, params: { format: :json }
+
+        assert_response :success
+        assert_equal(false, ::Post.exists?(@post.id))
       end
     end
   end

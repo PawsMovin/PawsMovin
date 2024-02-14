@@ -12,5 +12,21 @@ class PostApprovalsControllerTest < ActionDispatch::IntegrationTest
         assert_response :success
       end
     end
+
+    context "create action" do
+      setup do
+        @admin = create(:admin_user)
+        as(@admin) do
+          @post = create(:post, is_pending: true)
+        end
+      end
+
+      should "render" do
+        post_auth post_approvals_path, @admin, params: { post_id: @post.id, format: :json }
+        assert_response :success
+        @post.reload
+        assert_not(@post.is_pending?)
+      end
+    end
   end
 end

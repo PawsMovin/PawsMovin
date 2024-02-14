@@ -355,7 +355,6 @@ Layout/SpaceAfterComma:
     - 'app/serializers/post_serializer.rb'
     - 'app/views/admin/danger_zone/index.html.erb'
     - 'app/views/mod_actions/_search.html.erb'
-    - 'app/views/moderator/post/queues/_quick_mod.html.erb'
     - 'app/views/post_events/_search.html.erb'
     - 'app/views/post_events/index.html.erb'
     - 'app/views/users/edit.html.erb'
@@ -418,11 +417,6 @@ Layout/SpaceBeforeBlockBraces:
     - 'app/views/moderator/ip_addrs/_ip_listing.html.erb'
     - 'test/unit/post_replacement_test.rb'
 
-# Offense count: 1
-# This cop supports safe autocorrection (--autocorrect).
-Layout/SpaceBeforeComma:
-  Exclude:
-    - 'app/views/moderator/post/queues/_quick_mod.html.erb'
 
 # Offense count: 2
 # This cop supports safe autocorrection (--autocorrect).
@@ -584,7 +578,6 @@ Layout/SpaceInsideHashLiteralBraces:
     - 'app/views/moderator/ip_addrs/_ip_listing.html.erb'
     - 'app/views/moderator/ip_addrs/_ip_listing.json.erb'
     - 'app/views/moderator/ip_addrs/_user_listing.erb'
-    - 'app/views/moderator/post/queues/_quick_mod.html.erb'
     - 'app/views/note_versions/_revert_listing.html.erb'
     - 'app/views/note_versions/_standard_listing.html.erb'
     - 'app/views/notes/index.html.erb'
@@ -869,7 +862,6 @@ Lint/SymbolConversion:
     - 'app/views/forum_post_votes/_add_vote.html.erb'
     - 'app/views/forum_post_votes/_vote.html.erb'
     - 'app/views/help/index.html.erb'
-    - 'app/views/moderator/post/queues/_quick_mod.html.erb'
     - 'app/views/note_versions/_revert_listing.html.erb'
     - 'app/views/pool_versions/_revert_listing.html.erb'
     - 'app/views/post_replacements/index.html.erb'
@@ -960,7 +952,6 @@ Lint/UselessAssignment:
     - 'app/logical/vote_manager.rb'
     - 'app/models/post.rb'
     - 'db/fixes/101_migrate_mod_actions.rb'
-    - 'test/functional/moderator/post/disapprovals_controller_test.rb'
     - 'test/models/upload_service_test.rb'
     - 'test/unit/artist_test.rb'
     - 'test/unit/bulk_update_importer_importer_test.rb'
@@ -1125,7 +1116,6 @@ Rails/ActionOrder:
     - 'app/controllers/help_controller.rb'
     - 'app/controllers/ip_bans_controller.rb'
     - 'app/controllers/mascots_controller.rb'
-    - 'app/controllers/moderator/post/disapprovals_controller.rb'
     - 'app/controllers/news_updates_controller.rb'
     - 'app/controllers/pools_controller.rb'
     - 'app/controllers/post_flags_controller.rb'
@@ -1189,7 +1179,6 @@ Rails/Blank:
     - 'app/models/note.rb'
     - 'app/models/post.rb'
     - 'app/models/post_flag.rb'
-    - 'app/views/moderator/post/posts/confirm_delete.html.erb'
 
 # Offense count: 6
 # This cop supports unsafe autocorrection (--autocorrect-all).
@@ -1337,7 +1326,6 @@ Rails/OutputSafety:
     - 'app/views/layouts/_head.html.erb'
     - 'app/views/moderator/ip_addrs/_ip_listing.json.erb'
     - 'app/views/moderator/ip_addrs/_user_listing.json.erb'
-    - 'app/views/moderator/post/posts/confirm_delete.html.erb'
     - 'app/views/post_disapprovals/_counts.html.erb'
     - 'app/views/post_sets/_form.html.erb'
     - 'app/views/posts/show.html.erb'
@@ -1792,8 +1780,6 @@ Style/HashSyntax:
     - 'app/views/moderator/dashboards/_search_activity.html.erb'
     - 'app/views/moderator/dashboards/_search_ip_addr.html.erb'
     - 'app/views/moderator/ip_addrs/_user_listing.erb'
-    - 'app/views/moderator/post/posts/confirm_delete.html.erb'
-    - 'app/views/moderator/post/posts/confirm_move_favorites.html.erb'
     - 'app/views/news_updates/index.html.erb'
     - 'app/views/note_versions/_revert_listing.html.erb'
     - 'app/views/notes/_quick_search.html.erb'
@@ -2484,7 +2470,6 @@ Style/StringConcatenation:
     - 'app/models/pool.rb'
     - 'app/models/tag_alias.rb'
     - 'app/models/tag_implication.rb'
-    - 'app/views/moderator/post/posts/confirm_delete.html.erb'
     - 'app/views/posts/show.html.erb'
     - 'config/environment.rb'
     - 'test/unit/bulk_update_importer_importer_test.rb'
@@ -2577,7 +2562,6 @@ Style/StringLiterals:
     - 'app/views/help/_form.html.erb'
     - 'app/views/moderator/ip_addrs/_ip_listing.html.erb'
     - 'app/views/moderator/ip_addrs/_user_listing.erb'
-    - 'app/views/moderator/post/queues/_quick_mod.html.erb'
     - 'app/views/note_versions/_revert_listing.html.erb'
     - 'app/views/pool_versions/_revert_listing.html.erb'
     - 'app/views/post_replacements/index.html.erb'
@@ -2644,8 +2628,6 @@ Style/StringLiterals:
     - 'test/functional/mod_actions_controller_test.rb'
     - 'test/functional/moderator/dashboards_controller_test.rb'
     - 'test/functional/moderator/ip_addrs_controller_test.rb'
-    - 'test/functional/moderator/post/disapprovals_controller_test.rb'
-    - 'test/functional/moderator/post/posts_controller_test.rb'
     - 'test/functional/news_updates_controller_test.rb'
     - 'test/functional/note_previews_controller_test.rb'
     - 'test/functional/note_versions_controller_test.rb'

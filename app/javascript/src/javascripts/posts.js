@@ -755,8 +755,8 @@ Post.delete_with_reason = function(post_id, reason, reload_after_delete) {
   Post.notice_update("inc");
   SendQueue.add(function() {
     $.ajax({
-      type: "POST",
-      url: `/moderator/post/posts/${post_id}/delete.json`,
+      type: "DELETE",
+      url: `/posts/${post_id}.json`,
       data: {commit: "Delete", reason: reason, move_favorites: true}
     }).fail(function(data) {
       var message = $.map(data.responseJSON.errors, function(msg, attr) { return msg; }).join('; ');
@@ -779,7 +779,7 @@ Post.undelete = function(post_id) {
   SendQueue.add(function() {
     $.ajax({
       type: "POST",
-      url: `/moderator/post/posts/${post_id}/undelete.json`
+      url: `/posts/${post_id}/undelete.json`
     }).fail(function(data) {
 //      var message = $.map(data.responseJSON.errors, function(msg, attr) { return msg; }).join('; ');
       const message = data.responseJSON.message;
@@ -820,8 +820,7 @@ Post.unapprove = function(post_id) {
   SendQueue.add(function() {
     $.ajax({
       type: "DELETE",
-      url: "/moderator/post/approval.json",
-      data: {post_id: post_id}
+      url: `/post_approvals/${post_id}.json`
     }).fail(function(data) {
       var message = $.map(data.responseJSON.errors, function(msg, attr) { return msg; }).join('; ');
       $(window).trigger('danbooru:error', "Error: " + message);
@@ -835,8 +834,8 @@ Post.unapprove = function(post_id) {
 }
 
 Post.destroy = function(post_id) {
-  $.post(`/moderator/post/posts/${post_id}/expunge.json`, {}
-  ).fail(data => {
+  $.post(`/posts/${post_id}/expunge.json`, {})
+  .fail(data => {
     var message = $.map(data.responseJSON.errors, function(msg, attr) { return msg; }).join("; ");
     $(window).trigger("danbooru:error", "Error: " + message);
   }).done(data => {
@@ -845,8 +844,8 @@ Post.destroy = function(post_id) {
 };
 
 Post.regenerate_image_samples = function(post_id) {
-  $.post(`/moderator/post/posts/${post_id}/regenerate_thumbnails.json`, {}
-  ).fail(data => {
+  $.post(`/posts/${post_id}/regenerate_thumbnails.json`, {})
+  .fail(data => {
     Utility.error("Error: " + data.responseJSON.reason);
   }).done(data => {
     Utility.notice("Image samples regenerated.");
@@ -854,8 +853,8 @@ Post.regenerate_image_samples = function(post_id) {
 };
 
 Post.regenerate_video_samples = function(post_id) {
-  $.post(`/moderator/post/posts/${post_id}/regenerate_videos.json`, {}
-  ).fail(data => {
+  $.post(`/posts/${post_id}/regenerate_videos.json`, {})
+  .fail(data => {
     Utility.error("Error: " + data.responseJSON.reason);
   }).done(data => {
     Utility.notice("Video samples will be regenerated in a few minutes.");
@@ -866,8 +865,8 @@ Post.approve = function(post_id, callback) {
   Post.notice_update("inc");
   SendQueue.add(function() {
     $.post(
-      "/moderator/post/approval.json",
-      { "post_id": post_id }
+      `/post_approvals.json`,
+      { post_id }
     ).fail(function(data) {
       const message = $.map(data.responseJSON.errors, function(msg, attr) { return msg; }).join("; ");
       Danbooru.error("Error: " + message);
@@ -891,7 +890,7 @@ Post.disapprove = function(post_id, reason, should_reload) {
   Post.notice_update("inc");
   SendQueue.add(function() {
     $.post(
-      "/moderator/post/disapprovals.json",
+      "/post_disapprovals.json",
       {"post_disapproval[post_id]": post_id, "post_disapproval[reason]": reason}
     ).fail(function(data) {
       var message = $.map(data.responseJSON.errors, function(msg, attr) { return msg; }).join("; ");

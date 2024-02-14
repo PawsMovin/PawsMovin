@@ -11,7 +11,7 @@
         <li><%= link_to("Popular", popular_index_path) %></li>
         <li><%= link_to("Similar Images Search", iqdb_queries_path) %></li>
         <% if CurrentUser.can_approve_posts? %>
-          <li><%= link_to("Disapprovals", moderator_post_disapprovals_path) %></li>
+          <li><%= link_to("Disapprovals", post_disapprovals_path) %></li>
         <% end %>
         <li><%= link_to("Deletion Reasons", post_deletion_reasons_path) %></li>
         <li><%= link_to("Deleted Index", deleted_posts_path) %></li>

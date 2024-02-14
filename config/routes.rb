@@ -39,22 +39,6 @@ Rails.application.routes.draw do
         get :export
       end
     end
-    namespace :post do
-      resource :approval, only: %i[create destroy]
-      resources :disapprovals, only: %i[create index]
-      resources :posts, only: %i[delete undelete expunge confirm_delete] do
-        member do
-          get :confirm_delete
-          post :expunge
-          post :delete
-          post :undelete
-          get :confirm_move_favorites
-          post :move_favorites
-          post :regenerate_thumbnails
-          post :regenerate_videos
-        end
-      end
-    end
     resources :user_text_versions, only: %i[index show] do
       get :diff, on: :collection
     end
@@ -211,7 +195,7 @@ Rails.application.routes.draw do
   end
   resources :deleted_posts, only: [:index]
   resource :post_recommendations, only: %i[show]
-  resources :posts, only: %i[index show update] do
+  resources :posts, only: %i[index show update delete destroy] do
     resources :replacements, only: %i[index new create], controller: "post_replacements"
     resource :recommended, only: %i[show], controller: "post_recommendations"
     resource :similar, only: %i[show], controller: "iqdb_queries"
@@ -228,6 +212,14 @@ Rails.application.routes.draw do
       get :show_seq
       put :mark_as_translated
       get :comments, to: "comments#for_post"
+
+      post :expunge
+      get :delete
+      post :undelete
+      get :confirm_move_favorites
+      post :move_favorites
+      post :regenerate_thumbnails
+      post :regenerate_videos
     end
   end
   resources :post_votes, only: %i[index delete lock] do
@@ -238,7 +230,8 @@ Rails.application.routes.draw do
   end
   resources :post_events, only: :index
   resources :post_flags, except: %i[edit update]
-  resources :post_approvals, only: [:index]
+  resources :post_approvals, only: %i[index create destroy]
+  resources :post_disapprovals, only: %i[create index]
   resources :post_versions, only: [:index] do
     member do
       put :undo

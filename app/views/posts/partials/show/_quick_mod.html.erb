@@ -37,7 +37,7 @@
   </div>
   <% end %>
   <div class="quick-mod-group">
-    <%= link_to "Delete", confirm_delete_moderator_post_post_path(id: post.id), class: "button btn-neutral btn-important" %>
+    <%= link_to "Delete", delete_post_path(id: post.id), class: "button btn-neutral btn-important" %>
     |
     <% (reasons = PostDeletionReason.quick_access).each_with_index.each do |reason, index| %>
       <%= link_to reason.title, "#", class: "delete-with-reason-link button btn-neutral", data: { prompt: reason.prompt, reason: reason.reason, post_id: post.id } %>

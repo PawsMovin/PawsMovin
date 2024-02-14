@@ -5,7 +5,7 @@
     <%= PostPresenter.preview(@post, show_deleted: true, no_blacklist: true) %>
   </div>
 
-  <%= form_tag(delete_moderator_post_post_path, :style => "clear: both;", :class => "simple_form") do %>
+  <%= form_tag(post_path(@post), style: "clear: both;", class: "simple_form", method: :delete) do %>
     <div class="input">
       <label for="reason">Reason</label>
       <%= text_field_tag "reason", @reason %>

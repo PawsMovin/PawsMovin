@@ -1,6 +1,9 @@
 class PostsController < ApplicationController
   before_action :member_only, except: %i[show show_seq index random]
-  before_action :admin_only, only: [:update_iqdb]
+  before_action :admin_only, only: %i[update_iqdb expunge]
+  before_action :janitor_only, only: %i[regenerate_thumbnails regenerate_videos]
+  before_action :approver_only, only: %i[delete destroy undelete confirm_move_favorites move_favorites expunge approve unapprove]
+  skip_before_action :api_check, only: %i[delete destroy undelete move_favorites expunge approve unapprove]
   respond_to :html, :json
 
   def index
@@ -104,6 +107,86 @@ class PostsController < ApplicationController
     @post = Post.find(params[:id])
     @post.update_iqdb_async
     respond_with_post_after_update(@post)
+  end
+
+  def delete
+    @post = Post.find(params[:id])
+    @reason = @post.pending_flag&.reason || ""
+    @reason = "Inferior version/duplicate of post ##{@post.parent_id}" if @post.parent_id && @reason == ""
+    @reason = "" if @reason =~ /uploading_guidelines/
+  end
+
+  def destroy
+    @post = Post.find(params[:id])
+    @post.delete!(params[:reason], move_favorites: params[:move_favorites].present?)
+    @post.copy_sources_to_parent if params[:copy_sources].present?
+    @post.copy_tags_to_parent if params[:copy_tags].present?
+    @post.parent.save if params[:copy_tags].present? || params[:copy_sources].present?
+    respond_with(@post) do |format|
+      format.html { redirect_to post_path(@post) }
+    end
+  end
+
+  def undelete
+    @post = Post.find(params[:id])
+    @post.undelete!
+    respond_with(@post)
+  end
+
+  def confirm_move_favorites
+    @post = Post.find(params[:id])
+  end
+
+  def move_favorites
+    @post = Post.find(params[:id])
+    @post.give_favorites_to_parent
+    redirect_to(post_path(@post))
+  end
+
+  def expunge
+    @post = Post.find(params[:id])
+    @post.expunge!
+    respond_with(@post)
+  end
+
+  def regenerate_thumbnails
+    @post = Post.find(params[:id])
+    raise User::PrivilegeError, "Cannot regenerate thumbnails on deleted images" if @post.is_deleted?
+    @post.regenerate_image_samples!
+    respond_with(@post)
+  end
+
+  def regenerate_videos
+    @post = Post.find(params[:id])
+    raise User::PrivilegeError, "Cannot regenerate thumbnails on deleted images" if @post.is_deleted?
+    @post.regenerate_video_samples!
+    respond_with(@post)
+  end
+
+  def approve
+    @post = Post.find(params[:id])
+    if @post.is_approvable?
+      @post.approve!
+      respond_with do |format|
+        format.json do
+          render json: {}, status: 201
+        end
+      end
+    elsif @post.approver.present?
+      flash[:notice] = "Post is already approved"
+    else
+      flash[:notice] = "You can't approve this post"
+    end
+  end
+
+  def unapprove
+    @post = Post.find(params[:id])
+    if @post.is_unapprovable?(CurrentUser.user)
+      @post.unapprove!
+      respond_with(nil)
+    else
+      flash[:notice] = "You can't unapprove this post"
+    end
   end
 
   private

@@ -29,9 +29,6 @@ en:
       help: "Help Page"
       ip_bans: "IP Ban"
       "users/dmail_filters": "DMail Filters"
-      "moderator/post/disapprovals": "Post Disapproval"
-      "moderator/post/approvals": "Post Approval"
-      "moderator/post/posts": "Post"
     routes:
       "admin/reowner:create": "Admin: Change Post Ownership"
       "admin/stuck_dnp:create": "Admin: Fix Stuck DNP"
@@ -45,8 +42,6 @@ en:
       "dtext_previews:create": "Preview DText"
       "iqdb_queries:show": "Query IQDB"
       "users/count_fixes:create": "Fix User Stat Counts"
-      "moderator/post/approvals:create": "Approve Post"
-      "moderator/post/approvals:destroy": "Unapprove Post"
       "note_previews:show": "Preview Note"
       "popular:index": "List Popular Posts"
       "post_recommendations:show": "List Post Recommendations"
