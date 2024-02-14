@@ -1,7 +1,7 @@
 class TagRelationshipRequest
   include ActiveModel::Validations
 
-  attr_reader :antecedent_name, :consequent_name, :tag_relationship, :reason, :forum_topic, :skip_forum
+  attr_reader :antecedent_name, :consequent_name, :tag_relationship, :reason, :forum_topic, :forum_topic_id, :skip_forum
 
   validate :validate_tag_relationship
   validate :validate_forum_topic
@@ -11,6 +11,7 @@ class TagRelationshipRequest
     @antecedent_name = attributes[:antecedent_name].strip.tr(" ", "_")
     @consequent_name = attributes[:consequent_name].strip.tr(" ", "_")
     @reason = attributes[:reason]
+    @forum_topic_id = attributes[:forum_topic_id]
     self.skip_forum = attributes[:skip_forum]
   end
 
@@ -26,12 +27,17 @@ class TagRelationshipRequest
       @tag_relationship.save
 
       unless skip_forum
-        @forum_topic = build_forum_topic
-        @forum_topic.save
+        if forum_topic.present?
+          forum_post = @forum_topic.posts.create(tag_change_request: @tag_relationship, body: "Reason: #{reason}")
+        else
+          @forum_topic = build_forum_topic
+          @forum_topic.save
+          forum_post = @forum_topic.posts.first
+          forum_post.update(tag_change_request: @tag_relationship)
+        end
 
         @tag_relationship.forum_topic_id = @forum_topic.id
-        @tag_relationship.forum_post_id = @forum_topic.posts.first.id
-        @forum_topic.posts.first.update(tag_change_request: @tag_relationship)
+        @tag_relationship.forum_post_id = forum_post.id
         @tag_relationship.save
       end
     end
@@ -68,6 +74,13 @@ class TagRelationshipRequest
 
   def validate_forum_topic
     return if skip_forum
+    if forum_topic_id.present?
+      @forum_topic = ForumTopic.find_by(id: forum_topic_id)
+      if @forum_topic.blank?
+        errors.add(:forum_topic_id, "is invalid")
+        return
+      end
+    end
     ft = @forum_topic || build_forum_topic
     if ft.invalid?
       errors.add(:base, ft.errors.full_messages.join("; "))

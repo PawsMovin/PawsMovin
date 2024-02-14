@@ -14,6 +14,7 @@ class TagAliasesController < ApplicationController
   end
 
   def new
+    @tag_alias = TagAlias.new
   end
 
   def edit
@@ -24,7 +25,9 @@ class TagAliasesController < ApplicationController
     @tag_alias_request = TagAliasRequest.create(tag_alias_params(:create))
 
     if @tag_alias_request.invalid?
-      render action: "new"
+      respond_with(@tag_alias_request) do |format|
+        format.html { redirect_back(fallback_location: new_tag_alias_path, notice: @tag_alias_request.errors.full_messages.join("; ")) }
+      end
     elsif @tag_alias_request.forum_topic
       redirect_to forum_topic_path(@tag_alias_request.forum_topic)
     else
@@ -65,8 +68,9 @@ class TagAliasesController < ApplicationController
   private
 
   def tag_alias_params(context = nil)
-    permitted_params = %i[antecedent_name consequent_name forum_topic_id]
-    permitted_params += %i[reason skip_forum] if context == :create
+    permitted_params = %i[antecedent_name consequent_name]
+    permitted_params += %i[reason forum_topic_id] if context == :create
+    permitted_params += %i[skip_forum] if context == :create && CurrentUser.is_admin?
     params.require(:tag_alias).permit(permitted_params)
   end
 end

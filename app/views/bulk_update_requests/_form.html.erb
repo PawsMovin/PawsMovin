@@ -36,13 +36,10 @@
   <% end %>
 
   <% if @bulk_update_request.new_record? %>
-    <%= f.input :forum_topic_id, as: :string, :hint => " (optional)" %>
-  <% elsif @bulk_update_request.persisted? && CurrentUser.is_admin? %>
-    <%= f.input :forum_topic_id, as: :string %>
-    <%= f.input :forum_post_id, as: :string %>
+    <%= f.input :forum_topic_id, as: :string, hint: " (optional)" %>
   <% end %>
 
-  <%= f.button :submit, :value => "Submit" %>
+  <%= f.button :submit, value: "Submit" %>
 <% end %>
 
 <%= content_for(:html_header) do %>

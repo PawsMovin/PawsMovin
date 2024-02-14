@@ -14,6 +14,7 @@ class TagImplicationsController < ApplicationController
   end
 
   def new
+    @tag_implication = TagImplication.new
   end
 
   def edit
@@ -24,7 +25,9 @@ class TagImplicationsController < ApplicationController
     @tag_implication_request = TagImplicationRequest.create(tag_implication_params(:create))
 
     if @tag_implication_request.invalid?
-      render action: "new"
+      respond_with(@tag_implication_request) do |format|
+        format.html { redirect_back(fallback_location: new_tag_implication_path, notice: @tag_implication_request.errors.full_messages.join("; ")) }
+      end
     elsif @tag_implication_request.forum_topic
       redirect_to forum_topic_path(@tag_implication_request.forum_topic)
     else
@@ -71,8 +74,9 @@ class TagImplicationsController < ApplicationController
   private
 
   def tag_implication_params(context = nil)
-    permitted_params = %i[antecedent_name consequent_name forum_topic_id]
-    permitted_params += %i[reason skip_forum] if context == :create
+    permitted_params = %i[antecedent_name consequent_name]
+    permitted_params += %i[reason forum_topic_id] if context == :create
+    permitted_params += %i[skip_forum] if context == :create && CurrentUser.is_admin?
     params.require(:tag_implication).permit(permitted_params)
   end
 end

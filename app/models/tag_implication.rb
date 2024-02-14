@@ -3,6 +3,7 @@ class TagImplication < TagRelationship
 
   array_attribute :descendant_names
 
+  attr_accessor :skip_forum
   before_save :update_descendant_names
   after_save :update_descendant_names_for_parents
   after_destroy :update_descendant_names_for_parents
