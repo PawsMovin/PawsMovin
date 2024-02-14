@@ -199,8 +199,8 @@ class TagAlias < TagRelationship
         rename_artist
         update(status: 'active', post_count: consequent_tag.post_count)
         # TODO: Race condition with indexing jobs here.
-        antecedent_tag.fix_post_count if antecedent_tag
-        consequent_tag.fix_post_count if consequent_tag
+        antecedent_tag.fix_post_count if antecedent_tag&.persisted?
+        consequent_tag.fix_post_count if consequent_tag&.persisted?
       end
     rescue Exception => e
       Rails.logger.error("[TA] #{e.message}\n#{e.backtrace}")
