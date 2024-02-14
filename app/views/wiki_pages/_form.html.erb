@@ -12,6 +12,10 @@
 
     <%= f.input :body, as: :dtext, limit: PawsMovin.config.wiki_page_max_size %>
 
+    <% if CurrentUser.is_trusted? %>
+      <%= f.input :parent, :label => "Redirect to", autocomplete: "wiki-page" %>
+    <% end %>
+
     <% if CurrentUser.is_janitor? %>
       <%= f.input :is_locked, :label => "Locked" %>
     <% end %>

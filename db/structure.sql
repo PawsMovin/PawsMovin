@@ -2313,7 +2313,8 @@ CREATE TABLE public.wiki_page_versions (
     is_locked boolean NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    reason character varying
+    reason character varying,
+    parent character varying
 );
 
 
@@ -2349,7 +2350,8 @@ CREATE TABLE public.wiki_pages (
     is_locked boolean DEFAULT false NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    updater_id integer
+    updater_id integer,
+    parent character varying
 );
 
 
@@ -4505,6 +4507,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20240127150517'),
 ('20240127134104'),
 ('20240126174807'),
+('20240113112949'),
 ('20240101042716'),
 ('20231213010430'),
 ('20230531081706'),

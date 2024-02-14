@@ -2,11 +2,12 @@ class WikiPage < ApplicationRecord
   class RevertError < Exception ; end
 
   before_validation :normalize_title
+  before_validation :normalize_parent
   after_save :create_version
   validates :title, uniqueness: { :case_sensitive => false }
   validates :title, presence: true
   validates :title, tag_name: true, if: :title_changed?
-  validates :body, presence: true
+  validates :body, presence: true, unless: -> { parent.present? }
   validates :title, length: { minimum: 1, maximum: 100 }
   validates :body, length: { maximum: PawsMovin.config.wiki_page_max_size }
   validate :user_not_limited
@@ -128,6 +129,7 @@ class WikiPage < ApplicationRecord
 
     self.title = version.title
     self.body = version.body
+    self.parent = version.parent
   end
 
   def revert_to!(version)
@@ -141,6 +143,10 @@ class WikiPage < ApplicationRecord
 
   def self.normalize_other_name(name)
     name.unicode_normalize(:nfkc).gsub(/[[:space:]]+/, " ").strip.tr(" ", "_")
+  end
+
+  def normalize_parent
+    self.parent = nil if parent == ""
   end
 
   def skip_secondary_validations=(value)
@@ -161,17 +167,18 @@ class WikiPage < ApplicationRecord
   end
 
   def wiki_page_changed?
-    saved_change_to_title? || saved_change_to_body? || saved_change_to_is_locked?
+    saved_change_to_title? || saved_change_to_body? || saved_change_to_is_locked? || saved_change_to_parent?
   end
 
   def create_new_version
     versions.create(
-      :updater_id => CurrentUser.user.id,
-      :updater_ip_addr => CurrentUser.ip_addr,
-      :title => title,
-      :body => body,
-      :is_locked => is_locked,
-      reason: edit_reason
+      updater_id: CurrentUser.user.id,
+      updater_ip_addr: CurrentUser.ip_addr,
+      title: title,
+      body: body,
+      is_locked: is_locked,
+      parent: parent,
+      reason: edit_reason,
     )
   end
 
