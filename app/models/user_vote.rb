@@ -10,6 +10,7 @@ class UserVote < ApplicationRecord
 
   def self.inherited(child_class)
     super
+    return if child_class.name.starts_with?("Lockable") # We can't check for abstract here, it hasn't been set yet
     child_class.class_eval do
       belongs_to model_type
     end
@@ -18,6 +19,10 @@ class UserVote < ApplicationRecord
   # PostVote => :post
   def self.model_type
     model_name.singular.delete_suffix("_vote").to_sym
+  end
+
+  def self.vote_types
+    [%w[Downvote redtext -1], %w[Upvote greentext 1]]
   end
 
   def initialize_attributes
@@ -33,8 +38,19 @@ class UserVote < ApplicationRecord
     score == -1
   end
 
-  def is_locked?
-    score == 0
+  def vote_type
+    case score
+    when 1
+      "up"
+    when -1
+      "down"
+    else
+      raise
+    end
+  end
+
+  def vote_display
+    self.class.vote_types.to_h { |type, clazz, value| [value, %(<span class="#{clazz}">#{type.titleize}</span>)] }[score.to_s]
   end
 
   module SearchMethods
@@ -47,7 +63,7 @@ class UserVote < ApplicationRecord
 
       q = q.where_user(:user_id, :user, params)
 
-      allow_complex_params = (params.keys & ["#{model_type}_id", "user_name", "user_id"]).any?
+      allow_complex_params = (params.keys & %W[#{model_type}_id user_name user_id]).any?
 
       if allow_complex_params
         q = q.where_user({ model_type => :"#{model_creator_column}_id" }, :"#{model_type}_creator", params) do |q, _user_ids|

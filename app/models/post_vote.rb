@@ -1,4 +1,4 @@
-class PostVote < UserVote
+class PostVote < LockableUserVote
   validate :validate_user_can_vote
 
   def self.model_creator_column

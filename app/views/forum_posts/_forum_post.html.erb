@@ -24,7 +24,7 @@
           <%= format_text(tag_change_message(forum_post)) %>
         <% end %>
 
-        <%= format_text(parse_embedded_tag_request_text(forum_post.body), allow_color: forum_post.creator.is_privileged?) %>
+        <%= format_text(parse_embedded_tag_request_text(forum_post.body), allow_color: forum_post.creator.is_trusted?) %>
       </div>
       <%= render "application/update_notice", record: forum_post %>
       <%= render "application/warned_notice", record: forum_post %>
@@ -63,7 +63,7 @@
             <li><%= link_to "Parent", forum_topic_path(forum_post.topic, :page => forum_post.forum_topic_page, :anchor => "forum_post_#{forum_post.id}") %></li>
           <% end %>
           <% if CurrentUser.is_member? %>
-            <li><%= link_to "Report", new_ticket_path(disp_id: forum_post.id, qtype: 'forum') %></li>
+            <li><%= link_to "Report", model_new_ticket_path(model: forum_post) %></li>
           <% end %>
           <% if CurrentUser.is_moderator? %>
             <li>|</li>
@@ -77,10 +77,13 @@
               <span><%= link_to_ip forum_post.creator_ip_addr %></span>
             </li>
           <% end %>
+          <% if forum_post.votable? %>
+            <%= render "forum_post_votes/list", votes: forum_post.votes, forum_post: forum_post %>
+            <% if CurrentUser.is_moderator? %>
+              <li><%= link_to "(List)", controller: "forum_post_votes", search: { forum_post_id: forum_post.id } %></li>
+            <% end %>
+          <% end %>
         </menu>
-        <% if forum_post.votable? %>
-          <%= render "forum_post_votes/list", votes: forum_post.votes, forum_post: forum_post %>
-        <% end %>
         <% if forum_post.editable_by?(CurrentUser.user) %>
           <% if forum_post.is_original_post?(original_forum_post_id) %>
             <%= render "forum_topics/form", :forum_topic => forum_post.topic %>

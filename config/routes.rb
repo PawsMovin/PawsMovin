@@ -131,6 +131,7 @@ Rails.application.routes.draw do
       get :search
     end
   end
+  resources :forum_post_votes, only: %i[index]
   resources :forum_topics do
     member do
       post :hide

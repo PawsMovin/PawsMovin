@@ -1,44 +1,48 @@
-class ForumPostVote < ApplicationRecord
-  belongs_to_creator
+class ForumPostVote < UserVote
   belongs_to :forum_post
-  validates :creator_id, uniqueness: {scope: :forum_post_id}
-  validates :score, inclusion: {in: [-1, 0, 1]}
-  validate :validate_creator_is_not_limited, on: :create
-  scope :up, -> {where(score: 1)}
-  scope :down, -> {where(score: -1)}
-  scope :by, ->(user_id) {where(creator_id: user_id)}
-  scope :excluding_user, ->(user_id) {where("creator_id <> ?", user_id)}
+  validates :user_id, uniqueness: { scope: :forum_post_id }
+  validate :validate_user_is_not_limited, on: :create
+  scope :by, ->(user_id) {where(user_id: user_id)}
+  scope :excluding_user, ->(user_id) {where("user_id <> ?", user_id)}
 
-  def creator_name
-    if association(:creator).loaded?
-      return creator&.name || "Anonymous"
+  def self.vote_types
+    [%w[Downvote redtext -1], %w[Meh yellowtext 0], %w[Upvote greentext 1]]
+  end
+
+  def self.model_creator_column
+    :creator
+  end
+
+  def user_name
+    if association(:user).loaded?
+      return user&.name || "Anonymous"
     end
-    User.id_to_name(creator_id)
+    User.id_to_name(user_id)
   end
 
   def method_attributes
-    super + [:creator_name]
+    super + %i[user_name]
   end
 
-  def validate_creator_is_not_limited
-    allowed = creator.can_forum_vote_with_reason
+  def validate_user_is_not_limited
+    allowed = user.can_forum_vote_with_reason
     if allowed != true
-      errors.add(:creator, User.throttle_reason(allowed))
+      errors.add(:user, User.throttle_reason(allowed))
       return false
     end
     true
   end
 
-  def up?
-    score == 1
-  end
-
-  def down?
-    score == -1
-  end
-
-  def meh?
+  def is_meh?
     score == 0
+  end
+
+  def vote_type
+    if score == 0
+      "locked"
+    else
+      super
+    end
   end
 
   def fa_class
@@ -51,15 +55,7 @@ class ForumPostVote < ApplicationRecord
     end
   end
 
-  def vote_type
-    if score == 1
-      return "up"
-    elsif score == -1
-      return "down"
-    elsif score == 0
-      return "meh"
-    else
-      raise
-    end
+  def self.model_type
+    model_name.singular.delete_suffix("_vote").to_sym
   end
 end

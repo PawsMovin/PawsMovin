@@ -1,7 +1,7 @@
 <%# locals: (votes:, forum_post:, votable: true) -%>
 
-<% own_vote = votes.find { |vote| vote.creator == CurrentUser.user } %>
-<% other_votes = votes.reject { |vote| vote.creator == CurrentUser.user } %>
+<% own_vote = votes.find { |vote| vote.user == CurrentUser.user } %>
+<% other_votes = votes.reject { |vote| vote.user == CurrentUser.user } %>
 
 <ul class="forum-post-votes-list" id="forum-post-votes-for-<%= forum_post.id %>">
   <% if own_vote %>

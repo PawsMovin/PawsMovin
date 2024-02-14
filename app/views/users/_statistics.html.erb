@@ -60,6 +60,7 @@
           <%= presenter.forum_post_count(self) %>
           (<%= link_to "mentions", forum_posts_path(search: { body_matches: user.name }) %>)
           <% if CurrentUser.is_moderator? %>
+            (<%= link_to "votes", action: "index", controller: "forum_post_votes", search: { user_name: user.name } %>)
             (<%= link_to "edits", edit_histories_path(search: { versionable_type: "ForumPost", user_id: user.id }) %>)
           <% end %>
         </span>

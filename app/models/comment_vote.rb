@@ -1,4 +1,4 @@
-class CommentVote < UserVote
+class CommentVote < LockableUserVote
   validate :validate_user_can_vote
   validate :validate_comment_can_be_voted
 

@@ -1,10 +1,15 @@
 class ForumPostVotesController < ApplicationController
   respond_to :json
   before_action :member_only
-  before_action :load_forum_post
-  before_action :validate_forum_post
-  before_action :validate_no_vote_on_own_post, only: [:create]
-  before_action :load_vote, only: [:destroy]
+  before_action :moderator_only, only: %i[index]
+  before_action :load_forum_post, except: %i[index]
+  before_action :validate_forum_post, except: %i[index]
+  before_action :validate_no_vote_on_own_post, only: %i[create]
+  before_action :load_vote, only: %i[destroy]
+
+  def index
+    @forum_post_votes = ForumPostVote.includes(:user, forum_post: [:creator]).search(search_params).paginate(params[:page], limit: 100)
+  end
 
   def create
     @forum_post_vote = @forum_post.votes.create(forum_post_vote_params)
@@ -24,7 +29,7 @@ class ForumPostVotesController < ApplicationController
 private
 
   def load_vote
-    @forum_post_vote = @forum_post.votes.where(creator_id: CurrentUser.id).first
+    @forum_post_vote = @forum_post.votes.where(user_id: CurrentUser.id).first
     raise ActiveRecord::RecordNotFound.new if @forum_post_vote.nil?
   end
 

@@ -645,10 +645,11 @@ ALTER SEQUENCE public.forum_categories_id_seq OWNED BY public.forum_categories.i
 CREATE TABLE public.forum_post_votes (
     id bigint NOT NULL,
     forum_post_id integer NOT NULL,
-    creator_id integer NOT NULL,
+    user_id integer NOT NULL,
     score integer NOT NULL,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    user_ip_addr inet NOT NULL
 );
 
 
@@ -3576,10 +3577,10 @@ CREATE INDEX index_forum_post_votes_on_forum_post_id ON public.forum_post_votes 
 
 
 --
--- Name: index_forum_post_votes_on_forum_post_id_and_creator_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_forum_post_votes_on_forum_post_id_and_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_forum_post_votes_on_forum_post_id_and_creator_id ON public.forum_post_votes USING btree (forum_post_id, creator_id);
+CREATE UNIQUE INDEX index_forum_post_votes_on_forum_post_id_and_user_id ON public.forum_post_votes USING btree (forum_post_id, user_id);
 
 
 --
@@ -4773,4 +4774,5 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20240205174652'),
 ('20240206035357'),
 ('20240210054643'),
-('20240214023511');
+('20240214023511'),
+('20240214190653');

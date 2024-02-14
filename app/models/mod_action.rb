@@ -179,7 +179,7 @@ class ModAction < ApplicationRecord
 
     ### Forum Post ###
     forum_post_delete: {
-      text: ->(mod, user) { "Delete forum ##{mod.forum_post_id} in topic ##{mod.forum_topic_id} by #{user}" },
+      text: ->(mod, user) { "Deleted forum ##{mod.forum_post_id} in topic ##{mod.forum_topic_id} by #{user}" },
       json: %i[forum_post_id forum_topic_id user_id],
     },
     forum_post_hide: {
