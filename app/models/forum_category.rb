@@ -2,10 +2,13 @@ class ForumCategory < ApplicationRecord
   has_many :forum_topics, -> { order(id: :desc) }, foreign_key: :category
   validates :name, uniqueness: { case_sensitive: false }
 
-  after_destroy :reassign_topics
+  after_create :log_create
+  after_update :log_update
+  before_destroy :prevent_destroy_if_topics
+  after_destroy :log_delete
 
-  def reassign_topics
-    ForumTopic.where(category: id).update_all(category_id: 0)
+  before_validation(on: :create) do
+    self.order = (ForumCategory.maximum(:order) || 0) + 1 if order.blank?
   end
 
   def can_create_within?(user = CurrentUser.user)
@@ -13,14 +16,58 @@ class ForumCategory < ApplicationRecord
   end
 
   def self.reverse_mapping
-    order(:cat_order).all.map { |rec| [rec.name, rec.id] }
+    order(:order).all.map { |rec| [rec.name, rec.id] }
   end
 
   def self.ordered_categories
-    order(:cat_order)
+    order(:order)
   end
 
-  def self.visible(user = CurrentUser.user)
-    where('can_view <= ?', user.level)
+  def prevent_destroy_if_topics
+    if forum_topics.any?
+      errors.add(:base, "Forum category cannot be deleted because it has topics")
+      throw :abort
+    end
   end
+
+  module LogMethods
+    def log_create
+      ModAction.log(:forum_category_create, {
+        forum_category_id: id,
+        forum_category_name: name,
+        can_view: can_view,
+        can_create: can_create,
+      })
+    end
+
+    def log_update
+      ModAction.log(:forum_category_update, {
+        forum_category_id: id,
+        forum_category_name: name,
+        old_category_name: category_name_before_last_save,
+        can_view: can_view,
+        old_can_view: can_view_before_last_save,
+        can_create: can_create,
+        old_can_create: can_create_before_last_save,
+      })
+    end
+
+    def log_delete
+      ModAction.log(:forum_category_create, {
+        forum_category_id: id,
+        forum_category_name: name,
+        can_view: can_view,
+        can_create: can_create,
+      })
+    end
+  end
+
+  module SearchMethods
+    def visible
+      where(can_view: ..CurrentUser.user.level)
+    end
+  end
+
+  include LogMethods
+  extend SearchMethods
 end

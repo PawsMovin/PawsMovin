@@ -149,7 +149,7 @@ class ForumTopic < ApplicationRecord
   end
 
   def can_reply?(user = CurrentUser.user)
-    user.level >= category.can_reply
+    user.level >= category.can_create
   end
 
   def can_hide?(user)

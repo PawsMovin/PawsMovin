@@ -1,4 +1,3 @@
-
 <div id="c-post-deletion-reasons">
   <div id="a-index">
     <h1>Post Deletion Reasons</h1>
@@ -18,7 +17,7 @@
       <tbody>
       <% last_order = 0 %>
       <% @reasons.each do |reason| %>
-        <% # the latter should never happen, but if it did, this loop would tear down the site %>
+        <%# the latter should never happen, but if it did, this loop would tear down the site %>
         <% if (last_order + 1) != reason.order && last_order != reason.order %>
           <% while (last_order + 1) != reason.order %>
             <%= render partial: "spacing" %>

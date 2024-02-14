@@ -613,11 +613,9 @@ ALTER SEQUENCE public.favorites_id_seq OWNED BY public.favorites.id;
 CREATE TABLE public.forum_categories (
     id bigint NOT NULL,
     name character varying NOT NULL,
-    description text,
-    cat_order integer,
-    can_view integer DEFAULT 10 NOT NULL,
-    can_create integer DEFAULT 10 NOT NULL,
-    can_reply integer DEFAULT 10 NOT NULL
+    "order" integer NOT NULL,
+    can_view integer DEFAULT 0 NOT NULL,
+    can_create integer DEFAULT 10 NOT NULL
 );
 
 
@@ -4495,6 +4493,7 @@ ALTER TABLE ONLY public.staff_notes
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20240214023511'),
 ('20240210054643'),
 ('20240206035357'),
 ('20240205174652'),

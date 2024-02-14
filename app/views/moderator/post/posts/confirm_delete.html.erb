@@ -40,7 +40,7 @@
     <b>Reason</b>
     <% last_order = 0 %>
     <% PostDeletionReason.order(order: :desc).find_each do |reason| %>
-      <% # the latter should never happen, but if it did, this loop would tear down the site %>
+      <%# the latter should never happen, but if it did, this loop would tear down the site %>
       <% if (last_order + 1) != reason.order && last_order != reason.order %>
         <% while (last_order + 1) < reason.order %>
           <br>

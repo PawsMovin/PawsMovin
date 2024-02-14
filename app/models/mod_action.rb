@@ -18,11 +18,14 @@ class ModAction < ApplicationRecord
     alias_id alias_desc
     implication_id implication_desc
     set_id is_public
+    report_reason_id
     added removed level level_was
     new_name old_name artist_id
     duration expires_at expires_at_was
     comment_id
-    forum_category_id forum_post_id forum_topic_id forum_topic_title
+    forum_category_id forum_category_name can_view old_can_view can_create old_can_create
+    forum_post_id
+    forum_topic_id forum_topic_title
     pool_id pool_name
     pattern old_pattern note hidden
     type type_was record_id
@@ -132,16 +135,46 @@ class ModAction < ApplicationRecord
 
     ### Forum Category ###
     forum_category_create: {
-      text: ->(mod, _user) { "Created forum category ##{mod.forum_category_id}" },
-      json: %i[forum_category_id],
+      text: ->(mod, _user) do
+        text = "Created forum category ##{mod.forum_category_id}"
+        return text unless CurrentUser.user.level >= mod.can_view
+        text += " (#{mod.forum_category_name})"
+        text += "\nRestricted viewing topics to #{User.level_string(mod.can_view)}"
+        text += "\nRestricted creating topics to #{User.level_string(mod.can_create)}"
+        text
+      end,
+      json: ->(mod, _user) do
+        values = %i[forum_category_id]
+        return values unless CurrentUser.user.level >= mod.can_view
+        values + %i[forum_category_name can_view can_create]
+      end,
     },
     forum_category_delete: {
-      text: ->(mod, _user) { "Deleted forum category ##{mod.forum_category_id}" },
-      json: %i[forum_category_id],
+      text: ->(mod, _user) do
+        text = "Deleted forum category ##{mod.forum_category_id}"
+        return text unless CurrentUser.user.level >= mod.can_view
+        "#{text} (#{mod.forum_category_name})"
+      end,
+      json: ->(mod, _user) do
+        values = %i[forum_category_id]
+        return values unless CurrentUser.user.level >= mod.can_view
+        values + %i[forum_category_name can_view can_create]
+      end,
     },
     forum_category_update: {
-      text: ->(mod, _user) { "Updated forum category ##{mod.forum_category_id}" },
-      json: %i[forum_category_id],
+      text: ->(mod, _user) do
+        text = "Updated forum category ##{mod.forum_category_id}"
+        return text unless CurrentUser.user.level >= mod.can_view
+        text += " (#{mod.forum_category_name})"
+        text += "\nRestricted viewing topics to #{User.level_string(mod.can_view)} (Previously #{User.level_string(mod.old_can_view)})" if mod.can_view != mod.old_can_view
+        text += "\nRestricted creating topics to #{User.level_string(mod.can_create)} (Previously #{User.level_string(mod.old_can_create)})" if mod.can_create != mod.old_can_create
+        text
+      end,
+      json: ->(mod, _user) do
+        values = %i[forum_category_id]
+        return values unless CurrentUser.user.level >= mod.can_view
+        values + %i[forum_category_name can_view can_create]
+      end,
     },
 
     ### Forum Post ###
@@ -398,7 +431,10 @@ class ModAction < ApplicationRecord
   end
 
   def format_json
-    FORMATTERS[action.to_sym]&.[](:json)&.index_with { |k| send(k) } || (CurrentUser.is_admin? ? values : {})
+    keys = FORMATTERS[action.to_sym]&.[](:json)
+    return CurrentUser.is_admin? ? values : {} if keys.blank?
+    keys = keys.call(self, user) if keys.is_a?(Proc)
+    keys.index_with { |k| send(k) }
   end
 
   KNOWN_ACTIONS = FORMATTERS.keys.freeze

@@ -161,7 +161,9 @@ Rails.application.routes.draw do
       post :mark_all_as_read
     end
   end
-  resources :forum_categories, only: %i[index show create destroy]
+  resources :forum_categories, only: %i[index show new create edit update destroy] do
+    post :reorder, on: :collection
+  end
   resources :help_pages, controller: "help", path: "help"
   resources :ip_bans, only: %i[index new create destroy]
   resources :upload_whitelists, except: %i[show] do

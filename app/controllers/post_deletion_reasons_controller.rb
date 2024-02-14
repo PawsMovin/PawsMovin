@@ -1,6 +1,7 @@
 class PostDeletionReasonsController < ApplicationController
   before_action :approver_only
   before_action :admin_only, except: %i[index]
+  before_action :load_reason, only: %i[edit update destroy]
   respond_to :html, :json
 
   def index
@@ -13,7 +14,6 @@ class PostDeletionReasonsController < ApplicationController
   end
 
   def edit
-    @reason = PostDeletionReason.find(params[:id])
   end
 
   def create
@@ -25,7 +25,6 @@ class PostDeletionReasonsController < ApplicationController
   end
 
   def update
-    @reason = PostDeletionReason.find(params[:id])
     @reason.update(reason_params)
     flash[:notice] = @reason.valid? ? "Post deletion reason updated" : @reason.errors.full_messages.join("; ")
     respond_with(@reason) do |fmt|
@@ -34,7 +33,6 @@ class PostDeletionReasonsController < ApplicationController
   end
 
   def destroy
-    @reason = PostDeletionReason.find(params[:id])
     @reason.destroy
     flash[:notice] = "Post deletion reason deleted"
     respond_with(@reason) do |format|
@@ -79,5 +77,9 @@ class PostDeletionReasonsController < ApplicationController
 
   def reason_params
     params.require(:post_deletion_reason).permit(%i[reason title prompt order move_up])
+  end
+
+  def load_reason
+    @reason = PostDeletionReason.find(params[:id])
   end
 end

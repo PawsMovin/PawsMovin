@@ -1,42 +1,85 @@
 <div id="c-forum-categories">
   <div id="a-index">
-    <div class="box-section">
-      <h4>New Category</h4>
-      <%= custom_form_for(@new_cat) do |f| %>
-        <%= f.input :name %>
-        <%= f.input :description, as: :dtext %>
-        <%= f.input :can_create, collection: @user_levels, include_blank: false %>
-        <%= f.input :can_reply, collection: @user_levels, include_blank: false %>
-        <%= f.input :can_view, collection: @user_levels, include_blank: false %>
-        <%= f.input :cat_order, label: "Order" %>
-        <%= f.button :submit, "Create" %>
-      <% end %>
-    </div>
+    <h1>Forum Categories</h1>
 
-    <% @forum_cats.each do |fp| %>
-      <div class="box-section">
-        <h4><%= fp.name %></h4>
-        <%= custom_form_for(fp) do |f| %>
-          <%= f.input :name %>
-          <%= f.input :description, as: :dtext %>
-          <%= f.input :can_create, collection: @user_levels, selected: fp.can_create %>
-          <%= f.input :can_reply, collection: @user_levels, selected: fp.can_reply %>
-          <%= f.input :can_view, collection: @user_levels, selected: fp.can_view %>
-          <%= f.input :cat_order, label: "Order" %>
-          <%= f.button :submit, "Update" %>
+    <table class="striped" id="forum-categories-table">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Level Requirements</th>
+        <% if CurrentUser.is_admin? %>
+          <th></th>
         <% end %>
-      </div>
-    <% end %>
+      </tr>
+      </thead>
 
-    <%= numbered_paginator(@forum_cats) %>
+      <tbody>
+      <% @forum_categories.each do |cat| %>
+        <tr id="forum-category-<%= cat.id %>" data-id="<%= cat.id %>">
+          <td><%= cat.name %></td>
+          <td>
+            <ul>
+              <li>View: <b><%= User.level_string(cat.can_view) %></b></li>
+              <li>Create: <b><%= User.level_string(cat.can_create) %></b></li>
+            </ul>
+          </td>
+          <% if CurrentUser.is_admin? %>
+            <td>
+              <%= link_to "Edit", edit_forum_category_path(cat) %> |
+              <%= link_to "Delete", forum_category_path(cat), method: :delete, data: { confirm: "Are you sure you want to delete this forum category? It must be empty of posts." } %>
+            </td>
+          <% end %>
+        </tr>
+      <% end %>
+      </tbody>
+    </table>
   </div>
 </div>
 
-<% content_for(:secondary_links) do %>
-  <%= subnav_link_to "Forum Topics", forum_posts_path %>
-  <%= subnav_link_to "Help", help_page_path(id: "forum") %>
-<% end %>
+
+<%= render partial: "secondary_links" %>
 
 <% content_for(:page_title) do %>
-  Forum Categories
+  Post Report Reasons
+<% end %>
+
+<%= javascript_tag nonce: true do -%>
+  function reorderData() {
+    return JSON.stringify(Array.from($("#forum-categories-table tr")).slice(1).map((element, index) => ({ id: Number(element.dataset.id), order: index + 1 })));
+  }
+
+  $(".edit-order-link").on("click.pawsmovin.sorting", function(event) {
+    event.preventDefault();
+    $(".save-order-link").show();
+    $(".edit-order-link").hide();
+    $(".add-spacing-link").show();
+    $(".link-remove-spacing").show();
+    $("#forum-categories-table tbody").sortable();
+    Danbooru.notice("Drag and drop to reorder.");
+  });
+
+  $(".save-order-link").on("click.pawsmovin.sorting", function(event) {
+    event.preventDefault();
+    $(".save-order-link").hide();
+    $(".add-spacing-link").hide();
+    $(".link-remove-spacing").hide();
+    $("#forum-categories-table tbody").sortable("disable");
+    $.ajax({
+      url: "/forum_categories/reorder.json",
+      type: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      data: reorderData(),
+      success() {
+        Danbooru.notice("Order updated.");
+        $(".edit-order-link").show();
+      },
+      error() {
+        Danbooru.error("Failed to update order.");
+        $(".save-order-link").show();
+        $("#forum-categories-table tbody").sortable();
+      }
+    });
+  });
 <% end %>
