@@ -19,7 +19,7 @@
         <tr>
           <td><label>Source</label></td>
           <td>
-            <% if !@takedown.reason_hidden  || CurrentUser.is_moderator? || @show_instructions %>
+            <% if !@takedown.reason_hidden  || CurrentUser.is_janitor? || @show_instructions %>
               <% if @takedown.source.match(/^https?:\/\//i) %>
                 <%= link_to @takedown.source, @takedown.source, rel: "noopener noreferrer nofollow" %>
               <% else %>
@@ -33,7 +33,7 @@
 
         <tr>
           <td><label>Reason</label></td>
-          <% if !@takedown.reason_hidden || CurrentUser.is_moderator? || @show_instructions %>
+          <% if !@takedown.reason_hidden || CurrentUser.is_janitor? || @show_instructions %>
             <td><%= h @takedown.reason %>
               <% if @takedown.reason_hidden %><span class="redtext">(HIDDEN)</span><% end %></td>
           <% else %>
@@ -43,7 +43,7 @@
 
         <tr><td colspan="2">&nbsp;</td></tr>
 
-        <% if CurrentUser.is_admin? %>
+        <% if CurrentUser.can_handle_takedowns? %>
           <tr>
             <td><label>Vericode</label></td>
             <td><%= @takedown.vericode %></td>
@@ -60,7 +60,7 @@
           </tr>
         <% end %>
 
-        <% if CurrentUser.is_moderator? %>
+        <% if CurrentUser.is_janitor? %>
           <tr>
             <td><label>User</label></td>
             <td><%= link_to_user @takedown.creator %></td>
@@ -99,7 +99,7 @@
     <% if !@takedown.notes.blank? && @takedown.notes.downcase != "none" %>
       <h3>Admin notes</h3>
       <div class="box-section dtext-container">
-        <% if !@takedown.reason_hidden || CurrentUser.is_moderator? %>
+        <% if !@takedown.reason_hidden || CurrentUser.is_janitor? %>
           <%= format_text(@takedown.notes) %>
           <% if @takedown.reason_hidden %><span class="redtext">(HIDDEN)</span><% end %>
         <% else %>
@@ -108,7 +108,7 @@
       </div>
     <% end %>
 
-    <% if CurrentUser.is_moderator? %>
+    <% if CurrentUser.is_janitor? %>
       <% if !@takedown.instructions.blank? %>
         <h3>Special instructions</h3>
         <div class="box-section">
@@ -116,7 +116,7 @@
         </div>
       <% end %>
     <% end %>
-    <% if CurrentUser.is_admin? %>
+    <% if CurrentUser.can_handle_takedowns? %>
       <%= render "editor" %>
     <% end %>
 
@@ -177,7 +177,7 @@
           <% end %>
         </div>
       <% end %>
-    <% elsif !CurrentUser.is_moderator? %>
+    <% elsif !CurrentUser.is_janitor? %>
       <div class="box-section">
         Post lists and special instructions are not visible to users.
       </div>
