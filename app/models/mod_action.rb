@@ -222,15 +222,15 @@ class ModAction < ApplicationRecord
 
     ### Help ###
     help_create: {
-      text: ->(mod, _user) { "Created help entry \"#{mod.name}\":/help/#{HelpPage.normalize_name(mod.name)} ([[#{mod.wiki_page}]])" },
+      text: ->(mod, _user) { "Created help entry \"#{mod.name}\":/help/#{mod.name} ([[#{mod.wiki_page}]])" },
       json: %i[name wiki_page],
     },
     help_delete: {
-      text: ->(mod, _user) { "Deleted help entry \"#{mod.name}\":/help/#{HelpPage.normalize_name(mod.name)} ([[#{mod.wiki_page}]])" },
+      text: ->(mod, _user) { "Deleted help entry \"#{mod.name}\":/help/#{mod.name} ([[#{mod.wiki_page}]])" },
       json: %i[name wiki_page],
     },
     help_update: {
-      text: ->(mod, _user) { "Updated help entry \"#{mod.name}\":/help/#{HelpPage.normalize_name(mod.name)} ([[#{mod.wiki_page}]])" },
+      text: ->(mod, _user) { "Updated help entry \"#{mod.name}\":/help/#{mod.name} ([[#{mod.wiki_page}]])" },
       json: %i[name wiki_page],
     },
 
