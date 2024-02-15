@@ -75,10 +75,10 @@ class UploadServiceTest < ActiveSupport::TestCase
             assert_operator(File.size(crop.path), :>, 0)
             preview_image = Vips::Image.new_from_file(preview.path)
             crop_image = Vips::Image.new_from_file(crop.path)
-            assert_equal(150, preview_image.width)
-            assert_equal(150, preview_image.height)
-            assert_equal(150, crop_image.width)
-            assert_equal(150, crop_image.height)
+            assert_equal(PawsMovin.config.small_image_width, preview_image.width)
+            assert_equal(PawsMovin.config.small_image_width, preview_image.height)
+            assert_equal(PawsMovin.config.small_image_width, crop_image.width)
+            assert_equal(PawsMovin.config.small_image_width, crop_image.height)
             preview.close
             preview.unlink
             crop.close
