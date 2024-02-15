@@ -111,9 +111,6 @@
       </fieldset>
 
       <fieldset id="enhancement-settings-section">
-        <%= f.input :enable_enhanced_profiles, label: "Enable Enhanced Profiles", as: :select, collection: [%w[Yes true], %w[No false]], include_blank: false,
-                    hint: "Enables an enhanced profile layout, borrowed from <a href=\"https://github.com/re621/re621.Legacy\">re621</a>.".html_safe %>
-
         <%= f.input :move_related_thumbnails, label: "Move Related Thumbnails", as: :select, collection: [%w[Yes true], %w[No false]], include_blank: false,
                     hint: "Moves the parent/child thumbnails to the sidebar." %>
 

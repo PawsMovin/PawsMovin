@@ -43,16 +43,16 @@ class PostPresenter < Presenter
 
     locals[:cropped_url] = if PawsMovin.config.enable_image_cropping? && options[:show_cropped] && post.has_cropped? && !CurrentUser.user.disable_cropped_thumbnails?
                              post.crop_file_url
-    else
-      post.preview_file_url
-    end
+                           else
+                             post.preview_file_url
+                           end
 
     locals[:cropped_url] = PawsMovin.config.deleted_preview_url if post.deleteblocked?
     locals[:preview_url] = if post.deleteblocked?
-      PawsMovin.config.deleted_preview_url
-    else
-      post.preview_file_url
-    end
+                             PawsMovin.config.deleted_preview_url
+                           else
+                             post.preview_file_url
+                           end
 
     locals[:alt_text] = post.tag_string
 

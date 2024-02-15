@@ -44,8 +44,8 @@ Thumbnails.initialize = function () {
     const img = $('<img>');
     img.attr('src', postData.preview_file_url || '/images/deleted-preview.png');
     img.attr({
-      height: postData.preview_file_url ? postData.preview_height : 150,
-      width: postData.preview_file_url ? postData.preview_width : 150,
+      height: postData.preview_file_url ? postData.preview_height : 300,
+      width: postData.preview_file_url ? postData.preview_width : 300,
       title: `Rating: ${postData.rating}\r\nID: ${postData.id}\r\nStatus: ${postData.status}\r\nDate: ${postData.created_at}\r\n\r\n${postData.tags}`,
       alt: postData.tags,
       class: 'post-thumbnail-img'

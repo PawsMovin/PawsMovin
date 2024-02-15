@@ -15,21 +15,21 @@ HoverZoom.init = function(shiftRequired, stickyShift, playAudio) {
 
 HoverZoom.init_listeners = function() {
   $(document)
-    .off("scroll.femboyfans.zoom")
-    .off("keydown.femboyfans.zoom")
-    .off("keyup.femboyfans.zoom")
-    .off("mousemove.femboyfans.zoom");
+    .off("scroll.pawsmovin.zoom")
+    .off("keydown.pawsmovin.zoom")
+    .off("keyup.pawsmovin.zoom")
+    .off("mousemove.pawsmovin.zoom");
 
   $(window)
-    .off("blur.femboyfans.zoom")
-    .off("contextmenu.femboyfans.zoom");
+    .off("blur.pawsmovin.zoom")
+    .off("contextmenu.pawsmovin.zoom");
 
   $("#page")
-    .off("mouseenter.femboyfans.zoom", ".post-preview, div.post-thumbnail")
-    .off("mouseleave.femboyfans.zoom", ".post-preview, div.post-thumbnail");
+    .off("mouseenter.pawsmovin.zoom", ".post-preview, div.post-thumbnail")
+    .off("mouseleave.pawsmovin.zoom", ".post-preview, div.post-thumbnail");
 
   let throttle = false;
-  $(document).on("mousemove.femboyfans.zoom", (event) => {
+  $(document).on("mousemove.pawsmovin.zoom", (event) => {
     if(throttle) return;
     throttle = true;
     setTimeout(() => { throttle = false }, 25);
@@ -41,7 +41,7 @@ HoverZoom.init_listeners = function() {
 
   let scrolling = false;
   $("#page")
-    .on("mouseenter.femboyfans.zoom", ".post-preview, div.post-thumbnail", (event) => {
+    .on("mouseenter.pawsmovin.zoom", ".post-preview, div.post-thumbnail", (event) => {
       if (scrolling) return;
 
       const ref = $(event.currentTarget)
@@ -53,7 +53,7 @@ HoverZoom.init_listeners = function() {
         HoverZoom.emit("zoom.start", { post: post.id, pageX: this.pageX, pageY: this.pageY });
       }, 0);
     })
-    .on("mouseleave.femboyfans.zoom", ".post-preview, div.post-thumbnail", (event) => {
+    .on("mouseleave.pawsmovin.zoom", ".post-preview, div.post-thumbnail", (event) => {
       const ref = $(event.currentTarget);
       ref.removeAttr("data-hovering");
 
@@ -63,7 +63,7 @@ HoverZoom.init_listeners = function() {
     });
 
   let scrollTimer = 0;
-  $(document).on("scroll.femboyfans.zoom", (event) => {
+  $(document).on("scroll.pawsmovin.zoom", (event) => {
     if(scrollTimer) {
       clearTimeout(scrollTimer);
     }
@@ -74,26 +74,26 @@ HoverZoom.init_listeners = function() {
 
   if(!HoverZoom.shiftRequired) return;
   $(document)
-    .on("keydown.femboyfans.zoom", (event) => {
+    .on("keydown.pawsmovin.zoom", (event) => {
       if (HoverZoom.shiftPressed || event.originalEvent.key !== "Shift") return;
       HoverZoom.shiftPressed = true;
       for (const element of $("[data-hovering=true]")) {
         const ref = $(element);
-        ref.find("img").trigger("mouseenter.femboyfans.zoom");
+        ref.find("img").trigger("mouseenter.pawsmovin.zoom");
       }
     })
-    .on("keyup.femboyfans.zoom", (event) => {
+    .on("keyup.pawsmovin.zoom", (event) => {
       if (!HoverZoom.shiftPressed || event.originalEvent.key !== "Shift") return;
       HoverZoom.shiftPressed = false;
       if(!HoverZoom.stickyShift) resetOnUnshift();
     });
 
   $(window)
-    .on("blur.femboyfans.zoom", () => {
+    .on("blur.pawsmovin.zoom", () => {
       HoverZoom.shiftPressed = false;
       if(!HoverZoom.stickyShift) resetOnUnshift();
     })
-    .on("contextmenu.femboyfans.zoom", () => {
+    .on("contextmenu.pawsmovin.zoom", () => {
       HoverZoom.shiftPressed = false;
       if(!HoverZoom.stickyShift) resetOnUnshift();
     });
