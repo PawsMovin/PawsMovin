@@ -1730,7 +1730,7 @@ class Post < ApplicationRecord
 
   def flaggable_for_guidelines?
     return true if is_pending?
-    return true if CurrentUser.is_trusted? && !has_tag?("grandfathered_content") && created_at.after?("2015-01-01")
+    return true if CurrentUser.is_trusted?
     false
   end
 
