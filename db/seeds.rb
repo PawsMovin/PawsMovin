@@ -10,6 +10,9 @@ require_relative "seeds/post_deletion_reasons"
 
 module Seeds
   def self.run!
+    UploadWhitelist.find_or_create_by(note: "E621") do |whitelist|
+      whitelist.pattern = "https://static1.e621.net/*"
+    end
     User.system.update_column(:level, User::Levels::ADMIN)
     CurrentUser.user = User.system
     Posts.run!

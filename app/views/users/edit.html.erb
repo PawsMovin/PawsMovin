@@ -89,7 +89,7 @@
         <%= f.input :show_hidden_comments, label: "Show Own Hidden Comments", :as => :select, :collection => [["No", "false"], ["Yes", "true"]], :include_blank => false,
                     hint: "Show your own hidden comments on comment pages." %>
 
-        <% if @user.post_active_count >= Danbooru.config.compact_uploader_minimum_posts %>
+        <% if @user.post_active_count >= PawsMovin.config.compact_uploader_minimum_posts %>
           <%= f.input :enable_compact_uploader, label: "Enable Compact Uploader", as: :select,
           collection: [["No", "false"], ["Yes", "true"]], include_blank: false,
           hint: "Enables a more compact and less guided post uploader." %>

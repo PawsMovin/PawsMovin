@@ -4,5 +4,5 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "config",
 require "faker"
 
 28.times do
-  User.create!(name: Faker::Internet.username.tr(" ", "_").tr(".", "_"), email: Faker::Internet.email, password: "pawsmovin", password_confirmation: "pawsmovin")
+  User.create!(name: Faker::Internet.username.tr(" ", "_").tr(".", "_"), email: Faker::Internet.email, password: "pawsmovin", password_confirmation: "pawsmovin", created_at: 2.weeks.ago)
 end

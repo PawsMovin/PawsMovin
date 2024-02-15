@@ -528,7 +528,7 @@ class User < ApplicationRecord
     def can_replace?
       return true if is_janitor?
       return false if no_replacements?
-      post_active_count >= Danbooru.config.replacements_minimum_posts
+      post_active_count >= PawsMovin.config.replacements_minimum_posts
     end
 
     def can_view_staff_notes?
