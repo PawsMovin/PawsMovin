@@ -133,6 +133,7 @@ class User < ApplicationRecord
   has_many :staff_notes, -> { active.order("staff_notes.id desc") }
   has_many :user_name_change_requests, -> { order(id: :asc) }
   has_many :text_versions, -> { order(id: :desc) }, class_name: "UserTextVersion"
+  has_many :artists, foreign_key: "linked_user_id"
 
   belongs_to :avatar, class_name: 'Post', optional: true
   accepts_nested_attributes_for :dmail_filter
@@ -323,6 +324,8 @@ class User < ApplicationRecord
       if name != PawsMovin.config.system_user_name && !User.exists?(level: Levels::OWNER)
         self.level = Levels::OWNER
         self.created_at = 2.weeks.ago
+        self.can_approve_posts = true
+        self.can_upload_free = true
       end
     end
 
