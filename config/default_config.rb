@@ -51,8 +51,9 @@ module PawsMovin
     end
 
     module Users
+      # If enabled, users must verify their email addresses.
       def enable_email_verification?
-        true
+        Rails.env.production?
       end
 
       def anonymous_user_name
@@ -459,11 +460,6 @@ module PawsMovin
       # StorageManager::Local.new(base_dir: "/mnt/backup", hierarchical: false)
     end
 
-    # If enabled, users must verify their email addresses.
-    def enable_email_verification?
-      false
-    end
-
     def enable_signups?
       true
     end
@@ -587,15 +583,34 @@ module PawsMovin
     end
 
     def mailgun_api_key
-      ''
     end
 
     def mailgun_domain
-      ''
     end
 
     def mail_from_addr
-      'noreply@localhost'
+      "noreply@localhost"
+    end
+
+    def smtp_address
+    end
+
+    def smtp_port
+    end
+
+    def smtp_domain
+    end
+
+    def smtp_username
+    end
+
+    def smtp_password
+    end
+
+    def smtp_authentication
+    end
+
+    def smtp_tls
     end
 
     # disable this for tests
