@@ -46,7 +46,6 @@ class EditHistory < ApplicationRecord
     EditHistory.where(versionable_id: versionable_id, versionable_type: versionable_type, edit_type: %w[original edit]).and(EditHistory.where(EditHistory.arel_table[:version].lt(version))).last
   end
 
-  # rubocop:disable Rails/OutputSafety
   def text_content
     if is_contentful?
       return subject if subject.present?
@@ -54,7 +53,6 @@ class EditHistory < ApplicationRecord
     end
     "<b>#{EDIT_MAP[edit_type.to_sym] || pretty_edit_type}</b>".html_safe
   end
-  # rubocop:enable Rails/OutputSafety
 
   def is_contentful?
     %w[original edit].include?(edit_type)

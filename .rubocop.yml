@@ -156,3 +156,6 @@ Style/TrailingCommaInHashLiteral:
 
 Rails/NotNullColumn:
   Enabled: false
+  
+Rails/OutputSafety:
+  Enabled: false

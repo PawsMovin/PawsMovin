@@ -8,8 +8,8 @@ class PaginatorTest < ActiveSupport::TestCase
     assert_equal(is_last_page, records.is_last_page?, "is_last_page")
   end
 
-  { active_record: WikiPage, opensearch: Post }.each do |name, model| # rubocop:disable Metrics/BlockLength
-    context name do
+  { active_record: WikiPage, opensearch: Post }.each do |type, model| # rubocop:disable Metrics/BlockLength
+    context type do
       setup do
         @user = create(:user)
         CurrentUser.user = @user

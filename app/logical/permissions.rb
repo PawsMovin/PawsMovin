@@ -53,22 +53,30 @@ module Permissions
     permissions.group_by { |r| r.split(":")[0] }
   end
 
-  ROUTES = routes.map { |r| "#{r.defaults[:controller]}:#{r.defaults[:action]}" }.freeze
-  GROUPS = group(ROUTES).freeze
-  MAPPING = routes.map do |route|
-    controller = route.defaults[:controller]
-    action = route.defaults[:action]
-    {
-      controller => {
-        "name" => self.controller(controller) || controller.sub("/", ": ").gsub("/", " ").titlecase.singularize.sub(":", ": %s"),
-        action => self.action(action) || action.titlecase,
-      },
-    }
-  end.reduce(&:deep_merge).with_indifferent_access.freeze
+  def actions
+    @actions ||= routes.map { |r| "#{r.defaults[:controller]}:#{r.defaults[:action]}" }.freeze
+  end
+
+  def groups
+    @groups ||= group(actions).freeze
+  end
+
+  def mapping
+    @mapping ||= routes.map do |route|
+      controller = route.defaults[:controller]
+      action = route.defaults[:action]
+      {
+        controller => {
+          "name" => self.controller(controller) || controller.sub("/", ": ").gsub("/", " ").titlecase.singularize.sub(":", ": %s"),
+          action => self.action(action) || action.titlecase,
+        },
+      }
+    end.reduce(&:deep_merge).with_indifferent_access.freeze
+  end
 
   def controller_name(controller, plural: false)
     cname = I18n.translate!("permissions.controllers.#{controller}") rescue nil # rubocop:disable Style/RescueModifier
-    cname ||= MAPPING[controller]&.[]("name")
+    cname ||= mapping[controller]&.[]("name")
     cname ||= controller.titleize.singularize
     if plural
       parts = cname.split
@@ -86,20 +94,20 @@ module Permissions
     return name if name
     cname = controller_name(controller, plural: PLURAL_ACTIONS.include?(action))
     aname = I18n.translate!("permissions.actions.#{action}") rescue nil # rubocop:disable Style/RescueModifier
-    aname ||= MAPPING[controller]&.[](action) || action.titleize
+    aname ||= mapping[controller]&.[](action) || action.titleize
     return cname.sub("%s", aname) if cname.include?("%s")
     return aname.sub("%s", cname) if aname.include?("%s")
     names["#{controller}:#{action}"] = "#{aname} #{cname}"
   end
 
   def parse(value)
-    return [ROUTES, []] if value.blank? || value == %w[all]
+    return [actions, []] if value.blank? || value == %w[all]
     permissions = []
     invalid = []
     value.each do |permission|
-      next permissions += [permission] if ROUTES.include?(permission)
+      next permissions += [permission] if groups.include?(permission)
       if permission.ends_with?(":all")
-        group = GROUPS[permission[0..-5]]
+        group = groups[permission[0..-5]]
         next permissions += group if group
       end
       invalid += [permission]
