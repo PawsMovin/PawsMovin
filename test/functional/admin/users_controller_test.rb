@@ -4,7 +4,7 @@ class Admin::UsersControllerTest < ActionDispatch::IntegrationTest
   context "Admin::UsersController" do
     setup do
       @user = create(:user)
-      @admin = create(:admin_user, is_bd_staff: true)
+      @admin = create(:owner_user)
     end
 
     context "#edit" do
