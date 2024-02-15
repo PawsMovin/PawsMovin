@@ -168,5 +168,5 @@ class TagSetPresenter < Presenter
     link_base = link_type == :wiki_page ? "/wiki_pages/show_or_new?title=" : "/posts?tags="
     itemprop = 'itemprop="author"' if tag.category == Tag.categories.artist
     %(<a rel="nofollow" class="search-tag" #{itemprop} href="#{link_base}#{u(tag.name)}">#{h(link_text)}</a> )
-    end
+  end
 end

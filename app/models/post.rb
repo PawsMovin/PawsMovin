@@ -720,7 +720,7 @@ class Post < ApplicationRecord
       prefixed, unprefixed = tags.partition {|x| x =~ Tag.categories.regexp}
       prefixed.map!{|tag| tag.sub(/\A#{Tag.categories.regexp}:/, '')}
       prefixed + unprefixed
-      end
+    end
 
     def filter_metatags(tags)
       @bad_type_changes = []
