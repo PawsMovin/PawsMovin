@@ -231,7 +231,7 @@
                         Post is a duplicate of <a :href="duplicatePath">post #{{duplicateId}}.</a>
                     </div>
                     <button @click="submit" :disabled="(showErrors && preventUpload) || submitting" accesskey="s">
-                        {{ submitting ? 'Uploading...' : 'Upload' }}
+                        {{ submitting ? "Uploading..." : "Upload" }}
                     </button>
                 </div>
             </div>
@@ -243,44 +243,41 @@
 </template>
 
 <script>
-  import sources from './sources.vue';
-  import checkbox from './checkbox.vue';
-  import relatedTags from './related.vue';
-  import tagPreview from './tag_preview.vue';
-  import filePreview from './file_preview.vue';
-  import fileInput from './file_input.vue';
+  import sources from "./sources.vue";
+  import checkbox from "./checkbox.vue";
+  import relatedTags from "./related.vue";
+  import tagPreview from "./tag_preview.vue";
+  import filePreview from "./file_preview.vue";
+  import fileInput from "./file_input.vue";
 
   const sex_checks = [
-    {name: 'Male'},
-    {name: 'Female'},
-    {name: 'Andromorph'},
-    {name: 'Gynomorph'},
-    {name: 'Hermaphrodite', tag: 'herm'},
-    {name: 'Male-Herm', tag: 'maleherm'},
-    {name: 'Ambiguous', tag: 'ambiguous_gender'}];
+    {name: "Male"},
+    {name: "Female"},
+    {name: "Andromorph"},
+    {name: "Gynomorph"},
+    {name: "Hermaphrodite", tag: "herm"},
+    {name: "Male-Herm", tag: "maleherm"},
+    {name: "Ambiguous", tag: "ambiguous_gender"}];
 
   const pairing_checks = [
-    {name: 'Male/Male'},
-    {name: 'Male/Female'},
-    {name: 'Female/Female'},
-    {name: 'Intersex/Male'},
-    {name: 'Intersex/Female'},
-    {name: 'Intersex/Intersex'}
+    {name: "Male/Male"},
+    {name: "Male/Female"},
+    {name: "Female/Female"},
   ];
 
   const char_count_checks = [
-    {name: 'Solo'},
-    {name: 'Duo'},
-    {name: 'Trio'},
-    {name: 'Group'},
-    {name: 'Zero Pictured'}];
+    {name: "Solo"},
+    {name: "Duo"},
+    {name: "Trio"},
+    {name: "Group"},
+    {name: "Zero Pictured"}];
 
   const body_type_checks = [
-    {name: 'Anthro'},
-    {name: 'Feral'},
-    {name: 'Humanoid'},
-    {name: 'Human'},
-    {name: 'Taur'}];
+    {name: "Anthro"},
+    {name: "Feral"},
+    {name: "Humanoid"},
+    {name: "Human"},
+    {name: "Taur"}];
 
   function tagSorter(a, b) {
     return a.name > b.name ? 1 : -1;
@@ -295,21 +292,21 @@
 
   export default {
     components: {
-      'sources': sources,
-      'image-checkbox': checkbox,
-      'related-tags': relatedTags,
-      'tag-preview': tagPreview,
-      'file-preview': filePreview,
-      'file-input': fileInput,
+      "sources": sources,
+      "image-checkbox": checkbox,
+      "related-tags": relatedTags,
+      "tag-preview": tagPreview,
+      "file-preview": filePreview,
+      "file-input": fileInput,
     },
     data() {
       const allChecks = {};
       const addChecks = function (check) {
-        if (typeof check['tag'] !== "undefined") {
+        if (typeof check["tag"] !== "undefined") {
           allChecks[check.tag] = true;
           return
         }
-        allChecks[check.name.toLowerCase().replace(' ', '_')] = true;
+        allChecks[check.name.toLowerCase().replace(" ", "_")] = true;
       };
       sex_checks.forEach(addChecks);
       pairing_checks.forEach(addChecks);
@@ -324,14 +321,14 @@
         submitting: false,
 
         previewData: {
-          url: '',
+          url: "",
           isVideo: false,
         },
-        uploadValue: '',
+        uploadValue: "",
         invalidUploadValue: false,
 
         sourceWarning: false,
-        sources: [''],
+        sources: [""],
         normalMode: !window.uploaderSettings.compactMode,
 
         checkboxes: {
@@ -343,11 +340,11 @@
           all: allChecks
         },
         tagEntries: {
-          character: '',
-          sex: '',
-          bodyType: '',
-          theme: '',
-          other: '',
+          character: "",
+          sex: "",
+          bodyType: "",
+          theme: "",
+          other: "",
         },
 
         tagPreview: {
@@ -357,7 +354,7 @@
         },
 
         allowLockedTags: window.uploaderSettings.allowLockedTags,
-        lockedTags: '',
+        lockedTags: "",
         allowRatingLock: window.uploaderSettings.allowRatingLock,
         ratingLocked: false,
         allowUploadAsPending: window.uploaderSettings.allowUploadAsPending,
@@ -367,10 +364,10 @@
         lastRelatedCategoryId: undefined,
         loadingRelated: false,
 
-        parentID: '',
-        description: '',
-        rating: '',
-        error: '',
+        parentID: "",
+        description: "",
+        rating: "",
+        error: "",
         duplicateId: 0,
       };
     },
@@ -385,13 +382,13 @@
       };
       const fillFieldBool = function(field, key) {
         if(params.has(key)) {
-          self[field] = (params.get(key) === 'true');
+          self[field] = (params.get(key) === "true");
         }
       };
       const fillTags = function() {
-        if(!params.has('tags'))
+        if(!params.has("tags"))
           return;
-        const tags = params.get('tags').split(' ');
+        const tags = params.get("tags").split(" ");
         for(const tag of tags) {
           const trimTag = tag.trim();
           if(!trimTag)
@@ -399,16 +396,16 @@
           self.pushTag(trimTag, true);
         }
       };
-      fillField('parentID', 'parent');
-      fillField('description', 'description');
+      fillField("parentID", "parent");
+      fillField("description", "description");
       fillTags();
-      if(params.has('sources')) {
-        self.sources = params.get('sources').split(',');
+      if(params.has("sources")) {
+        self.sources = params.get("sources").split(",");
       }
       if(this.allowRatingLock)
-        fillFieldBool('ratingLocked', 'rating_locked');
+        fillFieldBool("ratingLocked", "rating_locked");
       if(this.allowLockedTags)
-        fillField('lockedTags', 'locked_tags');
+        fillField("lockedTags", "locked_tags");
       if(this.allowUploadAsPending)
         fillFieldBool("uploadAsPending", "upload_as_pending")
     },
@@ -418,56 +415,56 @@
       },
       submit() {
         this.showErrors = true;
-        this.error = '';
+        this.error = "";
         if (this.preventUpload || this.submitting)
           return;
         const self = this;
         this.submitting = true;
         const data = new FormData();
         if (typeof this.uploadValue === "string") {
-          data.append('upload[direct_url]', this.uploadValue);
+          data.append("upload[direct_url]", this.uploadValue);
         } else {
-          data.append('upload[file]', this.uploadValue);
+          data.append("upload[file]", this.uploadValue);
         }
-        data.append('upload[tag_string]', this.tags);
-        data.append('upload[rating]', this.rating);
-        data.append('upload[source]', this.sources.join('\n'));
-        data.append('upload[description]', this.description);
-        data.append('upload[parent_id]', this.parentID);
+        data.append("upload[tag_string]", this.tags);
+        data.append("upload[rating]", this.rating);
+        data.append("upload[source]", this.sources.join("\n"));
+        data.append("upload[description]", this.description);
+        data.append("upload[parent_id]", this.parentID);
         if (this.allowLockedTags)
-          data.append('upload[locked_tags]', this.lockedTags);
+          data.append("upload[locked_tags]", this.lockedTags);
         if (this.allowRatingLock)
-          data.append('upload[locked_rating]', this.ratingLocked);
+          data.append("upload[locked_rating]", this.ratingLocked);
         if (this.allowUploadAsPending)
-          data.append('upload[as_pending]', this.uploadAsPending);
-        jQuery.ajax('/uploads.json', {
+          data.append("upload[as_pending]", this.uploadAsPending);
+        jQuery.ajax("/uploads.json", {
           contentType: false,
           processData: false,
-          method: 'POST',
-          type: 'POST',
+          method: "POST",
+          type: "POST",
           data: data,
           success(data) {
             self.submitting = false;
             self.allowNavigate = true;
-            Danbooru.notice('Post uploaded successfully.');
+            Danbooru.notice("Post uploaded successfully.");
             location.assign(data.location);
           },
           error(data) {
             self.submitting = false;
             const data2 = data.responseJSON;
             try {
-              if (data2 && data2.reason === 'duplicate') {
+              if (data2 && data2.reason === "duplicate") {
                 self.duplicateId = data2.post_id;
               }
-              if (data2 && ['duplicate', 'invalid'].indexOf(data2.reason) !== -1) {
+              if (data2 && ["duplicate", "invalid"].indexOf(data2.reason) !== -1) {
                 self.error = data2.message;
               } else if (data2 && data2.message) {
-                self.error = 'Error: ' + data2.message;
+                self.error = "Error: " + data2.message;
               } else {
-                self.error = 'Error: ' + data2.reason;
+                self.error = "Error: " + data2.reason;
               }
             } catch (e) {
-              self.error = 'Error: Unknown error! ' + JSON.stringify(data2);
+              self.error = "Error: Unknown error! " + JSON.stringify(data2);
             }
           }
         });
@@ -476,12 +473,12 @@
         this.tagPreview.show = false;
         const isCheck = typeof this.checkboxes.all[tag] !== "undefined";
         // In advanced mode we need to push these into the tags area because there are no checkboxes or other
-        // tag fields so we can't see them otherwise.
+        // tag fields so we can"t see them otherwise.
         if (isCheck && this.normalMode) {
           this.setCheck(tag, add);
           return;
         }
-        const tags = this.tagEntries.other ? this.tagEntries.other.trim().split(' ') : [];
+        const tags = this.tagEntries.other ? this.tagEntries.other.trim().split(" ") : [];
         const tagIdx = tags.indexOf(tag);
         if (add) {
           if (tagIdx === -1)
@@ -491,7 +488,7 @@
             return;
           tags.splice(tagIdx, 1);
         }
-        this.tagEntries.other = tags.join(' ') + ' ';
+        this.tagEntries.other = tags.join(" ") + " ";
       },
       previewFinalTags() {
         if (this.tagPreview.loading)
@@ -506,8 +503,8 @@
         const self = this;
         const data = {tags: this.tags};
         jQuery.ajax("/tags/preview.json", {
-          method: 'POST',
-          type: 'POST',
+          method: "POST",
+          type: "POST",
           data: data,
           success: function (result) {
             self.tagPreview.loading = false;
@@ -517,7 +514,7 @@
             self.tagPreview.loading = false;
             self.tagPreview.tags = [];
             self.tagPreview.show = false;
-            Danbooru.error('Error loading tag preview ' + result);
+            Danbooru.error("Error loading tag preview " + result);
           }
         })
       },
@@ -536,13 +533,13 @@
               continue;
             if (!respData[key].length)
               continue;
-            sortedRelated.push({title: 'Related: ' + key, tags: respData[key].sort(tagSorter)});
+            sortedRelated.push({title: "Related: " + key, tags: respData[key].sort(tagSorter)});
           }
           return sortedRelated;
         };
         const getSelectedTags = function () {
-          const field = self.$refs['otherTags'];
-          if (!field.hasOwnProperty('selectionStart'))
+          const field = self.$refs["otherTags"];
+          if (!field.hasOwnProperty("selectionStart"))
             return null;
           const length = field.selectionEnd - field.selectionStart;
           if (length)
@@ -555,7 +552,7 @@
         const params = selectedTags ? {query: selectedTags} : {query: this.tags};
 
         if (categoryId)
-          params['category_id'] = categoryId;
+          params["category_id"] = categoryId;
         $.getJSON("/related_tag/bulk.json", params, function (data) {
           self.relatedTags = convertResponse(data);
           self.lastRelatedCategoryId = categoryId;
@@ -573,13 +570,13 @@
           return self.checkboxes.selected[x] === true;
         });
         return checked.concat([this.tagEntries.other, this.tagEntries.sex, this.tagEntries.bodyType,
-          this.tagEntries.theme, this.tagEntries.character]).join(' ').replace(',', ' ').trim().replace(/ +/g, ' ');
+          this.tagEntries.theme, this.tagEntries.character]).join(" ").replace(",", " ").trim().replace(/ +/g, " ");
       },
       tagsArray() {
-        return this.tags.toLowerCase().split(' ');
+        return this.tags.toLowerCase().split(" ");
       },
       tagCount: function () {
-        return this.tags.split(' ').filter(function (x) {
+        return this.tags.split(" ").filter(function (x) {
           return x;
         }).length;
       },
