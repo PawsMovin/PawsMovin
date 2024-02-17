@@ -24,6 +24,7 @@ class PostEvent < ApplicationRecord
     comment_enabled: 19,
     comment_locked: 21,
     comment_unlocked: 22,
+    changed_bg_color: 23,
   }
   MOD_ONLY_SEARCH_ACTIONS = [
     actions[:comment_disabled],

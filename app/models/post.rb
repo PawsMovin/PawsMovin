@@ -1579,6 +1579,9 @@ class Post < ApplicationRecord
         action = is_comment_locked? ? :comment_locked : :comment_unlocked
         PostEvent.add(id, CurrentUser.user, action)
       end
+      if saved_change_to_bg_color?
+        PostEvent.add(id, CurrentUser.user, :changed_background_color, { bg_color: bg_color })
+      end
     end
   end
 
