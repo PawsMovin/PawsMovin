@@ -455,11 +455,11 @@ class Post < ApplicationRecord
 
     def set_tag_counts(disable_cache: true)
       self.tag_count = 0
-      TagCategory::CATEGORIES.each { |x| set_tag_count(x, 0) }
+      TagCategory.category_names.each { |x| set_tag_count(x, 0) }
       categories = Tag.categories_for(tag_array, disable_cache: disable_cache)
       categories.each_value do |category|
         self.tag_count += 1
-        inc_tag_count(TagCategory::REVERSE_MAPPING[category])
+        inc_tag_count(TagCategory.reverse_mapping[category])
       end
     end
 
@@ -714,8 +714,8 @@ class Post < ApplicationRecord
 
     def remove_metatags(tags)
       tags = tags.reject {|x| x =~ /\A(?:-set|set|fav|-fav|upvote|downvote):/i}
-      prefixed, unprefixed = tags.partition {|x| x =~ Tag.categories.regexp}
-      prefixed.map!{|tag| tag.sub(/\A#{Tag.categories.regexp}:/, '')}
+      prefixed, unprefixed = tags.partition {|x| x =~ TagCategory.regexp}
+      prefixed.map!{|tag| tag.sub(/\A#{TagCategory.regexp}:/, '')}
       prefixed + unprefixed
     end
 
@@ -733,7 +733,7 @@ class Post < ApplicationRecord
     end
 
     def apply_categorization_metatags(tags)
-      prefixed, unprefixed = tags.partition {|x| x =~ Tag.categories.regexp}
+      prefixed, unprefixed = tags.partition {|x| x =~ TagCategory.regexp}
       prefixed = Tag.find_or_create_by_name_list(prefixed)
       prefixed.map! do |tag|
         @bad_type_changes << tag.name if tag.errors.include? :category
@@ -1608,13 +1608,13 @@ class Post < ApplicationRecord
     def added_tags_are_valid
       # Load this only once since it isn't cached
       added = added_tags
-      added_invalid_tags = added.select { |t| t.category == Tag.categories.invalid }
+      added_invalid_tags = added.select { |t| t.category == TagCategory.invalid }
       new_tags = added.select { |t| t.post_count <= 0 }
-      new_general_tags = new_tags.select { |t| t.category == Tag.categories.general }
-      new_artist_tags = new_tags.select { |t| t.category == Tag.categories.artist }
+      new_general_tags = new_tags.select { |t| t.category == TagCategory.general }
+      new_artist_tags = new_tags.select { |t| t.category == TagCategory.artist }
       # See https://github.com/e621ng/e621ng/issues/494
       # If the tag is fresh it's save to assume it was created with a prefix
-      repopulated_tags = new_tags.select { |t| t.category != Tag.categories.general && t.category != Tag.categories.meta && t.created_at < 10.seconds.ago }
+      repopulated_tags = new_tags.select { |t| t.category != TagCategory.general && t.category != TagCategory.meta && t.created_at < 10.seconds.ago }
 
       if added_invalid_tags.present?
         n = added_invalid_tags.size
@@ -1653,7 +1653,7 @@ class Post < ApplicationRecord
 
     def has_artist_tag
       return if !new_record?
-      return if tags.any? { |t| t.category == Tag.categories.artist }
+      return if tags.any? { |t| t.category == TagCategory.artist }
 
       self.warnings.add(:base, 'Artist tag is required. "Click here":/help/tags#catchange if you need help changing the category of an tag. Ask on the forum if you need naming help')
     end
@@ -1661,7 +1661,7 @@ class Post < ApplicationRecord
     def has_enough_tags
       return if !new_record?
 
-      if tags.count {|t| t.category == Tag.categories.general} < 10
+      if tags.count {|t| t.category == TagCategory.general} < 10
         self.warnings.add(:base, "Uploads must have at least 10 general tags. Read [[help:tags]] for guidelines on tagging your uploads")
       end
     end
@@ -1765,21 +1765,21 @@ class Post < ApplicationRecord
   end
 
   def uploader_linked_artists
-    linked_artists ||= tags.select { |t| t.category == Tag.categories.artist }.filter_map(&:artist)
+    linked_artists ||= tags.select { |t| t.category == TagCategory.artist }.filter_map(&:artist)
     linked_artists.select { |artist| artist.linked_user_id == uploader_id }
   end
 
   def uploader_name_matches_artists?
     return false if uploader_id.nil? || uploader_linked_artists.any?
-    typed_tags(Tag.categories.artist).include?(uploader_name.downcase)
+    typed_tags(TagCategory.artist).include?(uploader_name.downcase)
   end
 
   def download_filename
     name = id.to_s
-    artists = typed_tags(Tag.categories.artist)
-    copyrights = typed_tags(Tag.categories.copyright)
-    characters = typed_tags(Tag.categories.character)
-    species = typed_tags(Tag.categories.species)
+    artists = typed_tags(TagCategory.artist)
+    copyrights = typed_tags(TagCategory.copyright)
+    characters = typed_tags(TagCategory.character)
+    species = typed_tags(TagCategory.species)
     name += "-#{artists.join('-')}" if artists.present?
     name += "-#{copyrights.join('-')}" if copyrights.present?
     name += "-#{characters.join('-')}" if characters.present?

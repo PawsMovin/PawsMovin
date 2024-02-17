@@ -16,7 +16,7 @@ class BulkUpdateRequestImporterTest < ActiveSupport::TestCase
       should "work" do
         @importer.process!
         @tag.reload
-        assert_equal(Tag.categories.value_for("artist"), @tag.category)
+        assert_equal(TagCategory.value_for("artist"), @tag.category)
       end
     end
 

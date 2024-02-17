@@ -65,8 +65,8 @@ class StatsUpdater
     ### Tags ###
 
     stats[:total_tags] = Tag.count
-    TagCategory::CATEGORIES.each do |cat|
-      stats[:"#{cat}_tags"] = Tag.where(category: TagCategory::MAPPING[cat]).count
+    TagCategory.category_names.each do |cat|
+      stats[:"#{cat}_tags"] = Tag.where(category: TagCategory.mapping[cat]).count
     end
 
     Cache.redis.set("e6stats", stats.to_json)

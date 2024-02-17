@@ -42,7 +42,7 @@ class PostQueryBuilder
     relation = add_array_range_relation(relation, q[:change_seq], "posts.change_seq")
     relation = add_array_range_relation(relation, q[:date], "posts.created_at")
     relation = add_array_range_relation(relation, q[:age], "posts.created_at")
-    TagCategory::CATEGORIES.each do |category|
+    TagCategory.category_names.each do |category|
       relation = add_array_range_relation(relation, q[:"#{category}_tag_count"], "posts.tag_count_#{category}")
     end
     relation = add_array_range_relation(relation, q[:post_tag_count], "posts.tag_count")

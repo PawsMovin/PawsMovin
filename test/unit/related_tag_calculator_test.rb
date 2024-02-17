@@ -45,8 +45,8 @@ class RelatedTagCalculatorTest < ActiveSupport::TestCase
       posts << create(:post, tag_string: "aaa bbb art:ccc")
       posts << create(:post, tag_string: "aaa bbb")
 
-      assert_equal({"ccc" => 2}, RelatedTagCalculator.calculate_from_sample("aaa", 10, Tag.categories.artist))
-      assert_equal({"ddd" => 1}, RelatedTagCalculator.calculate_from_sample("aaa", 10, Tag.categories.copyright))
+      assert_equal({"ccc" => 2}, RelatedTagCalculator.calculate_from_sample("aaa", 10, TagCategory.artist))
+      assert_equal({"ddd" => 1}, RelatedTagCalculator.calculate_from_sample("aaa", 10, TagCategory.copyright))
     end
 
     should "convert a hash into string format" do

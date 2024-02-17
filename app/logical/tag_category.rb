@@ -1,108 +1,107 @@
-class TagCategory
-  MAPPING = {
-    "general" => 0,
-    "gen" => 0,
-    "artist" => 1,
-    "art" => 1,
-    "copyright" => 3,
-    "copy" => 3,
-    "co" => 3,
-    "character" => 4,
-    "char" => 4,
-    "ch" => 4,
-    "oc" => 4,
-    "species" => 5,
-    "spec" => 5,
-    "invalid" => 6,
-    "inv" => 6,
-    "meta" => 7,
-    "lore" => 8,
-    "lor" => 8,
-  }.freeze
+module TagCategory
+  module_function
 
-  CANONICAL_MAPPING = {
-    "General" => 0,
-    "Artist" => 1,
-    "Copyright" => 3,
-    "Character" => 4,
-    "Species" => 5,
-    "Invalid" => 6,
-    "Meta" => 7,
-    "Lore" => 8,
-  }.freeze
+  Category = Struct.new(:id, :name, :aliases) do
+    KWARGS = %i[header suffix limit exclusion regex formatstr].freeze # rubocop:disable Lint/ConstantDefinitionInBlock
+    attr_reader :admin_only
+    attr_accessor(*KWARGS)
 
-  REVERSE_MAPPING = {
-    0 => "general",
-    1 => "artist",
-    3 => "copyright",
-    4 => "character",
-    5 => "species",
-    6 => "invalid",
-    7 => "meta",
-    8 => "lore",
-  }.freeze
+    def initialize(*, **kwargs)
+      super(*)
+      KWARGS.each do |key|
+        send("#{key}=", kwargs[key])
+      end
+      self.aliases ||= []
+      self.header ||= name.titlecase
+    end
 
-  SHORT_NAME_MAPPING = {
-    "gen" => "general",
-    "art" => "artist",
-    "copy" => "copyright",
-    "char" => "character",
-    "spec" => "species",
-    "inv" => "invalid",
-    "meta" => "meta",
-    "lor" => "lore",
-  }.freeze
+    def values
+      [name, *aliases]
+    end
 
-  HEADER_MAPPING = {
-    "general" => "General",
-    "artist" => "Artists",
-    "copyright" => "Copyrights",
-    "character" => "Characters",
-    "species" => "Species",
-    "invalid" => "Invalid",
-    "meta" => "Meta",
-    "lore" => "Lore",
-  }.freeze
+    def title
+      name.titleize
+    end
 
-  ADMIN_ONLY_MAPPING = {
-    "general" => false,
-    "artist" => false,
-    "copyright" => false,
-    "character" => false,
-    "species" => false,
-    "invalid" => true,
-    "meta" => true,
-    "lore" => true,
-  }.freeze
+    def admin_only?
+      is_a?(AdminCategory)
+    end
 
-  HUMANIZED_MAPPING = {
-    "artist" => {
-      "slice" => 0,
-      "exclusion" => %w[avoid_posting conditional_dnp epilepsy_warning sound_warning],
-      "regexmap" => //,
-      "formatstr" => "created by %s",
-    },
-    "copyright" => {
-      "slice" => 1,
-      "exclusion" => [],
-      "regexmap" => //,
-      "formatstr" => "(%s)",
-    },
-    "character" => {
-      "slice" => 5,
-      "exclusion" => [],
-      "regexmap" => /^(.+?)(?:_\(.+\))?$/,
-      "formatstr" => "%s",
-    },
-  }.freeze
+    def humanized?
+      %i[limit exclusion regex formatstr].any? { |v| send(v).present? }
+    end
+  end
+  class AdminCategory < Category; end
 
-  CATEGORIES = %w[general species character copyright artist invalid lore meta].freeze
-  CATEGORY_IDS = CANONICAL_MAPPING.values
+  GENERAL = Category.new(0, "general", %w[gen])
+  ARTIST = Category.new(1, "artist", %w[art], header: "Artists", exclusion: %w[avoid_posting conditional_dnp epilepsy_warning sound_warning], formatstr: "created by %s")
+  VOICE_ACTOR = Category.new(2, "voice_actor", %w[va], header: "Voice Actors", suffix: "_(va)")
+  COPYRIGHT = Category.new(3, "copyright", %w[copy co], header: "Copyrights", limit: 1, formatstr: "(%s)")
+  CHARACTER = Category.new(4, "character", %w[char ch oc], header: "Characters", limit: 5, regex: /^(.+?)(?:_\(.+\))?$/)
+  SPECIES = Category.new(5, "species", %w[spec])
+  INVALID = AdminCategory.new(6, "invalid", %w[inv])
+  META = AdminCategory.new(7, "meta")
+  LORE = AdminCategory.new(8, "lore", %w[lor], suffix: "_(lore)")
 
-  SHORT_NAME_LIST = SHORT_NAME_MAPPING.keys
-  HUMANIZED_LIST = %w[character copyright artist].freeze
-  SPLIT_HEADER_LIST = %w[invalid artist copyright character species general meta lore].freeze
-  CATEGORIZED_LIST = %w[invalid artist copyright character species meta general lore].freeze
+  def categories
+    @categories ||= constants.map { |c| const_get(c) }.select { |c| c.is_a?(Category) }
+  end
 
-  SHORT_NAME_REGEX = SHORT_NAME_LIST.join("|").freeze
+  def get(value)
+    value = reverse_mapping[value] if value.is_a?(Integer)
+    categories.find { |c| c.name == value.to_s.downcase }
+  end
+
+  def ids
+    @ids ||= categories.map(&:id)
+  end
+
+  def mapping
+    @mapping ||= categories.flat_map { |c| c.values.map { |v| [v, c.id] } }.to_h
+  end
+
+  def reverse_mapping
+    @reverse_mapping ||= categories.to_h { |c| [c.id, c.name] }
+  end
+
+  def for_select
+    categories.map { |c| [c.title, c.id] }
+  end
+
+  def regexp
+    @regexp ||= Regexp.compile(mapping.keys.sort_by { |x| -x.length }.join("|"))
+  end
+
+  def value_for(string)
+    mapping[string.to_s.downcase] || 0
+  end
+
+  def short_name_mapping
+    @short_name_mapping ||= categories.flat_map { |c| c.aliases.map { |a| [a, c.name] } }.to_h
+  end
+
+  def short_name_list
+    @short_name_list ||= short_name_mapping.keys
+  end
+
+  def short_name_regex
+    @short_name_regex ||= short_name_mapping.keys.join("|")
+  end
+
+  def humanized
+    @humanized ||= categories.select(&:humanized?).map(&:name)
+  end
+
+  def category_names
+    @category_names ||= categories.map(&:name)
+  end
+
+  categories.each do |cat|
+    define_method(cat.name) do
+      cat.id
+    end
+  end
+
+  SPLIT_HEADER_LIST = %w[invalid artist voice_actor copyright character species general meta lore].freeze
+  CATEGORIZED_LIST = %w[invalid artist voice_actor copyright character species meta general lore].freeze
 end

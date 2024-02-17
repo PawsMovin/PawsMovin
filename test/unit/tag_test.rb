@@ -9,43 +9,43 @@ class TagTest < ActiveSupport::TestCase
   context "A tag category fetcher" do
     should "fetch for a single tag" do
       create(:artist_tag, name: "test")
-      assert_equal(Tag.categories.artist, Tag.category_for("test"))
+      assert_equal(TagCategory.artist, Tag.category_for("test"))
     end
 
     should "fetch for a single tag with strange markup" do
       create(:artist_tag, name: "!@ab")
-      assert_equal(Tag.categories.artist, Tag.category_for("!@ab"))
+      assert_equal(TagCategory.artist, Tag.category_for("!@ab"))
     end
 
     should "return general for a tag that doesn't exist" do
-      assert_equal(Tag.categories.general, Tag.category_for("missing"))
+      assert_equal(TagCategory.general, Tag.category_for("missing"))
     end
 
     should "fetch for multiple tags" do
       create(:artist_tag, name: "aaa")
       create(:copyright_tag, name: "bbb")
       categories = Tag.categories_for(%w(aaa bbb ccc))
-      assert_equal(Tag.categories.artist, categories["aaa"])
-      assert_equal(Tag.categories.copyright, categories["bbb"])
+      assert_equal(TagCategory.artist, categories["aaa"])
+      assert_equal(TagCategory.copyright, categories["bbb"])
       assert_nil(categories["ccc"])
     end
   end
 
   context "A tag category mapping" do
     should "exist" do
-      assert_nothing_raised {Tag.categories}
+      assert_nothing_raised { TagCategory.categories }
     end
 
     should "have convenience methods for the four main categories" do
-      assert_equal(0, Tag.categories.general)
-      assert_equal(1, Tag.categories.artist)
-      assert_equal(3, Tag.categories.copyright)
-      assert_equal(4, Tag.categories.character)
-      assert_equal(7, Tag.categories.meta)
+      assert_equal(0, TagCategory.general)
+      assert_equal(1, TagCategory.artist)
+      assert_equal(3, TagCategory.copyright)
+      assert_equal(4, TagCategory.character)
+      assert_equal(7, TagCategory.meta)
     end
 
     should "have a regular expression for matching category names and shortcuts" do
-      regexp = Tag.categories.regexp
+      regexp = TagCategory.regexp
 
       assert_match(regexp, "artist")
       assert_match(regexp, "art")
@@ -61,12 +61,12 @@ class TagTest < ActiveSupport::TestCase
     end
 
     should "map a category name to its value" do
-      assert_equal(0, Tag.categories.value_for("general"))
-      assert_equal(0, Tag.categories.value_for("gen"))
-      assert_equal(1, Tag.categories.value_for("artist"))
-      assert_equal(1, Tag.categories.value_for("art"))
-      assert_equal(7, Tag.categories.value_for("meta"))
-      assert_equal(0, Tag.categories.value_for("unknown"))
+      assert_equal(0, TagCategory.value_for("general"))
+      assert_equal(0, TagCategory.value_for("gen"))
+      assert_equal(1, TagCategory.value_for("artist"))
+      assert_equal(1, TagCategory.value_for("art"))
+      assert_equal(7, TagCategory.value_for("meta"))
+      assert_equal(0, TagCategory.value_for("unknown"))
     end
   end
 
@@ -78,14 +78,14 @@ class TagTest < ActiveSupport::TestCase
 
     should "reset its category after updating" do
       tag = create(:artist_tag)
-      assert_equal(Tag.categories.artist, Cache.fetch("tc:#{tag.name}"))
+      assert_equal(TagCategory.artist, Cache.fetch("tc:#{tag.name}"))
 
-      tag.update_attribute(:category, Tag.categories.copyright)
-      assert_equal(Tag.categories.copyright, Cache.fetch("tc:#{tag.name}"))
+      tag.update_attribute(:category, TagCategory.copyright)
+      assert_equal(TagCategory.copyright, Cache.fetch("tc:#{tag.name}"))
     end
 
     context "not be settable to an invalid category" do
-      should validate_inclusion_of(:category).in_array(TagCategory::CATEGORY_IDS)
+      should validate_inclusion_of(:category).in_array(TagCategory.ids)
     end
   end
 
@@ -100,10 +100,10 @@ class TagTest < ActiveSupport::TestCase
     should "change the type for an existing tag" do
       tag = create(:tag)
       assert_difference("Tag.count", 0) do
-        assert_equal(Tag.categories.general, tag.category)
+        assert_equal(TagCategory.general, tag.category)
         Tag.find_or_create_by_name("artist:#{tag.name}")
         tag.reload
-        assert_equal(Tag.categories.artist, tag.category)
+        assert_equal(TagCategory.artist, tag.category)
       end
     end
 
@@ -146,7 +146,7 @@ class TagTest < ActiveSupport::TestCase
       assert_difference("Tag.count", 1) do
         tag = Tag.find_or_create_by_name("hoge")
         assert_equal("hoge", tag.name)
-        assert_equal(Tag.categories.general, tag.category)
+        assert_equal(TagCategory.general, tag.category)
       end
     end
 
@@ -154,7 +154,7 @@ class TagTest < ActiveSupport::TestCase
       assert_difference("Tag.count", 1) do
         tag = Tag.find_or_create_by_name("artist:hoge")
         assert_equal("hoge", tag.name)
-        assert_equal(Tag.categories.artist, tag.category)
+        assert_equal(TagCategory.artist, tag.category)
       end
     end
 
@@ -179,7 +179,7 @@ class TagTest < ActiveSupport::TestCase
       should_not allow_value("東方").for(:name).on(:create)
       should_not allow_value("FAV:blah").for(:name).on(:create)
 
-      metatags = TagQuery::METATAGS + TagCategory::MAPPING.keys
+      metatags = TagQuery::METATAGS + TagCategory.mapping.keys
       metatags.each do |metatag|
         should_not allow_value("#{metatag}:foo").for(:name).on(:create)
       end

@@ -41,7 +41,7 @@ class BulkUpdateRequestImporter
       elsif line =~ /^(?:nuke tag|nuke) (\S+)( #.*)?$/i
         [:nuke_tag, $1, nil, $2]
 
-      elsif line =~ /^category (\S+) -> (#{Tag.categories.regexp})( #.*)?$/i
+      elsif line =~ /^category (\S+) -> (#{TagCategory.regexp})( #.*)?$/i
         [:change_category, $1, $2, $3]
 
       elsif line.strip.empty?
@@ -238,7 +238,7 @@ class BulkUpdateRequestImporter
         when :change_category
           tag = Tag.find_by(name: token[1])
           raise Error, "Tag for #{token[1]} not found" if tag.nil?
-          tag.category = Tag.categories.value_for(token[2])
+          tag.category = TagCategory.value_for(token[2])
           tag.save
 
         else

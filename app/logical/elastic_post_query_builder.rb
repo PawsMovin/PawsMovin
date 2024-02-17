@@ -54,7 +54,7 @@ class ElasticPostQueryBuilder < ElasticQueryBuilder
     add_array_range_relation(:date, :created_at)
     add_array_range_relation(:age, :created_at)
 
-    TagCategory::CATEGORIES.each do |category|
+    TagCategory.category_names.each do |category|
       add_array_range_relation(:"#{category}_tag_count", "tag_count_#{category}")
     end
 
@@ -279,11 +279,11 @@ class ElasticPostQueryBuilder < ElasticQueryBuilder
     when "tagcount_asc"
       order.push({tag_count: :asc})
 
-    when /(#{TagCategory::SHORT_NAME_REGEX})tags(?:\Z|_desc)/
-      order.push({"tag_count_#{TagCategory::SHORT_NAME_MAPPING[$1]}" => :desc})
+    when /(#{TagCategory.short_name_regex})tags(?:\Z|_desc)/
+      order.push({"tag_count_#{TagCategory.short_name_mapping[$1]}" => :desc})
 
-    when /(#{TagCategory::SHORT_NAME_REGEX})tags_asc/
-      order.push({"tag_count_#{TagCategory::SHORT_NAME_MAPPING[$1]}" => :asc})
+    when /(#{TagCategory.short_name_regex})tags_asc/
+      order.push({"tag_count_#{TagCategory.short_name_mapping[$1]}" => :asc})
 
     when "rank"
       @function_score = {

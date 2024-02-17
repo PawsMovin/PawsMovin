@@ -2,20 +2,20 @@ FactoryBot.define do
   factory(:tag) do
     sequence(:name) { |n| "tag_name_#{n}" }
     post_count { 0 }
-    category {Tag.categories.general}
+    category {TagCategory.general}
     related_tags { "" }
     related_tags_updated_at {Time.now}
 
     factory(:artist_tag) do
-      category {Tag.categories.artist}
+      category {TagCategory.artist}
     end
 
     factory(:copyright_tag) do
-      category {Tag.categories.copyright}
+      category {TagCategory.copyright}
     end
 
     factory(:character_tag) do
-      category {Tag.categories.character}
+      category {TagCategory.character}
     end
   end
 end

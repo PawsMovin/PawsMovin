@@ -8,27 +8,11 @@ class Tag < ApplicationRecord
 
   validates :name, uniqueness: true, tag_name: true, on: :create
   validates :name, length: { in: 1..100 }
-  validates :category, inclusion: { in: TagCategory::CATEGORY_IDS }
+  validates :category, inclusion: { in: TagCategory.ids }
   validate :user_can_create_tag?, on: :create
   validate :user_can_change_category?, if: :category_changed?
 
   before_save :update_category, if: :category_changed?
-
-  class CategoryMapping
-    TagCategory::REVERSE_MAPPING.each do |value, category|
-      define_method(category) do
-        value
-      end
-    end
-
-    def regexp
-      @regexp ||= Regexp.compile(TagCategory::MAPPING.keys.sort_by { |x| -x.length }.join("|"))
-    end
-
-    def value_for(string)
-      TagCategory::MAPPING[string.to_s.downcase] || 0
-    end
-  end
 
   module CountMethods
     extend ActiveSupport::Concern
@@ -70,10 +54,6 @@ class Tag < ApplicationRecord
 
   module CategoryMethods
     module ClassMethods
-      def categories
-        @category_mapping ||= CategoryMapping.new
-      end
-
       def category_for(tag_name)
         Cache.fetch("tc:#{tag_name}") do
           Tag.where(name: tag_name).pick(:category).to_i
@@ -102,7 +82,7 @@ class Tag < ApplicationRecord
       end
 
       def category_for_value(value)
-        TagCategory::REVERSE_MAPPING.fetch(value, "unknown category").capitalize
+        TagCategory.reverse_mapping.fetch(value, "unknown category").capitalize
       end
     end
 
@@ -111,14 +91,14 @@ class Tag < ApplicationRecord
     end
 
     def category_name
-      TagCategory::REVERSE_MAPPING[category].capitalize
+      TagCategory.get(category).title
     end
 
     def update_category_post_counts!
       Post.with_timeout(30_000, nil, {:tags => name}) do
         Post.sql_raw_tag_match(name).find_each do |post|
           post.set_tag_counts(disable_cache: false)
-          args = TagCategory::CATEGORIES.to_h { |x| ["tag_count_#{x}", post.send("tag_count_#{x}")] }.update("tag_count" => post.tag_count)
+          args = TagCategory.category_names.to_h { |x| ["tag_count_#{x}", post.send("tag_count_#{x}")] }.update("tag_count" => post.tag_count)
           Post.where(:id => post.id).update_all(args)
           post.update_index
         end
@@ -134,14 +114,15 @@ class Tag < ApplicationRecord
     end
 
     def user_can_change_category?
-      cat = TagCategory::REVERSE_MAPPING[category]
-      if !CurrentUser.is_admin? && TagCategory::ADMIN_ONLY_MAPPING[cat]
+      cat = TagCategory.get(category)
+      return false unless cat
+      if !CurrentUser.is_admin? && cat.admin_only?
         errors.add(:category,  "can only used by admins")
         return false
       end
-      if cat == "lore"
-        unless name =~ /\A.*_\(lore\)\z/
-          errors.add(:category, "can only be applied to tags that end with '_(lore)'")
+      if cat.suffix
+        unless name.ends_with?(cat.suffix)
+          errors.add(:category, "can only be applied to tags that end with '#{cat.suffix}'")
           return false
         end
       end
@@ -183,7 +164,7 @@ class Tag < ApplicationRecord
     def find_or_create_by_name_list(names, creator: CurrentUser.user)
       names = names.map {|x| normalize_name(x)}
       names = names.map do |x|
-        if x =~ /\A(#{categories.regexp}):(.+)\Z/
+        if x =~ /\A(#{TagCategory.regexp}):(.+)\Z/
           [$2, $1]
         else
           [x, nil]
@@ -193,7 +174,7 @@ class Tag < ApplicationRecord
       existing = Tag.where(name: names.keys).to_a
       existing.each do |tag|
         cat = names[tag.name]
-        category_id = categories.value_for(cat)
+        category_id = TagCategory.value_for(cat)
         if cat && category_id != tag.category
           if tag.category_editable_by_implicit?(creator)
             tag.update(category: category_id)
@@ -207,7 +188,7 @@ class Tag < ApplicationRecord
       names.each do |name, cat|
         existing << Tag.new.tap do |t|
           t.name = name
-          t.category = categories.value_for(cat)
+          t.category = TagCategory.value_for(cat)
           t.save
         end
       end
@@ -218,7 +199,7 @@ class Tag < ApplicationRecord
       name = normalize_name(name)
       category = nil
 
-      if name =~ /\A(#{categories.regexp}):(.+)\Z/
+      if name =~ /\A(#{TagCategory.regexp}):(.+)\Z/
         category = $1
         name = $2
       end
@@ -227,7 +208,7 @@ class Tag < ApplicationRecord
 
       if tag
         if category
-          category_id = categories.value_for(category)
+          category_id = TagCategory.value_for(category)
             # in case a category change hasn't propagated to this server yet,
             # force an update the local cache. This may get overwritten in the
             # next few lines if the category is changed.
@@ -246,7 +227,7 @@ class Tag < ApplicationRecord
       else
         Tag.new.tap do |t|
           t.name = name
-          t.category = categories.value_for(category)
+          t.category = TagCategory.value_for(category)
           t.save
         end
       end
@@ -382,14 +363,14 @@ class Tag < ApplicationRecord
   def category_editable_by?(user)
     return true if user.is_admin?
     return false if is_locked?
-    return false if TagCategory::ADMIN_ONLY_MAPPING[TagCategory::REVERSE_MAPPING[category]]
+    return false if TagCategory.get(category).admin_only?
     return true if post_count < PawsMovin.config.tag_type_change_cutoff
     false
   end
 
   def user_can_create_tag?
-    if name =~ /\A.*_\(lore\)\z/ && !CurrentUser.user.is_admin?
-      errors.add(:base, "Can not create lore tags unless admin")
+    if name =~ /\A.*_\((lore)\)\z/ && !CurrentUser.user.is_admin?
+      errors.add(:base, "Can not create #{$1} tags unless admin")
       errors.add(:name, "is invalid")
       return false
     end

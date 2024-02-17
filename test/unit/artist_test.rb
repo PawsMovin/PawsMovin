@@ -241,7 +241,7 @@ class ArtistTest < ActiveSupport::TestCase
       tag = create(:tag, name: "abc")
       artist = create(:artist, name: "abc")
       tag.reload
-      assert_equal(Tag.categories.artist, tag.category)
+      assert_equal(TagCategory.artist, tag.category)
     end
 
     context "when saving" do

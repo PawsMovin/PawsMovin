@@ -35,7 +35,7 @@ class TagSetPresenter < Presenter
       typetags = tags_for_category(category)
 
       if typetags.any?
-        html << %{<h2 class="#{category}-tag-list-header tag-list-header" data-category="#{category}">#{TagCategory::HEADER_MAPPING[category]}</h2>}
+        html << %{<h2 class="#{category}-tag-list-header tag-list-header" data-category="#{category}">#{TagCategory.get(category).header}</h2>}
         html << %{<ul class="#{category}-tag-list">}
         typetags.each do |tag|
           html << build_list_item(tag, current_query: current_query, highlight: highlighted_tags.include?(tag.name))
@@ -64,14 +64,14 @@ class TagSetPresenter < Presenter
     end.compact_blank.join(" \n")
   end
 
-  def humanized_essential_tag_string(category_list: TagCategory::HUMANIZED_LIST, default: "")
+  def humanized_essential_tag_string(category_list: TagCategory.humanized, default: "")
     return @_humanized if @_cached[:humanized]
     strings = category_list.map do |category|
-      mapping = TagCategory::HUMANIZED_MAPPING[category]
-      max_tags = mapping["slice"]
-      regexmap = mapping["regexmap"]
-      formatstr = mapping["formatstr"]
-      excluded_tags = mapping["exclusion"]
+      mapping = TagCategory.get(category)
+      max_tags = mapping.limit || 0
+      regexmap = mapping.regex || //
+      formatstr = mapping.formatstr || "%s"
+      excluded_tags = mapping.exclusion || []
 
       type_tags = tags_for_category(category).map(&:name) - excluded_tags
       next if type_tags.empty?
@@ -109,7 +109,7 @@ class TagSetPresenter < Presenter
   end
 
   def tags_for_category(category_name)
-    category = TagCategory::MAPPING[category_name.downcase]
+    category = TagCategory.mapping[category_name.downcase]
     tags_by_category[category] || []
   end
 
@@ -132,7 +132,7 @@ class TagSetPresenter < Presenter
 
     html = %{<li class="category-#{tag.category}">}
 
-    if category == Tag.categories.artist
+    if category == TagCategory.artist
       html << %{<a class="wiki-link" rel="nofollow" href="/artists/show_or_new?name=#{u(name)}">?</a> }
     else
       html << %{<a class="wiki-link" rel="nofollow" href="/wiki_pages/show_or_new?title=#{u(name)}">?</a> }
@@ -154,7 +154,7 @@ class TagSetPresenter < Presenter
       post_count = count
     end
 
-    is_underused_tag = count <= 1 && category == Tag.categories.general
+    is_underused_tag = count <= 1 && category == TagCategory.general
     klass = "color-muted post-count#{is_underused_tag ? " low-post-count" : ""}"
     title = "New general tag detected. Check the spelling or populate it now."
 
@@ -166,7 +166,7 @@ class TagSetPresenter < Presenter
 
   def tag_link(tag, link_text = tag.name, link_type = :tag)
     link_base = link_type == :wiki_page ? "/wiki_pages/show_or_new?title=" : "/posts?tags="
-    itemprop = 'itemprop="author"' if tag.category == Tag.categories.artist
+    itemprop = 'itemprop="author"' if tag.category == TagCategory.artist
     %(<a rel="nofollow" class="search-tag" #{itemprop} href="#{link_base}#{u(tag.name)}">#{h(link_text)}</a> )
   end
 end

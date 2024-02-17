@@ -17,7 +17,7 @@ module BulkUpdateRequestsHelper
 
     when :change_category
       tag, category = antecedent, consequent
-      Tag.exists?(name: tag, category: Tag.categories.value_for(category))
+      Tag.exists?(name: tag, category: TagCategory.value_for(category))
 
     else
       false

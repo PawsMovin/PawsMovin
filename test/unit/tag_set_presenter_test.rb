@@ -4,11 +4,11 @@ class TagSetPresenterTest < ActiveSupport::TestCase
   context "TagSetPresenter" do
     setup do
       CurrentUser.user = create(:mod_user)
-      create(:tag, name: "bkub", category: Tag.categories.artist)
-      create(:tag, name: "chen", category: Tag.categories.character)
-      create(:tag, name: "cirno", category: Tag.categories.character)
-      create(:tag, name: "solo", category: Tag.categories.general)
-      create(:tag, name: "touhou", category: Tag.categories.copyright)
+      create(:tag, name: "bkub", category: TagCategory.artist)
+      create(:tag, name: "chen", category: TagCategory.character)
+      create(:tag, name: "cirno", category: TagCategory.character)
+      create(:tag, name: "solo", category: TagCategory.general)
+      create(:tag, name: "touhou", category: TagCategory.copyright)
     end
 
     context "#split_tag_list_text method" do

@@ -78,7 +78,7 @@ class RelatedTagQueryTest < ActiveSupport::TestCase
       @post_1 = create(:post, tag_string: "aaa bbb")
       @post_2 = create(:post, tag_string: "aaa art:ccc")
       @post_3 = create(:post, tag_string: "aaa copy:ddd")
-      @query = RelatedTagQuery.new(query: "aaa", category_id: Tag.categories.artist)
+      @query = RelatedTagQuery.new(query: "aaa", category_id: TagCategory.artist)
     end
 
     should "find the related tags" do

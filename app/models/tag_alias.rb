@@ -93,9 +93,9 @@ class TagAlias < TagRelationship
 
   def self.to_aliased_query(query, overrides: nil)
     # Remove tag types (newline syntax)
-    query.gsub!(/(^| )(-)?(#{TagCategory::MAPPING.keys.sort_by { |x| -x.size }.join('|')}):([\S])/i, '\1\2\4')
+    query.gsub!(/(^| )(-)?(#{TagCategory.mapping.keys.sort_by { |x| -x.size }.join('|')}):([\S])/i, '\1\2\4')
     # Remove tag types (comma syntax)
-    query.gsub!(/, (-)?(#{TagCategory::MAPPING.keys.sort_by { |x| -x.size }.join('|')}):([\S])/i, ', \1\3')
+    query.gsub!(/, (-)?(#{TagCategory.mapping.keys.sort_by { |x| -x.size }.join('|')}):([\S])/i, ', \1\3')
     lines = query.downcase.split("\n")
     collected_tags = []
     lines.each do |line|
@@ -172,7 +172,7 @@ class TagAlias < TagRelationship
   end
 
   def rename_artist_undo
-    if consequent_tag.category == Tag.categories.artist
+    if consequent_tag.category == TagCategory.artist
       if consequent_tag.artist.present? && antecedent_tag.artist.blank?
         CurrentUser.scoped(creator, creator_ip_addr) do
           consequent_tag.artist.update!(name: antecedent_name)
@@ -261,8 +261,8 @@ class TagAlias < TagRelationship
 
   def ensure_category_consistency
     return if consequent_tag.is_locked? # Prevent accidentally changing tag type if category locked.
-    return if consequent_tag.category != Tag.categories.general # Don't change the already existing category of the target tag
-    return if antecedent_tag.category == Tag.categories.general # Don't set the target tag to general
+    return if consequent_tag.category != TagCategory.general # Don't change the already existing category of the target tag
+    return if antecedent_tag.category == TagCategory.general # Don't set the target tag to general
 
     consequent_tag.update_attribute(:category, antecedent_tag.category)
   end
@@ -300,7 +300,7 @@ class TagAlias < TagRelationship
   end
 
   def rename_artist
-    if antecedent_tag.category == Tag.categories.artist
+    if antecedent_tag.category == TagCategory.artist
       if antecedent_tag.artist.present? && consequent_tag.artist.blank?
         CurrentUser.scoped(creator, creator_ip_addr) do
           antecedent_tag.artist.update!(name: consequent_name)

@@ -124,7 +124,7 @@ class BulkUpdateRequestTest < ActiveSupport::TestCase
         bur = create(:bulk_update_request, script: "category tagme -> meta")
         bur.approve!(@admin)
 
-        assert_equal(Tag.categories.meta, tag.reload.category)
+        assert_equal(TagCategory.meta, tag.reload.category)
       end
     end
 

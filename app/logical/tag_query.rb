@@ -14,7 +14,7 @@ class TagQuery
     source status pool set fav favoritedby note locked upvote votedup downvote voteddown voted
     width height mpixels ratio filesize duration score favcount date age change tagcount
     commenter comm noter noteupdater
-  ] + TagCategory::SHORT_NAME_LIST.map { |tag_name| "#{tag_name}tags" }
+  ] + TagCategory.short_name_list.map { |tag_name| "#{tag_name}tags" }
 
   METATAGS = %w[
     md5 order limit child randseed ratinglocked notelocked statuslocked
@@ -37,7 +37,7 @@ class TagQuery
     duration duration_desc duration_asc
     rank
     random
-  ] + COUNT_METATAGS + TagCategory::SHORT_NAME_LIST.flat_map { |str| ["#{str}tags", "#{str}tags_asc"] }
+  ] + COUNT_METATAGS + TagCategory.short_name_list.flat_map { |str| ["#{str}tags", "#{str}tags_asc"] }
 
   delegate :[], :include?, to: :@q
   attr_reader :q, :resolve_aliases
@@ -262,8 +262,8 @@ class TagQuery
       when "tagcount", "-tagcount", "~tagcount"
         add_to_query(type, :post_tag_count) { ParseValue.range(g2) }
 
-      when /[-~]?(#{TagCategory::SHORT_NAME_REGEX})tags/
-        add_to_query(type, :"#{TagCategory::SHORT_NAME_MAPPING[$1]}_tag_count") { ParseValue.range(g2) }
+      when /[-~]?(#{TagCategory.short_name_regex})tags/
+        add_to_query(type, :"#{TagCategory.short_name_mapping[$1]}_tag_count") { ParseValue.range(g2) }
 
       when "parent", "-parent", "~parent"
         add_to_query(type, :parent_ids, any_none_key: :parent, value: g2) do

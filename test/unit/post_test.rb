@@ -493,11 +493,11 @@ class PostTest < ActiveSupport::TestCase
         end
 
         should "update the category of the tag" do
-          assert_equal(Tag.categories.copyright, Tag.find_by_name("abc").category)
+          assert_equal(TagCategory.copyright, Tag.find_by_name("abc").category)
         end
 
         should "1234 update the category cache of the tag" do
-          assert_equal(Tag.categories.copyright, Cache.fetch("tc:abc"))
+          assert_equal(TagCategory.copyright, Cache.fetch("tc:abc"))
         end
 
         should "update the tag counts of the posts" do

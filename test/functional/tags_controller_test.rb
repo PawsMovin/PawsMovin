@@ -5,7 +5,7 @@ class TagsControllerTest < ActionDispatch::IntegrationTest
     setup do
       @user = create(:janitor_user)
       as(@user) do
-        @tag = create(:tag, name: "touhou", category: Tag.categories.copyright, post_count: 1)
+        @tag = create(:tag, name: "touhou", category: TagCategory.copyright, post_count: 1)
       end
     end
 
@@ -50,9 +50,9 @@ class TagsControllerTest < ActionDispatch::IntegrationTest
       end
 
       should "update the tag" do
-        put_auth tag_path(@tag), @user, params: { tag: { category: Tag.categories.general } }
+        put_auth tag_path(@tag), @user, params: { tag: { category: TagCategory.general } }
         assert_redirected_to tag_path(@tag)
-        assert_equal(Tag.categories.general, @tag.reload.category)
+        assert_equal(TagCategory.general, @tag.reload.category)
       end
 
       should "lock the tag for an admin" do
@@ -76,28 +76,28 @@ class TagsControllerTest < ActionDispatch::IntegrationTest
         end
 
         should "not update the category for a janitor" do
-          put_auth tag_path(@tag), @user, params: { tag: { category: Tag.categories.general } }
+          put_auth tag_path(@tag), @user, params: { tag: { category: TagCategory.general } }
 
-          assert_not_equal(Tag.categories.general, @tag.reload.category)
+          assert_not_equal(TagCategory.general, @tag.reload.category)
         end
 
         should "update the category for an admin" do
           @admin = create(:admin_user)
-          put_auth tag_path(@tag), @admin, params: { tag: { category: Tag.categories.general } }
+          put_auth tag_path(@tag), @admin, params: { tag: { category: TagCategory.general } }
 
           assert_redirected_to @tag
-          assert_equal(Tag.categories.general, @tag.reload.category)
+          assert_equal(TagCategory.general, @tag.reload.category)
         end
       end
 
       should "not change category when the tag is too large to be changed by a builder" do
         as(@user) do
-          @tag.update(category: Tag.categories.general, post_count: 1001)
+          @tag.update(category: TagCategory.general, post_count: 1001)
         end
-        put_auth tag_path(@tag), @user, params: { tag: { category: Tag.categories.artist } }
+        put_auth tag_path(@tag), @user, params: { tag: { category: TagCategory.artist } }
 
         assert_response :forbidden
-        assert_equal(Tag.categories.general, @tag.reload.category)
+        assert_equal(TagCategory.general, @tag.reload.category)
       end
     end
   end
