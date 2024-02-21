@@ -53,7 +53,7 @@ class PostDeletionReasonsController < ApplicationController
     return render_expected_error(400, "Duplicate ids provided: #{duplicate.join(', ')}") if duplicate.any?
 
     changes = 0
-    PostDeletionReason.all.find_each do |reason|
+    PostDeletionReason.find_each do |reason|
       order = new_orders.find { |o| o[:id] == reason.id }
       if reason.order != order[:order]
         reason.update_column(:order, order[:order])

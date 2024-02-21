@@ -1929,7 +1929,6 @@ Style/NumericLiterals:
     - 'app/indexes/post_version_index.rb'
     - 'app/logical/apng_inspector.rb'
     - 'app/logical/pbkdf2.rb'
-    - 'app/views/ads/_leaderboard.html.erb'
     - 'app/views/takedowns/new.html.erb'
     - 'config/default_config.rb'
     - 'test/functional/application_controller_test.rb'

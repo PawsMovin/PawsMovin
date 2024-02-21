@@ -653,23 +653,6 @@ module PawsMovin
       user.is_admin? || user == User.system
     end
 
-    def ads_enabled?
-      false
-    end
-
-    # These tags will be sent to the revive server to do filtering on
-    def ads_keyword_tags
-      []
-    end
-
-    def ads_zone_desktop
-      {zone: nil, revive_id: nil, checksum: nil}
-    end
-
-    def ads_zone_mobile
-      {zone: nil, revive_id: nil, checksum: nil}
-    end
-
     # Additional video samples will be generated in these dimensions if it makes sense to do so
     # They will be available as additional scale options on applicable posts in the order they appear here
     def video_rescales
@@ -681,10 +664,6 @@ module PawsMovin
     end
 
     def readonly_mode?
-      false
-    end
-
-    def enable_visitor_metrics?
       false
     end
 
