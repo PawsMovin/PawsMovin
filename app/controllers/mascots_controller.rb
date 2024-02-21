@@ -13,7 +13,7 @@ class MascotsController < ApplicationController
 
   def create
     @mascot = Mascot.create(mascot_params.merge(creator: CurrentUser.user))
-    ModAction.log(:mascot_create, { mascot_d: @mascot.id }) if @mascot.valid?
+    ModAction.log!(:mascot_create, @mascot) if @mascot.valid?
     respond_with(@mascot, location: mascots_path)
   end
 
@@ -24,14 +24,15 @@ class MascotsController < ApplicationController
   def update
     @mascot = Mascot.find(params[:id])
     @mascot.update(mascot_params)
-    ModAction.log(:mascot_update, { mascot_id: @mascot.id }) if @mascot.valid?
+    # TODO: specifically updated attributes
+    ModAction.log!(:mascot_update, @mascot) if @mascot.valid?
     respond_with(@mascot, location: mascots_path)
   end
 
   def destroy
     @mascot = Mascot.find(params[:id])
     @mascot.destroy
-    ModAction.log(:mascot_delete, { mascot_id: @mascot.id })
+    ModAction.log!(:mascot_delete, @mascot)
     respond_with(@mascot)
   end
 

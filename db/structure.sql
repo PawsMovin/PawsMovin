@@ -938,7 +938,9 @@ CREATE TABLE public.mod_actions (
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     action text,
-    "values" json
+    "values" json,
+    subject_id integer,
+    subject_type character varying
 );
 
 
@@ -4516,6 +4518,7 @@ ALTER TABLE ONLY public.staff_notes
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20240217235926'),
 ('20240217025400'),
 ('20240214190653'),
 ('20240214023511'),

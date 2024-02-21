@@ -121,7 +121,7 @@ class Tag < ApplicationRecord
         return false
       end
       if cat.suffix
-        unless name.ends_with?(cat.suffix)
+        unless name&.ends_with?(cat.suffix)
           errors.add(:category, "can only be applied to tags that end with '#{cat.suffix}'")
           return false
         end

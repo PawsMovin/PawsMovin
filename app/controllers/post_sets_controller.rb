@@ -53,11 +53,11 @@ class PostSetsController < ApplicationController
 
     unless @post_set.is_owner?(CurrentUser.user)
       if @post_set.saved_change_to_is_public?
-        ModAction.log(:set_change_visibility, { set_id: @post_set.id, user_id: @post_set.creator_id, is_public: @post_set.is_public })
+        ModAction.log!(:set_change_visibility, @post_set, user_id: @post_set.creator_id, is_public: @post_set.is_public)
       end
 
       if @post_set.saved_change_to_watched_attributes?
-        ModAction.log(:set_update, { set_id: @post_set.id, user_id: @post_set.creator_id })
+        ModAction.log!(:set_update, @post_set, user_id: @post_set.creator_id)
       end
     end
 
@@ -87,7 +87,7 @@ class PostSetsController < ApplicationController
     @post_set = PostSet.find(params[:id])
     check_settings_edit_access(@post_set)
     if @post_set.creator != CurrentUser.user
-      ModAction.log(:set_delete, {set_id: @post_set.id, user_id: @post_set.creator_id})
+      ModAction.log!(:set_delete, @post_set, user_id: @post_set.creator_id)
     end
     @post_set.destroy
     respond_with(@post_set)

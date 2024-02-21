@@ -16,7 +16,7 @@ class WikiPage < ApplicationRecord
 
   before_destroy :validate_not_used_as_help_page
   before_destroy :log_destroy
-  before_save :log_changes
+  after_save :log_changes
 
   attr_accessor :skip_secondary_validations, :edit_reason
   belongs_to_creator
@@ -33,15 +33,15 @@ class WikiPage < ApplicationRecord
   end
 
   def log_destroy
-    ModAction.log(:wiki_page_delete, { wiki_page_title: title, wiki_page_id: id })
+    ModAction.log!(:wiki_page_delete, self, wiki_page_title: title, wiki_page_id: id)
   end
 
   def log_changes
     if title_changed? && !new_record?
-      ModAction.log(:wiki_page_rename, { new_title: title, old_title: title_was })
+      ModAction.log!(:wiki_page_rename, self, new_title: title, old_title: title_was)
     end
     if is_locked_changed?
-      ModAction.log(is_locked ? :wiki_page_lock : :wiki_page_unlock, { wiki_page_id: id, wiki_page_title: title })
+      ModAction.log!(is_locked ? :wiki_page_lock : :wiki_page_unlock, self, wiki_page_title: title)
     end
   end
 

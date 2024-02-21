@@ -10,7 +10,7 @@ class TakedownsController < ApplicationController
 
   def destroy
     @takedown.destroy
-    ModAction.log(:takedown_delete, { takedown_id: @takedown.id })
+    ModAction.log!(:takedown_delete, @takedown)
     respond_with(@takedown)
   end
 

@@ -20,23 +20,21 @@ class PostDeletionReason < ApplicationRecord
 
   module LogMethods
     def log_create
-      ModAction.log(:post_deletion_reason_create, { report_reason_id: id, reason: reason, title: title, prompt: prompt })
+      ModAction.log!(:post_deletion_reason_create, self, reason: reason, title: title, prompt: prompt)
     end
 
     def log_update
-      options = {
-        report_reason_id: id,
-      }
+      options = {}
 
       options.merge!({ reason: reason, reason_was: reason_before_last_save }) if saved_change_to_reason?
       options.merge!({ title: title, title_was: title_before_last_save }) if saved_change_to_title?
       options.merge!({ prompt: prompt, prompt_was: prompt_before_last_save }) if saved_change_to_prompt?
 
-      ModAction.log(:post_deletion_reason_update, options)
+      ModAction.log!(:post_deletion_reason_update, self, **options)
     end
 
     def log_delete
-      ModAction.log(:post_deletion_reason_delete, { report_reason_id: id, reason: reason, title: title, prompt: prompt, user_id: creator_id })
+      ModAction.log!(:post_deletion_reason_delete, self, reason: reason, title: title, prompt: prompt, user_id: creator_id)
     end
   end
 

@@ -135,14 +135,14 @@ class Ban < ApplicationRecord
   end
 
   def create_ban_mod_action
-    ModAction.log(:ban_create, {duration: duration, reason: reason, user_id: user_id})
+    ModAction.log!(:ban_create, self, duration: duration, reason: reason, user_id: user_id)
   end
 
   def create_ban_update_mod_action
-    ModAction.log(:ban_update, { user_id: user_id, ban_id: id, expires_at: expires_at, expires_at_was: expires_at_before_last_save, reason: reason, reason_was: reason_before_last_save })
+    ModAction.log!(:ban_update, self, user_id: user_id, expires_at: expires_at, expires_at_was: expires_at_before_last_save, reason: reason, reason_was: reason_before_last_save)
   end
 
   def create_unban_mod_action
-    ModAction.log(:ban_delete, {user_id: user_id})
+    ModAction.log!(:ban_delete, self, user_id: user_id)
   end
 end

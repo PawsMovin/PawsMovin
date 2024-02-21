@@ -5,6 +5,7 @@ class IqdbQueriesControllerTest < ActionDispatch::IntegrationTest
     setup do
       PawsMovin.config.stubs(:iqdb_server).returns("https://karasuma.donmai.us")
       @user = create(:user)
+      CurrentUser.user = @user
       as(@user) do
         @posts = create_list(:post, 2)
       end

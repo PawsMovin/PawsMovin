@@ -18,7 +18,7 @@ class TagBatchJob < ApplicationJob
     CurrentUser.scoped(updater, updater_ip_addr) do
       migrate_posts(normalized_antecedent, normalized_consequent)
       migrate_blacklists(normalized_antecedent, normalized_consequent)
-      ModAction.log(:mass_update, { antecedent: antecedent, consequent: consequent })
+      ModAction.log!(:mass_update, nil, antecedent: antecedent, consequent: consequent)
     end
   end
 

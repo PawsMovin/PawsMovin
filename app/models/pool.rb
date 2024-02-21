@@ -193,7 +193,7 @@ class Pool < ApplicationRecord
   end
 
   def create_mod_action_for_delete
-    ModAction.log(:pool_delete, {pool_id: id, pool_name: name, user_id: creator_id})
+    ModAction.log!(:pool_delete, self, pool_name: name, user_id: creator_id)
   end
 
   def validate_number_of_posts

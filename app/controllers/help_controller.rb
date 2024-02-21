@@ -44,7 +44,7 @@ class HelpController < ApplicationController
     @help = HelpPage.create(help_params)
     if @help.valid?
       flash[:notice] = 'Help page created'
-      ModAction.log(:help_create, {name: @help.name, wiki_page: @help.wiki_page})
+      ModAction.log!(:help_create, @help, name: @help.name, wiki_page: @help.wiki_page)
     end
     respond_with(@help)
   end
@@ -54,7 +54,8 @@ class HelpController < ApplicationController
     @help.update(help_params)
     if @help.valid?
       flash[:notice] = "Help entry updated"
-      ModAction.log(:help_update,{name: @help.name, wiki_page: @help.wiki_page})
+      # TODO: specifically updated attributes
+      ModAction.log!(:help_update, @help, name: @help.name, wiki_page: @help.wiki_page)
     end
     respond_with(@help)
   end
@@ -62,7 +63,7 @@ class HelpController < ApplicationController
   def destroy
     @help = HelpPage.find(params[:id])
     @help.destroy
-    ModAction.log(:help_delete, {name: @help.name, wiki_page: @help.wiki_page})
+    ModAction.log!(:help_delete, @help, name: @help.name, wiki_page: @help.wiki_page)
     respond_with(@help)
   end
 

@@ -57,7 +57,7 @@ Rails.application.configure do
   config.action_mailer.perform_caching = false
 
   config.action_mailer.delivery_method = :smtp
-  config.action_mailer.mailgun_settings = {
+  config.action_mailer.smtp_settings = {
     address: PawsMovin.config.smtp_address,
     port: PawsMovin.config.smtp_port,
     domain: PawsMovin.config.smtp_domain,

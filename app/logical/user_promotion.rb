@@ -62,11 +62,11 @@ class UserPromotion
     flag_check(added, removed, "no_replacements", "replacements ban")
 
     if added.any? || removed.any?
-      ModAction.log(:user_flags_change, { user_id: user.id, added: added, removed: removed })
+      ModAction.log!(:user_flags_change, user, added: added, removed: removed)
     end
 
     if user.level_changed?
-      ModAction.log(:user_level_change, { user_id: user.id, level: user.level_string, level_was: user.level_string_was })
+      ModAction.log!(:user_level_change, user, level: user.level_string, level_was: user.level_string_was)
     end
   end
 

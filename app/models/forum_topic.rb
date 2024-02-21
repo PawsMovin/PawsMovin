@@ -18,10 +18,10 @@ class ForumTopic < ApplicationRecord
   after_update :update_original_post
   after_save :log_changes
   after_save(:if => ->(rec) {rec.saved_change_to_is_locked?}) do |rec|
-    ModAction.log(rec.is_locked ? :forum_topic_lock : :forum_topic_unlock, {forum_topic_id: rec.id, forum_topic_title: rec.title, user_id: rec.creator_id})
+    ModAction.log!(rec.is_locked ? :forum_topic_lock : :forum_topic_unlock, rec, forum_topic_title: rec.title, user_id: rec.creator_id)
   end
   after_save(:if => ->(rec) {rec.saved_change_to_is_sticky?}) do |rec|
-    ModAction.log(rec.is_sticky ? :forum_topic_stick : :forum_topic_unstick, {forum_topic_id: rec.id, forum_topic_title: rec.title, user_id: rec.creator_id})
+    ModAction.log!(rec.is_sticky ? :forum_topic_stick : :forum_topic_unstick, rec, forum_topic_title: rec.title, user_id: rec.creator_id)
   end
 
   def validate_not_aibur
@@ -35,7 +35,7 @@ class ForumTopic < ApplicationRecord
 
   def log_changes
     if saved_change_to_is_hidden?
-      ModAction.log(is_hidden? ? :forum_topic_hide : :forum_topic_unhide, { forum_topic_id: id, forum_topic_title: title, user_id: creator_id })
+      ModAction.log!(is_hidden? ? :forum_topic_hide : :forum_topic_unhide, self, forum_topic_title: title, user_id: creator_id)
     end
   end
 
@@ -184,7 +184,7 @@ class ForumTopic < ApplicationRecord
   end
 
   def create_mod_action_for_delete
-    ModAction.log(:forum_topic_delete, { forum_topic_id: id, forum_topic_title: title, user_id: creator_id })
+    ModAction.log!(:forum_topic_delete, self, forum_topic_title: title, user_id: creator_id)
   end
 
   def initialize_is_hidden

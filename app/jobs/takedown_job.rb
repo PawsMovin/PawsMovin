@@ -13,7 +13,7 @@ class TakedownJob < ApplicationJob
     @approver = User.find(approver)
     @takedown.approver_id = @approver.id
     CurrentUser.scoped(@approver) do
-      ModAction.log(:takedown_process, { takedown_id: @takedown.id })
+      ModAction.log!(:takedown_process, @takedown)
     end
 
     CurrentUser.as_system do

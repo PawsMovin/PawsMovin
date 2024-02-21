@@ -64,7 +64,7 @@ class ForumCategoriesController < ApplicationController
     end
 
     if changes != 0
-      ModAction.log(:forum_categories_reorder, { total: changes })
+      ModAction.log!(:forum_categories_reorder, nil, total: changes)
     end
 
     respond_to do |format|
