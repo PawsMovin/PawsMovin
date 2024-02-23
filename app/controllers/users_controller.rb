@@ -125,8 +125,8 @@ class UsersController < ApplicationController
       enable_privacy_mode disable_user_dmails blacklist_users show_post_statistics
       style_usernames show_hidden_comments
       enable_auto_complete
-      disable_cropped_thumbnails disable_mobile_gestures
-      enable_safe_mode disable_responsive_mode disable_post_tooltips
+      disable_cropped_thumbnails
+      enable_safe_mode disable_responsive_mode
       move_related_thumbnails enable_hover_zoom hover_zoom_shift hover_zoom_play_audio hover_zoom_sticky_shift
     ]
 
