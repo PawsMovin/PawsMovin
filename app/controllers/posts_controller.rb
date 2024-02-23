@@ -257,8 +257,4 @@ class PostsController < ApplicationController
 
     params.require(:post).permit(permitted_params)
   end
-
-  def allowed_readonly_actions
-    super + %w[random show_seq]
-  end
 end

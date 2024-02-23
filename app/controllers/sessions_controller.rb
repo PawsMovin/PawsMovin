@@ -31,10 +31,4 @@ class SessionsController < ApplicationController
 
   def confirm_password
   end
-
-  private
-
-  def allowed_readonly_actions
-    super + %w[destroy]
-  end
 end

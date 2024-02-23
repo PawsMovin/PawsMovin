@@ -663,10 +663,6 @@ module PawsMovin
       []
     end
 
-    def readonly_mode?
-      false
-    end
-
     def janitor_reports_discord_webhook_url
       nil
     end
