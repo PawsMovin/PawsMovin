@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class StaticController < ApplicationController
   def privacy
     @page = WikiPage.find_by(title: "help:privacy_policy")

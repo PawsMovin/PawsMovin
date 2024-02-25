@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ForumPostVote < UserVote
   belongs_to :forum_post
   validates :user_id, uniqueness: { scope: :forum_post_id }

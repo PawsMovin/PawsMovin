@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class PostVote < LockableUserVote
   validate :validate_user_can_vote
 

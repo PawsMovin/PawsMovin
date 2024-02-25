@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class PostApprovalsController < ApplicationController
   before_action :approver_only, except: %i[index]
   skip_before_action :api_check, except: %i[index]

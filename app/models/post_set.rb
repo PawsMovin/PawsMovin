@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class PostSet < ApplicationRecord
   array_attribute :post_ids, parse: %r{(?:https://pawsmov\.in/posts/)?(\d+)}i, cast: :to_i
 

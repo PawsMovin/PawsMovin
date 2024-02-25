@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class TagImplicationsController < ApplicationController
   before_action :member_only, except: %i[index show]
   before_action :admin_only, only: %i[edit update approve]

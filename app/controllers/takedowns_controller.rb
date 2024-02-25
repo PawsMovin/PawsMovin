@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class TakedownsController < ApplicationController
   respond_to :html, :json
   before_action :can_handle_takedowns_only, except: %i[index new create]

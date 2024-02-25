@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ForumCategoriesController < ApplicationController
   before_action :admin_only, except: %i[index]
   before_action :load_forum_category, only: %i[edit update destroy]

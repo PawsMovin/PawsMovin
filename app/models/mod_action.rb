@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ModAction < ApplicationRecord
   belongs_to_creator
   belongs_to :subject, polymorphic: true, optional: true
