@@ -183,7 +183,7 @@
 
       <% if @post.description.present? %>
         <div id="post-description-container" class="styled-dtext">
-          <details id="description" <%= 'open' unless CurrentUser.description_collapsed_initially? %>>
+          <details id="description" <%= "open" unless CurrentUser.description_collapsed_initially? %>>
             <summary>Description</summary>
             <div>
               <%= format_text(@post.description, max_thumbs: 0) %>
@@ -273,7 +273,7 @@
   <%= tag.meta(property: "og:url", content: post_url(@post, host: PawsMovin.config.hostname, protocol: "https")) %>
 
   <% if @post.visible? %>
-    <% if @post.is_video? && @post.has_sample_size?('original') %>
+    <% if @post.is_video? && @post.has_sample_size?("original") %>
       <meta property="og:type" content="video.other">
       <%= tag.meta(property: "og:video", content: @post.open_graph_video_url) %>
       <%= tag.meta(property: "og:image", content: @post.open_graph_image_url) %>

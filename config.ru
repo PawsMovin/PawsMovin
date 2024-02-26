@@ -4,7 +4,7 @@
 
 if defined?(Unicorn) && ENV["RAILS_ENV"] == "production"
   # Unicorn self-process killer
-  require 'unicorn/worker_killer'
+  require "unicorn/worker_killer"
 
   # Max requests per worker
   use Unicorn::WorkerKiller::MaxRequests, 5_000, 10_000
@@ -13,6 +13,6 @@ if defined?(Unicorn) && ENV["RAILS_ENV"] == "production"
   use Unicorn::WorkerKiller::Oom, (386*(1024**2)), (768*(1024**2))
 end
 
-require ::File.expand_path('../config/environment',  __FILE__)
+require ::File.expand_path("../config/environment",  __FILE__)
 
 run Rails.application

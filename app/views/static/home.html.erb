@@ -102,14 +102,14 @@
           <%= link_to "Posts", posts_path, title: "A paginated list of every post" %>
           <%= link_to "Comments", comments_path, title: "A paginated list of every comment" %>
           <%= link_to "Tags", tags_path, title: "A paginated list of every tag" %>
-          <%= link_to "Wiki", wiki_pages_path(title: 'help:home'), title: "Wiki" %>
+          <%= link_to "Wiki", wiki_pages_path(title: "help:home"), title: "Wiki" %>
           <%= link_to "Forum", forum_topics_path, title: "Forum" %>
           <%= link_to "»", site_map_path, title: "A site map" %>
         </div>
         <div>
           <%= form_tag(posts_path, method: "get") do %>
             <div>
-              <%= text_field_tag "tags", "", size: 30, autofocus: "autofocus", 'data-autocomplete': 'tag-query' %><br>
+              <%= text_field_tag "tags", "", size: 30, autofocus: "autofocus", 'data-autocomplete': "tag-query" %><br>
               <input type="submit" value="Search">
               <input type="button" value="Change Mascot" id="change-mascot">
             </div>

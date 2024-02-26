@@ -9,19 +9,19 @@ class EmailBlacklistTest < ActiveSupport::TestCase
   end
 
   should "detect email by suffix" do
-    block = EmailBlacklist.create(creator: @user, domain: '.xyz', reason: 'test')
+    block = EmailBlacklist.create(creator: @user, domain: ".xyz", reason: "test")
 
-    assert(EmailBlacklist.is_banned?('spam@what.xyz'))
-    assert_equal(false, EmailBlacklist.is_banned?('good@angelic.com'))
+    assert(EmailBlacklist.is_banned?("spam@what.xyz"))
+    assert_equal(false, EmailBlacklist.is_banned?("good@angelic.com"))
   end
 
   should "detect email by mx" do
-    block = EmailBlacklist.create(creator: @user, domain: 'google.com', reason: 'test')
-    EmailBlacklist.stubs(:get_mx_records).returns(['google.com'])
-    assert(EmailBlacklist.is_banned?('spam@pawsmov.in'))
+    block = EmailBlacklist.create(creator: @user, domain: "google.com", reason: "test")
+    EmailBlacklist.stubs(:get_mx_records).returns(["google.com"])
+    assert(EmailBlacklist.is_banned?("spam@pawsmov.in"))
 
     EmailBlacklist.unstub(:get_mx_records)
-    assert_equal(false, EmailBlacklist.is_banned?('what@me.xynzs'))
+    assert_equal(false, EmailBlacklist.is_banned?("what@me.xynzs"))
   end
 
   should "keep accounts verified if there are too many matches" do

@@ -85,6 +85,6 @@ class PoolVersion < ApplicationRecord
   end
 
   def pretty_name
-    name&.tr("_", " ") || '(Unknown Name)'
+    name&.tr("_", " ") || "(Unknown Name)"
   end
 end

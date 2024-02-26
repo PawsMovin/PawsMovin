@@ -1670,8 +1670,8 @@ class PostTest < ActiveSupport::TestCase
 
     should "return posts for the description:<text> metatag" do
       posts = create_list(:post, 2)
-      posts[0].update_attribute(:description, 'abc')
-      posts[1].update_attribute(:description, 'efg')
+      posts[0].update_attribute(:description, "abc")
+      posts[1].update_attribute(:description, "efg")
 
       assert_tag_match([posts[0]], "description:abc")
       assert_tag_match([posts[1]], "description:efg")

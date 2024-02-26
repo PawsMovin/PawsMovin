@@ -39,29 +39,29 @@ class PostSerializer < ActiveModel::Serializer
       next unless object.has_sample_size?(k)
       dims = object.scaled_sample_dimensions(v)
       alternates[k] = {
-          type: 'video',
+          type: "video",
           height: dims[1],
           width: dims[0],
-          urls: object.visible? ? [object.scaled_url_ext(k, 'webm'), object.scaled_url_ext(k, 'mp4')] : [nil, nil]
+          urls: object.visible? ? [object.scaled_url_ext(k, "webm"), object.scaled_url_ext(k, "mp4")] : [nil, nil]
       }
     end
-    if object.has_sample_size?('original')
+    if object.has_sample_size?("original")
       fixed_dims = object.scaled_sample_dimensions([object.image_width, object.image_height])
-      alternates['original'] = {
-          type: 'video',
+      alternates["original"] = {
+          type: "video",
           height: fixed_dims[1],
           width: fixed_dims[0],
-          urls: object.visible? ? [nil, object.file_url_ext('mp4')] : [nil, nil]
+          urls: object.visible? ? [nil, object.file_url_ext("mp4")] : [nil, nil]
       }
     end
     PawsMovin.config.image_rescales.each do |k,v|
       next unless object.has_sample_size?(k)
       dims = object.scaled_sample_dimensions(v)
       alternates[k] = {
-          type: 'image',
+          type: "image",
           height: dims[1],
           width: dims[0],
-          url: object.visible? ? object.scaled_url_ext(k, 'webp') : nil
+          url: object.visible? ? object.scaled_url_ext(k, "webp") : nil
       }
     end
     sample_attributes = {
@@ -109,12 +109,12 @@ class PostSerializer < ActiveModel::Serializer
         parent_id: object.parent_id,
         has_children: object.has_children,
         has_active_children: object.has_active_children,
-        children: object.children_ids&.split(' ')&.map(&:to_i) || []
+        children: object.children_ids&.split(" ")&.map(&:to_i) || []
     }
   end
 
   def locked_tags
-    object.locked_tags&.split(' ') || []
+    object.locked_tags&.split(" ") || []
   end
 
   def is_favorited

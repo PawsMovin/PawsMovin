@@ -42,7 +42,7 @@ class UploadsController < ApplicationController
 
     if @upload.invalid?
       flash[:notice] = @upload.errors.full_messages.join("; ")
-      return render(json: {success: false, reason: 'invalid', message: @upload.errors.full_messages.join("; ")}, status: 412)
+      return render(json: {success: false, reason: "invalid", message: @upload.errors.full_messages.join("; ")}, status: 412)
     end
     if @service.warnings.any? && !@upload.is_errored? && !@upload.is_duplicate?
       warnings = @service.warnings.join(".\n \n")
@@ -60,8 +60,8 @@ class UploadsController < ApplicationController
 
     respond_to do |format|
       format.json do
-        return render(json: {success: false, reason: 'duplicate', location: post_path(@upload.duplicate_post_id), post_id: @upload.duplicate_post_id}, status: 412) if @upload.is_duplicate?
-        return render(json: {success: false, reason: 'invalid', message: @upload.sanitized_status}, status: 412) if @upload.is_errored?
+        return render(json: {success: false, reason: "duplicate", location: post_path(@upload.duplicate_post_id), post_id: @upload.duplicate_post_id}, status: 412) if @upload.is_duplicate?
+        return render(json: {success: false, reason: "invalid", message: @upload.sanitized_status}, status: 412) if @upload.is_errored?
 
         render(json: {success: true, location: post_path(@upload.post_id), post_id: @upload.post_id})
       end

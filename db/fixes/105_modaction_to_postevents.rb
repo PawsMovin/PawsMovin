@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'config', 'environment'))
+require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "config", "environment"))
 
 class PostEventTemp < PostEvent
   self.table_name = "post_events_temp"
@@ -17,7 +17,7 @@ ActiveRecord::Base.connection.execute('CREATE TABLE post_events_temp (
 	CONSTRAINT post_events_temp_pkey PRIMARY KEY (id)
 );')
 
-ActiveRecord::Base.connection.execute('CREATE INDEX index_post_events_temp_on_created_at ON public.post_events_temp USING btree (created_at);')
+ActiveRecord::Base.connection.execute("CREATE INDEX index_post_events_temp_on_created_at ON public.post_events_temp USING btree (created_at);")
 
 def create(post_id, creator_id, created_at, action, extra_data = {})
   PostEventTemp.create!(post_id: post_id, creator_id: creator_id, created_at: created_at, action: action, extra_data: extra_data)
@@ -66,7 +66,7 @@ ModAction.where(action: migrate_actions).in_batches do |batch|
     when "post_destroy"
       create(vals["post_id"], creator_id, created_at, :expunged)
     when "post_rating_lock"
-      action = vals['locked'] ? :rating_locked : :rating_unlocked
+      action = vals["locked"] ? :rating_locked : :rating_unlocked
       create(vals["post_id"], creator_id, created_at, action)
     when "post_unapprove"
       create(vals["post_id"], creator_id, created_at, :unapproved)

@@ -136,7 +136,7 @@ class TagTest < ActiveSupport::TestCase
       assert_equal(1, post.tag_count_general)
       assert_equal(0, post.tag_count_character)
 
-      tag = Tag.find_by_normalized_name('test')
+      tag = Tag.find_by_normalized_name("test")
       with_inline_jobs { tag.update_attribute(:category, 4) }
       assert_equal tag.errors.full_messages, []
       post.reload

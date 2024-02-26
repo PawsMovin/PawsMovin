@@ -18,11 +18,11 @@ class UploadWhitelist < ApplicationRecord
   end
 
   def clean_pattern
-    self.pattern = self.pattern.downcase.tr('%', '*')
+    self.pattern = self.pattern.downcase.tr("%", "*")
   end
 
   def clear_cache
-    Cache.delete('upload_whitelist')
+    Cache.delete("upload_whitelist")
   end
 
   module SearchMethods
@@ -62,7 +62,7 @@ class UploadWhitelist < ApplicationRecord
     end
 
     if PawsMovin.config.bypass_upload_whitelist?(CurrentUser)
-      return [true, 'bypassed']
+      return [true, "bypassed"]
     end
 
     entries.each do |x|

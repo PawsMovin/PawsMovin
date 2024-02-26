@@ -30,7 +30,7 @@ class PostSetsController < ApplicationController
 
   def create
     @post_set = PostSet.create(set_params)
-    flash[:notice] = @post_set.valid? ? 'Set created' : @post_set.errors.full_messages.join('; ')
+    flash[:notice] = @post_set.valid? ? "Set created" : @post_set.errors.full_messages.join("; ")
     respond_with(@post_set)
   end
 
@@ -51,7 +51,7 @@ class PostSetsController < ApplicationController
     @post_set = PostSet.find(params[:id])
     check_settings_edit_access(@post_set)
     @post_set.update(set_params)
-    flash[:notice] = @post_set.valid? ? 'Set updated' : @post_set.errors.full_messages.join('; ')
+    flash[:notice] = @post_set.valid? ? "Set updated" : @post_set.errors.full_messages.join("; ")
 
     unless @post_set.is_owner?(CurrentUser.user)
       if @post_set.saved_change_to_is_public?
@@ -80,7 +80,7 @@ class PostSetsController < ApplicationController
     @post_set = PostSet.find(params[:id])
     check_post_edit_access(@post_set)
     @post_set.update(update_posts_params)
-    flash[:notice] = @post_set.valid? ? 'Set posts updated.' : @post_set.errors.full_messages.join('; ')
+    flash[:notice] = @post_set.valid? ? "Set posts updated." : @post_set.errors.full_messages.join("; ")
 
     redirect_back(fallback_location: post_list_post_set_path(@post_set))
   end

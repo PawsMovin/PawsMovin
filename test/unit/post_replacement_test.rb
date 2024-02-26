@@ -16,20 +16,20 @@ class PostReplacementTest < ActiveSupport::TestCase
     should "fail on too many per post in one day" do
       PawsMovin.config.stubs(:post_replacement_per_day_limit).returns(-1)
       @replacement = @post.replacements.create(attributes_for(:png_replacement).merge(creator: @user))
-      assert_equal ['Creator has already suggested too many replacements for this post today'], @replacement.errors.full_messages
+      assert_equal ["Creator has already suggested too many replacements for this post today"], @replacement.errors.full_messages
     end
 
     should "fail on too many per post total" do
       PawsMovin.config.stubs(:post_replacement_per_post_limit).returns(-1)
       @replacement = @post.replacements.create(attributes_for(:png_replacement).merge(creator: @user))
-      assert_equal ['Creator has already suggested too many total replacements for this post'], @replacement.errors.full_messages
+      assert_equal ["Creator has already suggested too many total replacements for this post"], @replacement.errors.full_messages
     end
 
     should "fail if user has no remaining upload limit" do
       User.any_instance.stubs(:upload_limit).returns(0)
       PawsMovin.config.stubs(:disable_throttles?).returns(false)
       @replacement = @post.replacements.create(attributes_for(:png_replacement).merge(creator: @user))
-      assert_equal ['Creator have reached your upload limit'], @replacement.errors.full_messages
+      assert_equal ["Creator have reached your upload limit"], @replacement.errors.full_messages
     end
   end
 
@@ -38,7 +38,7 @@ class PostReplacementTest < ActiveSupport::TestCase
       @replacement = @post.replacements.create(attributes_for(:png_replacement).merge(creator: @user))
       assert_equal @replacement.errors.size, 0
       assert_equal @post.replacements.size, 1
-      assert_equal @replacement.status, 'pending'
+      assert_equal @replacement.status, "pending"
       assert @replacement.storage_id
       assert_equal Digest::MD5.file(file_fixture("test.png")).hexdigest, Digest::MD5.file(@replacement.replacement_file_path).hexdigest
     end
@@ -52,7 +52,7 @@ class PostReplacementTest < ActiveSupport::TestCase
       @replacement = @post.replacements.create(attributes_for(:png_replacement).merge(creator: @user))
       assert_equal @replacement.errors.size, 0
       assert_equal @post.replacements.size, 1
-      assert_equal @replacement.status, 'pending'
+      assert_equal @replacement.status, "pending"
       assert @replacement.storage_id
       @new_replacement = @post.replacements.create(attributes_for(:png_replacement).merge(creator: @user))
       assert_equal(["Md5 duplicate of pending replacement on post ##{@post.id}"], @new_replacement.errors.full_messages)
@@ -92,12 +92,12 @@ class PostReplacementTest < ActiveSupport::TestCase
 
     should "mark replacement as rejected" do
       @replacement.reject!
-      assert_equal 'rejected', @replacement.status
+      assert_equal "rejected", @replacement.status
     end
 
     should "allow duplicate replacement after rejection" do
       @replacement.reject!
-      assert_equal 'rejected', @replacement.status
+      assert_equal "rejected", @replacement.status
       @new_replacement = @post.replacements.create(attributes_for(:png_replacement).merge(creator: @user))
       assert @new_replacement.valid?
       assert_equal [], @new_replacement.errors.full_messages
@@ -192,15 +192,15 @@ class PostReplacementTest < ActiveSupport::TestCase
         @replacement.approve!(penalize_current_uploader: true)
       end
       new_replacement = @post.replacements.last
-      assert_equal 'original', new_replacement.status
+      assert_equal "original", new_replacement.status
       assert_equal old_md5, new_replacement.md5
       assert_equal old_source, new_replacement.source
       assert_equal old_md5, Digest::MD5.file(new_replacement.replacement_file_path).hexdigest
     end
 
     should "update users upload counts" do
-      assert_difference(->{Post.for_user(@mod_user.id).where('is_flagged = false AND is_deleted = false AND is_pending = false').count}, -1) do
-        assert_difference(->{Post.for_user(@user.id).where('is_flagged = false AND is_deleted = false AND is_pending = false').count}, 1) do
+      assert_difference(->{Post.for_user(@mod_user.id).where("is_flagged = false AND is_deleted = false AND is_pending = false").count}, -1) do
+        assert_difference(->{Post.for_user(@user.id).where("is_flagged = false AND is_deleted = false AND is_pending = false").count}, 1) do
           @replacement.approve!(penalize_current_uploader: true)
         end
       end
@@ -296,7 +296,7 @@ class PostReplacementTest < ActiveSupport::TestCase
       assert post
       assert_equal [], post.errors.full_messages
       assert_equal [], post.post.errors.full_messages
-      assert_equal 'promoted', @replacement.status
+      assert_equal "promoted", @replacement.status
       assert_equal post.md5, @replacement.md5
       assert_equal post.file_ext, @replacement.file_ext
       assert_equal post.image_width, @replacement.image_width
@@ -307,8 +307,8 @@ class PostReplacementTest < ActiveSupport::TestCase
     end
 
     should "credit replacer with new post" do
-      assert_difference(->{Post.for_user(@mod_user.id).where('is_flagged = false AND is_deleted = false AND is_pending = false').count}, 0) do
-        assert_difference(->{Post.for_user(@user.id).where('is_flagged = false AND is_deleted = false').count}, 1) do
+      assert_difference(->{Post.for_user(@mod_user.id).where("is_flagged = false AND is_deleted = false AND is_pending = false").count}, 0) do
+        assert_difference(->{Post.for_user(@user.id).where("is_flagged = false AND is_deleted = false").count}, 1) do
           post = @replacement.promote!
           assert post
           assert_equal [], post.errors.full_messages

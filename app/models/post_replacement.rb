@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class PostReplacement < ApplicationRecord
-  self.table_name = 'post_replacements2'
+  self.table_name = "post_replacements2"
   belongs_to :post
   belongs_to :creator, class_name: "User"
   belongs_to :approver, class_name: "User", optional: true
@@ -56,7 +56,7 @@ class PostReplacement < ApplicationRecord
       self.errors.add(:md5, "duplicate of existing post ##{post.id}")
       return false
     end
-    replacements = PostReplacement.where(status: 'pending', md5: md5)
+    replacements = PostReplacement.where(status: "pending", md5: md5)
     replacements.each do |replacement|
       self.errors.add(:md5, "duplicate of pending replacement on post ##{replacement.post_id}")
     end
@@ -64,7 +64,7 @@ class PostReplacement < ApplicationRecord
   end
 
   def user_is_not_limited
-    return true if status == 'original'
+    return true if status == "original"
     uploadable = creator.can_upload_with_reason
     if uploadable != true
       self.errors.add(:creator, User.upload_reason_string(uploadable))
@@ -74,12 +74,12 @@ class PostReplacement < ApplicationRecord
     # Janitor bypass replacement limits
     return true if creator.is_janitor?
 
-    if post.replacements.where(creator_id: creator.id).where('created_at > ?', 1.day.ago).count >= PawsMovin.config.post_replacement_per_day_limit
-      self.errors.add(:creator, 'has already suggested too many replacements for this post today')
+    if post.replacements.where(creator_id: creator.id).where("created_at > ?", 1.day.ago).count >= PawsMovin.config.post_replacement_per_day_limit
+      self.errors.add(:creator, "has already suggested too many replacements for this post today")
       throw(:abort)
     end
     if post.replacements.where(creator_id: creator.id).count >= PawsMovin.config.post_replacement_per_post_limit
-      self.errors.add(:creator, 'has already suggested too many total replacements for this post')
+      self.errors.add(:creator, "has already suggested too many total replacements for this post")
       throw(:abort)
     end
     true
@@ -224,7 +224,7 @@ class PostReplacement < ApplicationRecord
       end
 
       PostEvent.add(post.id, CurrentUser.user, :replacement_rejected, { replacement_id: id })
-      update_attribute(:status, 'rejected')
+      update_attribute(:status, "rejected")
       UserStatus.for_user(creator_id).update_all("post_replacement_rejected_count = post_replacement_rejected_count + 1")
       post.update_index
     end
@@ -268,15 +268,15 @@ class PostReplacement < ApplicationRecord
       end
 
       def pending
-        where(status: 'pending')
+        where(status: "pending")
       end
 
       def rejected
-        where(status: 'rejected')
+        where(status: "rejected")
       end
 
       def approved
-        where(status: 'approved')
+        where(status: "approved")
       end
 
       def for_user(id)
@@ -296,9 +296,9 @@ class PostReplacement < ApplicationRecord
       end
 
       def visible(user)
-        return where('status != ?', 'rejected') if user.is_anonymous?
+        return where("status != ?", "rejected") if user.is_anonymous?
         return all if user.is_janitor?
-        where('creator_id = ? or status != ?', user.id, 'rejected')
+        where("creator_id = ? or status != ?", user.id, "rejected")
       end
     end
   end

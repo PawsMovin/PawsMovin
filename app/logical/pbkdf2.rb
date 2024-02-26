@@ -26,9 +26,9 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-require 'securerandom'
-require 'openssl'
-require 'base64'
+require "securerandom"
+require "openssl"
+require "base64"
 
 module Pbkdf2
 
@@ -37,7 +37,7 @@ module Pbkdf2
   HASH_BYTE_SIZE = 24
 
   HASH_SECTIONS = 4
-  SECTION_DELIMITER = ':'
+  SECTION_DELIMITER = ":"
   ITERATIONS_INDEX = 1
   SALT_INDEX = 2
   HASH_INDEX = 3

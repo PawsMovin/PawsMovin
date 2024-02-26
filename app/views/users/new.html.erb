@@ -22,7 +22,7 @@
         <%= f.input(:time_zone, :include_blank => false) %>
 
         <% if PawsMovin.config.enable_recaptcha? %>
-          <%= recaptcha_tags theme: 'dark', nonce: content_security_policy_nonce %>
+          <%= recaptcha_tags theme: "dark", nonce: content_security_policy_nonce %>
         <% end %>
         <%= f.submit("Sign up", :data => { :disable_with => "Signing up..." }) %>
       <% end %>

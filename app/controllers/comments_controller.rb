@@ -22,7 +22,7 @@ class CommentsController < ApplicationController
     @post = Post.find(params[:id])
     @comments = @post.comments
     @comment_votes = CommentVote.for_comments_and_user(@comments.map(&:id), CurrentUser.id)
-    comment_html = render_to_string(partial: 'comments/partials/show/comment', collection: @comments, locals: { post: @post }, formats: [:html])
+    comment_html = render_to_string(partial: "comments/partials/show/comment", collection: @comments, locals: { post: @post }, formats: [:html])
     respond_with do |format|
       format.json do
         render(json: {html: comment_html, posts: deferred_posts})
@@ -87,7 +87,7 @@ class CommentsController < ApplicationController
 
   def warning
     @comment = Comment.find(params[:id])
-    if params[:record_type] == 'unmark'
+    if params[:record_type] == "unmark"
       @comment.remove_user_warning!
     else
       @comment.user_warned!(params[:record_type], CurrentUser.user)

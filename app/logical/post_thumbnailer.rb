@@ -41,7 +41,7 @@ module PostThumbnailer
 
   def generate_video_preview_for(video, width)
     output_file = Tempfile.new(%w[video-preview .webp], binmode: true)
-    stdout, stderr, status = Open3.capture3(PawsMovin.config.ffmpeg_path, '-y', '-i', video, '-vf', "thumbnail,scale=#{width}:-1", '-frames:v', '1', output_file.path)
+    stdout, stderr, status = Open3.capture3(PawsMovin.config.ffmpeg_path, "-y", "-i", video, "-vf", "thumbnail,scale=#{width}:-1", "-frames:v", "1", output_file.path)
 
     unless status == 0
       Rails.logger.warn("[FFMPEG PREVIEW STDOUT] #{stdout.chomp!}")
@@ -53,7 +53,7 @@ module PostThumbnailer
 
   def generate_video_sample_for(video)
     output_file = Tempfile.new(%w[video-preview .webp], binmode: true)
-    stdout, stderr, status = Open3.capture3(PawsMovin.config.ffmpeg_path, '-y', '-i', video, '-vf', 'thumbnail', '-frames:v', '1', output_file.path)
+    stdout, stderr, status = Open3.capture3(PawsMovin.config.ffmpeg_path, "-y", "-i", video, "-vf", "thumbnail", "-frames:v", "1", output_file.path)
 
     unless status == 0
       Rails.logger.warn("[FFMPEG SAMPLE STDOUT] #{stdout.chomp!}")

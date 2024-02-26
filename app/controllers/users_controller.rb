@@ -63,7 +63,7 @@ class UsersController < ApplicationController
     User.transaction do
       @user = User.new(user_params(:create).merge({last_ip_addr: request.remote_ip}))
       @user.validate_email_format = true
-      @user.email_verification_key = '1' if PawsMovin.config.enable_email_verification?
+      @user.email_verification_key = "1" if PawsMovin.config.enable_email_verification?
       if !PawsMovin.config.enable_recaptcha? || verify_recaptcha(model: @user)
         @user.save
         if @user.errors.empty?
@@ -73,7 +73,7 @@ class UsersController < ApplicationController
             User::EmailConfirmationMailer.confirmation(@user).deliver_now
           end
         else
-          flash[:notice] = "Sign up failed: #{@user.errors.full_messages.join("; ")}"
+          flash[:notice] = "Sign up failed: #{@user.errors.full_messages.join('; ')}"
         end
         set_current_user
         respond_with(@user)

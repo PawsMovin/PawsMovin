@@ -61,7 +61,7 @@ module ApplicationHelper
     instance = instance_variable_get("@#{instance_name}")
 
     if instance && instance.errors.any?
-      %{<div class="error-messages ui-state-error ui-corner-all"><strong>Error</strong>: #{instance.__send__(:errors).full_messages.join(", ")}</div>}.html_safe
+      %{<div class="error-messages ui-state-error ui-corner-all"><strong>Error</strong>: #{instance.__send__(:errors).full_messages.join(', ')}</div>}.html_safe
     else
       ""
     end
@@ -101,7 +101,7 @@ module ApplicationHelper
   end
 
   def link_to_ip(ip)
-    return '(none)' unless ip
+    return "(none)" unless ip
     link_to(ip, moderator_ip_addrs_path(:search => {:ip_addr => ip}))
   end
 
@@ -144,7 +144,7 @@ module ApplicationHelper
 
     {
       lang: "en",
-      class: "c-#{controller_param} a-#{action_param} #{"resp" unless disable_mobile_mode?}",
+      class: "c-#{controller_param} a-#{action_param} #{'resp' unless disable_mobile_mode?}",
       data: {
         controller: controller_param,
         action: action_param,
@@ -167,8 +167,8 @@ module ApplicationHelper
     post_id = user.avatar_id
     return "" unless post_id
     deferred_post_ids.add(post_id)
-    tag.div(class: 'post-thumb placeholder', id: "tp-#{post_id}", 'data-id': post_id) do
-      tag.img(class: 'thumb-img placeholder', src: '/images/thumb-preview.png', height: 100, width: 100)
+    tag.div(class: "post-thumb placeholder", id: "tp-#{post_id}", 'data-id': post_id) do
+      tag.img(class: "thumb-img placeholder", src: "/images/thumb-preview.png", height: 100, width: 100)
     end
   end
 

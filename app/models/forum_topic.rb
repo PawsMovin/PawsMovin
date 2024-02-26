@@ -51,7 +51,7 @@ class ForumTopic < ApplicationRecord
     end
 
     def category_name
-      return '(Unknown)' unless category
+      return "(Unknown)" unless category
       category.name
     end
 
@@ -75,7 +75,7 @@ class ForumTopic < ApplicationRecord
     end
 
     def permitted
-      joins(:category).where('forum_categories.can_view <= ?', CurrentUser.level)
+      joins(:category).where("forum_categories.can_view <= ?", CurrentUser.level)
     end
 
     def sticky_first

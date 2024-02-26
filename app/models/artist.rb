@@ -257,7 +257,7 @@ class Artist < ApplicationRecord
     MAX_OTHER_NAMES_PER_ARTIST = 25
     module ClassMethods
       def normalize_name(name)
-        name.to_s.downcase.strip.gsub(/ /, '_').to_s
+        name.to_s.downcase.strip.gsub(/ /, "_").to_s
       end
     end
 

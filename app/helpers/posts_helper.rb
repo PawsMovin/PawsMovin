@@ -50,7 +50,7 @@ module PostsHelper
       html << link_to(text, posts_path(:tags => "parent:#{post.parent_id}"))
     end
 
-    html << " (#{link_to("learn more", wiki_pages_path(:title => "help:post_relationships"))}) "
+    html << " (#{link_to('learn more', wiki_pages_path(:title => 'help:post_relationships'))}) "
 
     html << link_to("show »", "#", id: "has-parent-relationship-preview-link")
 
@@ -64,7 +64,7 @@ module PostsHelper
     text = children_post_set.children.count == 1 ? "1 child" : "#{children_post_set.children.count} children"
     html << link_to(text, posts_path(:tags => "parent:#{post.id}"))
 
-    html << " (#{link_to("learn more", wiki_pages_path(:title => "help:post_relationships"))}) "
+    html << " (#{link_to('learn more', wiki_pages_path(:title => 'help:post_relationships'))}) "
 
     html << link_to("show »", "#", id: "has-children-relationship-preview-link")
 
@@ -100,14 +100,14 @@ module PostsHelper
       amount = tag.span(post.fav_count, class: "post-score-faves-faves-#{post.id}")
       icon + amount
     end
-    comments = tag.span("C#{post.visible_comment_count(CurrentUser)}", class: 'post-score-comments')
+    comments = tag.span("C#{post.visible_comment_count(CurrentUser)}", class: "post-score-comments")
     rating =  tag.span(post.rating.upcase, class: "post-score-rating")
     views = tag.span(class: "post-score-views-classes-#{post.id}") do
       icon = tag.i("", class: "fa-regular fa-eye")
       amount = tag.span(" #{(daily_views ? post.daily_views : post.total_views) || 0}", class: "post-score-views-views-#{post.id}")
       icon + amount
     end
-    tag.div(score + favs + comments + views + rating, class: 'post-score', id: "post-score-#{post.id}")
+    tag.div(score + favs + comments + views + rating, class: "post-score", id: "post-score-#{post.id}")
   end
 
   def user_record_meta(user)
@@ -163,13 +163,13 @@ module PostsHelper
   end
 
   def score_class(score)
-    return 'score-neutral' if score == 0
-    score > 0 ? 'score-positive' : 'score-negative'
+    return "score-neutral" if score == 0
+    score > 0 ? "score-positive" : "score-negative"
   end
 
   def confirm_score_class(score, want, buttons)
-    base = buttons ? 'button ' : ''
-    return base + 'score-neutral' if score != want || score == 0
+    base = buttons ? "button " : ""
+    return base + "score-neutral" if score != want || score == 0
     base + score_class(score)
   end
 

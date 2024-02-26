@@ -11,6 +11,6 @@ class UserNameValidator < ActiveModel::EachValidator
     rec.errors.add(attr, "must not contain consecutive special characters") if name =~ /_{2}|-{2}|~{2}|'{2}/
     rec.errors.add(attr, "cannot begin or end with an underscore") if name =~ /\A_|_\z/
     rec.errors.add(attr, "cannot consist of numbers only") if name =~ /\A[0-9]+\z/
-    rec.errors.add(attr, "cannot be the string 'me'") if name.downcase == 'me'
+    rec.errors.add(attr, "cannot be the string 'me'") if name.downcase == "me"
   end
 end

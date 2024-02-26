@@ -20,8 +20,8 @@ class TicketsController < ApplicationController
     check_new_permission(@ticket)
     if @ticket.valid?
       @ticket.save
-      @ticket.push_pubsub('create')
-      flash[:notice] = 'Ticket created'
+      @ticket.push_pubsub("create")
+      flash[:notice] = "Ticket created"
       redirect_to(ticket_path(@ticket))
     else
       respond_with(@ticket)

@@ -3,7 +3,7 @@
 class ApngInspector
   attr_reader :frames
 
-  PNG_MAGIC_NUMBER = ["89504E470D0A1A0A"].pack('H*')
+  PNG_MAGIC_NUMBER = ["89504E470D0A1A0A"].pack("H*")
 
   def initialize(file_path)
     @file_path = file_path
@@ -28,7 +28,7 @@ class ApngInspector
   #or if 100 000 chunks are read; returns false otherwise.
   def each_chunk
     iend_reached = false
-    File.open(@file_path, 'rb') do |file|
+    File.open(@file_path, "rb") do |file|
       #check if file is not PNG at all
       return false if file.read(8) != PNG_MAGIC_NUMBER
 

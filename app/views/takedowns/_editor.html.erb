@@ -24,7 +24,7 @@
             <label for="takedown_posts_<%= post.id %>" class="takedown-post-label"><%= check_box "takedown_posts", post.id, checked: @takedown.should_delete(post.id) %>
               <span>Keep</span></label>
 
-            <span class="takedown-post-<%= post.status == 'deleted' ? 'delete' : 'keep' %>">
+            <span class="takedown-post-<%= post.status == "deleted" ? "delete" : "keep" %>">
                 <%= link_to("post ##{post.id}", post_path(post)) %>
               </span>
           </div>

@@ -134,7 +134,7 @@ class User < ApplicationRecord
   has_many :text_versions, -> { order(id: :desc) }, class_name: "UserTextVersion"
   has_many :artists, foreign_key: "linked_user_id"
 
-  belongs_to :avatar, class_name: 'Post', optional: true
+  belongs_to :avatar, class_name: "Post", optional: true
   accepts_nested_attributes_for :dmail_filter
 
   module BanMethods
@@ -199,7 +199,7 @@ class User < ApplicationRecord
 
       def find_by_name_or_id(name)
         if name =~ /\A!\d+\z/
-          where('id = ?', name[1..-1].to_i).first
+          where("id = ?", name[1..-1].to_i).first
         else
           find_by_name(name)
         end
@@ -248,7 +248,7 @@ class User < ApplicationRecord
     end
 
     def upgrade_password(pass)
-      self.update_columns(password_hash: '', bcrypt_password_hash: User.bcrypt(pass))
+      self.update_columns(password_hash: "", bcrypt_password_hash: User.bcrypt(pass))
     end
   end
 
@@ -375,7 +375,7 @@ class User < ApplicationRecord
     end
 
     def mark_unverified!
-      update_attribute(:email_verification_key, '1')
+      update_attribute(:email_verification_key, "1")
     end
 
     def mark_verified!
@@ -474,29 +474,29 @@ class User < ApplicationRecord
       is_trusted?
     end
 
-    create_user_throttle(:artist_edit, ->{ PawsMovin.config.artist_edit_limit - ArtistVersion.for_user(id).where('updated_at > ?', 1.hour.ago).count },
+    create_user_throttle(:artist_edit, ->{ PawsMovin.config.artist_edit_limit - ArtistVersion.for_user(id).where("updated_at > ?", 1.hour.ago).count },
                          :general_bypass_throttle?, 7.days)
-    create_user_throttle(:post_edit, ->{ PawsMovin.config.post_edit_limit - PostVersion.for_user(id).where('updated_at > ?', 1.hour.ago).count },
+    create_user_throttle(:post_edit, ->{ PawsMovin.config.post_edit_limit - PostVersion.for_user(id).where("updated_at > ?", 1.hour.ago).count },
                          :general_bypass_throttle?, 7.days)
-    create_user_throttle(:wiki_edit, ->{ PawsMovin.config.wiki_edit_limit - WikiPageVersion.for_user(id).where('updated_at > ?', 1.hour.ago).count },
+    create_user_throttle(:wiki_edit, ->{ PawsMovin.config.wiki_edit_limit - WikiPageVersion.for_user(id).where("updated_at > ?", 1.hour.ago).count },
                          :general_bypass_throttle?, 7.days)
-    create_user_throttle(:pool, ->{ PawsMovin.config.pool_limit - Pool.for_user(id).where('created_at > ?', 1.hour.ago).count },
+    create_user_throttle(:pool, ->{ PawsMovin.config.pool_limit - Pool.for_user(id).where("created_at > ?", 1.hour.ago).count },
                          :is_janitor?, 7.days)
-    create_user_throttle(:pool_edit, ->{ PawsMovin.config.pool_edit_limit - PoolVersion.for_user(id).where('updated_at > ?', 1.hour.ago).count },
+    create_user_throttle(:pool_edit, ->{ PawsMovin.config.pool_edit_limit - PoolVersion.for_user(id).where("updated_at > ?", 1.hour.ago).count },
                          :is_janitor?, 3.days)
-    create_user_throttle(:pool_post_edit, -> { PawsMovin.config.pool_post_edit_limit - PoolVersion.for_user(id).where('updated_at > ?', 1.hour.ago).group(:pool_id).count(:pool_id).length },
+    create_user_throttle(:pool_post_edit, -> { PawsMovin.config.pool_post_edit_limit - PoolVersion.for_user(id).where("updated_at > ?", 1.hour.ago).group(:pool_id).count(:pool_id).length },
                           :general_bypass_throttle?, 7.days)
-    create_user_throttle(:note_edit, ->{ PawsMovin.config.note_edit_limit - NoteVersion.for_user(id).where('updated_at > ?', 1.hour.ago).count },
+    create_user_throttle(:note_edit, ->{ PawsMovin.config.note_edit_limit - NoteVersion.for_user(id).where("updated_at > ?", 1.hour.ago).count },
                          :general_bypass_throttle?, 3.days)
-    create_user_throttle(:comment, ->{ PawsMovin.config.member_comment_limit - Comment.for_creator(id).where('created_at > ?', 1.hour.ago).count },
+    create_user_throttle(:comment, ->{ PawsMovin.config.member_comment_limit - Comment.for_creator(id).where("created_at > ?", 1.hour.ago).count },
                          :general_bypass_throttle?, 7.days)
-    create_user_throttle(:forum_post, ->{ PawsMovin.config.member_comment_limit - ForumPost.for_user(id).where('created_at > ?', 1.hour.ago).count },
+    create_user_throttle(:forum_post, ->{ PawsMovin.config.member_comment_limit - ForumPost.for_user(id).where("created_at > ?", 1.hour.ago).count },
                          nil, 3.days)
-    create_user_throttle(:dmail_minute, ->{ PawsMovin.config.dmail_minute_limit - Dmail.sent_by_id(id).where('created_at > ?', 1.minute.ago).count },
+    create_user_throttle(:dmail_minute, ->{ PawsMovin.config.dmail_minute_limit - Dmail.sent_by_id(id).where("created_at > ?", 1.minute.ago).count },
                          nil, 7.days)
-    create_user_throttle(:dmail, ->{ PawsMovin.config.dmail_limit - Dmail.sent_by_id(id).where('created_at > ?', 1.hour.ago).count },
+    create_user_throttle(:dmail, ->{ PawsMovin.config.dmail_limit - Dmail.sent_by_id(id).where("created_at > ?", 1.hour.ago).count },
                          nil, 7.days)
-    create_user_throttle(:dmail_day, ->{ PawsMovin.config.dmail_day_limit - Dmail.sent_by_id(id).where('created_at > ?', 1.day.ago).count },
+    create_user_throttle(:dmail_day, ->{ PawsMovin.config.dmail_day_limit - Dmail.sent_by_id(id).where("created_at > ?", 1.day.ago).count },
                          nil, 7.days)
     create_user_throttle(:comment_vote, ->{ PawsMovin.config.comment_vote_limit - CommentVote.for_user(id).where("created_at > ?", 1.hour.ago).count },
                          :general_bypass_throttle?, 3.days)
@@ -839,10 +839,10 @@ class User < ApplicationRecord
           attr_idx = BOOLEAN_ATTRIBUTES.index(x.to_s)
           if params[x].to_s.truthy?
             bitprefs_include ||= "0"*bitprefs_length
-            bitprefs_include[attr_idx] = '1'
+            bitprefs_include[attr_idx] = "1"
           elsif params[x].to_s.falsy?
             bitprefs_exclude ||= "0"*bitprefs_length
-            bitprefs_exclude[attr_idx] = '1'
+            bitprefs_exclude[attr_idx] = "1"
           end
         end
       end

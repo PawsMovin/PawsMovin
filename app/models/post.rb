@@ -143,10 +143,10 @@ class Post < ApplicationRecord
     end
 
     def open_graph_video_url
-      if image_height > 720 && has_sample_size?('720p')
-        return scaled_url_ext('720p', 'mp4')
+      if image_height > 720 && has_sample_size?("720p")
+        return scaled_url_ext("720p", "mp4")
       end
-      file_url_ext('mp4')
+      file_url_ext("mp4")
     end
 
     def open_graph_image_url
@@ -170,8 +170,8 @@ class Post < ApplicationRecord
     end
 
     def file_url_ext_for(user, ext)
-      if user.default_image_size == "large" && is_video? && has_sample_size?('720p')
-        scaled_url_ext('720p', ext)
+      if user.default_image_size == "large" && is_video? && has_sample_size?("720p")
+        scaled_url_ext("720p", ext)
       else
         file_url_ext(ext)
       end
@@ -602,14 +602,14 @@ class Post < ApplicationRecord
     end
 
     def add_dnp_tags_to_locked(tags)
-      locked = TagQuery.scan((locked_tags || '').downcase)
-      if tags.include?('avoid_posting')
-        locked << 'avoid_posting'
+      locked = TagQuery.scan((locked_tags || "").downcase)
+      if tags.include?("avoid_posting")
+        locked << "avoid_posting"
       end
-      if tags.include?('conditional_dnp')
-        locked << 'conditional_dnp'
+      if tags.include?("conditional_dnp")
+        locked << "conditional_dnp"
       end
-      self.locked_tags = locked.uniq.join(' ') if locked.size > 0
+      self.locked_tags = locked.uniq.join(" ") if locked.size > 0
     end
 
     def apply_locked_tags(tags, to_add, to_remove)
@@ -617,7 +617,7 @@ class Post < ApplicationRecord
         overlap = tags & to_remove
         n = overlap.size
         if n > 0
-          self.warnings.add(:base,  "Forcefully removed #{n} locked #{n == 1 ? "tag" : "tags"}: #{overlap.join(", ")}")
+          self.warnings.add(:base,  "Forcefully removed #{n} locked #{n == 1 ? 'tag' : 'tags'}: #{overlap.join(', ')}")
         end
         tags -= to_remove
       end
@@ -625,7 +625,7 @@ class Post < ApplicationRecord
         missing = to_add - tags
         n = missing.size
         if n > 0
-          self.warnings.add(:base, "Forcefully added #{n} locked #{n == 1 ? "tag" : "tags"}: #{missing.join(", ")}")
+          self.warnings.add(:base, "Forcefully added #{n} locked #{n == 1 ? 'tag' : 'tags'}: #{missing.join(', ')}")
         end
         tags += to_add
       end
@@ -717,7 +717,7 @@ class Post < ApplicationRecord
     def remove_metatags(tags)
       tags = tags.reject {|x| x =~ /\A(?:-set|set|fav|-fav|upvote|downvote):/i}
       prefixed, unprefixed = tags.partition {|x| x =~ TagCategory.regexp}
-      prefixed.map!{|tag| tag.sub(/\A#{TagCategory.regexp}:/, '')}
+      prefixed.map!{|tag| tag.sub(/\A#{TagCategory.regexp}:/, "")}
       prefixed + unprefixed
     end
 
@@ -965,7 +965,7 @@ class Post < ApplicationRecord
 
     def remove_set!(set)
       with_lock do
-        self.pool_string = (pool_string.split(' ') - ["set:#{set.id}"]).join(' ').strip
+        self.pool_string = (pool_string.split(" ") - ["set:#{set.id}"]).join(" ").strip
       end
     end
 
@@ -1037,7 +1037,7 @@ class Post < ApplicationRecord
   module VoteMethods
     def own_vote(user = CurrentUser.user)
       return nil unless user
-      votes.where('user_id = ?', user.id).first
+      votes.where("user_id = ?", user.id).first
     end
 
     def is_voted?(user = CurrentUser.user)
@@ -1162,12 +1162,12 @@ class Post < ApplicationRecord
     end
 
     def inject_children(ids)
-      @children_ids = ids.map(&:id).join(' ')
+      @children_ids = ids.map(&:id).join(" ")
     end
 
     def children_ids
       if has_children?
-        @children_ids ||= children.map {|p| p.id}.join(' ')
+        @children_ids ||= children.map {|p| p.id}.join(" ")
       end
     end
   end
@@ -1250,7 +1250,7 @@ class Post < ApplicationRecord
       force_flag = options.fetch(:force, false)
       Post.with_timeout(30_000) do
         transaction do
-          flag = flags.create(reason: reason, reason_name: 'deletion', is_resolved: false, is_deletion: true, force_flag: force_flag)
+          flag = flags.create(reason: reason, reason_name: "deletion", is_resolved: false, is_deletion: true, force_flag: force_flag)
 
           if flag.errors.any?
             raise(PostFlag::Error.new(flag.errors.full_messages.join("; ")))
@@ -1276,7 +1276,7 @@ class Post < ApplicationRecord
     end
 
     def reject_pending_replacements
-      replacements.where(status: 'pending').update_all(status: 'rejected')
+      replacements.where(status: "pending").update_all(status: "rejected")
     end
 
     def undelete!(options = {})

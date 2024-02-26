@@ -36,7 +36,7 @@ class ForumCategoriesController < ApplicationController
   def update
     @forum_category.update(category_params)
 
-    flash[:notice] = @forum_category.valid? ? "Category updated" : @forum_category.errors.full_messages.join('; ')
+    flash[:notice] = @forum_category.valid? ? "Category updated" : @forum_category.errors.full_messages.join("; ")
     respond_with(@forum_category) do |format|
       format.html { redirect_to(forum_categories_path) }
     end

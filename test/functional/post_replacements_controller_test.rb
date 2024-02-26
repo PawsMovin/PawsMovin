@@ -21,7 +21,7 @@ class PostReplacementsControllerTest < ActionDispatch::IntegrationTest
           post_id: @post.id,
           post_replacement: {
             replacement_file: file,
-            reason: 'test replacement'
+            reason: "test replacement"
           }
         }
 

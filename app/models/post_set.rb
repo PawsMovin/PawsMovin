@@ -5,16 +5,16 @@ class PostSet < ApplicationRecord
 
   has_many :post_set_maintainers, dependent: :destroy do
     def in_cooldown(user)
-      where(creator_id: user.id, status: 'cooldown').where('created_at < ?', 24.hours.ago)
+      where(creator_id: user.id, status: "cooldown").where("created_at < ?", 24.hours.ago)
     end
     def active
-      where(status: 'approved')
+      where(status: "approved")
     end
     def pending
-      where(status: 'pending')
+      where(status: "pending")
     end
     def banned
-      where(status: 'banned')
+      where(status: "banned")
     end
   end
   has_many :maintainers, class_name: "User", through: :post_set_maintainers, source: :user
@@ -24,7 +24,7 @@ class PostSet < ApplicationRecord
   before_validation :normalize_shortname
   validates :name, length: { in: 3..100, message: "must be between three and one hundred characters long" }
   validates :name, :shortname, uniqueness: { case_sensitive: false, message: "is already taken" }, if: :if_names_changed?
-  validates :shortname, length: { in: 3..50, message: 'must be between three and fifty characters long' }
+  validates :shortname, length: { in: 3..50, message: "must be between three and fifty characters long" }
   validates :shortname, format: { with: /\A[\w]+\z/, message: "must only contain numbers, lowercase letters, and underscores" }
   validates :shortname, format: { with: /\A\d*[a-z_][\w]*\z/, message: "must contain at least one lowercase letter or underscore" }
   validates :description, length: { maximum: PawsMovin.config.pool_descr_max_size }
@@ -49,17 +49,17 @@ class PostSet < ApplicationRecord
   end
 
   def self.visible(user = CurrentUser.user)
-    return where('is_public = true') if user.nil?
+    return where("is_public = true") if user.nil?
     return all if user.is_moderator?
-    where('is_public = true OR creator_id = ?', user.id)
+    where("is_public = true OR creator_id = ?", user.id)
   end
 
   def self.owned(user = CurrentUser.user)
-    where('creator_id = ?', user.id)
+    where("creator_id = ?", user.id)
   end
 
   def self.active_maintainer(user = CurrentUser.user)
-    joins(:post_set_maintainers).where(post_set_maintainers: {status: 'approved', user_id: user.id})
+    joins(:post_set_maintainers).where(post_set_maintainers: {status: "approved", user_id: user.id})
   end
 
   def if_names_changed?
@@ -160,15 +160,15 @@ class PostSet < ApplicationRecord
 
     def is_maintainer?(user)
       return false if user.is_blocked?
-      post_set_maintainers.where(user_id: user.id, status: 'approved').count() > 0
+      post_set_maintainers.where(user_id: user.id, status: "approved").count() > 0
     end
 
     def is_invited?(user)
-      post_set_maintainers.where(user_id: user.id, status: 'pending').count() > 0
+      post_set_maintainers.where(user_id: user.id, status: "pending").count() > 0
     end
 
     def is_blocked?(user)
-      post_set_maintainers.where(user_id: user.id, status: 'blocked').count() > 0
+      post_set_maintainers.where(user_id: user.id, status: "blocked").count() > 0
     end
 
     def is_owner?(user)
@@ -303,11 +303,11 @@ class PostSet < ApplicationRecord
     end
 
     def where_has_post(post_id)
-      where('post_ids @> ARRAY[?]::integer[]', post_id)
+      where("post_ids @> ARRAY[?]::integer[]", post_id)
     end
 
     def where_has_maintainer(user_id)
-      joins(:maintainers).where('(post_set_maintainers.user_id = ? AND post_set_maintainers.status = ?) OR creator_id = ?', user_id, 'approved', user_id)
+      joins(:maintainers).where("(post_set_maintainers.user_id = ? AND post_set_maintainers.status = ?) OR creator_id = ?", user_id, "approved", user_id)
     end
 
     def search(params)
@@ -326,15 +326,15 @@ class PostSet < ApplicationRecord
       end
 
       case params[:order]
-      when 'name'
+      when "name"
         q = q.order(:name, id: :desc)
-      when 'shortname'
+      when "shortname"
         q = q.order(:shortname, id: :desc)
-      when 'postcount', 'post_count'
+      when "postcount", "post_count"
         q = q.order(post_count: :desc, id: :desc)
-      when 'created_at'
+      when "created_at"
         q = q.order(:id)
-      when 'update', 'updated_at'
+      when "update", "updated_at"
         q = q.order(updated_at: :desc)
       else
         q = q.order(id: :desc)

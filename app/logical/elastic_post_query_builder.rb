@@ -233,12 +233,12 @@ class ElasticPostQueryBuilder < ElasticQueryBuilder
       order.push({id: :desc})
 
     when "comment_bumped"
-      must.push({exists: {field: 'comment_bumped_at'}})
+      must.push({exists: {field: "comment_bumped_at"}})
       order.push({comment_bumped_at: {order: :desc, missing: :_last}})
       order.push({id: :desc})
 
     when "comment_bumped_asc"
-      must.push({exists: {field: 'comment_bumped_at'}})
+      must.push({exists: {field: "comment_bumped_at"}})
       order.push({comment_bumped_at: {order: :asc, missing: :_last}})
       order.push({id: :desc})
 

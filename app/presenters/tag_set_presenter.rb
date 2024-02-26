@@ -20,7 +20,7 @@ class TagSetPresenter < Presenter
   def post_index_sidebar_tag_list_html(current_query: "")
     html = +""
     if ordered_tags.present?
-      html << '<ul>'
+      html << "<ul>"
       ordered_tags.each do |tag|
         html << build_list_item(tag, current_query: current_query)
       end
@@ -157,10 +157,10 @@ class TagSetPresenter < Presenter
     end
 
     is_underused_tag = count <= 1 && category == TagCategory.general
-    klass = "color-muted post-count#{is_underused_tag ? " low-post-count" : ""}"
+    klass = "color-muted post-count#{is_underused_tag ? ' low-post-count' : ''}"
     title = "New general tag detected. Check the spelling or populate it now."
 
-    html << %{<span data-count='#{count}' class="#{klass}"#{is_underused_tag ? " title='#{title}'" : ""}>#{post_count}</span>}
+    html << %{<span data-count='#{count}' class="#{klass}"#{is_underused_tag ? " title='#{title}'" : ''}>#{post_count}</span>}
 
     html << "</li>"
     html

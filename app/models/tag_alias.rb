@@ -101,7 +101,7 @@ class TagAlias < TagRelationship
     collected_tags = []
     lines.each do |line|
       tags = line.split(" ").reject(&:blank?).map do |x|
-        negated = x[0] == '-'
+        negated = x[0] == "-"
         [negated ? x[1..-1] : x, negated]
       end
       tags.each do |t|
@@ -111,8 +111,8 @@ class TagAlias < TagRelationship
     aliased = to_aliased_with_originals(collected_tags)
     aliased.merge!(overrides) if overrides
     lines = lines.map do |line|
-      tags = line.split(" ").reject(&:blank?).reject {|t| t == '-'}.map do |x|
-        negated = x[0] == '-'
+      tags = line.split(" ").reject(&:blank?).reject {|t| t == "-"}.map do |x|
+        negated = x[0] == "-"
         [negated ? x[1..-1] : x, negated]
       end
       tags.map { |t| "#{t[1] ? '-' : ''}#{aliased[t[0]]}" }.join(" ")
@@ -195,7 +195,7 @@ class TagAlias < TagRelationship
         update_posts
         forum_updater.update(approval_message(approver), "APPROVED") if update_topic
         rename_artist
-        update(status: 'active', post_count: consequent_tag.post_count)
+        update(status: "active", post_count: consequent_tag.post_count)
         # TODO: Race condition with indexing jobs here.
         antecedent_tag.fix_post_count if antecedent_tag&.persisted?
         consequent_tag.fix_post_count if consequent_tag&.persisted?

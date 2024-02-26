@@ -15,9 +15,9 @@ class PostsDecorator < ApplicationDecorator
     klass << "post-status-deleted" if post.is_deleted?
     klass << "post-status-has-parent" if post.parent_id
     klass << "post-status-has-children" if post.has_visible_children?
-    klass << "post-rating-safe" if post.rating == 's'
-    klass << "post-rating-questionable" if post.rating == 'q'
-    klass << "post-rating-explicit" if post.rating == 'e'
+    klass << "post-rating-safe" if post.rating == "s"
+    klass << "post-rating-questionable" if post.rating == "q"
+    klass << "post-rating-explicit" if post.rating == "e"
     klass << "post-no-blacklist" if options[:no_blacklist]
     klass
   end
@@ -67,8 +67,8 @@ class PostsDecorator < ApplicationDecorator
   end
 
   def score_class(score)
-    return 'score-neutral' if score == 0
-    score > 0 ? 'score-positive' : 'score-negative'
+    return "score-neutral" if score == 0
+    score > 0 ? "score-positive" : "score-negative"
   end
 
   def preview_html(t, options = {})

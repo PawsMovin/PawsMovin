@@ -36,7 +36,7 @@
           <tr>
             <td><span class="title">Claimed By</span></td>
             <% if @ticket.claimant.nil? %>
-              <td id="claimed_by"><%= link_to 'Claim', claim_ticket_path(@ticket), method: :post %></td>
+              <td id="claimed_by"><%= link_to "Claim", claim_ticket_path(@ticket), method: :post %></td>
             <% else %>
               <td id="claimed_by">
                 <%= link_to_user @ticket.claimant %>
@@ -63,7 +63,7 @@
           <tr>
             <td><span class="title">Open Duplicates</span></td>
             <td><ul>
-              <% @ticket.open_duplicates.where('id != ?', @ticket.id).find_each do |dup| %>
+              <% @ticket.open_duplicates.where("id != ?", @ticket.id).find_each do |dup| %>
               <li><%= link_to("Ticket #{dup.id} - #{dup.subject}", ticket_path(dup.id)) %></li>
               <% end %>
             </ul></td>
@@ -124,7 +124,7 @@
   <%= @ticket.type_title %>
 <% end %>
 
-<% render partial: 'secondary_links' %>
+<% render partial: "secondary_links" %>
 
 <% content_for(:page_title) do %>
   <%= @ticket.type_title %>

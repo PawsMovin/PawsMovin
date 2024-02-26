@@ -4,7 +4,7 @@
     <%= f.input(:user_name, :as => :string, autocomplete: "user") %>
   <% end %>
   <%= f.input(:duration, :hint => "in days") %>
-  <%= f.input(:is_permaban, as: :boolean, hint: 'ignores days') %>
+  <%= f.input(:is_permaban, as: :boolean, hint: "ignores days") %>
   <%= f.input(:reason, as: :dtext) %>
   <%= f.button(:submit, :value => "Ban") %>
 <% end %>

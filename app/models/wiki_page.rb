@@ -160,7 +160,7 @@ class WikiPage < ApplicationRecord
   end
 
   def pretty_title
-    title&.tr("_", " ") || ''
+    title&.tr("_", " ") || ""
   end
 
   def pretty_title_with_category

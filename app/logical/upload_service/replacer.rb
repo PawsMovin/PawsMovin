@@ -11,10 +11,10 @@ class UploadService
 
     def create_backup_replacement
       begin
-        repl = post.replacements.new(creator_id: post.uploader_id, creator_ip_addr: post.uploader_ip_addr, status: 'original',
+        repl = post.replacements.new(creator_id: post.uploader_id, creator_ip_addr: post.uploader_ip_addr, status: "original",
                                      image_width: post.image_width, image_height: post.image_height, file_ext: post.file_ext,
                                      file_size: post.file_size, md5: post.md5, file_name: "#{post.md5}.#{post.file_ext}",
-                                     source: post.source, reason: 'Backup of original file', is_backup: true)
+                                     source: post.source, reason: "Backup of original file", is_backup: true)
         repl.replacement_file = PawsMovin.config.storage_manager.open(PawsMovin.config.storage_manager.file_path(post, post.file_ext, :original))
         repl.save
       rescue Exception => e
@@ -84,7 +84,7 @@ class UploadService
         rescale_notes(post)
 
         replacement.update({
-          status: 'approved',
+          status: "approved",
           approver_id: CurrentUser.id,
           uploader_id_on_approve: previous_uploader,
           penalize_uploader_on_approve: penalize_current_uploader.to_s.truthy?

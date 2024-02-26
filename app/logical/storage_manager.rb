@@ -69,13 +69,13 @@ class StorageManager
       delete(file_path(md5, file_ext, type, true))
     end
     PawsMovin.config.video_rescales.each_key do |k|
-      ['mp4','webm'].each do |ext|
+      ["mp4","webm"].each do |ext|
         delete(file_path(md5, ext, :scaled, false, scale_factor: k.to_s))
         delete(file_path(md5, ext, :scaled, true, scale_factor: k.to_s))
       end
     end
-    delete(file_path(md5, 'mp4', :original, false))
-    delete(file_path(md5, 'mp4', :original, true))
+    delete(file_path(md5, "mp4", :original, false))
+    delete(file_path(md5, "mp4", :original, true))
   end
 
   def delete_replacement(replacement)
@@ -100,7 +100,7 @@ class StorageManager
     ip = CurrentUser.ip_addr
     time = (Time.now + 15.minute).to_i
     secret = secret
-    hmac = Digest::MD5.base64digest("#{time} #{url} #{user_id} #{secret}").tr("+/","-_").gsub("==",'')
+    hmac = Digest::MD5.base64digest("#{time} #{url} #{user_id} #{secret}").tr("+/","-_").gsub("==","")
     "?auth=#{hmac}&expires=#{time}&uid=#{user_id}"
   end
 

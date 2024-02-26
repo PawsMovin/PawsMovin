@@ -9,17 +9,17 @@
 Rails.application.configure do
   config.content_security_policy do |policy|
     policy.default_src(:self)
-    policy.script_src(:self, 'js-agent.newrelic.com', 'https://www.google.com/recaptcha/', 'https://www.gstatic.com/recaptcha/', 'https://www.recaptcha.net/')
+    policy.script_src(:self, "js-agent.newrelic.com", "https://www.google.com/recaptcha/", "https://www.gstatic.com/recaptcha/", "https://www.recaptcha.net/")
     policy.style_src(:self, :unsafe_inline)
     policy.connect_src(:self)
-    policy.object_src(:self, 'static.pawsmov.in')
-    policy.media_src(:self, 'static.pawsmov.in')
+    policy.object_src(:self, "static.pawsmov.in")
+    policy.media_src(:self, "static.pawsmov.in")
     policy.frame_ancestors(:none)
-    policy.frame_src('https://www.google.com/recaptcha/', 'https://www.recaptcha.net/')
+    policy.frame_src("https://www.google.com/recaptcha/", "https://www.recaptcha.net/")
     policy.font_src(:self)
-    policy.img_src(:self, :data, 'static.pawsmov.in')
+    policy.img_src(:self, :data, "static.pawsmov.in")
     policy.child_src(:none)
-    policy.form_action(:self, 'discord.pawsmov.in', 'discord.com')
+    policy.form_action(:self, "discord.pawsmov.in", "discord.com")
     # Specify URI for violation reports
     # policy.report_uri "/csp-violation-report-endpoint"
   end

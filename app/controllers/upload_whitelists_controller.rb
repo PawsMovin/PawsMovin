@@ -47,9 +47,9 @@ class UploadWhitelistsController < ApplicationController
     rescue Addressable::URI::InvalidURIError => e
       @whitelist = {
           url: params[:url],
-          domain: 'invalid domain',
+          domain: "invalid domain",
           is_allowed: false,
-          reason: 'invalid domain'
+          reason: "invalid domain"
       }
     end
     respond_with(@whitelist) do |format|

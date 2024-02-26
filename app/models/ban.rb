@@ -114,17 +114,17 @@ class Ban < ApplicationRecord
   end
 
   def humanized_duration
-    return 'permanent' if expires_at == nil
+    return "permanent" if expires_at == nil
     ApplicationController.helpers.distance_of_time_in_words(created_at, expires_at)
   end
 
   def humanized_expiration
-    return 'never' if expires_at == nil
+    return "never" if expires_at == nil
     ApplicationController.helpers.compact_time(expires_at)
   end
 
   def expire_days
-    return 'never' if expires_at == nil
+    return "never" if expires_at == nil
     ApplicationController.helpers.time_ago_in_words(expires_at)
   end
 

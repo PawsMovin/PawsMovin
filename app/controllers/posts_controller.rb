@@ -19,7 +19,7 @@ class PostsController < ApplicationController
       @posts = PostsDecorator.decorate_collection(@post_set.posts)
       respond_with(@posts) do |format|
         format.json do
-          render(json: @post_set.api_posts, root: 'posts')
+          render(json: @post_set.api_posts, root: "posts")
         end
         format.atom
       end
@@ -48,7 +48,7 @@ class PostsController < ApplicationController
     @fixup_post_url = true
 
     respond_with(@post) do |fmt|
-      fmt.html { render('posts/show')}
+      fmt.html { render("posts/show")}
     end
   end
 
@@ -90,7 +90,7 @@ class PostsController < ApplicationController
   end
 
   def random
-    tags = params[:tags] || ''
+    tags = params[:tags] || ""
     @post = Post.tag_match(tags + " order:random").limit(1).first
     raise(ActiveRecord::RecordNotFound) if @post.nil?
     respond_with(@post) do |format|

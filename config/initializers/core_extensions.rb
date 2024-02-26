@@ -6,12 +6,12 @@ module PawsMovin
       def to_escaped_for_sql_like
         string = self.gsub(/%|_|\*|\\\*|\\\\|\\/) do |str|
           case str
-          when '%'    then '\%'
-          when '_'    then '\_'
-          when '*'    then '%'
-          when '\*'   then '*'
-          when '\\\\' then '\\\\'
-          when '\\'   then '\\\\'
+          when "%"    then '\%'
+          when "_"    then '\_'
+          when "*"    then "%"
+          when '\*'   then "*"
+          when "\\\\" then "\\\\"
+          when "\\"   then "\\\\"
           end
         end
 

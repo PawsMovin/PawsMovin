@@ -18,11 +18,11 @@ class PostSetMaintainersController < ApplicationController
       return
     end
     check_edit_access(@set)
-    @invite = PostSetMaintainer.new(post_set_id: @set.id, user_id: @user.id, status: 'pending')
+    @invite = PostSetMaintainer.new(post_set_id: @set.id, user_id: @user.id, status: "pending")
     @invite.validate
 
     if @invite.invalid?
-      flash[:notice] = @invite.errors.full_messages.join('; ')
+      flash[:notice] = @invite.errors.full_messages.join("; ")
       redirect_to(maintainers_post_set_path(@set))
       return
     end
@@ -38,7 +38,7 @@ class PostSetMaintainersController < ApplicationController
       RateLimiter.hit("set.invite.#{CurrentUser.id}", 1.hours)
       flash[:notice] = "#{@user.pretty_name} invited to be a maintainer"
     else
-      flash[:notice] = @invite.errors.full_messages.join('; ')
+      flash[:notice] = @invite.errors.full_messages.join("; ")
     end
     redirect_to(maintainers_post_set_path(@set))
   end
@@ -81,17 +81,17 @@ class PostSetMaintainersController < ApplicationController
 
   def check_approve_access(maintainer)
     raise(User::PrivilegeError) unless maintainer.user_id == CurrentUser.id
-    raise(User::PrivilegeError) if ['blocked', 'approved'].include?(maintainer.status)
+    raise(User::PrivilegeError) if ["blocked", "approved"].include?(maintainer.status)
   end
 
   def check_cancel_access(maintainer)
-    raise(User::PrivilegeError) if maintainer.status == 'blocked'
-    raise(User::PrivilegeError) if maintainer.status == 'cooldown' && @maintainer.created_at > 24.hours.ago
+    raise(User::PrivilegeError) if maintainer.status == "blocked"
+    raise(User::PrivilegeError) if maintainer.status == "cooldown" && @maintainer.created_at > 24.hours.ago
   end
 
   def check_block_access(maintainer)
     raise(User::PrivilegeError) unless maintainer.user_id == CurrentUser.id
-    raise(User::PrivilegeError) if maintainer.status == 'blocked'
+    raise(User::PrivilegeError) if maintainer.status == "blocked"
   end
 
   def check_edit_access(set)

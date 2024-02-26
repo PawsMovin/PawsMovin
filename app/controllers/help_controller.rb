@@ -43,7 +43,7 @@ class HelpController < ApplicationController
   def create
     @help = HelpPage.create(help_params)
     if @help.valid?
-      flash[:notice] = 'Help page created'
+      flash[:notice] = "Help page created"
       ModAction.log!(:help_create, @help, name: @help.name, wiki_page: @help.wiki_page)
     end
     respond_with(@help)

@@ -133,16 +133,16 @@ class PostFlag < ApplicationRecord
 
   def validate_reason
     case reason_name
-    when 'deletion'
+    when "deletion"
       # You're probably looking at this line as you get this validation failure
       errors.add(:reason, "is not one of the available choices") unless is_deletion
-    when 'inferior'
+    when "inferior"
       unless parent_post.present?
         errors.add(:parent_id, "must exist")
         return false
       end
       errors.add(:parent_id, "cannot be set to the post being flagged") if parent_post.id == post.id
-    when 'uploading_guidelines'
+    when "uploading_guidelines"
       errors.add(:reason, "cannot be used. The post is not pending") unless post.flaggable_for_guidelines?
     else
       errors.add(:reason, "is not one of the available choices") unless MAPPED_REASONS.key?(reason_name)
@@ -151,9 +151,9 @@ class PostFlag < ApplicationRecord
 
   def update_reason
     case reason_name
-    when 'deletion'
+    when "deletion"
       # NOP
-    when 'inferior'
+    when "inferior"
       return unless parent_post
       old_parent_id = post.parent_id
       post.update_column(:parent_id, parent_post.id)
@@ -178,7 +178,7 @@ class PostFlag < ApplicationRecord
 
   def parent_post
     @parent_post ||= begin
-                       Post.where('id = ?', parent_id).first
+                       Post.where("id = ?", parent_id).first
                      rescue
                        nil
                      end

@@ -43,7 +43,7 @@ class StaticController < ApplicationController
       if cookies[:nmm]
         cookies.delete(:nmm)
       else
-        cookies.permanent[:nmm] = '1'
+        cookies.permanent[:nmm] = "1"
       end
     end
     redirect_back(fallback_location: posts_path)

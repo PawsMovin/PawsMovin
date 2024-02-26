@@ -17,16 +17,16 @@ class TagImplicationTest < ActiveSupport::TestCase
         create(:tag_implication, antecedent_name: "aaa", consequent_name: "bbb")
       end
 
-      should allow_value('active').for(:status)
-      should allow_value('deleted').for(:status)
-      should allow_value('pending').for(:status)
-      should allow_value('processing').for(:status)
-      should allow_value('queued').for(:status)
-      should allow_value('error: derp').for(:status)
+      should allow_value("active").for(:status)
+      should allow_value("deleted").for(:status)
+      should allow_value("pending").for(:status)
+      should allow_value("processing").for(:status)
+      should allow_value("queued").for(:status)
+      should allow_value("error: derp").for(:status)
 
-      should_not allow_value('ACTIVE').for(:status)
-      should_not allow_value('error').for(:status)
-      should_not allow_value('derp').for(:status)
+      should_not allow_value("ACTIVE").for(:status)
+      should_not allow_value("error").for(:status)
+      should_not allow_value("derp").for(:status)
 
       should allow_value(nil).for(:forum_topic_id)
       should_not allow_value(-1).for(:forum_topic_id).with_message("must exist", against: :forum_topic)

@@ -21,7 +21,7 @@ class Ticket < ApplicationRecord
   validate :validate_model_exists, on: :create
   validate :validate_creator_is_not_limited, on: :create
 
-  scope :for_creator, ->(uid) {where('creator_id = ?', uid)}
+  scope :for_creator, ->(uid) {where("creator_id = ?", uid)}
 
   attr_accessor :record_type, :send_update_dmail
 
@@ -224,11 +224,11 @@ class Ticket < ApplicationRecord
       if params[:status].present?
         case params[:status]
         when "pending_claimed"
-          q = q.where('status = ? and claimant_id is not null', 'pending')
+          q = q.where("status = ? and claimant_id is not null", "pending")
         when "pending_unclaimed"
-          q = q.where('status = ? and claimant_id is null', 'pending')
+          q = q.where("status = ? and claimant_id is null", "pending")
         else
-          q = q.where('status = ?', params[:status])
+          q = q.where("status = ?", params[:status])
         end
       end
 
@@ -294,7 +294,7 @@ class Ticket < ApplicationRecord
       transaction do
         ModAction.log!(:ticket_claim, self)
         update_attribute(:claimant_id, user.id)
-        push_pubsub('claim')
+        push_pubsub("claim")
       end
     end
 
@@ -302,7 +302,7 @@ class Ticket < ApplicationRecord
       transaction do
         ModAction.log!(:ticket_unclaim, self)
         update_attribute(:claimant_id, nil)
-        push_pubsub('unclaim')
+        push_pubsub("unclaim")
       end
     end
   end

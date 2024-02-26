@@ -92,7 +92,7 @@ private
   end
 
   def authenticate_basic_auth
-    credentials = ::Base64.decode64(request.authorization.split(' ', 2).last || '')
+    credentials = ::Base64.decode64(request.authorization.split(" ", 2).last || "")
     login, api_key = credentials.split(":", 2)
     authenticate_api_key(login, api_key)
   end
