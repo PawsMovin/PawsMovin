@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class StaffNote < ApplicationRecord
   belongs_to_creator
   belongs_to_updater

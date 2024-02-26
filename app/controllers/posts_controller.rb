@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class PostsController < ApplicationController
   before_action :member_only, except: %i[show show_seq index random]
   before_action :admin_only, only: %i[update_iqdb expunge]
@@ -256,9 +258,5 @@ class PostsController < ApplicationController
     permitted_params += %i[is_status_locked is_comment_disabled locked_tags hide_from_anonymous hide_from_search_engines] if CurrentUser.is_admin?
 
     params.require(:post).permit(permitted_params)
-  end
-
-  def allowed_readonly_actions
-    super + %w[random show_seq]
   end
 end

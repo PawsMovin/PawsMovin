@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class WikiPageVersion < ApplicationRecord
   belongs_to :wiki_page
   belongs_to_updater

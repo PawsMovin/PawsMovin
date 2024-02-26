@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class PostSerializer < ActiveModel::Serializer
   def tags
     TagCategory.categories.to_h { |category| [category.name, object.typed_tags(category.id)] }

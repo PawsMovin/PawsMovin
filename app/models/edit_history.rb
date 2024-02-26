@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class EditHistory < ApplicationRecord
   belongs_to :versionable, polymorphic: true
   belongs_to :user

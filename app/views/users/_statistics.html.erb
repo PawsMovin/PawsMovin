@@ -115,12 +115,6 @@
             <%= link_to "Manage", user_api_keys_path(CurrentUser.user) %>
             (<%= link_to "help", help_page_path(id: "api") %>)
           </span>
-
-          <span>API Limits</span>
-          <span>
-            <%= CurrentUser.user.remaining_api_limit %>
-            / <%= CurrentUser.user.api_burst_limit %> <span class="hint">(may not be up to date)</span>
-          </span>
         <% end %>
 
         <% if CurrentUser.is_admin? %>

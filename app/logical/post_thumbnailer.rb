@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module PostThumbnailer
   extend self
   class CorruptFileError < RuntimeError; end

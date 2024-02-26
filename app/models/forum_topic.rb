@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ForumTopic < ApplicationRecord
   belongs_to_creator
   belongs_to_updater
@@ -125,7 +127,7 @@ class ForumTopic < ApplicationRecord
     end
 
     def mark_as_read!(user = CurrentUser.user)
-      return if user.is_anonymous? || PawsMovin.config.readonly_mode?
+      return if user.is_anonymous?
 
       match = ForumTopicVisit.where(:user_id => user.id, :forum_topic_id => id).first
       if match

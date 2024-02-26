@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 id_name_constraint = { id: %r{[^/]+?}, format: /json|html/ }.freeze
 Rails.application.routes.draw do
   require "sidekiq/web"
@@ -121,6 +123,7 @@ Rails.application.routes.draw do
   resources :dmails, only: %i[new create index show destroy] do
     member do
       put :mark_as_read
+      put :mark_as_unread
     end
     collection do
       put :mark_all_as_read

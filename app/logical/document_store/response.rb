@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module DocumentStore
   class Response
     include PawsMovin::Paginator::DocumentStoreExtensions

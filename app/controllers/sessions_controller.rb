@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class SessionsController < ApplicationController
   def new
     @user = User.new
@@ -30,11 +32,5 @@ class SessionsController < ApplicationController
   end
 
   def confirm_password
-  end
-
-  private
-
-  def allowed_readonly_actions
-    super + %w[destroy]
   end
 end

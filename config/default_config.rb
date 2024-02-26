@@ -1,4 +1,4 @@
-require 'socket'
+# frozen_string_literal: true
 
 module PawsMovin
   class Configuration
@@ -661,10 +661,6 @@ module PawsMovin
 
     def image_rescales
       []
-    end
-
-    def readonly_mode?
-      false
     end
 
     def janitor_reports_discord_webhook_url
