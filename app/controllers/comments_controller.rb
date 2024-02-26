@@ -8,7 +8,7 @@ class CommentsController < ApplicationController
   skip_before_action :api_check
 
   def index
-    if params[:group_by] == "comment"
+    if params[:group_by] == "comment" || (request.format == :json && params[:group_by].blank?)
       index_by_comment
     else
       index_by_post
@@ -109,8 +109,11 @@ private
   def index_by_comment
     @comments = Comment.visible(CurrentUser.user)
     @comments = @comments.search(search_params).paginate(params[:page], limit: params[:limit], search_count: params[:search])
-    @comment_votes = CommentVote.for_comments_and_user(@comments.select { |comment| comment.visible_to?(CurrentUser) }.map(&:id), CurrentUser.id)
-    respond_with(@comments)
+    respond_with(@comments) do |format|
+      format.html do
+        @comment_votes = CommentVote.for_comments_and_user(@comments.select { |comment| comment.visible_to?(CurrentUser) }.map(&:id), CurrentUser.id)
+      end
+    end
   end
 
   def check_editable(comment)
