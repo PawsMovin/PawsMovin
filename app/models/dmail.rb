@@ -7,9 +7,9 @@ class Dmail < ApplicationRecord
   validate :recipient_accepts_dmails, on: :create
   validate :user_not_limited, on: :create
 
-  belongs_to :owner, :class_name => "User"
-  belongs_to :to, :class_name => "User"
-  belongs_to :from, :class_name => "User"
+  belongs_to :owner, class_name: "User"
+  belongs_to :to, class_name: "User"
+  belongs_to :from, class_name: "User"
 
   after_initialize :initialize_attributes, if: :new_record?
   before_create :auto_read_if_filtered

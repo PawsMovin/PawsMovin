@@ -30,8 +30,8 @@ class PostsController < ApplicationController
     @post = Post.find(params[:id])
 
     include_deleted = @post.is_deleted? || (@post.parent_id.present? && @post.parent.is_deleted?) || CurrentUser.is_approver?
-    @parent_post_set = PostSets::PostRelationship.new(@post.parent_id, :include_deleted => include_deleted, want_parent: true)
-    @children_post_set = PostSets::PostRelationship.new(@post.id, :include_deleted => include_deleted, want_parent: false)
+    @parent_post_set = PostSets::PostRelationship.new(@post.parent_id, include_deleted: include_deleted, want_parent: true)
+    @children_post_set = PostSets::PostRelationship.new(@post.id, include_deleted: include_deleted, want_parent: false)
     @comment_votes = {}
     @comment_votes = CommentVote.for_comments_and_user(@post.comments.visible(CurrentUser.user).map(&:id), CurrentUser.id) if request.format.html?
 
@@ -41,8 +41,8 @@ class PostsController < ApplicationController
   def show_seq
     @post = PostSearchContext.new(params).post
     include_deleted = @post.is_deleted? || (@post.parent_id.present? && @post.parent.is_deleted?) || CurrentUser.is_approver?
-    @parent_post_set = PostSets::PostRelationship.new(@post.parent_id, :include_deleted => include_deleted, want_parent: true)
-    @children_post_set = PostSets::PostRelationship.new(@post.id, :include_deleted => include_deleted, want_parent: false)
+    @parent_post_set = PostSets::PostRelationship.new(@post.parent_id, include_deleted: include_deleted, want_parent: true)
+    @children_post_set = PostSets::PostRelationship.new(@post.id, include_deleted: include_deleted, want_parent: false)
     @comment_votes = {}
     @comment_votes = CommentVote.for_comments_and_user(@post.comments.visible(CurrentUser.user).map(&:id), CurrentUser.id) if request.format.html?
     @fixup_post_url = true
@@ -83,7 +83,7 @@ class PostsController < ApplicationController
 
     if @post.errors.any?
       @error_message = @post.errors.full_messages.join("; ")
-      render(:json => {:success => false, :reason => @error_message}.to_json, :status => 400)
+      render(json: {success: false, reason: @error_message}.to_json, status: 400)
     else
       head(:no_content)
     end
@@ -94,7 +94,7 @@ class PostsController < ApplicationController
     @post = Post.tag_match(tags + " order:random").limit(1).first
     raise(ActiveRecord::RecordNotFound) if @post.nil?
     respond_with(@post) do |format|
-      format.html { redirect_to(post_path(@post, :tags => params[:tags])) }
+      format.html { redirect_to(post_path(@post, tags: params[:tags])) }
     end
   end
 
@@ -223,16 +223,16 @@ class PostsController < ApplicationController
 
         if post.errors.any?
           @message = post.errors.full_messages.join("; ")
-          render(:template => "static/error", :status => 500)
+          render(template: "static/error", status: 500)
         else
-          response_params = {:q => params[:tags_query], :pool_id => params[:pool_id], post_set_id: params[:post_set_id]}
+          response_params = {q: params[:tags_query], pool_id: params[:pool_id], post_set_id: params[:post_set_id]}
           response_params.reject!{|key, value| value.blank?}
           redirect_to(post_path(post, response_params))
         end
       end
 
       format.json do
-        render(:json => post)
+        render(json: post)
       end
     end
   end

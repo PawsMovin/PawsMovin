@@ -10,13 +10,13 @@ class DmailFilterTest < ActiveSupport::TestCase
 
   def create_dmail(body, title)
     as(@sender) do
-      Dmail.create_split(:to_id => @receiver.id, :body => body, :title => title)
+      Dmail.create_split(to_id: @receiver.id, body: body, title: title)
     end
   end
 
   context "a dmail filter for a word" do
     setup do
-      @dmail_filter = @receiver.create_dmail_filter(:words => "banned")
+      @dmail_filter = @receiver.create_dmail_filter(words: "banned")
     end
 
     should "filter on that word in the body" do
@@ -37,7 +37,7 @@ class DmailFilterTest < ActiveSupport::TestCase
 
   context "a dmail filter for a user name" do
     setup do
-      @dmail_filter = @receiver.create_dmail_filter(:words => @sender.name)
+      @dmail_filter = @receiver.create_dmail_filter(words: @sender.name)
     end
 
     should "filter on the sender" do

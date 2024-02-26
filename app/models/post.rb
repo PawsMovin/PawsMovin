@@ -9,7 +9,7 @@ class Post < ApplicationRecord
   NOTE_COPY_TAGS = %w[translated partially_translated translation_check translation_request]
   ASPECT_RATIO_REGEX = /^\d+:\d+$/
 
-  before_validation :initialize_uploader, :on => :create
+  before_validation :initialize_uploader, on: :create
   before_validation :merge_old_changes
   before_validation :apply_source_diff
   before_validation :apply_tag_diff, if: :should_process_tags?
@@ -19,7 +19,7 @@ class Post < ApplicationRecord
   before_validation :fix_bg_color
   before_validation :blank_out_nonexistent_parents
   before_validation :remove_parent_loops
-  validates :md5, uniqueness: { :on => :create, message: ->(obj, data) {"duplicate: #{Post.find_by_md5(obj.md5).id}"} }
+  validates :md5, uniqueness: { on: :create, message: ->(obj, data) {"duplicate: #{Post.find_by_md5(obj.md5).id}"} }
   validates :rating, inclusion: { in: %w(s q e), message: "rating must be s, q, or e" }
   validates :bg_color, format: { with: /\A[A-Fa-f0-9]{6}\z/ }, allow_nil: true
   validates :description, length: { maximum: PawsMovin.config.post_descr_max_size }, if: :description_changed?
@@ -35,31 +35,31 @@ class Post < ApplicationRecord
   after_save :create_version
   after_save :update_parent_on_save
   after_save :apply_post_metatags
-  after_commit :delete_files, :on => :destroy
-  after_commit :remove_iqdb_async, :on => :destroy
-  after_commit :update_iqdb_async, :on => :create
+  after_commit :delete_files, on: :destroy
+  after_commit :remove_iqdb_async, on: :destroy
+  after_commit :update_iqdb_async, on: :create
   after_commit :generate_video_samples, on: :create, if: :is_video?
 
-  belongs_to :updater, :class_name => "User", optional: true # this is handled in versions
+  belongs_to :updater, class_name: "User", optional: true # this is handled in versions
   belongs_to :approver, class_name: "User", optional: true
-  belongs_to :uploader, :class_name => "User"
+  belongs_to :uploader, class_name: "User"
   user_status_counter :post_count, foreign_key: :uploader_id
   belongs_to :parent, class_name: "Post", optional: true
-  has_one :upload, :dependent => :destroy
-  has_many :flags, :class_name => "PostFlag", :dependent => :destroy
-  has_many :votes, :class_name => "PostVote", :dependent => :destroy
-  has_many :notes, :dependent => :destroy
-  has_many :comments, -> {includes(:creator, :updater).order("comments.is_sticky DESC, comments.id")}, :dependent => :destroy
-  has_many :children, -> {order("posts.id")}, :class_name => "Post", :foreign_key => "parent_id"
-  has_many :approvals, :class_name => "PostApproval", :dependent => :destroy
-  has_many :disapprovals, :class_name => "PostDisapproval", :dependent => :destroy
+  has_one :upload, dependent: :destroy
+  has_many :flags, class_name: "PostFlag", dependent: :destroy
+  has_many :votes, class_name: "PostVote", dependent: :destroy
+  has_many :notes, dependent: :destroy
+  has_many :comments, -> {includes(:creator, :updater).order("comments.is_sticky DESC, comments.id")}, dependent: :destroy
+  has_many :children, -> {order("posts.id")}, class_name: "Post", foreign_key: "parent_id"
+  has_many :approvals, class_name: "PostApproval", dependent: :destroy
+  has_many :disapprovals, class_name: "PostDisapproval", dependent: :destroy
   has_many :favorites
   has_many :replacements, class_name: "PostReplacement", dependent: :destroy
 
   attr_accessor :old_tag_string, :old_parent_id, :old_source, :old_rating,
                 :do_not_version_changes, :tag_string_diff, :source_diff, :edit_reason, :tag_string_before_parse
 
-  has_many :versions, -> {order("post_versions.id ASC")}, :class_name => "PostVersion", :dependent => :destroy
+  has_many :versions, -> {order("post_versions.id ASC")}, class_name: "PostVersion", dependent: :destroy
 
   IMAGE_TYPES = %i[original large preview crop]
 
@@ -707,7 +707,7 @@ class Post < ApplicationRecord
         when /^newpool:(.+)$/i
           pool = Pool.find_by_name($1)
           if pool.nil?
-            pool = Pool.create(:name => $1, :description => "This pool was automatically generated")
+            pool = Pool.create(name: $1, description: "This pool was automatically generated")
           end
         end
       end
@@ -920,7 +920,7 @@ class Post < ApplicationRecord
     def remove_from_favorites
       Favorite.where(post_id: id).delete_all
       user_ids = fav_string.scan(/\d+/)
-      UserStatus.where(:user_id => user_ids).update_all("favorite_count = favorite_count - 1")
+      UserStatus.where(user_id: user_ids).update_all("favorite_count = favorite_count - 1")
     end
   end
 

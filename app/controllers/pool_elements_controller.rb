@@ -26,7 +26,7 @@ class PoolElementsController < ApplicationController
       @pool.remove!(@post)
       @pool.save
     end
-    respond_with(@pool, :location => post_path(@post))
+    respond_with(@pool, location: post_path(@post))
   end
 
   private

@@ -6,7 +6,7 @@ class Upload < ApplicationRecord
   class Error < Exception ; end
 
   attr_accessor :as_pending, :replaced_post, :file, :direct_url, :original_post_id, :locked_tags, :locked_rating, :replacement_id
-  belongs_to :uploader, :class_name => "User"
+  belongs_to :uploader, class_name: "User"
   belongs_to :post, optional: true
 
   before_validation :assign_rating_from_tags
@@ -79,7 +79,7 @@ class Upload < ApplicationRecord
 
   module SearchMethods
     def pending
-      where(:status => "pending")
+      where(status: "pending")
     end
 
     def post_tags_match(query)

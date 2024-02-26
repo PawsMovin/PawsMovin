@@ -3,10 +3,10 @@
 class UserNameChangeRequest < ApplicationRecord
   after_initialize :initialize_attributes, if: :new_record?
   validates :user_id, :original_name, :desired_name, presence: true
-  validates :status, inclusion: { :in => %w(pending approved rejected) }
+  validates :status, inclusion: { in: %w(pending approved rejected) }
   belongs_to :user
-  belongs_to :approver, :class_name => "User", optional: true
-  validate :not_limited, :on => :create
+  belongs_to :approver, class_name: "User", optional: true
+  validate :not_limited, on: :create
   validates :desired_name, user_name: true
   attr_accessor :skip_limited_validation
 
@@ -16,11 +16,11 @@ class UserNameChangeRequest < ApplicationRecord
   end
 
   def self.pending
-    where(:status => "pending")
+    where(status: "pending")
   end
 
   def self.approved
-    where(:status => "approved")
+    where(status: "approved")
   end
 
   def self.search(params)
@@ -55,7 +55,7 @@ class UserNameChangeRequest < ApplicationRecord
     update(status: "approved", approver_id: CurrentUser.user.id)
     user.update_attribute(:name, desired_name)
     body = "Your name change request has been approved. Be sure to log in with your new user name."
-    Dmail.create_automated(:title => "Name change request approved", :body => body, :to_id => user_id)
+    Dmail.create_automated(title: "Name change request approved", body: body, to_id: user_id)
   end
 
   def not_limited

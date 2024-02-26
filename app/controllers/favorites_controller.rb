@@ -7,7 +7,7 @@ class FavoritesController < ApplicationController
 
   def index
     if params[:tags]
-      redirect_to(posts_path(:tags => params[:tags]))
+      redirect_to(posts_path(tags: params[:tags]))
     else
       user_id = params[:user_id] || CurrentUser.user.id
       @user = User.find(user_id)

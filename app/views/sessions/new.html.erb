@@ -2,7 +2,7 @@
   <div id="a-new">
     <section>
       <h1>Sign in</h1>
-      <%= form_tag(session_path, :class => "simple_form") do %>
+      <%= form_tag(session_path, class: "simple_form") do %>
         <%= hidden_field_tag :"session[url]", params[:url] %>
 
         <div class="input">
@@ -21,7 +21,7 @@
         </div>
 
         <div class="input">
-          <%= submit_tag "Submit", :data => { :disable_with => "Signing in..." } %>
+          <%= submit_tag "Submit", data: { disable_with: "Signing in..." } %>
         </div>
       <% end %>
     </section>

@@ -270,10 +270,10 @@ class PoolTest < ActiveSupport::TestCase
     end
 
     should "normalize its name" do
-      @pool.update(:name => "  A  B  ")
+      @pool.update(name: "  A  B  ")
       assert_equal("A_B", @pool.name)
 
-      @pool.update(:name => "__A__B__")
+      @pool.update(name: "__A__B__")
       assert_equal("A_B", @pool.name)
     end
 

@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
 class Tag < ApplicationRecord
-  has_one :wiki_page, :foreign_key => "title", :primary_key => "name"
-  has_one :artist, :foreign_key => "name", :primary_key => "name"
-  has_one :antecedent_alias, -> {active}, :class_name => "TagAlias", :foreign_key => "antecedent_name", :primary_key => "name"
-  has_many :consequent_aliases, -> {active}, :class_name => "TagAlias", :foreign_key => "consequent_name", :primary_key => "name"
-  has_many :antecedent_implications, -> {active}, :class_name => "TagImplication", :foreign_key => "antecedent_name", :primary_key => "name"
-  has_many :consequent_implications, -> {active}, :class_name => "TagImplication", :foreign_key => "consequent_name", :primary_key => "name"
+  has_one :wiki_page, foreign_key: "title", primary_key: "name"
+  has_one :artist, foreign_key: "name", primary_key: "name"
+  has_one :antecedent_alias, -> {active}, class_name: "TagAlias", foreign_key: "antecedent_name", primary_key: "name"
+  has_many :consequent_aliases, -> {active}, class_name: "TagAlias", foreign_key: "consequent_name", primary_key: "name"
+  has_many :antecedent_implications, -> {active}, class_name: "TagImplication", foreign_key: "antecedent_name", primary_key: "name"
+  has_many :consequent_implications, -> {active}, class_name: "TagImplication", foreign_key: "consequent_name", primary_key: "name"
 
   validates :name, uniqueness: true, tag_name: true, on: :create
   validates :name, length: { in: 1..100 }
@@ -97,11 +97,11 @@ class Tag < ApplicationRecord
     end
 
     def update_category_post_counts!
-      Post.with_timeout(30_000, nil, {:tags => name}) do
+      Post.with_timeout(30_000, nil, {tags: name}) do
         Post.sql_raw_tag_match(name).find_each do |post|
           post.set_tag_counts(disable_cache: false)
           args = TagCategory.category_names.to_h { |x| ["tag_count_#{x}", post.send("tag_count_#{x}")] }.update("tag_count" => post.tag_count)
-          Post.where(:id => post.id).update_all(args)
+          Post.where(id: post.id).update_all(args)
           post.update_index
         end
       end

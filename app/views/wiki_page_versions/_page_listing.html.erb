@@ -1,5 +1,5 @@
 <div id="p-page-listing">
-  <%= form_tag(diff_wiki_page_versions_path, :method => :get) do %>
+  <%= form_tag(diff_wiki_page_versions_path, method: :get) do %>
     <table class="striped">
       <thead>
         <tr>
@@ -21,7 +21,7 @@
           <tr>
             <td>
               <% if i < @wiki_page_versions.length - 1 %>
-                <%= link_to "diff", diff_wiki_page_versions_path(:otherpage => wiki_page_version.id, :thispage => @wiki_page_versions[i + 1].id) %>
+                <%= link_to "diff", diff_wiki_page_versions_path(otherpage: wiki_page_version.id, thispage: @wiki_page_versions[i + 1].id) %>
               <% else %>
                 diff
               <% end %>

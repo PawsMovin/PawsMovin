@@ -2,7 +2,7 @@
 <div id="c-posts">
   <div id="a-show">
     <aside id="sidebar">
-      <%= render "posts/partials/common/search", :path => posts_path, :tags => params[:q], :tags_dom_id => "tags" %>
+      <%= render "posts/partials/common/search", path: posts_path, tags: params[:q], tags_dom_id: "tags" %>
       <% if CurrentUser.move_related_thumbnails? %>
         <%= render "posts/partials/show/parent_children", post: @post, parent_post_set: @parent_post_set, children_post_set: @children_post_set %>
       <% end %>
@@ -15,12 +15,12 @@
 
       <section id="post-information">
         <h1>Information</h1>
-        <%= render "posts/partials/show/information", :post => @post %>
+        <%= render "posts/partials/show/information", post: @post %>
       </section>
 
       <section id="post-options">
         <h1>Options</h1>
-        <%= render "posts/partials/show/options", :post => @post %>
+        <%= render "posts/partials/show/options", post: @post %>
       </section>
 
       <% if CurrentUser.is_member? %>
@@ -61,7 +61,7 @@
     <section id="content">
       <div id="image-and-nav">
         <% if @post.presenter.has_nav_links?(self) %>
-          <%= render "posts/partials/show/nav_links", :post => @post %>
+          <%= render "posts/partials/show/nav_links", post: @post %>
           <div id="nav-links-top" class="ui-corner-all nav-notice">
             <%= content_for :nav_links_section %>
           </div>
@@ -159,18 +159,18 @@
       </div>
 
       <section id="mark-as-translated-section" style="display: none;">
-        <%= form_tag(mark_as_translated_post_path(@post), :class => "simple_form", :method => :put) do |f| %>
+        <%= form_tag(mark_as_translated_post_path(@post), class: "simple_form", method: :put) do |f| %>
           <%= hidden_field_tag :tags_query, params[:q] %>
           <%= hidden_field_tag :pool_id, params[:pool_id] %>
 
           <fieldset>
             <label for="post_translation_check">
-              <%= check_box "post", "translation_check", :checked => @post.has_tag?("translation_check") %>
+              <%= check_box "post", "translation_check", checked: @post.has_tag?("translation_check") %>
               Check translation
             </label>
 
             <label for="post_partially_translated">
-              <%= check_box "post", "partially_translated", :checked => @post.has_tag?("partially_translated") %>
+              <%= check_box "post", "partially_translated", checked: @post.has_tag?("partially_translated") %>
               Partially translated
             </label>
           </fieldset>
@@ -207,7 +207,7 @@
 
       <% unless CurrentUser.hide_comments? %>
         <section id="comments">
-          <%= render "comments/partials/index/list", :comments => @post.comments.visible(CurrentUser.user), :post => @post, :show_header => false %>
+          <%= render "comments/partials/index/list", comments: @post.comments.visible(CurrentUser.user), post: @post, show_header: false %>
         </section>
       <% end %>
 
@@ -221,14 +221,14 @@
       <section id="notes" style="display: none;">
         <% if @post.has_notes? %>
           <% cache("p/#{@post.id}/n/#{@post.last_noted_at.to_i}") do %>
-            <%= render :partial => "notes/note", :collection => @post.notes.active %>
+            <%= render partial: "notes/note", collection: @post.notes.active %>
           <% end %>
         <% end %>
       </section>
 
       <% if CurrentUser.is_member? %>
         <section id="edit" style="display: none;">
-          <%= render "posts/partials/show/edit", :post => @post %>
+          <%= render "posts/partials/show/edit", post: @post %>
         </section>
       <% end %>
     </section>

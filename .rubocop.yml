@@ -125,6 +125,7 @@ Style/GuardClause:
   Enabled: false
 
 Style/HashSyntax:
+  EnforcedStyle: ruby19_no_mixed_keys
   EnforcedShorthandSyntax: never
 
 Style/IfUnlessModifier:

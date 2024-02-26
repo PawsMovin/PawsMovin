@@ -7,7 +7,7 @@ class PostFlag < ApplicationRecord
   COOLDOWN_PERIOD = 1.days
   MAPPED_REASONS = PawsMovin.config.flag_reasons.map { |i| [i[:name], i[:reason]] }.to_h
 
-  belongs_to_creator :class_name => "User"
+  belongs_to_creator class_name: "User"
   user_status_counter :post_flag_count
   belongs_to :post
   validate :validate_creator_is_not_limited, on: :create

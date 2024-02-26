@@ -17,9 +17,9 @@ class ApplicationController < ActionController::Base
   include DeferredPosts
   helper_method :deferred_post_ids, :deferred_posts
 
-  rescue_from Exception, :with => :rescue_exception
-  rescue_from User::PrivilegeError, :with => :access_denied
-  rescue_from ActionController::UnpermittedParameters, :with => :access_denied
+  rescue_from Exception, with: :rescue_exception
+  rescue_from User::PrivilegeError, with: :access_denied
+  rescue_from ActionController::UnpermittedParameters, with: :access_denied
 
   # This is raised on requests to `/blah.js`. Rails has already rendered StaticController#not_found
   # here, so calling `rescue_exception` would cause a double render error.
@@ -140,16 +140,16 @@ class ApplicationController < ActionController::Base
       fmt.html do
         if CurrentUser.is_anonymous?
           if request.get?
-            redirect_to(new_session_path(:url => previous_url), notice: @message)
+            redirect_to(new_session_path(url: previous_url), notice: @message)
           else
             redirect_to(new_session_path, notice: @message)
           end
         else
-          render(:template => "static/access_denied", :status => 403)
+          render(template: "static/access_denied", status: 403)
         end
       end
       fmt.json do
-        render(:json => {:success => false, reason: @message}.to_json, :status => 403)
+        render(json: {success: false, reason: @message}.to_json, status: 403)
       end
     end
   end

@@ -8,7 +8,7 @@
       <% end %>
     </h1>
 
-    <p class="info">Posted under <%= link_to @forum_topic.category_name, forum_topics_path(:search => {:category_id => @forum_topic.category_id}) %></p>
+    <p class="info">Posted under <%= link_to @forum_topic.category_name, forum_topics_path(search: {category_id: @forum_topic.category_id}) %></p>
 
     <% if @forum_topic.is_locked? %>
       <div class="notice">
@@ -16,14 +16,14 @@
       </div>
     <% end %>
 
-    <%= render "forum_posts/listing", :forum_posts => @forum_posts, :original_forum_post_id => @forum_topic.original_post.id %>
+    <%= render "forum_posts/listing", forum_posts: @forum_posts, original_forum_post_id: @forum_topic.original_post.id %>
 
     <% if CurrentUser.is_member? %>
       <% if CurrentUser.is_moderator? || !@forum_topic.is_locked? %>
         <p><%= link_to "Reply »", new_forum_post_path(forum_post: { topic_id: @forum_topic.id }), id: "new-response-link" %></p>
 
         <div style="display: none;" id="topic-response">
-          <%= render "forum_posts/partials/new/form", :forum_post => ForumPost.new(:topic_id => @forum_topic.id) %>
+          <%= render "forum_posts/partials/new/form", forum_post: ForumPost.new(topic_id: @forum_topic.id) %>
         </div>
       <% end %>
     <% elsif !@forum_topic.is_locked? %>

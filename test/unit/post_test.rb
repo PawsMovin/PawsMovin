@@ -262,8 +262,8 @@ class PostTest < ActiveSupport::TestCase
           FavoriteManager.add!(user: user, post: c1)
           c1.delete!("test")
           p1.reload
-          assert(Favorite.exists?(:post_id => c1.id, :user_id => user.id))
-          assert(!Favorite.exists?(:post_id => p1.id, :user_id => user.id))
+          assert(Favorite.exists?(post_id: c1.id, user_id: user.id))
+          assert(!Favorite.exists?(post_id: p1.id, user_id: user.id))
         end
 
         should "reassign favorites to the parent if specified" do
@@ -273,8 +273,8 @@ class PostTest < ActiveSupport::TestCase
           FavoriteManager.add!(user: user, post: c1)
           with_inline_jobs { c1.delete!("test", move_favorites: true) }
           p1.reload
-          assert(!Favorite.exists?(:post_id => c1.id, :user_id => user.id), "Child should not still have favorites")
-          assert(Favorite.exists?(:post_id => p1.id, :user_id => user.id), "Parent should have favorites")
+          assert(!Favorite.exists?(post_id: c1.id, user_id: user.id), "Child should not still have favorites")
+          assert(Favorite.exists?(post_id: p1.id, user_id: user.id), "Parent should have favorites")
         end
 
         should "not update the parent's has_children flag" do
@@ -292,7 +292,7 @@ class PostTest < ActiveSupport::TestCase
           FavoriteManager.add!(user: user, post: c1)
 
           assert_equal(true, p1.reload.has_active_children?)
-          c1.delete!("test", :move_favorites => true)
+          c1.delete!("test", move_favorites: true)
           assert_equal(false, p1.reload.has_active_children?)
         end
       end
@@ -467,7 +467,7 @@ class PostTest < ActiveSupport::TestCase
 
       context "as a new user" do
         setup do
-          @post.update(:tag_string => "aaa bbb ccc ddd tagme")
+          @post.update(tag_string: "aaa bbb ccc ddd tagme")
           CurrentUser.user = create(:user)
         end
 
@@ -478,7 +478,7 @@ class PostTest < ActiveSupport::TestCase
         # end
 
         should "allow you to remove request tags" do
-          @post.update(:tag_string => "aaa bbb ccc ddd")
+          @post.update(tag_string: "aaa bbb ccc ddd")
           @post.reload
           assert_equal("aaa bbb ccc ddd", @post.tag_string)
         end
@@ -513,7 +513,7 @@ class PostTest < ActiveSupport::TestCase
         setup do
           create(:tag_alias, antecedent_name: "abc", consequent_name: "xyz")
           @post = Post.find(@post.id)
-          @post.update(:tag_string => "art:abc")
+          @post.update(tag_string: "art:abc")
           @post.reload
         end
 
@@ -707,7 +707,7 @@ class PostTest < ActiveSupport::TestCase
           end
 
           should "update the parent relationships for both posts" do
-            @post.update(:tag_string => "aaa parent:#{@parent.id}")
+            @post.update(tag_string: "aaa parent:#{@parent.id}")
             @post.reload
             @parent.reload
             assert_equal(@parent.id, @post.parent_id)
@@ -715,23 +715,23 @@ class PostTest < ActiveSupport::TestCase
           end
 
           should "not allow self-parenting" do
-            @post.update(:tag_string => "parent:#{@post.id}")
+            @post.update(tag_string: "parent:#{@post.id}")
             assert_nil(@post.parent_id)
           end
 
           should "clear the parent with parent:none" do
-            @post.update(:parent_id => @parent.id)
+            @post.update(parent_id: @parent.id)
             assert_equal(@parent.id, @post.parent_id)
 
-            @post.update(:tag_string => "parent:none")
+            @post.update(tag_string: "parent:none")
             assert_nil(@post.parent_id)
           end
 
           should "clear the parent with -parent:1234" do
-            @post.update(:parent_id => @parent.id)
+            @post.update(parent_id: @parent.id)
             assert_equal(@parent.id, @post.parent_id)
 
-            @post.update(:tag_string => "-parent:#{@parent.id}")
+            @post.update(tag_string: "-parent:#{@parent.id}")
             assert_nil(@post.parent_id)
           end
         end
@@ -771,7 +771,7 @@ class PostTest < ActiveSupport::TestCase
           context "id" do
             setup do
               @pool = create(:pool)
-              @post.update(:tag_string => "aaa pool:#{@pool.id}")
+              @post.update(tag_string: "aaa pool:#{@pool.id}")
             end
 
             should "add the post to the pool" do
@@ -786,7 +786,7 @@ class PostTest < ActiveSupport::TestCase
             context "that exists" do
               setup do
                 @pool = create(:pool, name: "abc")
-                @post.update(:tag_string => "aaa pool:abc")
+                @post.update(tag_string: "aaa pool:abc")
               end
 
               should "add the post to the pool" do
@@ -799,7 +799,7 @@ class PostTest < ActiveSupport::TestCase
 
             context "that doesn't exist" do
               should "create a new pool and add the post to that pool" do
-                @post.update(:tag_string => "aaa newpool:abc")
+                @post.update(tag_string: "aaa newpool:abc")
                 @pool = Pool.find_by_name("abc")
                 @post.reload
                 assert_not_nil(@pool)
@@ -820,7 +820,7 @@ class PostTest < ActiveSupport::TestCase
         context "for a rating" do
           context "that is valid" do
             should "update the rating if the post is unlocked" do
-              @post.update(:tag_string => "aaa rating:e")
+              @post.update(tag_string: "aaa rating:e")
               @post.reload
               assert_equal("e", @post.rating)
             end
@@ -828,7 +828,7 @@ class PostTest < ActiveSupport::TestCase
 
           context "that is invalid" do
             should "not update the rating" do
-              @post.update(:tag_string => "aaa rating:z")
+              @post.update(tag_string: "aaa rating:z")
               @post.reload
               assert_equal("q", @post.rating)
             end
@@ -846,7 +846,7 @@ class PostTest < ActiveSupport::TestCase
               @post.is_rating_locked = true
               @post.save
 
-              @post.update(:tag_string => "rating:e")
+              @post.update(tag_string: "rating:e")
 
               assert(@post.invalid?)
               assert_not_equal("e", @post.reload.rating)
@@ -856,7 +856,7 @@ class PostTest < ActiveSupport::TestCase
 
         context "for a fav" do
           should "add/remove the current user to the post's favorite listing" do
-            @post.update(:tag_string => "aaa")
+            @post.update(tag_string: "aaa")
             FavoriteManager.add!(user: CurrentUser.user, post: @post)
             assert_equal("fav:#{@user.id}", @post.fav_string)
 
@@ -891,23 +891,23 @@ class PostTest < ActiveSupport::TestCase
 
         context "for a source" do
           should "set the source with source:foo_bar_baz" do
-            @post.update(:tag_string => "source:foo_bar_baz")
+            @post.update(tag_string: "source:foo_bar_baz")
             assert_equal("foo_bar_baz", @post.source)
           end
 
           should 'set the source with source:"foo bar baz"' do
-            @post.update(:tag_string => 'source:"foo bar baz"')
+            @post.update(tag_string: 'source:"foo bar baz"')
             assert_equal("foo bar baz", @post.source)
           end
 
           should 'strip the source with source:"  foo bar baz  "' do
-            @post.update(:tag_string => 'source:"  foo bar baz  "')
+            @post.update(tag_string: 'source:"  foo bar baz  "')
             assert_equal("foo bar baz", @post.source)
           end
 
           should "clear the source with source:none" do
-            @post.update(:source => "foobar")
-            @post.update(:tag_string => "source:none")
+            @post.update(source: "foobar")
+            @post.update(tag_string: "source:none")
             assert_equal("", @post.source)
           end
         end
@@ -920,7 +920,7 @@ class PostTest < ActiveSupport::TestCase
           context "locked:notes" do
             context "by a member" do
               should "not lock the notes" do
-                @post.update(:tag_string => "locked:notes")
+                @post.update(tag_string: "locked:notes")
                 assert_equal(false, @post.is_note_locked)
               end
             end
@@ -928,10 +928,10 @@ class PostTest < ActiveSupport::TestCase
             context "by a janitor" do
               should "lock/unlock the notes" do
                 as(@janitor) do
-                  @post.update(:tag_string => "locked:notes")
+                  @post.update(tag_string: "locked:notes")
                   assert_equal(true, @post.is_note_locked)
 
-                  @post.update(:tag_string => "-locked:notes")
+                  @post.update(tag_string: "-locked:notes")
                   assert_equal(false, @post.is_note_locked)
                 end
               end
@@ -941,7 +941,7 @@ class PostTest < ActiveSupport::TestCase
           context "locked:rating" do
             context "by a member" do
               should "not lock the rating" do
-                @post.update(:tag_string => "locked:rating")
+                @post.update(tag_string: "locked:rating")
                 assert_equal(false, @post.is_rating_locked)
               end
             end
@@ -949,10 +949,10 @@ class PostTest < ActiveSupport::TestCase
             context "by a janitor" do
               should "lock/unlock the rating" do
                 as(@janitor) do
-                  @post.update(:tag_string => "locked:rating")
+                  @post.update(tag_string: "locked:rating")
                   assert_equal(true, @post.is_rating_locked)
 
-                  @post.update(:tag_string => "-locked:rating")
+                  @post.update(tag_string: "-locked:rating")
                   assert_equal(false, @post.is_rating_locked)
                 end
               end
@@ -962,7 +962,7 @@ class PostTest < ActiveSupport::TestCase
           context "locked:status" do
             context "by a member" do
               should "not lock the status" do
-                @post.update(:tag_string => "locked:status")
+                @post.update(tag_string: "locked:status")
                 assert_equal(false, @post.is_status_locked)
               end
             end
@@ -970,10 +970,10 @@ class PostTest < ActiveSupport::TestCase
             context "by an admin" do
               should "lock/unlock the status" do
                 as(create(:admin_user)) do
-                  @post.update(:tag_string => "locked:status")
+                  @post.update(tag_string: "locked:status")
                   assert_equal(true, @post.is_status_locked)
 
-                  @post.update(:tag_string => "-locked:status")
+                  @post.update(tag_string: "-locked:status")
                   assert_equal(false, @post.is_status_locked)
                 end
               end
@@ -984,15 +984,15 @@ class PostTest < ActiveSupport::TestCase
 
       context "tagged with a negated tag" do
         should "remove the tag if present" do
-          @post.update(:tag_string => "aaa bbb ccc")
-          @post.update(:tag_string => "aaa bbb ccc -bbb")
+          @post.update(tag_string: "aaa bbb ccc")
+          @post.update(tag_string: "aaa bbb ccc -bbb")
           @post.reload
           assert_equal("aaa ccc", @post.tag_string)
         end
 
         should "resolve aliases" do
           create(:tag_alias, antecedent_name: "tr", consequent_name: "translation_request")
-          @post.update(:tag_string => "aaa translation_request -tr")
+          @post.update(tag_string: "aaa translation_request -tr")
 
           assert_equal("aaa", @post.tag_string)
         end
@@ -1069,7 +1069,7 @@ class PostTest < ActiveSupport::TestCase
         should "create a new version if the post is updated" do
           post = create(:post)
           assert_difference("PostVersion.count", 1) do
-            post.update(:tag_string => "zzz")
+            post.update(tag_string: "zzz")
           end
         end
 
@@ -1077,7 +1077,7 @@ class PostTest < ActiveSupport::TestCase
           post = create(:post, tag_string: "aaa bbb ccc")
 
           assert_difference("CurrentUser.user.reload.post_update_count", 1) do
-            post.update(:tag_string => "zzz")
+            post.update(tag_string: "zzz")
           end
         end
 
@@ -1360,22 +1360,22 @@ class PostTest < ActiveSupport::TestCase
         FavoriteManager.add!(user: @user, post: @post)
         @post.reload
         assert_equal("fav:#{@user.id}", @post.fav_string)
-        assert(Favorite.exists?(:user_id => @user.id, :post_id => @post.id))
+        assert(Favorite.exists?(user_id: @user.id, post_id: @post.id))
 
         assert_raises(Favorite::Error) { FavoriteManager.add!(user: @user, post: @post) }
         @post.reload
         assert_equal("fav:#{@user.id}", @post.fav_string)
-        assert(Favorite.exists?(:user_id => @user.id, :post_id => @post.id))
+        assert(Favorite.exists?(user_id: @user.id, post_id: @post.id))
 
         FavoriteManager.remove!(user: @user, post: @post)
         @post.reload
         assert_equal("", @post.fav_string)
-        assert(!Favorite.exists?(:user_id => @user.id, :post_id => @post.id))
+        assert(!Favorite.exists?(user_id: @user.id, post_id: @post.id))
 
         FavoriteManager.remove!(user: @user, post: @post)
         @post.reload
         assert_equal("", @post.fav_string)
-        assert(!Favorite.exists?(:user_id => @user.id, :post_id => @post.id))
+        assert(!Favorite.exists?(user_id: @user.id, post_id: @post.id))
       end
     end
 
@@ -2154,11 +2154,11 @@ class PostTest < ActiveSupport::TestCase
       setup do
         @post = create(:post, rating: "q", tag_string: "aaa", source: "")
         @post.reload
-        @post.update(:tag_string => "aaa bbb ccc ddd")
+        @post.update(tag_string: "aaa bbb ccc ddd")
         @post.reload
-        @post.update(:tag_string => "bbb xxx yyy", :source => "xyz")
+        @post.update(tag_string: "bbb xxx yyy", source: "xyz")
         @post.reload
-        @post.update(:tag_string => "bbb mmm yyy", :source => "abc")
+        @post.update(tag_string: "bbb mmm yyy", source: "abc")
         @post.reload
       end
 

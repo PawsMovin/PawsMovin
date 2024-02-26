@@ -6,7 +6,7 @@ class ArtistUrl < ApplicationRecord
   validates :url, presence: true, uniqueness: { scope: :artist_id }
   validates :url, length: { in: 1..4096 }
   validate :validate_url_format
-  belongs_to :artist, :touch => true
+  belongs_to :artist, touch: true
 
   scope :url_matches, ->(url) { url_attribute_matches(:url, url) }
   scope :normalized_url_matches, ->(url) { url_attribute_matches(:normalized_url, url) }

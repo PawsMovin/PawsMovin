@@ -32,7 +32,7 @@
 <% if flash[:notice] =~ /error/i %>
   <meta name="errors" content="true">
 <% end %>
-<%= auto_discovery_link_tag :atom, posts_path(:format => "atom", :tags => params[:tags]) %>
+<%= auto_discovery_link_tag :atom, posts_path(format: "atom", tags: params[:tags]) %>
 
 <%= stylesheet_pack_tag "application", nonce: true %>
 <%= javascript_pack_tag "application", nonce: true, defer: false %>

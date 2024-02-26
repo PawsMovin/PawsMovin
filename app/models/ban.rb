@@ -9,10 +9,10 @@ class Ban < ApplicationRecord
   after_destroy :update_user_on_destroy
   after_destroy :create_unban_mod_action
   belongs_to :user
-  belongs_to :banner, :class_name => "User"
+  belongs_to :banner, class_name: "User"
   validate :user_is_inferior
   validates :user_id, :reason, :duration, presence: true
-  before_validation :initialize_banner_id, :on => :create
+  before_validation :initialize_banner_id, on: :create
   before_validation :initialize_permaban, on: [:update, :create]
 
   scope :unexpired, -> { where("bans.expires_at > ? OR bans.expires_at IS NULL", Time.now) }

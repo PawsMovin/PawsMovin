@@ -31,7 +31,7 @@ class PostFlagsControllerTest < ActionDispatch::IntegrationTest
 
       context "with search parameters" do
         should "render" do
-          get_auth post_flags_path, @user, params: {:search => {:post_id => @post_flag.post_id}}
+          get_auth post_flags_path, @user, params: {search: {post_id: @post_flag.post_id}}
           assert_response :success
         end
       end

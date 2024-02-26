@@ -2,9 +2,9 @@
 
 class ArtistsController < ApplicationController
   respond_to :html, :json
-  before_action :member_only, :except => [:index, :show, :show_or_new]
-  before_action :admin_only, :only => [:destroy]
-  before_action :load_artist, :only => [:edit, :update, :destroy]
+  before_action :member_only, except: [:index, :show, :show_or_new]
+  before_action :admin_only, only: [:destroy]
+  before_action :load_artist, only: [:edit, :update, :destroy]
 
   def new
     @artist = Artist.new(artist_params(:new))
@@ -16,10 +16,10 @@ class ArtistsController < ApplicationController
   end
 
   def index
-    @artists = Artist.includes(:urls).search(search_params).paginate(params[:page], :limit => params[:limit], :search_count => params[:search])
+    @artists = Artist.includes(:urls).search(search_params).paginate(params[:page], limit: params[:limit], search_count: params[:search])
     respond_with(@artists) do |format|
       format.json do
-        render(:json => @artists.to_json(:include => [:urls]))
+        render(json: @artists.to_json(include: [:urls]))
         expires_in(params[:expiry].to_i.days) if params[:expiry]
       end
     end

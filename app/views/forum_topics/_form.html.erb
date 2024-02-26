@@ -14,8 +14,8 @@
     <% end %>
 
     <% if CurrentUser.is_moderator? %>
-      <%= f.input(:is_sticky, :label => "Sticky") %>
-      <%= f.input(:is_locked, :label => "Locked") %>
+      <%= f.input(:is_sticky, label: "Sticky") %>
+      <%= f.input(:is_locked, label: "Locked") %>
     <% end %>
 
     <%= f.button(:submit, "Submit") %>

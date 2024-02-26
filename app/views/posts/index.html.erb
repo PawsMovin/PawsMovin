@@ -2,7 +2,7 @@
 <div id="c-posts">
   <div id="a-index">
     <aside id="sidebar">
-      <%= render "posts/partials/common/search", :path => posts_path, :tags => params[:tags], :tags_dom_id => "tags" %>
+      <%= render "posts/partials/common/search", path: posts_path, tags: params[:tags], tags_dom_id: "tags" %>
 
       <% if CurrentUser.is_member? %>
         <%= render "posts/partials/index/mode_menu" %>
@@ -33,18 +33,18 @@
       <div class="mobile-search">
         <%= link_to "(search help)", help_page_path(id: "cheatsheet"), class: "search-help" %>
         <div class="search-form">
-          <%= form_tag(posts_path, :method => "get") do %>
+          <%= form_tag(posts_path, method: "get") do %>
             <% if params[:random] %>
               <%= hidden_field_tag :random, params[:random] %>
             <% end %>
-            <div class="search-input"><%= text_field_tag("tags", params[:tags], :id => "mobile-search-input", :"data-autocomplete" => "tag-query") %></div>
+            <div class="search-input"><%= text_field_tag("tags", params[:tags], id: "mobile-search-input", "data-autocomplete": "tag-query") %></div>
             <div class="search-button"><%= tag.button(tag.i(class: "fa-solid fa-magnifying-glass"), type: "submit") %></div>
           <% end %>
         </div>
       </div>
 
       <%= render "posts/partials/index/edit" %>
-      <%= render "posts/partials/index/posts", :post_set => @post_set %>
+      <%= render "posts/partials/index/posts", post_set: @post_set %>
     </section>
   </div>
 </div>

@@ -4,25 +4,25 @@ class ForumTopic < ApplicationRecord
   belongs_to_creator
   belongs_to_updater
   belongs_to :category, class_name: "ForumCategory", foreign_key: :category_id
-  has_many :posts, -> {order("forum_posts.id asc")}, :class_name => "ForumPost", :foreign_key => "topic_id", :dependent => :destroy
+  has_many :posts, -> {order("forum_posts.id asc")}, class_name: "ForumPost", foreign_key: "topic_id", dependent: :destroy
   has_one :original_post, -> {order("forum_posts.id asc")}, class_name: "ForumPost", foreign_key: "topic_id", inverse_of: :topic
-  has_many :subscriptions, :class_name => "ForumSubscription"
-  before_validation :initialize_is_hidden, :on => :create
+  has_many :subscriptions, class_name: "ForumSubscription"
+  before_validation :initialize_is_hidden, on: :create
   validate :category_valid
   validates :title, :creator_id, presence: true
   validates_associated :original_post
   validates_presence_of :original_post
-  validates :title, :length => {:maximum => 250}
+  validates :title, length: {maximum: 250}
   validate :category_allows_creation, on: :create
   validate :validate_not_aibur, if: :will_save_change_to_is_hidden?
   accepts_nested_attributes_for :original_post
   before_destroy :create_mod_action_for_delete
   after_update :update_original_post
   after_save :log_changes
-  after_save(:if => ->(rec) {rec.saved_change_to_is_locked?}) do |rec|
+  after_save(if: ->(rec) {rec.saved_change_to_is_locked?}) do |rec|
     ModAction.log!(rec.is_locked ? :forum_topic_lock : :forum_topic_unlock, rec, forum_topic_title: rec.title, user_id: rec.creator_id)
   end
-  after_save(:if => ->(rec) {rec.saved_change_to_is_sticky?}) do |rec|
+  after_save(if: ->(rec) {rec.saved_change_to_is_sticky?}) do |rec|
     ModAction.log!(rec.is_sticky ? :forum_topic_stick : :forum_topic_unstick, rec, forum_topic_title: rec.title, user_id: rec.creator_id)
   end
 
@@ -46,7 +46,7 @@ class ForumTopic < ApplicationRecord
 
     module ClassMethods
       def for_category_id(cid)
-        where(:category_id => cid)
+        where(category_id: cid)
       end
     end
 
@@ -129,11 +129,11 @@ class ForumTopic < ApplicationRecord
     def mark_as_read!(user = CurrentUser.user)
       return if user.is_anonymous?
 
-      match = ForumTopicVisit.where(:user_id => user.id, :forum_topic_id => id).first
+      match = ForumTopicVisit.where(user_id: user.id, forum_topic_id: id).first
       if match
         match.update_attribute(:last_read_at, updated_at)
       else
-        ForumTopicVisit.create(:user_id => user.id, :forum_topic_id => id, :last_read_at => updated_at)
+        ForumTopicVisit.create(user_id: user.id, forum_topic_id: id, last_read_at: updated_at)
       end
 
       has_unread_topics = ForumTopic.permitted.active.where("forum_topics.updated_at >= ?", user.last_forum_read_at)
@@ -149,7 +149,7 @@ class ForumTopic < ApplicationRecord
 
   module SubscriptionMethods
     def user_subscription(user)
-      subscriptions.where(:user_id => user.id).first
+      subscriptions.where(user_id: user.id).first
     end
   end
 
@@ -207,7 +207,7 @@ class ForumTopic < ApplicationRecord
 
   def update_original_post
     if original_post
-      original_post.update_columns(:updater_id => CurrentUser.id, :updated_at => Time.now)
+      original_post.update_columns(updater_id: CurrentUser.id, updated_at: Time.now)
     end
   end
 end

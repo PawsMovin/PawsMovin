@@ -20,7 +20,7 @@ class WikiPageVersionsControllerTest < ActionDispatch::IntegrationTest
       end
 
       should "list all versions that match the search criteria" do
-        get wiki_page_versions_path, params: {:search => {:wiki_page_id => @wiki_page.id}}
+        get wiki_page_versions_path, params: {search: {wiki_page_id: @wiki_page.id}}
         assert_response :success
       end
     end

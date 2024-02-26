@@ -17,11 +17,11 @@ class PoolVersionsControllerTest < ActionDispatch::IntegrationTest
         @user_3 = create(:user)
 
         as(@user_2, "1.2.3.4") do
-          @pool.update(:post_ids => "1 2")
+          @pool.update(post_ids: "1 2")
         end
 
         as(@user_3, "5.6.7.8") do
-          @pool.update(:post_ids => "1 2 3 4")
+          @pool.update(post_ids: "1 2 3 4")
         end
 
         @versions = @pool.versions
@@ -36,7 +36,7 @@ class PoolVersionsControllerTest < ActionDispatch::IntegrationTest
       end
 
       should "list all versions that match the search criteria" do
-        get_auth pool_versions_path, @user, params: {:search => {:updater_id => @user_2.id}}
+        get_auth pool_versions_path, @user, params: {search: {updater_id: @user_2.id}}
         assert_response :success
         assert_select "#pool-version-#{@versions[0].id}", false
         assert_select "#pool-version-#{@versions[1].id}"

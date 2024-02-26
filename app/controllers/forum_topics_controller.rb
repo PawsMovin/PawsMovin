@@ -2,12 +2,12 @@
 
 class ForumTopicsController < ApplicationController
   respond_to :html, :json
-  before_action :member_only, :except => [:index, :show]
-  before_action :moderator_only, :only => [:unhide]
+  before_action :member_only, except: [:index, :show]
+  before_action :moderator_only, only: [:unhide]
   before_action :admin_only, only: [:destroy]
-  before_action :normalize_search, :only => :index
-  before_action :load_topic, :only => [:edit, :show, :update, :destroy, :hide, :unhide, :subscribe, :unsubscribe]
-  before_action :check_min_level, :only => [:show, :edit, :update, :destroy, :hide, :unhide, :subscribe, :unsubscribe]
+  before_action :normalize_search, only: :index
+  before_action :load_topic, only: [:edit, :show, :update, :destroy, :hide, :unhide, :subscribe, :unsubscribe]
+  before_action :check_min_level, only: [:show, :edit, :update, :destroy, :hide, :unhide, :subscribe, :unsubscribe]
   skip_before_action :api_check
 
   def new
@@ -27,14 +27,14 @@ class ForumTopicsController < ApplicationController
 
     @query = ForumTopic.permitted.active.search(search_params)
     @query = ForumTopic.permitted.search(search_params) if CurrentUser.is_moderator?
-    @forum_topics = @query.paginate(params[:page], :limit => per_page, :search_count => params[:search])
+    @forum_topics = @query.paginate(params[:page], limit: per_page, search_count: params[:search])
 
     respond_with(@forum_topics) do |format|
       format.html do
         @forum_topics = @forum_topics.includes(:creator, :updater).load
       end
       format.json do
-        render(:json => @forum_topics.to_json)
+        render(json: @forum_topics.to_json)
       end
     end
   end
@@ -43,7 +43,7 @@ class ForumTopicsController < ApplicationController
     if request.format == Mime::Type.lookup("text/html")
       @forum_topic.mark_as_read!(CurrentUser.user)
     end
-    @forum_posts = ForumPost.includes(topic: [:category]).search(:topic_id => @forum_topic.id).reorder("forum_posts.id").paginate(params[:page])
+    @forum_posts = ForumPost.includes(topic: [:category]).search(topic_id: @forum_topic.id).reorder("forum_posts.id").paginate(params[:page])
     @original_forum_post_id = @forum_topic.original_post.id
     respond_with(@forum_topic)
   end
@@ -98,15 +98,15 @@ class ForumTopicsController < ApplicationController
   end
 
   def subscribe
-    subscription = ForumSubscription.where(:forum_topic_id => @forum_topic.id, :user_id => CurrentUser.user.id).first
+    subscription = ForumSubscription.where(forum_topic_id: @forum_topic.id, user_id: CurrentUser.user.id).first
     unless subscription
-      ForumSubscription.create(:forum_topic_id => @forum_topic.id, :user_id => CurrentUser.user.id, :last_read_at => @forum_topic.updated_at)
+      ForumSubscription.create(forum_topic_id: @forum_topic.id, user_id: CurrentUser.user.id, last_read_at: @forum_topic.updated_at)
     end
     respond_with(@forum_topic)
   end
 
   def unsubscribe
-    subscription = ForumSubscription.where(:forum_topic_id => @forum_topic.id, :user_id => CurrentUser.user.id).first
+    subscription = ForumSubscription.where(forum_topic_id: @forum_topic.id, user_id: CurrentUser.user.id).first
     if subscription
       subscription.destroy
     end

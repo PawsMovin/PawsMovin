@@ -69,7 +69,7 @@ class RelatedTagQueryTest < ActiveSupport::TestCase
 
     context "for a tag with a wiki page" do
       setup do
-        @wiki_page = create(:wiki_page, :title => "aaa", body: "[[bbb]] [[ccc]]")
+        @wiki_page = create(:wiki_page, title: "aaa", body: "[[bbb]] [[ccc]]")
         @query = RelatedTagQuery.new(query: "aaa")
       end
     end

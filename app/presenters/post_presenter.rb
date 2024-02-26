@@ -220,7 +220,7 @@ class PostPresenter < Presenter
   def image_attributes
     attributes = {
         :id => "image",
-        class: @post.display_class_for(CurrentUser.user),
+        :class => @post.display_class_for(CurrentUser.user),
         :alt => humanized_essential_tag_string,
         "itemprop" => "contentUrl"
     }

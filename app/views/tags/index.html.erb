@@ -15,11 +15,11 @@
             <td><%= tag.post_count %></td>
             <td class="category-<%= tag.category %>">
               <% if tag.category == TagCategory.artist %>
-                <%= link_to("?",  show_or_new_artists_path(:name => tag.name)) %>
+                <%= link_to("?",  show_or_new_artists_path(name: tag.name)) %>
               <% else %>
                 <%= link_to_wiki_or_new("?", tag.name) %>
               <% end %>
-              <%= link_to(tag.name, posts_path(:tags => tag.name)) %>
+              <%= link_to(tag.name, posts_path(tags: tag.name)) %>
             </td>
             <td>
               <% if tag.category_editable_by?(CurrentUser.user) %>
@@ -27,7 +27,7 @@
               <% end %>
               | <%= link_to "history", tag_type_versions_path(search: {tag: tag.name}) %>
               <% if CurrentUser.is_janitor? %>
-                | <%= link_to "fix", new_tag_correction_path(:tag_id => tag.id) %>
+                | <%= link_to "fix", new_tag_correction_path(tag_id: tag.id) %>
               <% end %>
             </td>
           </tr>

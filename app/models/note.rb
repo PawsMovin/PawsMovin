@@ -6,7 +6,7 @@ class Note < ApplicationRecord
   attr_accessor :html_id
   belongs_to :post
   belongs_to_creator
-  has_many :versions, -> {order("note_versions.id ASC")}, :class_name => "NoteVersion", :dependent => :destroy
+  has_many :versions, -> {order("note_versions.id ASC")}, class_name: "NoteVersion", dependent: :destroy
   validates :post_id, :creator_id, :x, :y, :width, :height, :body, presence: true
   validate :user_not_limited
   validate :post_must_exist
@@ -116,7 +116,7 @@ class Note < ApplicationRecord
   def create_version(updater: CurrentUser.user, updater_ip_addr: CurrentUser.ip_addr)
     return unless saved_change_to_versioned_attributes?
 
-    Note.where(:id => id).update_all("version = coalesce(version, 0) + 1")
+    Note.where(id: id).update_all("version = coalesce(version, 0) + 1")
     reload
     create_new_version(updater.id, updater_ip_addr)
   end
@@ -127,16 +127,16 @@ class Note < ApplicationRecord
 
   def create_new_version(updater_id, updater_ip_addr)
     versions.create(
-      :updater_id => updater_id,
-      :updater_ip_addr => updater_ip_addr,
-      :post_id => post_id,
-      :x => x,
-      :y => y,
-      :width => width,
-      :height => height,
-      :is_active => is_active,
-      :body => body,
-      :version => version
+      updater_id: updater_id,
+      updater_ip_addr: updater_ip_addr,
+      post_id: post_id,
+      x: x,
+      y: y,
+      width: width,
+      height: height,
+      is_active: is_active,
+      body: body,
+      version: version
     )
   end
 

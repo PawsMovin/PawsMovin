@@ -16,7 +16,7 @@
               <%= link_to_user user %>
             </td>
             <td>
-              <%= link_to(user.favorite_count, favorites_path(:user_id => user.id)) %>
+              <%= link_to(user.favorite_count, favorites_path(user_id: user.id)) %>
             </td>
           </tr>
         <% end %>

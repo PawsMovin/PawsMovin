@@ -5,7 +5,7 @@ Rails.application.routes.draw do
   require "sidekiq/web"
   require "sidekiq_unique_jobs/web"
 
-  mount Sidekiq::Web => "/sidekiq", constraints: AdminRouteConstraint.new
+  mount Sidekiq::Web => "/sidekiq", :constraints => AdminRouteConstraint.new
 
   namespace :admin do
     resources :users, only: %i[edit update edit_blacklist update_blacklist alt_list] do
@@ -395,7 +395,7 @@ Rails.application.routes.draw do
   get "/post/popular_by_week" => redirect("/popular")
   get "/post/popular_by_month" => redirect("/popular")
   # This redirect preserves all query parameters and the request format
-  get "/explore/posts/popular(*all)" => redirect(path: "/popular%{all}"), defaults: { all: "" }
+  get "/explore/posts/popular(*all)" => redirect(path: "/popular%{all}"), :defaults => { all: "" }
   get "/post/show/:id/:tag_title" => redirect("/posts/%{id}")
   get "/post/show/:id" => redirect("/posts/%{id}")
   get "/post/show" => redirect { |_params, req| "/posts?md5=#{req.params[:md5]}" }
@@ -433,14 +433,14 @@ Rails.application.routes.draw do
 
   get "/static/keyboard_shortcuts" => "static#keyboard_shortcuts", :as => "keyboard_shortcuts"
   get "/static/site_map" => "static#site_map", :as => "site_map"
-  get "/static/privacy" => "static#privacy", as: "privacy_policy"
-  get "/static/takedown" => "static#takedown", as: "takedown_static"
+  get "/static/privacy" => "static#privacy", :as => "privacy_policy"
+  get "/static/takedown" => "static#takedown", :as => "takedown_static"
   get "/static/terms_of_service" => "static#terms_of_service", :as => "terms_of_service"
   get "/static/contact" => "static#contact", :as => "contact"
-  get "/static/discord" => "static#discord", as: "discord_get"
-  post "/static/discord" => "static#discord", as: "discord_post"
-  get "/static/toggle_mobile_mode" => "static#disable_mobile_mode", as: "disable_mobile_mode"
-  get "/static/theme" => "static#theme", as: "theme"
+  get "/static/discord" => "static#discord", :as => "discord_get"
+  post "/static/discord" => "static#discord", :as => "discord_post"
+  get "/static/toggle_mobile_mode" => "static#disable_mobile_mode", :as => "disable_mobile_mode"
+  get "/static/theme" => "static#theme", :as => "theme"
   get "/meta_searches/tags" => "meta_searches#tags", :as => "meta_searches_tags"
   get "/route", to: "application#dump_route"
 

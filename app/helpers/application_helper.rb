@@ -102,7 +102,7 @@ module ApplicationHelper
 
   def link_to_ip(ip)
     return "(none)" unless ip
-    link_to(ip, moderator_ip_addrs_path(:search => {:ip_addr => ip}))
+    link_to(ip, moderator_ip_addrs_path(search: {ip_addr: ip}))
   end
 
   def link_to_wiki(text, title = text, classes: nil, **)

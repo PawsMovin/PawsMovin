@@ -54,7 +54,7 @@ class ForumTopicsControllerTest < ActionDispatch::IntegrationTest
 
       context "with search conditions" do
         should "list all matching forum topics" do
-          get forum_topics_path, params: {:search => {:title_matches => "forum"}}
+          get forum_topics_path, params: {search: {title_matches: "forum"}}
           assert_response :success
           assert_select "a.forum-post-link", @forum_topic.title
           assert_select "a.forum-post-link", {count: 0, text: @topic1.title}
@@ -62,7 +62,7 @@ class ForumTopicsControllerTest < ActionDispatch::IntegrationTest
         end
 
         should "list nothing for when the search matches nothing" do
-          get forum_topics_path, params: {:search => {:title_matches => "bababa"}}
+          get forum_topics_path, params: {search: {title_matches: "bababa"}}
           assert_response :success
           assert_select "a.forum-post-link", {count: 0, text: @forum_topic.title}
           assert_select "a.forum-post-link", {count: 0, text: @topic1.title}
@@ -98,7 +98,7 @@ class ForumTopicsControllerTest < ActionDispatch::IntegrationTest
     context "create action" do
       should "create a new forum topic and post" do
         assert_difference(["ForumPost.count", "ForumTopic.count"], 1) do
-          post_auth forum_topics_path, @user, params: {:forum_topic => {:title => "bababa", :category_id => PawsMovin.config.alias_implication_forum_category, :original_post_attributes => {:body => "xaxaxa"}}}
+          post_auth forum_topics_path, @user, params: {forum_topic: {title: "bababa", category_id: PawsMovin.config.alias_implication_forum_category, original_post_attributes: {body: "xaxaxa"}}}
         end
 
         forum_topic = ForumTopic.last

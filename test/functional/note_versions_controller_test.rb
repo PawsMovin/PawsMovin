@@ -16,11 +16,11 @@ class NoteVersionsControllerTest < ActionDispatch::IntegrationTest
         @user_2 = create(:user)
 
         as(@user_2, "1.2.3.4") do
-          @note.update(:body => "1 2")
+          @note.update(body: "1 2")
         end
 
         as(@user, "1.2.3.4") do
-          @note.update(:body => "1 2 3")
+          @note.update(body: "1 2 3")
         end
       end
 
@@ -30,7 +30,7 @@ class NoteVersionsControllerTest < ActionDispatch::IntegrationTest
       end
 
       should "list all versions that match the search criteria" do
-        get note_versions_path, params: {:search => {:updater_id => @user_2.id}}
+        get note_versions_path, params: {search: {updater_id: @user_2.id}}
         assert_response :success
       end
     end

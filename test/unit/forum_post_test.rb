@@ -85,7 +85,7 @@ class ForumPostTest < ActiveSupport::TestCase
       end
 
       should "not be updateable" do
-        @post.update(:body => "xxx")
+        @post.update(body: "xxx")
         @post.reload
         assert_equal("zzz", @post.body)
       end

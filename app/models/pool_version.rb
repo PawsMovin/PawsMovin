@@ -2,7 +2,7 @@
 
 class PoolVersion < ApplicationRecord
   user_status_counter :pool_edit_count, foreign_key: :updater_id
-  belongs_to :updater, :class_name => "User"
+  belongs_to :updater, class_name: "User"
   before_validation :fill_version, on: :create
   before_validation :fill_changes, on: :create
 

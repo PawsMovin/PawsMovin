@@ -22,7 +22,7 @@ class PoolsControllerTest < ActionDispatch::IntegrationTest
       end
 
       should "list all pools (with search)" do
-        get pools_path, params: {:search => {:name_matches => @pool.name}}
+        get pools_path, params: {search: {name_matches: @pool.name}}
         assert_response :success
       end
     end
@@ -51,7 +51,7 @@ class PoolsControllerTest < ActionDispatch::IntegrationTest
     context "create action" do
       should "create a pool" do
         assert_difference("Pool.count", 1) do
-          post_auth pools_path, @user, params: {:pool => {:name => "xxx", :description => "abc"}}
+          post_auth pools_path, @user, params: {pool: {name: "xxx", description: "abc"}}
         end
       end
     end
@@ -100,7 +100,7 @@ class PoolsControllerTest < ActionDispatch::IntegrationTest
         @pool.reload
         version = @pool.versions.first
         assert_equal([@post.id], version.post_ids)
-        put_auth revert_pool_path(@pool), @mod, params: {:version_id => version.id}
+        put_auth revert_pool_path(@pool), @mod, params: {version_id: version.id}
         @pool.reload
         assert_equal([@post.id], @pool.post_ids)
       end
@@ -109,7 +109,7 @@ class PoolsControllerTest < ActionDispatch::IntegrationTest
         as(@user) do
           @pool2 = create(:pool)
         end
-        put_auth revert_pool_path(@pool), @user, params: {:version_id => @pool2.versions.first.id }
+        put_auth revert_pool_path(@pool), @user, params: {version_id: @pool2.versions.first.id }
         @pool.reload
         assert_not_equal(@pool.name, @pool2.name)
         assert_response :missing

@@ -11,7 +11,7 @@ class BulkUpdateRequest < ApplicationRecord
   validates :user, presence: true
   validates :script, presence: true
   validates :title, presence: { if: ->(rec) {rec.forum_topic_id.blank?} }
-  validates :status, inclusion: { :in => %w(pending approved rejected) }
+  validates :status, inclusion: { in: %w(pending approved rejected) }
   validate :script_formatted_correctly
   validate :forum_topic_id_not_invalid
   validate :validate_script, on: :create

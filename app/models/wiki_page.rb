@@ -6,7 +6,7 @@ class WikiPage < ApplicationRecord
   before_validation :normalize_title
   before_validation :normalize_parent
   after_save :create_version
-  validates :title, uniqueness: { :case_sensitive => false }
+  validates :title, uniqueness: { case_sensitive: false }
   validates :title, presence: true
   validates :title, tag_name: true, if: :title_changed?
   validates :body, presence: true, unless: -> { parent.present? }
@@ -23,9 +23,9 @@ class WikiPage < ApplicationRecord
   attr_accessor :skip_secondary_validations, :edit_reason
   belongs_to_creator
   belongs_to_updater
-  has_one :tag, :foreign_key => "name", :primary_key => "title"
-  has_one :artist, :foreign_key => "name", :primary_key => "title"
-  has_many :versions, -> {order("wiki_page_versions.id ASC")}, :class_name => "WikiPageVersion", :dependent => :destroy
+  has_one :tag, foreign_key: "name", primary_key: "title"
+  has_one :artist, foreign_key: "name", primary_key: "title"
+  has_many :versions, -> {order("wiki_page_versions.id ASC")}, class_name: "WikiPageVersion", dependent: :destroy
 
   def validate_not_used_as_help_page
     if HelpPage.find_by(wiki_page: title).present?

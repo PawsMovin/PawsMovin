@@ -4,13 +4,13 @@ class PostDisapproval < ApplicationRecord
   belongs_to :post
   belongs_to :user
   after_initialize :initialize_attributes, if: :new_record?
-  validates :post_id, uniqueness: { :scope => [:user_id], :message => "have already hidden this post" }
-  validates :reason, inclusion: { :in => %w(borderline_quality borderline_relevancy other) }
+  validates :post_id, uniqueness: { scope: [:user_id], message: "have already hidden this post" }
+  validates :reason, inclusion: { in: %w(borderline_quality borderline_relevancy other) }
 
   scope :with_message, -> { where("message is not null and message <> ''") }
   scope :without_message, -> { where("message is null or message = ''") }
-  scope :poor_quality, -> { where(:reason => "borderline_quality") }
-  scope :not_relevant, -> { where(:reason => "borderline_relevancy") }
+  scope :poor_quality, -> { where(reason: "borderline_quality") }
+  scope :not_relevant, -> { where(reason: "borderline_relevancy") }
 
   def initialize_attributes
     self.user_id ||= CurrentUser.user.id

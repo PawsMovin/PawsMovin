@@ -19,7 +19,7 @@
                 <%= "(hidden)" if forum_post.topic.is_hidden? %>
               </td>
               <td class="forum-post-excerpt">
-                <%= link_to truncate(forum_post.body, :length => 50), forum_post_path(forum_post) %>
+                <%= link_to truncate(forum_post.body, length: 50), forum_post_path(forum_post) %>
                 <% if forum_post.is_hidden? %>
                   <span<% if forum_post.hidden_at.present? %> title="<%= time_ago_in_words(forum_post.hidden_at) %> ago"<% end %>>(hidden)</span>
                 <% end %>

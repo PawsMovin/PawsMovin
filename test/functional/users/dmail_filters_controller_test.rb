@@ -26,7 +26,7 @@ module Users
             },
           }
 
-          put_auth users_dmail_filter_path, @user1, params: params
+          put_auth(users_dmail_filter_path, @user1, params: params)
           assert_not_equal("owned", @user2.reload.dmail_filter.try(&:words))
         end
       end

@@ -216,9 +216,9 @@ class PostVersion < ApplicationRecord
     removed_sources = old_sources - new_sources
 
     return {
-        :added_sources => added_sources,
-        :unchanged_sources => new_sources & old_sources,
-        :removed_sources => removed_sources
+        added_sources: added_sources,
+        unchanged_sources: new_sources & old_sources,
+        removed_sources: removed_sources
     }
   end
 

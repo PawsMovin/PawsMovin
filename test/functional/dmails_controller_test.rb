@@ -21,18 +21,18 @@ class DmailsControllerTest < ActionDispatch::IntegrationTest
       context "with a respond_to_id" do
         should "check privileges" do
           @user2 = create(:user)
-          get_auth new_dmail_path, @user2, params: {:respond_to_id => @dmail.id}
+          get_auth new_dmail_path, @user2, params: {respond_to_id: @dmail.id}
           assert_response 403
         end
 
         should "prefill the fields" do
-          get_auth new_dmail_path, @user, params: {:respond_to_id => @dmail.id}
+          get_auth new_dmail_path, @user, params: {respond_to_id: @dmail.id}
           assert_response :success
         end
 
         context "and a forward flag" do
           should "not populate the to field" do
-            get_auth new_dmail_path, @user, params: {:respond_to_id => @dmail.id, :forward => true}
+            get_auth new_dmail_path, @user, params: {respond_to_id: @dmail.id, forward: true}
             assert_response :success
           end
         end
@@ -41,17 +41,17 @@ class DmailsControllerTest < ActionDispatch::IntegrationTest
 
     context "index action" do
       should "show dmails owned by the current user by sent" do
-        get_auth dmails_path, @user, params: {:search => {:owner_id => @dmail.owner_id, :folder => "sent"}}
+        get_auth dmails_path, @user, params: {search: {owner_id: @dmail.owner_id, folder: "sent"}}
         assert_response :success
       end
 
       should "show dmails owned by the current user by received" do
-        get_auth dmails_path, @user, params: {:search => {:owner_id => @dmail.owner_id, :folder => "received"}}
+        get_auth dmails_path, @user, params: {search: {owner_id: @dmail.owner_id, folder: "received"}}
         assert_response :success
       end
 
       should "not show dmails not owned by the current user" do
-        get_auth dmails_path, @user, params: {:search => {:owner_id => @dmail.owner_id}}
+        get_auth dmails_path, @user, params: {search: {owner_id: @dmail.owner_id}}
         assert_response :success
       end
 
@@ -110,8 +110,8 @@ class DmailsControllerTest < ActionDispatch::IntegrationTest
 
       should "create two messages, one for the sender and one for the recipient" do
         assert_difference("Dmail.count", 2) do
-          dmail_attribs = {:to_id => @user_2.id, :title => "abc", :body => "abc"}
-          post_auth dmails_path, @user, params: {:dmail => dmail_attribs}
+          dmail_attribs = {to_id: @user_2.id, title: "abc", body: "abc"}
+          post_auth dmails_path, @user, params: {dmail: dmail_attribs}
           assert_redirected_to dmail_path(Dmail.last)
         end
       end

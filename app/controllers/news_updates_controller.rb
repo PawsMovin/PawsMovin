@@ -5,7 +5,7 @@ class NewsUpdatesController < ApplicationController
   respond_to :html
 
   def index
-    @news_updates = NewsUpdate.includes(:creator).order("id desc").paginate(params[:page], :limit => params[:limit])
+    @news_updates = NewsUpdate.includes(:creator).order("id desc").paginate(params[:page], limit: params[:limit])
     respond_with(@news_updates)
   end
 
@@ -17,7 +17,7 @@ class NewsUpdatesController < ApplicationController
   def update
     @news_update = NewsUpdate.find(params[:id])
     @news_update.update(news_update_params)
-    respond_with(@news_update, :location => news_updates_path)
+    respond_with(@news_update, location: news_updates_path)
   end
 
   def new
@@ -27,7 +27,7 @@ class NewsUpdatesController < ApplicationController
 
   def create
     @news_update = NewsUpdate.create(news_update_params)
-    respond_with(@news_update, :location => news_updates_path)
+    respond_with(@news_update, location: news_updates_path)
   end
 
   def destroy

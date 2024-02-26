@@ -2,8 +2,8 @@
 
 class PoolsController < ApplicationController
   respond_to :html, :json
-  before_action :member_only, :except => [:index, :show, :gallery]
-  before_action :janitor_only, :only => [:destroy]
+  before_action :member_only, except: [:index, :show, :gallery]
+  before_action :janitor_only, only: [:destroy]
 
   def new
     @pool = Pool.new
@@ -16,7 +16,7 @@ class PoolsController < ApplicationController
   end
 
   def index
-    @pools = Pool.search(search_params).paginate(params[:page], :limit => params[:limit], :search_count => params[:search])
+    @pools = Pool.search(search_params).paginate(params[:page], limit: params[:limit], search_count: params[:search])
     respond_with(@pools) do |format|
       format.json do
         render(json: @pools.to_json)
@@ -28,7 +28,7 @@ class PoolsController < ApplicationController
   def gallery
     params[:limit] ||= CurrentUser.user.per_page
 
-    @pools = Pool.search(search_params).paginate(params[:page], :limit => params[:limit], :search_count => params[:search])
+    @pools = Pool.search(search_params).paginate(params[:page], limit: params[:limit], search_count: params[:search])
   end
 
   def show

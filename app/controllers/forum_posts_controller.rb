@@ -2,11 +2,11 @@
 
 class ForumPostsController < ApplicationController
   respond_to :html, :json
-  before_action :member_only, :except => [:index, :show, :search]
+  before_action :member_only, except: [:index, :show, :search]
   before_action :moderator_only, only: [:unhide, :warning]
   before_action :admin_only, only: [:destroy]
-  before_action :load_post, :only => [:edit, :show, :update, :destroy, :hide, :unhide, :warning]
-  before_action :check_min_level, :only => [:edit, :show, :update, :destroy, :hide, :unhide]
+  before_action :load_post, only: [:edit, :show, :update, :destroy, :hide, :unhide, :warning]
+  before_action :check_min_level, only: [:edit, :show, :update, :destroy, :hide, :unhide]
   skip_before_action :api_check
 
   def new
@@ -22,7 +22,7 @@ class ForumPostsController < ApplicationController
   def index
     @query = ForumPost.permitted.active.search(search_params)
     @query = ForumPost.permitted.search(search_params) if CurrentUser.is_moderator?
-    @forum_posts = @query.includes(:topic).paginate(params[:page], :limit => params[:limit], :search_count => params[:search])
+    @forum_posts = @query.includes(:topic).paginate(params[:page], limit: params[:limit], search_count: params[:search])
     respond_with(@forum_posts)
   end
 
@@ -31,7 +31,7 @@ class ForumPostsController < ApplicationController
 
   def show
     if request.format == "text/html" && @forum_post.id == @forum_post.topic.original_post.id
-      redirect_to(forum_topic_path(@forum_post.topic, :page => params[:page]))
+      redirect_to(forum_topic_path(@forum_post.topic, page: params[:page]))
     else
       respond_with(@forum_post)
     end

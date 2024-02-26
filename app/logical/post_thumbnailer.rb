@@ -33,7 +33,7 @@ module PostThumbnailer
 
   def generate_video_crop_for(video, width)
     vp = Tempfile.new(%w[video-preview .webp], binmode: true)
-    video.screenshot(vp.path, {:seek_time => 0, :resolution => "#{video.width}x#{video.height}"})
+    video.screenshot(vp.path, {seek_time: 0, resolution: "#{video.width}x#{video.height}"})
     crop = PawsMovin::ImageResizer.crop(vp, width, width, 87)
     vp.close
     return crop

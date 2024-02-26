@@ -9,10 +9,10 @@ class UserNameChangeRequestsControllerTest < ActionDispatch::IntegrationTest
       @admin = create(:admin_user)
       as(@user) do
         @change_request = UserNameChangeRequest.create!(
-          :user_id => @user.id,
-          :original_name => @user.name,
-          :desired_name => "abc",
-          :change_reason => "hello"
+          user_id: @user.id,
+          original_name: @user.name,
+          desired_name: "abc",
+          change_reason: "hello"
         )
       end
     end

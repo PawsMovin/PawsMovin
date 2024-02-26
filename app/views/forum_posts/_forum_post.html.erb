@@ -15,7 +15,7 @@
         <%= user_avatar(forum_post.creator) %>
       </div>
       <div class="post-time">
-        <%= link_to time_ago_in_words_tagged(forum_post.created_at), forum_topic_path(forum_post.topic, :page => forum_post.forum_topic_page, :anchor => "forum_post_#{forum_post.id}") %>
+        <%= link_to time_ago_in_words_tagged(forum_post.created_at), forum_topic_path(forum_post.topic, page: forum_post.forum_topic_page, anchor: "forum_post_#{forum_post.id}") %>
       </div>
     </div>
     <div class="content">
@@ -40,27 +40,27 @@
               <li><%= tag.a("Hide", href: "#", class: "forum-post-hide-link") %></li>
             <% end %>
             <% if forum_post.can_delete?(CurrentUser.user) %>
-              <li><%= link_to "Delete", forum_post_path(forum_post.id), :data => {:confirm => "Are you sure you want to delete this forum post?"}, method: :delete %></li>
+              <li><%= link_to "Delete", forum_post_path(forum_post.id), data: {confirm: "Are you sure you want to delete this forum post?"}, method: :delete %></li>
             <% end %>
           <% else %>
             <% if forum_post.topic.is_hidden? && CurrentUser.is_moderator? %>
               <li><%= link_to "Unhide", unhide_forum_topic_path(forum_post.topic.id), method: :post %></li>
             <% elsif forum_post.topic.can_hide?(CurrentUser.user) %>
-              <li><%= link_to "Hide", hide_forum_topic_path(forum_post.topic.id), :data => {:confirm => "Are you sure you want to hide this forum topic?"}, method: :post %></li>
+              <li><%= link_to "Hide", hide_forum_topic_path(forum_post.topic.id), data: {confirm: "Are you sure you want to hide this forum topic?"}, method: :post %></li>
             <% end %>
             <% if forum_post.topic.can_delete?(CurrentUser.user) %>
-              <li><%= link_to "Delete", forum_topic_path(forum_post.topic), :data => {:confirm => "Are you sure you want to delete this forum topic?"}, method: :delete %></li>
+              <li><%= link_to "Delete", forum_topic_path(forum_post.topic), data: {confirm: "Are you sure you want to delete this forum topic?"}, method: :delete %></li>
             <% end %>
           <% end %>
           <% if forum_post.editable_by?(CurrentUser.user) %>
             <% if forum_post.is_original_post?(original_forum_post_id) %>
-              <li><%= link_to "Edit", edit_forum_topic_path(forum_post.topic), :id => "edit_forum_topic_link_#{forum_post.topic.id}", :class => "edit_forum_topic_link" %></li>
+              <li><%= link_to "Edit", edit_forum_topic_path(forum_post.topic), id: "edit_forum_topic_link_#{forum_post.topic.id}", class: "edit_forum_topic_link" %></li>
             <% else %>
-              <li><%= link_to "Edit", edit_forum_post_path(forum_post.id), :id => "edit_forum_post_link_#{forum_post.id}", :class => "edit_forum_post_link" %></li>
+              <li><%= link_to "Edit", edit_forum_post_path(forum_post.id), id: "edit_forum_post_link_#{forum_post.id}", class: "edit_forum_post_link" %></li>
             <% end %>
           <% end %>
           <% if params[:controller] == "forum_posts" %>
-            <li><%= link_to "Parent", forum_topic_path(forum_post.topic, :page => forum_post.forum_topic_page, :anchor => "forum_post_#{forum_post.id}") %></li>
+            <li><%= link_to "Parent", forum_topic_path(forum_post.topic, page: forum_post.forum_topic_page, anchor: "forum_post_#{forum_post.id}") %></li>
           <% end %>
           <% if CurrentUser.is_member? %>
             <li><%= link_to "Report", model_new_ticket_path(model: forum_post) %></li>
@@ -86,9 +86,9 @@
         </menu>
         <% if forum_post.editable_by?(CurrentUser.user) %>
           <% if forum_post.is_original_post?(original_forum_post_id) %>
-            <%= render "forum_topics/form", :forum_topic => forum_post.topic %>
+            <%= render "forum_topics/form", forum_topic: forum_post.topic %>
           <% else %>
-            <%= render "forum_posts/partials/edit/form", :forum_post => forum_post %>
+            <%= render "forum_posts/partials/edit/form", forum_post: forum_post %>
           <% end %>
         <% end %>
       </div>

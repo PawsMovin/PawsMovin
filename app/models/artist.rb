@@ -21,11 +21,11 @@ class Artist < ApplicationRecord
   after_save :propagate_locked, if: :should_propagate_locked
   after_save :clear_url_string_changed
 
-  has_many :urls, :dependent => :destroy, :class_name => "ArtistUrl", :autosave => true
-  has_many :versions, -> {order("artist_versions.id ASC")}, :class_name => "ArtistVersion"
-  has_one :wiki_page, :foreign_key => "title", :primary_key => "name"
-  has_one :tag_alias, :foreign_key => "antecedent_name", :primary_key => "name"
-  has_one :tag, :foreign_key => "name", :primary_key => "name"
+  has_many :urls, dependent: :destroy, class_name: "ArtistUrl", autosave: true
+  has_many :versions, -> {order("artist_versions.id ASC")}, class_name: "ArtistVersion"
+  has_one :wiki_page, foreign_key: "title", primary_key: "name"
+  has_one :tag_alias, foreign_key: "antecedent_name", primary_key: "name"
+  has_one :tag, foreign_key: "name", primary_key: "name"
   belongs_to :linked_user, class_name: "User", optional: true
   attribute :notes, :string
 
@@ -285,13 +285,13 @@ class Artist < ApplicationRecord
 
     def create_new_version
       ArtistVersion.create(
-        :artist_id => id,
-        :name => name,
-        :updater_id => CurrentUser.id,
-        :updater_ip_addr => CurrentUser.ip_addr,
-        :urls => url_array,
-        :other_names => other_names,
-        :notes_changed => saved_change_to_notes?
+        artist_id: id,
+        name: name,
+        updater_id: CurrentUser.id,
+        updater_ip_addr: CurrentUser.ip_addr,
+        urls: url_array,
+        other_names: other_names,
+        notes_changed: saved_change_to_notes?
       )
     end
 

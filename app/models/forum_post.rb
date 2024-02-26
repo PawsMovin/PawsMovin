@@ -7,21 +7,21 @@ class ForumPost < ApplicationRecord
   belongs_to_creator
   belongs_to_updater
   user_status_counter :forum_post_count
-  belongs_to :topic, :class_name => "ForumTopic"
+  belongs_to :topic, class_name: "ForumTopic"
   belongs_to :warning_user, class_name: "User", optional: true
   has_many :votes, class_name: "ForumPostVote"
   has_one :tag_alias
   has_one :tag_implication
   has_one :bulk_update_request
   belongs_to :tag_change_request, polymorphic: true, optional: true
-  before_validation :initialize_is_hidden, :on => :create
+  before_validation :initialize_is_hidden, on: :create
   after_create :update_topic_updated_at_on_create
   after_destroy :update_topic_updated_at_on_destroy
   validates :body, :creator_id, presence: true
   validates :body, length: { minimum: 1, maximum: PawsMovin.config.forum_post_max_size }
   validate :validate_topic_is_unlocked
   validate :topic_id_not_invalid
-  validate :topic_is_not_restricted, :on => :create
+  validate :topic_is_not_restricted, on: :create
   validate :category_allows_replies, on: :create
   validate :validate_creator_is_not_limited, on: :create
   validate :validate_not_aibur, if: :will_save_change_to_is_hidden?
@@ -169,7 +169,7 @@ class ForumPost < ApplicationRecord
   def update_topic_updated_at_on_create
     if topic
       # need to do this to bypass the topic's original post from getting touched
-      ForumTopic.where(:id => topic.id).update_all(["updater_id = ?, response_count = response_count + 1, updated_at = ?", CurrentUser.id, Time.now])
+      ForumTopic.where(id: topic.id).update_all(["updater_id = ?, response_count = response_count + 1, updated_at = ?", CurrentUser.id, Time.now])
       topic.response_count += 1
     end
   end
@@ -185,19 +185,19 @@ class ForumPost < ApplicationRecord
   end
 
   def update_topic_updated_at_on_hide
-    max = ForumPost.where(:topic_id => topic.id, :is_hidden => false).order("updated_at desc").first
+    max = ForumPost.where(topic_id: topic.id, is_hidden: false).order("updated_at desc").first
     if max
-      ForumTopic.where(:id => topic.id).update_all(["updated_at = ?, updater_id = ?", max.updated_at, max.updater_id])
+      ForumTopic.where(id: topic.id).update_all(["updated_at = ?, updater_id = ?", max.updated_at, max.updater_id])
     end
   end
 
   def update_topic_updated_at_on_destroy
-    max = ForumPost.where(:topic_id => topic.id, :is_hidden => false).order("updated_at desc").first
+    max = ForumPost.where(topic_id: topic.id, is_hidden: false).order("updated_at desc").first
     if max
-      ForumTopic.where(:id => topic.id).update_all(["response_count = response_count - 1, updated_at = ?, updater_id = ?", max.updated_at, max.updater_id])
+      ForumTopic.where(id: topic.id).update_all(["response_count = response_count - 1, updated_at = ?, updater_id = ?", max.updated_at, max.updater_id])
       topic.response_count -= 1
     else
-      ForumTopic.where(:id => topic.id).update_all("response_count = response_count - 1")
+      ForumTopic.where(id: topic.id).update_all("response_count = response_count - 1")
       topic.response_count -= 1
     end
   end

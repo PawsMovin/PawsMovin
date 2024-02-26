@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class TagsController < ApplicationController
-  before_action :member_only, :only => [:edit, :update, :preview]
+  before_action :member_only, only: [:edit, :update, :preview]
   respond_to :html, :json
 
   def edit
@@ -11,7 +11,7 @@ class TagsController < ApplicationController
   end
 
   def index
-    @tags = Tag.search(search_params).paginate(params[:page], :limit => params[:limit], :search_count => params[:search])
+    @tags = Tag.search(search_params).paginate(params[:page], limit: params[:limit], search_count: params[:search])
 
     respond_with(@tags)
   end

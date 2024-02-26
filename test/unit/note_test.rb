@@ -101,7 +101,7 @@ class NoteTest < ActiveSupport::TestCase
       should "increment the updater's note_update_count" do
         @user.reload
         assert_difference("@user.note_update_count", 1) do
-          @note.update(:body => "zzz")
+          @note.update(body: "zzz")
           @user.reload
         end
       end
@@ -131,7 +131,7 @@ class NoteTest < ActiveSupport::TestCase
         end
 
         should "fail" do
-          @note.update(:x => 500)
+          @note.update(x: 500)
           assert_equal(["Post is note locked"], @note.errors.full_messages)
         end
       end
@@ -150,7 +150,7 @@ class NoteTest < ActiveSupport::TestCase
         @vandal = create(:user)
         @note = create(:note, x: 5, y: 5)
         as(@vandal) do
-          @note.update(:x => 10, :y => 10)
+          @note.update(x: 10, y: 10)
         end
       end
 

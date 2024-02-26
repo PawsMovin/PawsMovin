@@ -30,7 +30,7 @@
               <li><%= tag.a("Reply", href: "#", class: "reply-link comment-reply-link") %></li>
             <% end %>
             <% if comment.editable_by?(CurrentUser.user) %>
-              <li><%= link_to "Edit", edit_comment_path(comment.id), :id => "edit_comment_link_#{comment.id}", :class => "edit_comment_link" %></li>
+              <li><%= link_to "Edit", edit_comment_path(comment.id), id: "edit_comment_link_#{comment.id}", class: "edit_comment_link" %></li>
             <% end %>
             <% if !comment.is_hidden? && comment.can_hide?(CurrentUser.user) %>
               <li><%= tag.a("Hide", href: "#", class: "comment-hide-link") %></li>

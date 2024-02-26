@@ -136,7 +136,7 @@ class TagImplicationTest < ActiveSupport::TestCase
       ti1.reload
       ti2.reload
       ti2.update(
-        :antecedent_name => "bbb"
+        antecedent_name: "bbb"
       )
       ti1.reload
       ti2.reload

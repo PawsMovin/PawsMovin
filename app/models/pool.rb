@@ -14,7 +14,7 @@ class Pool < ApplicationRecord
   validate :user_not_limited, on: :update, if: :limited_attribute_changed?
   validate :user_not_posts_limited, on: :update, if: :post_ids_changed?
   validate :validate_name, if: :name_changed?
-  validates :category, inclusion: { :in => %w(series collection) }
+  validates :category, inclusion: { in: %w(series collection) }
   validate :updater_can_change_category, on: :update
   validate :updater_can_remove_posts
   validate :validate_number_of_posts

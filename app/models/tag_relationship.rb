@@ -19,9 +19,9 @@ class TagRelationship < ApplicationRecord
   scope :retired, ->{where(status: "retired")}
   scope :duplicate_relevant, ->{where(status: %w[active processing queued pending])}
 
-  before_validation :initialize_creator, :on => :create
+  before_validation :initialize_creator, on: :create
   before_validation :normalize_names
-  validates :status, format: { :with => /\A(active|deleted|pending|processing|queued|retired|error: .*)\Z/ }
+  validates :status, format: { with: /\A(active|deleted|pending|processing|queued|retired|error: .*)\Z/ }
   validates :creator_id, :antecedent_name, :consequent_name, presence: true
   validates :creator, presence: { message: "must exist" }, if: -> { creator_id.present? }
   validates :approver, presence: { message: "must exist" }, if: -> { approver_id.present? }

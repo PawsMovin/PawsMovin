@@ -52,7 +52,7 @@
           <td><%= compact_time note_version.updated_at %></td>
           <% if CurrentUser.is_member? %>
             <td>
-              <%= link_to "Revert to", revert_note_path(note_version.note_id, :version_id => note_version.id, format: :json), class: "revert-item-link", 'data-noun': "note" %>
+              <%= link_to "Revert to", revert_note_path(note_version.note_id, version_id: note_version.id, format: :json), class: "revert-item-link", 'data-noun': "note" %>
             </td>
           <% end %>
         </tr>

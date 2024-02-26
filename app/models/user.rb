@@ -71,7 +71,7 @@ class User < ApplicationRecord
   ].freeze
 
   include PawsMovin::HasBitFlags
-  has_bit_flags BOOLEAN_ATTRIBUTES, :field => "bit_prefs"
+  has_bit_flags BOOLEAN_ATTRIBUTES, field: "bit_prefs"
 
   attr_accessor :password, :old_password, :validate_email_format, :is_admin_edit
 
@@ -83,15 +83,15 @@ class User < ApplicationRecord
   validate :validate_email_address_allowed, on: [:create, :update], if: ->(rec) { (rec.new_record? && rec.email.present?) || (rec.email.present? && rec.email_changed?) }
 
   validates :name, user_name: true, on: :create
-  validates :default_image_size, inclusion: { :in => %w(large fit fitv original) }
-  validates :per_page, inclusion: { :in => 1..320 }
+  validates :default_image_size, inclusion: { in: %w(large fit fitv original) }
+  validates :per_page, inclusion: { in: 1..320 }
   validates :comment_threshold, presence: true
   validates :comment_threshold, numericality: { only_integer: true, less_than: 50_000, greater_than: -50_000 }
   validates :password, length: { minimum: 6, if: ->(rec) { rec.new_record? || rec.password.present? || rec.old_password.present? } }, unless: :is_system?
   validates :password, confirmation: true, unless: :is_system?
   validates :password_confirmation, presence: { if: ->(rec) { rec.new_record? || rec.old_password.present? } }, unless: :is_system?
-  validate :validate_ip_addr_is_not_banned, :on => :create
-  validate :validate_sock_puppets, :on => :create, :if => -> { PawsMovin.config.enable_sock_puppet_validation? && !is_system? }
+  validate :validate_ip_addr_is_not_banned, on: :create
+  validate :validate_sock_puppets, on: :create, if: -> { PawsMovin.config.enable_sock_puppet_validation? && !is_system? }
   before_validation :normalize_blacklisted_tags, if: ->(rec) { rec.blacklisted_tags_changed? }
   before_validation :set_per_page
   before_validation :staff_cant_disable_dmail
@@ -850,13 +850,13 @@ class User < ApplicationRecord
       if bitprefs_include
         bitprefs_include.reverse!
         q = q.where("bit_prefs::bit(:len) & :bits::bit(:len) = :bits::bit(:len)",
-                    {:len => bitprefs_length, :bits => bitprefs_include})
+                    {len: bitprefs_length, bits: bitprefs_include})
       end
 
       if bitprefs_exclude
         bitprefs_exclude.reverse!
         q = q.where("bit_prefs::bit(:len) & :bits::bit(:len) = 0::bit(:len)",
-                    {:len => bitprefs_length, :bits => bitprefs_exclude})
+                    {len: bitprefs_length, bits: bitprefs_exclude})
       end
 
       if params[:ip_addr].present?
