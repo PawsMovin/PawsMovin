@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Users
   class CountFixesController < ApplicationController
     before_action :member_only

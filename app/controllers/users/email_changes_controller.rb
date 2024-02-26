@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Users
   class EmailChangesController < ApplicationController
     before_action :logged_in_only

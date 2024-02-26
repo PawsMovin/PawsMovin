@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateUserTextVersions < ActiveRecord::Migration[7.0]
   def change
     create_table :user_text_versions do |t|

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class UserTextVersion < ApplicationRecord
   belongs_to :updater, class_name: "User"
   belongs_to :user

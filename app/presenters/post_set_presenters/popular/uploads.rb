@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module PostSetPresenters
   module Popular
     class Uploads < Base
@@ -48,8 +50,6 @@ module PostSetPresenters
         when "Month"
           next_month
 
-        else
-          nil
         end
       end
 

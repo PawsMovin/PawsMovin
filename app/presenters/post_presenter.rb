@@ -21,7 +21,7 @@ class PostPresenter < Presenter
 
     locals = {
       post: post,
-      daily_views: !!options[:daily_views],
+      daily_views: !options[:daily_views].nil?,
     }
 
     locals[:article_attrs] = {

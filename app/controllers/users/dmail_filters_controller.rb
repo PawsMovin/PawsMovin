@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Users
   class DmailFiltersController < ApplicationController
     before_action :ensure_ownership

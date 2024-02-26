@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RemoveWikiPagesIsDeletedAndOtherNames < ActiveRecord::Migration[7.0]
   def change
     remove_column :wiki_pages, :is_deleted, :boolean, default: false, null: false

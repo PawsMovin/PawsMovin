@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class PostDeletionReasonsController < ApplicationController
   before_action :approver_only
   before_action :admin_only, except: %i[index]

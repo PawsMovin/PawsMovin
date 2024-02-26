@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module PopularHelper
   def date_range_description(date, scale, min_date, max_date)
     case scale

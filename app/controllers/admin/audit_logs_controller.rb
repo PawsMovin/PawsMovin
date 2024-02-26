@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Admin
   class AuditLogsController < ApplicationController
     before_action :moderator_only

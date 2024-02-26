@@ -9,7 +9,7 @@
   <%= render "posts/partials/index/ribbons", post: post %>
   <% if stats -%>
     <div class="desc">
-      <%= post_stats_section(post, daily_views: !!daily_views) %>
+      <%= post_stats_section(post, daily_views: !daily_views.nil?) %>
     </div>
   <% end -%>
   <% if pool -%>

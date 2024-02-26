@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ModActionSerializer < ActiveModel::Serializer
   attributes :id, :creator_id, :created_at, :updated_at, :action, :subject_id, :subject_type, :values
 

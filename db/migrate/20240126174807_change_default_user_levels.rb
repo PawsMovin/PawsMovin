@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ChangeDefaultUserLevels < ActiveRecord::Migration[7.0]
   def change
     change_column_default :users, :level, from: 20, to: User::Levels::MEMBER

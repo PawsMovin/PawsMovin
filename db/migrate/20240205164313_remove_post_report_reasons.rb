@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RemovePostReportReasons < ActiveRecord::Migration[7.1]
   def change
     drop_table :post_report_reasons do |t|

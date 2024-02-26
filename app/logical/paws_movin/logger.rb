@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module PawsMovin
   class Logger
     def self.log(exception, expected: false, **params)

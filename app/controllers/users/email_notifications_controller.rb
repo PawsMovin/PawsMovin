@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Users
   class EmailNotificationsController < ApplicationController
     class VerificationError < StandardError; end

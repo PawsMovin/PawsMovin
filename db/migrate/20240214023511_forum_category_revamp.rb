@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ForumCategoryRevamp < ActiveRecord::Migration[7.1]
   def change
     rename_column :forum_categories, :cat_order, :order

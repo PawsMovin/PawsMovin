@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Users
   class LoginReminderMailer < ApplicationMailer
     default from: PawsMovin.config.mail_from_addr, content_type: "text/html"

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module PostSets
   module Popular
     class Uploads < PostSets::Base

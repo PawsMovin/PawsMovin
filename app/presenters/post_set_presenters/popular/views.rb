@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module PostSetPresenters
   module Popular
     class Views < Base
@@ -16,7 +18,7 @@ module PostSetPresenters
       def prev_date
         date - 1.day
       end
-      
+
       def nav_links(template)
         html =  []
         html << "<p id=\"popular-nav-links\">"

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class UpgradeApiKeys < ActiveRecord::Migration[7.1]
   def change
     add_column :api_keys, :name, :string, default: "", null: false

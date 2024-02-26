@@ -51,6 +51,7 @@ class ActiveSupport::TestCase
     Socket.stubs(:gethostname).returns("www.example.com")
     PawsMovin.config.stubs(:enable_sock_puppet_validation?).returns(false)
     PawsMovin.config.stubs(:disable_throttles?).returns(true)
+    PawsMovin.config.stubs(:reports_enabled?).returns(false)
 
     FileUtils.mkdir_p("#{Rails.root}/tmp/test-storage2")
     storage_manager = StorageManager::Local.new(base_dir: "#{Rails.root}/tmp/test-storage2")

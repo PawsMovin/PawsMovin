@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Users
   class LoginRemindersController < ApplicationController
     def new

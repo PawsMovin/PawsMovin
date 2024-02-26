@@ -1674,11 +1674,11 @@ class Post < ApplicationRecord
 
   module ViewMethods
     def total_views
-      Reports.get_post_views(id) || 0
+      (Reports.get_post_views(id) || 0).to_i
     end
 
     def daily_views(date = Time.now)
-      Reports.get_post_views_rank(date).find { |r| r["post"] == id }.try(:[], "count") || 0
+      (Reports.get_post_views_rank(date).find { |r| r["post"] == id }.try(:[], "count") || 0).to_i
     end
   end
 

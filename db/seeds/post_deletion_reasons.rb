@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 CurrentUser.user = User.system
 [
   "Inferior version/duplicate of post #%PARENT_ID%",

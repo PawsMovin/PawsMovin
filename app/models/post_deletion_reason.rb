@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class PostDeletionReason < ApplicationRecord
   belongs_to_creator
   validates :reason, presence: true, length: { maximum: 100 }, uniqueness: { case_sensitive: false }
