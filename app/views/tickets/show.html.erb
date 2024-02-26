@@ -49,7 +49,7 @@
         <% end %>
         <tr>
           <td><span class='title'>Status</span></td>
-          <td class="<%= @ticket.status %>-ticket"><%= pretty_ticket_status(@ticket) %></td>
+          <td class="<%= @ticket.status %>-ticket"><%= @ticket.pretty_status %></td>
         </tr>
 
         <% if CurrentUser.is_admin? %>
@@ -100,7 +100,7 @@
     <% if CurrentUser.is_moderator? %>
       <div class="section">
         <%= custom_form_for(@ticket) do |f| %>
-          <%= f.input(:status, collection: [%w[Investigated approved], ["Under Investigation", "partial"]], selected: @ticket.status || "approved") %>
+          <%= f.input(:status, collection: [%w[Approved approved], ["Under Investigation", "partial"], %w[Rejected rejected]], selected: @ticket.status || "approved") %>
           <% if @ticket.warnable? %>
             <%= f.input(:record_type, label: "Mark the #{@ticket.model.model_name.singular.humanize(capitalize: false)} as having recieved", collection: @ticket.model.class.warning_types.to_h { |k, v| ["A #{k}", v] }, include_blank: "Nothing") %>
           <% end %>

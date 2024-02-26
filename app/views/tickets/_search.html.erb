@@ -7,10 +7,11 @@
   <% end %>
   <%= f.input(:model_type, label: "Type", collection: Ticket::MODEL_TYPES.index_by { |k| k }.to_a, include_blank: true) %>
   <%= f.input(:status, collection: [
-      ["Pending + Unclaimed", "pending_unclaimed"],
-      ["Pending + Claimed", "pending_claimed"],
-      ["Approved/investigated", "approved"],
-      ["Under investigation", "partial"],
-      ["Pending", "pending"],
+    ["Pending + Unclaimed", "pending_unclaimed"],
+    ["Pending + Claimed", "pending_claimed"],
+    %w[Approved approved],
+    %w[Rejected rejected],
+    ["Under investigation", "partial"],
+    %w[Pending pending],
   ], include_blank: true) %>
 <% end %>

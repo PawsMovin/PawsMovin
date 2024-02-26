@@ -1,17 +1,6 @@
 # frozen_string_literal: true
 
 module TicketHelper
-  def pretty_ticket_status(ticket)
-    status = ticket.status
-    if status == "partial"
-      "Under Investigation"
-    elsif status == "approved"
-      "Investigated"
-    else
-      status.titleize
-    end
-  end
-
   def generate_content_warnings(message)
     warnings = []
     if message.creator.is_banned? && message.creator.recent_ban.expires_at.nil?

@@ -49,7 +49,7 @@
               <% end %>
             <% end %>
 
-            <td class="<%= ticket.status %>-ticket"><%= pretty_ticket_status(ticket) %></td>
+            <td class="<%= ticket.status %>-ticket"><%= ticket.pretty_status %></td>
             <td style="cursor:help;"><%= time_ago_in_words_tagged(ticket.updated_at) %></td>
             <td style="cursor:help;"><%= time_ago_in_words_tagged(ticket.created_at) %></td>
           </tr>

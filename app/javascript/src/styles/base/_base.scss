@@ -101,10 +101,10 @@ table tfoot {
   font-size: 80%;
 }
 
-.greentext, .greentext a, .approved-ticket { color: $green-text-color !important; font-weight:bold; }
-.greytext, .greytext a { color: $grey-text-color !important; font-weight:bold; }
-.yellowtext, .yellowtext a, .partial-ticket { color: $yellow-text-color !important; font-weight:bold; }
-.redtext, .redtext a { color: $red-text-color !important; font-weight:bold; }
+.greentext, .greentext a, .approved-ticket { color: $green-text-color !important; font-weight: bold; }
+.greytext, .greytext a { color: $grey-text-color !important; font-weight: bold; }
+.yellowtext, .yellowtext a, .partial-ticket { color: $yellow-text-color !important; font-weight: bold; }
+.redtext, .redtext a, .rejected-ticket { color: $red-text-color !important; font-weight: bold; }
 
 
 .sect_green { background-color: $section-green-background; /* green */ }

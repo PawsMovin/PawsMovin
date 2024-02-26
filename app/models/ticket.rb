@@ -15,7 +15,7 @@ class Ticket < ApplicationRecord
   validates :response, length: { minimum: 2 }, on: :update
   validates :report_type, presence: true
   validate :validate_report_type_for_ticket
-  enum status: %i[pending partial approved].index_with(&:to_s)
+  enum status: %i[pending partial approved rejected].index_with(&:to_s)
   after_update :log_update
   after_update :create_dmail
   validate :validate_model_exists, on: :create
@@ -289,6 +289,14 @@ class Ticket < ApplicationRecord
     model.respond_to?(:user_warned!) && !model.was_warned? && pending?
   end
 
+  def pretty_status
+    if status == "partial"
+      "Under Investigation"
+    else
+      status.titleize
+    end
+  end
+
   module ClaimMethods
     def claim!(user = CurrentUser)
       transaction do
@@ -318,10 +326,18 @@ class Ticket < ApplicationRecord
 
         Response: #{response}
       MSG
+      title = "Your ticket has been updated"
+      if saved_change_to_status?
+        if %w[approved rejected].include?(status)
+          title = "Your ticket has been #{pretty_status.downcase}"
+        else
+          title += " to #{pretty_status.downcase}"
+        end
+      end
       Dmail.create_split(
         from_id: CurrentUser.id,
         to_id: creator.id,
-        title: "Your ticket has been updated#{" to #{status}" if saved_change_to_status?}",
+        title: title,
         body: msg,
         bypass_limits: true,
       )
