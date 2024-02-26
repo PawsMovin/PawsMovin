@@ -44,7 +44,7 @@ class ForumPostVotesControllerTest < ActionDispatch::IntegrationTest
         log = StaffAuditLog.last
         assert_equal "forum_post_vote_delete", log.action
         assert_equal @forum_post.id, log.forum_post_id
-        assert_equal -1, log.vote
+        assert_equal(-1, log.vote)
         assert_equal @user2.id, log.voter_id
       end
     end

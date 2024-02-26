@@ -23,8 +23,8 @@ class ForumPostVotesController < ApplicationController
 
   def destroy
     VoteManager.forum_post_unvote!(forum_post: @forum_post, user: CurrentUser.user)
-  rescue UserVote::Error => x
-    render_expected_error(422, x)
+  rescue UserVote::Error => e
+    render_expected_error(422, e)
   end
 
   def delete

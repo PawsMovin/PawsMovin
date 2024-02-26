@@ -84,27 +84,27 @@ class StaffAuditLog < ApplicationRecord
 
     ### Comments ###
     comment_vote_delete: {
-      text: ->(log) { "Deleted #{%w[downvote locked\ vote upvote][log.vote + 1]} on comment ##{log.comment_id} for user #{link_to_user(log.voter_id)}"},
-      json: %i[vote comment_id voter_id]
+      text: ->(log) { "Deleted #{['downvote', 'locked vote', 'upvote'][log.vote + 1]} on comment ##{log.comment_id} for user #{link_to_user(log.voter_id)}" },
+      json: %i[vote comment_id voter_id],
     },
     comment_vote_lock: {
-      text: ->(log) { "Locked #{%w[downvote locked\ vote upvote][log.vote + 1]} on comment ##{log.comment_id} for user #{link_to_user(log.voter_id)}"},
-      json: %i[vote comment_id voter_id]
+      text: ->(log) { "Locked #{['downvote', 'locked vote', 'upvote'][log.vote + 1]} on comment ##{log.comment_id} for user #{link_to_user(log.voter_id)}" },
+      json: %i[vote comment_id voter_id],
     },
 
     ### Posts ###
     post_vote_delete: {
-      text: ->(log) { "Deleted #{%w[downvote locked\ vote upvote][log.vote + 1]} on post ##{log.post_id} for user #{link_to_user(log.voter_id)}"},
-      json: %i[vote post_id voter_id]
+      text: ->(log) { "Deleted #{['downvote', 'locked vote', 'upvote'][log.vote + 1]} on post ##{log.post_id} for user #{link_to_user(log.voter_id)}" },
+      json: %i[vote post_id voter_id],
     },
     post_vote_lock: {
-      text: ->(log) { "Locked #{%w[downvote locked\ vote upvote][log.vote + 1]} on post ##{log.post_id} for user #{link_to_user(log.voter_id)}"},
-      json: %i[vote post_id voter_id]
+      text: ->(log) { "Locked #{['downvote', 'locked vote', 'upvote'][log.vote + 1]} on post ##{log.post_id} for user #{link_to_user(log.voter_id)}" },
+      json: %i[vote post_id voter_id],
     },
     ### Forum Posts ###
     forum_post_vote_delete: {
-      text: ->(log) { "Deleted #{%w[downvote meh\ vote upvote][log.vote + 1]} on forum ##{log.forum_post_id} for user #{link_to_user(log.voter_id)}"},
-      json: %i[vote forum_post_id voter_id]
+      text: ->(log) { "Deleted #{['downvote', 'meh vote', 'upvote'][log.vote + 1]} on forum ##{log.forum_post_id} for user #{link_to_user(log.voter_id)}" },
+      json: %i[vote forum_post_id voter_id],
     },
   }.freeze
 

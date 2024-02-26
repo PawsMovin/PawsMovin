@@ -56,7 +56,7 @@ class CommentVotesControllerTest < ActionDispatch::IntegrationTest
         log = StaffAuditLog.last
         assert_equal "comment_vote_lock", log.action
         assert_equal @comment.id, log.comment_id
-        assert_equal -1, log.vote
+        assert_equal(-1, log.vote)
         assert_equal @user2.id, log.voter_id
       end
     end
@@ -88,7 +88,7 @@ class CommentVotesControllerTest < ActionDispatch::IntegrationTest
         log = StaffAuditLog.last
         assert_equal "comment_vote_delete", log.action
         assert_equal @comment.id, log.comment_id
-        assert_equal -1, log.vote
+        assert_equal(-1, log.vote)
         assert_equal @user2.id, log.voter_id
       end
     end

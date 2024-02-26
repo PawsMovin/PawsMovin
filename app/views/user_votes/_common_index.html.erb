@@ -21,6 +21,9 @@
       <thead>
       <tr>
         <th>ID</th>
+        <% if type == CommentVote %>
+          <th>Post</th>
+        <% end %>
         <th><%= type.model_type.to_s.titlecase %></th>
         <th><%= type.model_type.to_s.titlecase %> Creator</th>
         <th>Voter</th>
@@ -39,6 +42,9 @@
       <% votes.each do |vote| %>
         <tr id="r<%= vote.id %>">
           <td><%= vote.id %></td>
+          <% if type == CommentVote %>
+            <td><%= link_to vote.post.id, post_path(vote.post) %></td>
+          <% end %>
           <td><%= link_to vote.send("#{type.model_type}_id"), vote.send(type.model_type) %></td>
           <td><%= link_to_user vote.send(type.model_type).send(type.model_creator_column) %></td>
           <td><%= link_to_user vote.user %></td>
@@ -61,7 +67,7 @@
       <ul>
         <li><%= tag.button "Select All", id: "select-all-votes" %></li>
         <% if lockable %>
-          <li><%= tag.button "Lock Votes",  id: "lock-votes" %> Set the votes to 0, preventing the user from voting on the <%= type.model_type %> again</li>
+          <li><%= tag.button "Lock Votes", id: "lock-votes" %> Set the votes to 0, preventing the user from voting on the <%= type.model_type %> again</li>
         <% end %>
         <% if deletable && CurrentUser.is_admin? %>
           <li><%= tag.button "Delete Votes", id: "delete-votes" %> Remove the votes</li>
