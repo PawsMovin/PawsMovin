@@ -9,6 +9,10 @@ class StaffAuditLog < ApplicationRecord
     staff_note_update
     staff_note_delete
     staff_note_undelete
+    comment_vote_lock
+    comment_vote_delete
+    post_vote_lock
+    post_vote_delete
   ].freeze
 
   VALUES = %i[
@@ -18,6 +22,7 @@ class StaffAuditLog < ApplicationRecord
     new_user_id old_user_id
     staff_note_id body old_body
     ip_addr
+    comment_id post_id vote voter_id forum_post_id
   ].freeze
 
   store_accessor :values, *VALUES
@@ -75,6 +80,31 @@ class StaffAuditLog < ApplicationRecord
         "Undeleted \"staff note ##{log.staff_note_id}\":#{Rails.application.routes.url_helpers.user_staff_notes_path(user_id: log.target_id, search: { id: log.staff_note_id })} for #{link_to_user(log.target_id)}"
       end,
       json: %i[staff_note_id target_id],
+    },
+
+    ### Comments ###
+    comment_vote_delete: {
+      text: ->(log) { "Deleted #{%w[downvote locked\ vote upvote][log.vote + 1]} on comment ##{log.comment_id} for user #{link_to_user(log.voter_id)}"},
+      json: %i[vote comment_id voter_id]
+    },
+    comment_vote_lock: {
+      text: ->(log) { "Locked #{%w[downvote locked\ vote upvote][log.vote + 1]} on comment ##{log.comment_id} for user #{link_to_user(log.voter_id)}"},
+      json: %i[vote comment_id voter_id]
+    },
+
+    ### Posts ###
+    post_vote_delete: {
+      text: ->(log) { "Deleted #{%w[downvote locked\ vote upvote][log.vote + 1]} on post ##{log.post_id} for user #{link_to_user(log.voter_id)}"},
+      json: %i[vote post_id voter_id]
+    },
+    post_vote_lock: {
+      text: ->(log) { "Locked #{%w[downvote locked\ vote upvote][log.vote + 1]} on post ##{log.post_id} for user #{link_to_user(log.voter_id)}"},
+      json: %i[vote post_id voter_id]
+    },
+    ### Forum Posts ###
+    forum_post_vote_delete: {
+      text: ->(log) { "Deleted #{%w[downvote meh\ vote upvote][log.vote + 1]} on forum ##{log.forum_post_id} for user #{link_to_user(log.voter_id)}"},
+      json: %i[vote forum_post_id voter_id]
     },
   }.freeze
 

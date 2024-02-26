@@ -142,7 +142,9 @@ Rails.application.routes.draw do
       get :search
     end
   end
-  resources :forum_post_votes, only: %i[index]
+  resources :forum_post_votes, only: %i[index destroy] do
+    post :delete, on: :collection
+  end
   resources :forum_topics do
     member do
       post :hide

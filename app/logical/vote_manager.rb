@@ -73,6 +73,7 @@ class VoteManager
     PostVote.transaction(**ISOLATION) do
       vote = PostVote.find_by(id: id)
       return unless vote
+      StaffAuditLog.log(:post_vote_lock, CurrentUser.user, post_id: vote.post_id, vote: vote.score, voter_id: vote.user_id)
       post = vote.post
       subtract_vote(post, vote)
       vote.update_column(:score, 0)
@@ -82,7 +83,9 @@ class VoteManager
 
   def self.admin_unvote!(id)
     vote = PostVote.find_by(id: id)
-    unvote!(post: vote.post, user: vote.user, force: true) if vote
+    return unless vote
+    StaffAuditLog.log(:post_vote_delete, CurrentUser.user, post_id: vote.post_id, vote: vote.score, voter_id: vote.user_id)
+    unvote!(post: vote.post, user: vote.user, force: true)
   end
 
   def self.comment_vote!(user:, comment:, score:)
@@ -137,15 +140,34 @@ class VoteManager
     CommentVote.transaction(**ISOLATION) do
       vote = CommentVote.find_by(id: id)
       return unless vote
-      comment = vote.comment
-      Comment.where(id: comment.id).update_all("score = score - #{vote.score}")
+      StaffAuditLog.log(:comment_vote_lock, CurrentUser.user, comment_id: vote.comment_id, vote: vote.score, voter_id: vote.user_id)
+      Comment.where(id: vote.comment_id).update_all("score = score - #{vote.score}")
       vote.update_column(:score, 0)
     end
   end
 
   def self.admin_comment_unvote!(id)
     vote = CommentVote.find_by(id: id)
-    comment_unvote!(comment: vote.comment, user: vote.user, force: true) if vote
+    return unless vote
+    StaffAuditLog.log(:comment_vote_delete, CurrentUser.user, comment_id: vote.comment_id, vote: vote.score, voter_id: vote.user_id)
+    comment_unvote!(comment: vote.comment, user: vote.user, force: true)
+  end
+
+  def self.forum_post_unvote!(user:, forum_post:)
+    ForumPostVote.transaction(**ISOLATION) do
+      ForumPostVote.uncached do
+        vote = ForumPostVote.where(user_id: user.id, forum_post_id: forum_post.id).first
+        return unless vote
+        ForumPostVote.where(user_id: user.id, forum_post_id: forum_post.id).delete_all
+      end
+    end
+  end
+
+  def self.admin_forum_post_unvote!(id)
+    vote = ForumPostVote.find_by(id: id)
+    return unless vote
+    StaffAuditLog.log(:forum_post_vote_delete, CurrentUser.user, forum_post_id: vote.forum_post_id, vote: vote.score, voter_id: vote.user_id)
+    forum_post_unvote!(forum_post: vote.forum_post, user: vote.user)
   end
 
   private

@@ -1,3 +1,5 @@
+<%# locals: (type:, votes:, deletable: false, lockable: false) -%>
+
 <div id="c-<%= type.model_name.plural %>">
   <div id="a-index">
     <%# path is a string here because of duplicate routes %>
@@ -53,6 +55,23 @@
       <% end %>
       </tbody>
     </table>
+
+    <% if deletable || lockable %>
+      <br>
+      <ul>
+        <li><%= tag.button "Select All", id: "select-all-votes" %></li>
+        <% if lockable %>
+          <li><%= tag.button "Lock Votes",  id: "lock-votes" %> Set the votes to 0, preventing the user from voting on the <%= type.model_type %> again</li>
+        <% end %>
+        <% if deletable && CurrentUser.is_admin? %>
+          <li><%= tag.button "Delete Votes", id: "delete-votes" %> Remove the votes</li>
+        <% end %>
+      </ul>
+
+      <%= javascript_tag nonce: true do -%>
+        new Danbooru.VoteManager('<%= type.model_type %>');
+      <% end -%>
+    <% end %>
 
     <%= numbered_paginator(votes) %>
   </div>
