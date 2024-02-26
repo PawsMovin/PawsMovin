@@ -19,6 +19,14 @@
       <%= render "posts/partials/index/related" %>
     </aside>
 
+    <% if PawsMovin.config.reports_enabled? && @post_set.is_simple_tag? && @post_set.current_page == 1 %>
+      <% if @post_set.post_count == 0 %>
+        <%= missed_post_search_count_js(@post_set.public_tag_string) %>
+      <% else %>
+        <%= post_search_count_js(@post_set.public_tag_string) %>
+      <% end %>
+    <% end %>
+
     <section id="content">
       <!-- TODO: Fix tag array with forced -status:deleted -->
 

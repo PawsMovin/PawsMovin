@@ -83,7 +83,7 @@ module PostsHelper
     return params[:post_set_id].to_i == post_set.id
   end
 
-  def post_stats_section(post)
+  def post_stats_section(post, daily_views: false)
     post_score_icon_positive = "↑"
     post_score_icon_negative = "↓"
     post_score_icon_neutral = "↕"
@@ -100,7 +100,12 @@ module PostsHelper
     end
     comments = tag.span "C#{post.visible_comment_count(CurrentUser)}", class: 'post-score-comments'
     rating =  tag.span(post.rating.upcase, class: "post-score-rating")
-    tag.div score + favs + comments + rating, class: 'post-score', id: "post-score-#{post.id}"
+    views = tag.span(class: "post-score-views-classes-#{post.id}") do
+      icon = tag.i("", class: "fa-regular fa-eye")
+      amount = tag.span(" #{(daily_views ? post.daily_views : post.total_views) || 0}", class: "post-score-views-views-#{post.id}")
+      icon + amount
+    end
+    tag.div score + favs + comments + views + rating, class: 'post-score', id: "post-score-#{post.id}"
   end
 
   def user_record_meta(user)
@@ -168,9 +173,29 @@ module PostsHelper
 
   def rating_collection
     [
-      ["Safe", "s"],
-      ["Questionable", "q"],
-      ["Explicit", "e"]
+      %w[Safe s],
+      %w[Questionable q],
+      %w[Explicit e]
     ]
+  end
+
+  def generate_report_signature(value)
+    verifier = ActiveSupport::MessageVerifier.new(PawsMovin.config.report_key, serializer: JSON, digest: "SHA256")
+    verifier.generate("#{value},#{session[:session_id]}")
+  end
+
+  def view_count_js(post)
+    sig = generate_report_signature(post.id)
+    render partial: "posts/partials/common/report_js", locals: { sig: sig, type: "post_views" }
+  end
+
+  def missed_post_search_count_js(tags)
+    sig = generate_report_signature(tags)
+    render partial: "posts/partials/common/report_js", locals: { sig: sig, type: "missed_searches" }
+  end
+
+  def post_search_count_js(tags)
+    sig = generate_report_signature("ps-#{tags}")
+    render partial: "posts/partials/common/report_js", locals: { sig: sig, type: "post_searches" }
   end
 end

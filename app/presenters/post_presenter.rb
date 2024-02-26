@@ -15,10 +15,11 @@ class PostPresenter < Presenter
       return ""
     end
 
-    options[:stats] |= !options[:avatar] && !options[:inline]
+    options[:stats] ||= !options[:avatar] && !options[:inline]
 
     locals = {
-      post: post
+      post: post,
+      daily_views: !!options[:daily_views],
     }
 
     locals[:article_attrs] = {

@@ -7,8 +7,14 @@ x-environment: &common-env
   PAWSMOVIN_MEMCACHED_SERVERS: memcached
   PAWSMOVIN_IQDB_SERVER: http://iqdb:5588
   PAWSMOVIN_RECOMMENDER_SERVER: http://recommender:5000
+  # Must be externally accessible
+  PAWSMOVIN_REPORTS_SERVER: http://localhost:${EXPOSED_SERVER_PORT:-3001}/reports
+  # Must be internally accessible
+  PAWSMOVIN_REPORTS_SERVER_INTERNAL: http://reports:3000
+  PAWSMOVIN_REPORTS_ENABLED: true
   PAWSMOVIN_DISCORD_SITE: http://localhost:8000
   PAWSMOVIN_DISCORD_SECRET: super_secret_for_url_discord
+  PAWSMOVIN_REPORT_KEY: super_secret_key_for_reports_signature
   NEW_RELIC_AGENT_ENABLED: ${NEW_RELIC_AGENT_ENABLED:-false}
   NEW_RELIC_LICENSE_KEY: ${NEW_RELIC_LICENSE_KEY:-}
   # These are just development secrets, do not use them in production
@@ -52,8 +58,13 @@ services:
         condition: service_started
       iqdb:
         condition: service_started
+      recommender:
+        condition: service_started
+      reports:
+        condition: service_started
     tty: true
 
+  # For this service to work properly, it must be accessible from /tags/autocomplete.json on the same url as the primary app
   autocompleted:
     image: ghcr.io/e621ng/autocompleted:8807bc8658f594cd0de04de1c272c3a2f917fc48
     command: /app/autocompleted
@@ -77,6 +88,7 @@ services:
     depends_on:
       - autocompleted
       - pawsmovin
+      - reports
     ports:
       - "${EXPOSED_SERVER_PORT:-3001}:${EXPOSED_SERVER_PORT:-3001}"
 
@@ -96,6 +108,8 @@ services:
     command: redis-server --save 10 1 --loglevel warning
     volumes:
       - redis_data:/data
+    ports:
+      - "${EXPOSED_REDIS_PORT:-34519}:6379"
 
   memcached:
     image: memcached:1.5.22-alpine
@@ -133,6 +147,19 @@ services:
       - OPENBLAS_NUM_THREADS=1
       - TRAINING_THREADS=4
 
+  # By default, this is bound to /reports on the same url as the primary app for external access
+  # To change this, set the PAWSMOVIN_REPORTS_SERVER env variable
+  # For internal access, change the PAWSMOVIN_REPORTS_SERVER_INTERNAL env varable (defaults to http://reports:3000)
+  reports:
+    image: ghcr.io/pawsmovin/reports:2441adf25869a7231da6899c012790dd23ae9ea9
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - REPORTS_REDIS_URL=redis://redis
+      - REPORTS_REPORT_KEY=super_secret_key_for_reports_signature
+    ports:
+      - "${EXPOSED_REPORTS_PORT:-3002}:3000"
+
   # Discord integration
 
   discord_joiner:
@@ -147,7 +174,7 @@ services:
       GUILD_ID: ${JOINER_GUILD_ID-}
       FAILED_JOIN_URL: ${JOINER_FAILED_JOIN_WEBHOOK_URL-}
     ports:
-      - 8000:8000
+      - "8000:8000"
     volumes:
       - discord_joiner_data:/opt/app/data
     profiles:
@@ -189,3 +216,11 @@ volumes:
   rubocop_cache:
   discord_joiner_data:
   recommender_data:
+
+networks:
+  default:
+    driver: bridge
+    ipam:
+      driver: default
+    driver_opts:
+      com.docker.network.bridge.name: br-pawsmovin

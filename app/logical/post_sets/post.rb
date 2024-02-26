@@ -21,16 +21,19 @@ module PostSets
       end
     end
 
+    def is_simple_tag?
+      return false if %w[~ *].any? { |c| public_tag_string.include?(c) }
+      return false unless public_tag_string.split.one?
+      return false if public_tag_string.split.any? { |tag| TagQuery::METATAGS.include?(tag.split(":")[0]) }
+      true
+    end
+
     def tag_string
       @tag_string ||= tag_array.uniq.join(" ")
     end
 
     def public_tag_string
       @public_tag_string ||= public_tag_array.uniq.join(" ")
-    end
-
-    def ad_tag_string
-      TagQuery.ad_tag_string(public_tag_array)
     end
 
     def humanized_tag_string

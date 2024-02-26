@@ -1,0 +1,32 @@
+<div id="c-popular">
+  <div id="a-missed-searches">
+    <h1>Missed Searches: <%= date_range_description(@date, @scale, @min_date, @max_date) %></h1>
+
+    <table class="striped autofit">
+      <thead>
+      <tr>
+        <th>Count</th>
+        <th>Tag</th>
+      </tr>
+      </thead>
+      <tbody>
+      <% @ranking.each do |rank| %>
+        <tr id="missed-search-<%= rank["tag"] %>">
+          <td><%= rank["count"] %></td>
+          <td><%= rank["tag"] %></td>
+        </tr>
+      <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%= render partial: "popular/secondary_links" %>
+
+<% content_for(:page_title) do %>
+  Missed Searches for <%= date_range_description(@date, @scale, @min_date, @max_date) %>
+<% end %>
+
+<% content_for(:html_header) do %>
+  <meta name="description" content="The most searched tags">
+<% end %>

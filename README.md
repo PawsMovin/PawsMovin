@@ -18,6 +18,7 @@
 5. Run the following commands:
     ```
     docker compose run --rm -e SEED_POST_COUNT=100 pawsmovin /app/bin/setup
+    docker compose run --rm reports /app/bin/setup
     docker compose up
     ```
     After running the commands once only `docker compose up` is needed to bring up the containers.

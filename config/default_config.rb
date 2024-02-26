@@ -679,6 +679,20 @@ module PawsMovin
       nil
     end
 
+    def reports_enabled?
+      PawsMovin.config.reports_server.present?
+    end
+
+    def reports_server
+    end
+
+    def reports_server_internal
+      PawsMovin.config.reports_server
+    end
+
+    def report_key
+    end
+
     include Users
   end
 

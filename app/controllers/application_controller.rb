@@ -238,4 +238,10 @@ class ApplicationController < ActionController::Base
   def allowed_readonly_actions
     %w[index show search]
   end
+
+  def format_json(data, **)
+    ->(format) do
+      format.json { render(json: data.to_json, **) }
+    end
+  end
 end

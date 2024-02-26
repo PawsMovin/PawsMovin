@@ -8,7 +8,8 @@
         <% if CurrentUser.is_janitor? %>
           <li><%= link_to("Upload Listing", uploads_path) %></li>
         <% end %>
-        <li><%= link_to("Popular", popular_index_path) %></li>
+        <li><%= link_to("Popular Uploads", uploads_popular_index_path) %></li>
+        <li><%= link_to("Most Viewed", views_popular_index_path) %></li>
         <li><%= link_to("Similar Images Search", iqdb_queries_path) %></li>
         <% if CurrentUser.can_approve_posts? %>
           <li><%= link_to("Disapprovals", post_disapprovals_path) %></li>
@@ -131,3 +132,4 @@
 <% content_for(:page_title) do %>
   Site Map
 <% end %>
+

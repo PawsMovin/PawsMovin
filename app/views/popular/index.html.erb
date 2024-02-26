@@ -1,25 +1,18 @@
 <div id="c-popular">
   <div id="a-index">
-    <h1>Popular: <%= @post_set.presenter.range_text %></h1>
+    <h1>Popular Index</h1>
 
-    <%= @post_set.presenter.nav_links(self) %>
-
-    <%= render "posts/partials/common/inline_blacklist" %>
-
-    <div id="posts" class="user-disable-cropped-<%= PawsMovin.config.enable_image_cropping? && CurrentUser.user.disable_cropped_thumbnails? %>">
-      <div id="posts-container">
-        <%= @post_set.presenter.post_previews_html(self, show_cropped: true) %>
-      </div>
-    </div>
+    <ul>
+      <%= li_link_to "Uploads", uploads_popular_index_path %>
+      <%= li_link_to "Views", views_popular_index_path %>
+      <%= li_link_to "Searches", searches_popular_index_path %>
+      <%= li_link_to "Missed Searches", missed_searches_popular_index_path %>
+    </ul>
   </div>
 </div>
 
-<%= render "posts/partials/common/secondary_links" %>
+<%= render partial: "popular/secondary_links" %>
 
 <% content_for(:page_title) do %>
-  Popular
-<% end %>
-
-<% content_for(:html_header) do %>
-  <meta name="description" content="The most popular posts per day">
+  Popular Index
 <% end %>

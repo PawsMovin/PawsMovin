@@ -1,0 +1,11 @@
+<%# locals: (sig:, type:) %>
+
+<% if PawsMovin.config.reports_enabled? %>
+  <%= javascript_tag nonce: true do -%>
+    $(function() {
+      $.post("<%= PawsMovin.config.reports_server %>/<%= type %>.json", {
+        sig: "<%= sig %>"
+      });
+    });
+  <% end -%>
+<% end %>

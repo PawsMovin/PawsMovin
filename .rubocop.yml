@@ -162,3 +162,9 @@ Rails/NotNullColumn:
 
 Rails/OutputSafety:
   Enabled: false
+
+Lint/MissingSuper:
+  Enabled: false
+
+Style/MissingRespondToMissing:
+  Enabled: false

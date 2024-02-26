@@ -72,7 +72,7 @@
             <%= render "posts/partials/show/notices", post: @post %>
           <% end %>
         </div>
-        
+
         <%= tag.section(id: "image-container", **PostPresenter.data_attributes(@post, include_post: true)) do -%>
           <div id="note-container"></div>
           <div id="note-preview"></div>
@@ -304,5 +304,7 @@
     <meta name="rating" content="adult">
   <% end %>
 <% end %>
+
+<%= view_count_js(@post) %>
 
 <%= render "posts/partials/common/secondary_links" %>

@@ -52,7 +52,7 @@ class Post < ApplicationRecord
   has_many :approvals, :class_name => "PostApproval", :dependent => :destroy
   has_many :disapprovals, :class_name => "PostDisapproval", :dependent => :destroy
   has_many :favorites
-  has_many :replacements, class_name: "PostReplacement", :dependent => :destroy
+  has_many :replacements, class_name: "PostReplacement", dependent: :destroy
 
   attr_accessor :old_tag_string, :old_parent_id, :old_source, :old_rating,
                 :do_not_version_changes, :tag_string_diff, :source_diff, :edit_reason, :tag_string_before_parse
@@ -1670,6 +1670,16 @@ class Post < ApplicationRecord
     end
   end
 
+  module ViewMethods
+    def total_views
+      Reports.get_post_views(id) || 0
+    end
+
+    def daily_views(date = Time.now)
+      Reports.get_post_views_rank(date).find { |r| r["post"] == id }.try(:[], "count") || 0
+    end
+  end
+
   include PostFileMethods
   include FileMethods
   include ImageMethods
@@ -1695,6 +1705,7 @@ class Post < ApplicationRecord
   include PawsMovin::HasBitFlags
   include DocumentStore::Model
   include PostIndex
+  include ViewMethods
 
   BOOLEAN_ATTRIBUTES = %w(
     _has_embedded_notes

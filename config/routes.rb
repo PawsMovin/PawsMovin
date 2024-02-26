@@ -45,7 +45,14 @@ Rails.application.routes.draw do
     end
   end
   resources :api_keys
-  resources :popular, only: [:index]
+  resources :popular, only: %i[index] do
+    collection do
+      get :uploads
+      get :views
+      get :searches
+      get "/searches/missed", to: "popular#missed_searches", as: "missed_searches"
+    end
+  end
   namespace :users do
     resource :count_fixes, only: %i[new create]
     resource :email_notification, only: %i[show destroy]
