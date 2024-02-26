@@ -28,7 +28,7 @@ module Seeds
   end
 
   def self.api_request(path)
-    puts "-> GET #{read_resources['base_url']}#{path}"
+    puts("-> GET #{read_resources['base_url']}#{path}")
     response = HTTParty.get("#{read_resources['base_url']}#{path}", {
       headers: { "User-Agent" => "pawmovin/seeding" },
     })
@@ -37,19 +37,19 @@ module Seeds
 
   def self.read_resources
     if @resources
-      yield @resources if block_given?
+      yield(@resources) if block_given?
       return @resources
     end
-    @resources = YAML.load_file Rails.root.join("db/seeds.yml")
+    @resources = YAML.load_file(Rails.root.join("db/seeds.yml"))
     @resources["tags"] << "randseed:#{Digest::MD5.hexdigest(Time.now.to_s)}" if @resources["tags"]&.include?("order:random")
-    yield @resources if block_given?
+    yield(@resources) if block_given?
     @resources
   end
 
   module Posts
     def self.get_posts(tags, limit = ENV.fetch("SEED_POST_COUNT", 100), page = 1)
       posts = Seeds.api_request("/posts.json?limit=#{[320, limit].min}&tags=#{tags.join('%20')}&page=#{page}")["posts"]
-      puts "Get Page #{page}"
+      puts("Get Page #{page}")
       limit -= posts.length
       if posts.length == 320 && limit > 0
         posts += get_posts(tags, limit, page + 1)
@@ -68,7 +68,7 @@ module Seeds
       posts.each do |post|
         next if Post.find_by(md5: post["file"]["md5"]).present?
         url = get_url(post, resources["base_url"])
-        puts url
+        puts(url)
         post["sources"] << "#{resources['base_url']}/posts/#{post['id']}"
         post["tags"].each do |category, tags|
           Tag.find_or_create_by_name_list(tags.map { |tag| "#{category}:#{tag}" })
@@ -87,18 +87,18 @@ module Seeds
         upload = service.start!
 
         if upload.errors.any?
-          puts "Failed to create upload: #{upload.errors.full_messages}"
+          puts("Failed to create upload: #{upload.errors.full_messages}")
         end
 
         if upload.post&.errors&.any?
-          puts "Failed to create post: #{upload.post.errors.full_messages}"
+          puts("Failed to create post: #{upload.post.errors.full_messages}")
         end
       end
     end
 
     def self.get_url(post, base_url)
       return post["file"]["url"] unless post["file"]["url"].nil?
-      puts "post #{post['id']} returned a nil url, attempting to reconstruct url."
+      puts("post #{post['id']} returned a nil url, attempting to reconstruct url.")
       return "https://static1.e621.net/data/#{post['file']['md5'][0..1]}/#{post['file']['md5'][2..3]}/#{post['file']['md5']}.#{post['file']['ext']}" if /e621\.net/i =~ base_url
       "https://static.pawsmov.in/#{post['file']['md5'][0..1]}/#{post['file']['md5'][2..3]}/#{post['file']['md5']}.#{post['file']['ext']}"
     end
@@ -117,7 +117,7 @@ module Seeds
 
     def self.create_from_web
       Seeds.api_request("/mascots.json").each do |mascot|
-        puts mascot["url_path"]
+        puts(mascot["url_path"])
         Mascot.find_or_create_by!(display_name: mascot["display_name"]) do |masc|
           masc.mascot_file = Downloads::File.new(mascot["url_path"]).download!
           masc.background_color = mascot["background_color"]
@@ -136,7 +136,7 @@ module Seeds
       end
 
       resources["mascots"].each do |mascot|
-        puts mascot["file"]
+        puts(mascot["file"])
         Mascot.find_or_create_by!(display_name: mascot["name"]) do |masc|
           masc.mascot_file = Downloads::File.new(mascot["file"]).download!
           masc.background_color = mascot["color"]

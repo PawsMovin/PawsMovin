@@ -14,7 +14,7 @@ class UserVote < ApplicationRecord
     super
     return if child_class.name.starts_with?("Lockable") # We can't check for abstract here, it hasn't been set yet
     child_class.class_eval do
-      belongs_to model_type
+      belongs_to(model_type)
     end
   end
 

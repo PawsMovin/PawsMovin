@@ -137,15 +137,15 @@ class PostsDecorator < ApplicationDecorator
 
     size = options[:size] ? post.file_size : nil
 
-    img_contents = t.link_to t.polymorphic_path(link_target, link_params) do
+    img_contents = t.link_to(t.polymorphic_path(link_target, link_params)) do
       t.tag.picture do
-        t.concat t.tag.source media: "(max-width: 800px)", srcset: cropped_url
-        t.concat t.tag.source media: "(min-width: 800px)", srcset: preview_url
-        t.concat t.tag.img class: "has-cropped-#{has_cropped}", src: preview_url, title: tooltip, alt: alt_text
+        t.concat(t.tag.source(media: "(max-width: 800px)", srcset: cropped_url))
+        t.concat(t.tag.source(media: "(min-width: 800px)", srcset: preview_url))
+        t.concat(t.tag.img(class: "has-cropped-#{has_cropped}", src: preview_url, title: tooltip, alt: alt_text))
       end
     end
     desc_contents = if options[:stats] || pool || similarity || size
-      t.tag.div class: "desc" do
+      t.tag.div(class: "desc") do
         t.post_stats_section(post) if options[:stats]
       end
     else

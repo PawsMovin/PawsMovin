@@ -34,7 +34,7 @@ module PawsMovin
           [1, :numbered]
         elsif page =~ /\A\d+\z/
           if page.to_i > max_numbered_pages
-            raise PawsMovin::Paginator::PaginationError, "You cannot go beyond page #{max_numbered_pages}. Please narrow your search terms."
+            raise(PawsMovin::Paginator::PaginationError, "You cannot go beyond page #{max_numbered_pages}. Please narrow your search terms.")
           end
           [[page.to_i, 1].max, :numbered]
         elsif page =~ /b(\d+)/
@@ -42,7 +42,7 @@ module PawsMovin
         elsif page =~ /a(\d+)/
           [$1.to_i, :sequential_after]
         else
-          raise PawsMovin::Paginator::PaginationError, "Invalid page number."
+          raise(PawsMovin::Paginator::PaginationError, "Invalid page number.")
         end
       end
 

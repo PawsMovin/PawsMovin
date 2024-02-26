@@ -59,7 +59,7 @@ class UserDeletion
     end
 
     if n == 10
-      raise ValidationError.new("New name could not be found")
+      raise(ValidationError.new("New name could not be found"))
     end
 
     user.update_column(:name, name)
@@ -68,19 +68,19 @@ class UserDeletion
 
   def validate
     if user.is_blocked?
-      raise ValidationError.new("Banned users cannot delete their accounts")
+      raise(ValidationError.new("Banned users cannot delete their accounts"))
     end
 
     if user.younger_than(1.week)
-      raise ValidationError.new("Account must be one week old to be deleted")
+      raise(ValidationError.new("Account must be one week old to be deleted"))
     end
 
     unless User.authenticate(user.name, password)
-      raise ValidationError.new("Password is incorrect")
+      raise(ValidationError.new("Password is incorrect"))
     end
 
     if user.level >= User::Levels::ADMIN
-      raise ValidationError.new("Admins cannot delete their account")
+      raise(ValidationError.new("Admins cannot delete their account"))
     end
   end
 end

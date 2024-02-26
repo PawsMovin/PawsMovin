@@ -17,8 +17,8 @@ class PostDisapprovalsController < ApplicationController
     @post_disapproval.message = pd_params[:message]
     @post_disapproval.save
     respond_to do |format|
-      format.html { redirect_to post_path(id: pd_params[:post_id]) }
-      format.json { render json: @post_disapproval }
+      format.html { redirect_to(post_path(id: pd_params[:post_id])) }
+      format.json { render(json: @post_disapproval) }
     end
   end
 

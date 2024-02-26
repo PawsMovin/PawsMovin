@@ -151,7 +151,7 @@ class PostVersion < ApplicationRecord
   end
 
   def fill_version
-    self.version = PostVersion.calculate_version (self.post_id)
+    self.version = PostVersion.calculate_version(self.post_id)
   end
 
   def fill_changes(prev = nil)
@@ -313,7 +313,7 @@ class PostVersion < ApplicationRecord
   end
 
   def undo
-    raise UndoError, "Version 1 is not undoable" unless undoable?
+    raise(UndoError, "Version 1 is not undoable") unless undoable?
 
     if description_changed
       post.description = previous.description

@@ -12,7 +12,7 @@ class PostVotesController < ApplicationController
     if @post_vote == :need_unvote && !params[:no_unvote].to_s.truthy?
       VoteManager.unvote!(post: @post, user: CurrentUser.user)
     end
-    render json: {score: @post.score, up: @post.up_score, down: @post.down_score, our_score: @post_vote != :need_unvote ? @post_vote.score : 0}
+    render(json: {score: @post.score, up: @post.up_score, down: @post.down_score, our_score: @post_vote != :need_unvote ? @post_vote.score : 0})
   rescue UserVote::Error, ActiveRecord::RecordInvalid => x
     render_expected_error(422, x)
   end
@@ -49,6 +49,6 @@ class PostVotesController < ApplicationController
   def search_params
     permitted_params = %i[post_id user_name user_id post_creator_id post_creator_name timeframe score]
     permitted_params += %i[user_ip_addr duplicates_only order] if CurrentUser.is_admin?
-    permit_search_params permitted_params
+    permit_search_params(permitted_params)
   end
 end

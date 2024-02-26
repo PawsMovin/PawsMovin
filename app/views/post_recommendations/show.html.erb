@@ -3,9 +3,9 @@
     <h1>Recommended Posts</h1>
 
     <%= form_search(path: post_recommendations_path, always_display: true) do |f| %>
-      <%= f.user :user, label: "User" %>
-      <%= f.input :post_id, label: "Post" %>
-      <%= f.input :post_tags_match, label: "Tags", autocomplete: "tag"  %>
+      <%= f.user(:user, label: "User") %>
+      <%= f.input(:post_id, label: "Post") %>
+      <%= f.input(:post_tags_match, label: "Tags", autocomplete: "tag")  %>
     <% end %>
 
     <%= render "posts/partials/common/inline_blacklist" %>

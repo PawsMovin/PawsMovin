@@ -18,14 +18,14 @@ class UploadService
         repl.replacement_file = PawsMovin.config.storage_manager.open(PawsMovin.config.storage_manager.file_path(post, post.file_ext, :original))
         repl.save
       rescue Exception => e
-        raise ProcessingError, "Failed to create post file backup: #{e.message}"
+        raise(ProcessingError, "Failed to create post file backup: #{e.message}")
       end
-      raise ProcessingError, "Could not create post file backup?" if !repl.valid?
+      raise(ProcessingError, "Could not create post file backup?") if !repl.valid?
     end
 
     def process!(penalize_current_uploader:)
       # Prevent trying to replace deleted posts
-      raise ProcessingError, "Cannot replace post: post is deleted." if post.is_deleted?
+      raise(ProcessingError, "Cannot replace post: post is deleted.") if post.is_deleted?
 
       create_backup_replacement
       PostReplacement.transaction do
@@ -44,7 +44,7 @@ class UploadService
         )
 
         if upload.invalid? || upload.is_errored?
-          raise ProcessingError, upload.errors.full_messages.to_sentence
+          raise(ProcessingError, upload.errors.full_messages.to_sentence)
         end
 
         begin
@@ -56,7 +56,7 @@ class UploadService
           upload.save!
         rescue Exception => e
           upload.update(status: "error: #{e.class} - #{e.message}", backtrace: e.backtrace.join("\n"))
-          raise ProcessingError, "#{e.class} - #{e.message}"
+          raise(ProcessingError, "#{e.class} - #{e.message}")
         end
         md5_changed = upload.md5 != post.md5
 

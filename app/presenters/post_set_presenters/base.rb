@@ -3,7 +3,7 @@
 module PostSetPresenters
   class Base
     def posts
-      raise NotImplementedError
+      raise(NotImplementedError)
     end
 
     def post_previews_html(template, options = {})

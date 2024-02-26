@@ -104,7 +104,7 @@ class PostSetsController < ApplicationController
         "Maintained" => maintained.map {|x| [x.name.tr("_", " ").truncate(35), x.id]}
     }
 
-    render json: @for_select
+    render(json: @for_select)
   end
 
   def add_posts
@@ -127,19 +127,19 @@ class PostSetsController < ApplicationController
 
   def check_settings_edit_access(set)
     unless set.can_edit_settings?(CurrentUser.user)
-      raise User::PrivilegeError
+      raise(User::PrivilegeError)
     end
   end
 
   def check_post_edit_access(set)
     unless set.can_edit_posts?(CurrentUser.user)
-      raise User::PrivilegeError
+      raise(User::PrivilegeError)
     end
   end
 
   def check_view_access(set)
     unless set.can_view?(CurrentUser.user)
-      raise User::PrivilegeError
+      raise(User::PrivilegeError)
     end
   end
 
@@ -158,6 +158,6 @@ class PostSetsController < ApplicationController
   def search_params
     permitted_params = %i[name shortname creator_id creator_name order]
     permitted_params += %i[is_public] if CurrentUser.is_moderator?
-    permit_search_params permitted_params
+    permit_search_params(permitted_params)
   end
 end

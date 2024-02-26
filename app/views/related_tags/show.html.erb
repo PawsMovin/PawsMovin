@@ -3,8 +3,8 @@
     <h1>Related tags</h1>
     <section>
       <%= form_search(path: related_tag_path, always_display: true) do |f| %>
-        <%= f.input :query, autocomplete: "tag" %>
-        <%= f.input :category_id, collection: TagCategory.for_select, include_blank: true %>
+        <%= f.input(:query, autocomplete: "tag") %>
+        <%= f.input(:category_id, collection: TagCategory.for_select, include_blank: true) %>
       <% end %>
     </section>
     <% if @related_tags.query.present? %>

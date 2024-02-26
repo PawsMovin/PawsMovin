@@ -38,7 +38,7 @@ class TicketsController < ApplicationController
     @ticket = Ticket.find(params[:id])
     if @ticket.claimant_id.present? && @ticket.claimant_id != CurrentUser.id && !params[:force_claim].to_s.truthy?
       flash[:notice] = "Ticket has already been claimed by somebody else, submit again to force"
-      redirect_to ticket_path(@ticket, force_claim: "true")
+      redirect_to(ticket_path(@ticket, force_claim: "true"))
       return
     end
 
@@ -67,11 +67,11 @@ class TicketsController < ApplicationController
 
     if @ticket.claimant.nil?
       @ticket.claim!
-      redirect_to ticket_path(@ticket)
+      redirect_to(ticket_path(@ticket))
       return
     end
     flash[:notice] = "Ticket already claimed"
-    redirect_to ticket_path(@ticket)
+    redirect_to(ticket_path(@ticket))
   end
 
   def unclaim
@@ -79,20 +79,20 @@ class TicketsController < ApplicationController
 
     if @ticket.claimant.nil?
       flash[:notice] = "Ticket not claimed"
-      redirect_to ticket_path(@ticket)
+      redirect_to(ticket_path(@ticket))
       return
     elsif @ticket.claimant.id != CurrentUser.id
       flash[:notice] = "Ticket not claimed by you"
-      redirect_to ticket_path(@ticket)
+      redirect_to(ticket_path(@ticket))
       return
     elsif @ticket.approved?
       flash[:notice] = "Cannot unclaim approved ticket"
-      redirect_to ticket_path(@ticket)
+      redirect_to(ticket_path(@ticket))
       return
     end
     @ticket.unclaim!
     flash[:notice] = "Claim removed"
-    redirect_to ticket_path(@ticket)
+    redirect_to(ticket_path(@ticket))
   end
 
   private
@@ -111,18 +111,18 @@ class TicketsController < ApplicationController
     permitted_params = %i[model_type status order]
     permitted_params += %i[model_id creator_id] if CurrentUser.is_moderator? || (current_search_params[:creator_id].present? && current_search_params[:creator_id].to_i == CurrentUser.id)
     permitted_params += %i[creator_name accused_name accused_id claimant_id claimant_name reason] if CurrentUser.is_moderator?
-    permit_search_params permitted_params
+    permit_search_params(permitted_params)
   end
 
   def check_new_permission(ticket)
     unless ticket.can_create_for?(CurrentUser.user)
-      raise User::PrivilegeError
+      raise(User::PrivilegeError)
     end
   end
 
   def check_permission(ticket)
     unless ticket.can_see_details?(CurrentUser.user)
-      raise User::PrivilegeError
+      raise(User::PrivilegeError)
     end
   end
 end

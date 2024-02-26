@@ -30,7 +30,7 @@ class WikiPage < ApplicationRecord
   def validate_not_used_as_help_page
     if HelpPage.find_by(wiki_page: title).present?
       errors.add(:wiki_page, "is used by a help page")
-      throw :abort
+      throw(:abort)
     end
   end
 
@@ -126,7 +126,7 @@ class WikiPage < ApplicationRecord
 
   def revert_to(version)
     if id != version.wiki_page_id
-      raise RevertError.new("You cannot revert to a previous version of another wiki page.")
+      raise(RevertError.new("You cannot revert to a previous version of another wiki page."))
     end
 
     self.title = version.title

@@ -34,7 +34,7 @@ class ForumTopicsController < ApplicationController
         @forum_topics = @forum_topics.includes(:creator, :updater).load
       end
       format.json do
-        render :json => @forum_topics.to_json
+        render(:json => @forum_topics.to_json)
       end
     end
   end
@@ -56,7 +56,7 @@ class ForumTopicsController < ApplicationController
   def update
     check_privilege(@forum_topic)
     @forum_topic.assign_attributes(forum_topic_params)
-    @forum_topic.save touch: false
+    @forum_topic.save(touch: false)
     respond_with(@forum_topic)
   end
 
@@ -92,7 +92,7 @@ class ForumTopicsController < ApplicationController
     CurrentUser.user.update_attribute(:last_forum_read_at, Time.now)
     ForumTopicVisit.prune!(CurrentUser.user)
     respond_to do |format|
-      format.html { redirect_to forum_topics_path, notice: "All topics marked as read" }
+      format.html { redirect_to(forum_topics_path, notice: "All topics marked as read") }
       format.json
     end
   end
@@ -132,7 +132,7 @@ private
 
   def check_privilege(forum_topic)
     if !forum_topic.editable_by?(CurrentUser.user)
-      raise User::PrivilegeError
+      raise(User::PrivilegeError)
     end
   end
 
@@ -141,7 +141,7 @@ private
   end
 
   def check_min_level
-    raise User::PrivilegeError.new unless @forum_topic.visible?(CurrentUser.user)
+    raise(User::PrivilegeError.new) unless @forum_topic.visible?(CurrentUser.user)
   end
 
   def forum_topic_params

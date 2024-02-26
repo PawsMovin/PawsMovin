@@ -80,7 +80,7 @@ class UploadService
 
     def get_file_for_upload(upload, file: nil)
       return file if file.present?
-      raise RuntimeError, "No file or source URL provided" if upload.direct_url_parsed.blank?
+      raise(RuntimeError, "No file or source URL provided") if upload.direct_url_parsed.blank?
 
       download = Downloads::File.new(upload.direct_url_parsed)
       download.download!

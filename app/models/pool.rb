@@ -165,7 +165,7 @@ class Pool < ApplicationRecord
 
   def revert_to!(version)
     if id != version.pool_id
-      raise RevertError.new("You cannot revert to a previous version of another pool.")
+      raise(RevertError.new("You cannot revert to a previous version of another pool."))
     end
 
     self.post_ids = version.post_ids

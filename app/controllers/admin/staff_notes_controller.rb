@@ -26,7 +26,7 @@ module Admin
       flash[:notice] = @staff_note.valid? ? "Staff Note added" : @staff_note.errors.full_messages.join("; ")
       respond_with(@staff_note) do |format|
         format.html do
-          redirect_back fallback_location: admin_staff_notes_path
+          redirect_back(fallback_location: admin_staff_notes_path)
         end
       end
     end
@@ -43,7 +43,7 @@ module Admin
 
     def undelete
       @staff_note = StaffNote.find(params[:staff_note_id])
-      raise User::PrivilegeError unless @staff_note.can_delete?(CurrentUser.user)
+      raise(User::PrivilegeError) unless @staff_note.can_delete?(CurrentUser.user)
 
       @staff_note.update(is_deleted: false)
       redirect_back(fallback_location: admin_staff_notes_path)
@@ -60,11 +60,11 @@ module Admin
     end
 
     def check_delete_privilege
-      raise User::PrivilegeError unless @staff_note.can_delete?(CurrentUser.user)
+      raise(User::PrivilegeError) unless @staff_note.can_delete?(CurrentUser.user)
     end
 
     def check_edit_privilege
-      raise User::PrivilegeError unless @staff_note.can_edit?(CurrentUser.user)
+      raise(User::PrivilegeError) unless @staff_note.can_edit?(CurrentUser.user)
     end
   end
 end

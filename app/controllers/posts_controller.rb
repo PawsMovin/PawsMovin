@@ -19,7 +19,7 @@ class PostsController < ApplicationController
       @posts = PostsDecorator.decorate_collection(@post_set.posts)
       respond_with(@posts) do |format|
         format.json do
-          render json: @post_set.api_posts, root: 'posts'
+          render(json: @post_set.api_posts, root: 'posts')
         end
         format.atom
       end
@@ -48,7 +48,7 @@ class PostsController < ApplicationController
     @fixup_post_url = true
 
     respond_with(@post) do |fmt|
-      fmt.html { render 'posts/show'}
+      fmt.html { render('posts/show')}
     end
   end
 
@@ -83,18 +83,18 @@ class PostsController < ApplicationController
 
     if @post.errors.any?
       @error_message = @post.errors.full_messages.join("; ")
-      render :json => {:success => false, :reason => @error_message}.to_json, :status => 400
+      render(:json => {:success => false, :reason => @error_message}.to_json, :status => 400)
     else
-      head :no_content
+      head(:no_content)
     end
   end
 
   def random
     tags = params[:tags] || ''
     @post = Post.tag_match(tags + " order:random").limit(1).first
-    raise ActiveRecord::RecordNotFound if @post.nil?
+    raise(ActiveRecord::RecordNotFound) if @post.nil?
     respond_with(@post) do |format|
-      format.html { redirect_to post_path(@post, :tags => params[:tags]) }
+      format.html { redirect_to(post_path(@post, :tags => params[:tags])) }
     end
   end
 
@@ -125,7 +125,7 @@ class PostsController < ApplicationController
     @post.copy_tags_to_parent if params[:copy_tags].present?
     @post.parent.save if params[:copy_tags].present? || params[:copy_sources].present?
     respond_with(@post) do |format|
-      format.html { redirect_to post_path(@post) }
+      format.html { redirect_to(post_path(@post)) }
     end
   end
 
@@ -153,14 +153,14 @@ class PostsController < ApplicationController
 
   def regenerate_thumbnails
     @post = Post.find(params[:id])
-    raise User::PrivilegeError, "Cannot regenerate thumbnails on deleted images" if @post.is_deleted?
+    raise(User::PrivilegeError, "Cannot regenerate thumbnails on deleted images") if @post.is_deleted?
     @post.regenerate_image_samples!
     respond_with(@post)
   end
 
   def regenerate_videos
     @post = Post.find(params[:id])
-    raise User::PrivilegeError, "Cannot regenerate thumbnails on deleted images" if @post.is_deleted?
+    raise(User::PrivilegeError, "Cannot regenerate thumbnails on deleted images") if @post.is_deleted?
     @post.regenerate_video_samples!
     respond_with(@post)
   end
@@ -171,7 +171,7 @@ class PostsController < ApplicationController
       @post.approve!
       respond_with do |format|
         format.json do
-          render json: {}, status: 201
+          render(json: {}, status: 201)
         end
       end
     elsif @post.approver.present?
@@ -223,23 +223,23 @@ class PostsController < ApplicationController
 
         if post.errors.any?
           @message = post.errors.full_messages.join("; ")
-          render :template => "static/error", :status => 500
+          render(:template => "static/error", :status => 500)
         else
           response_params = {:q => params[:tags_query], :pool_id => params[:pool_id], post_set_id: params[:post_set_id]}
           response_params.reject!{|key, value| value.blank?}
-          redirect_to post_path(post, response_params)
+          redirect_to(post_path(post, response_params))
         end
       end
 
       format.json do
-        render :json => post
+        render(:json => post)
       end
     end
   end
 
   def ensure_can_edit(post)
     can_edit = CurrentUser.can_post_edit_with_reason
-    raise User::PrivilegeError.new("Updater #{User.throttle_reason(can_edit)}") unless can_edit == true
+    raise(User::PrivilegeError.new("Updater #{User.throttle_reason(can_edit)}")) unless can_edit == true
   end
 
   def post_params

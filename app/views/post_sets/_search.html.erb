@@ -1,9 +1,9 @@
 <%= form_search path: post_sets_path do |f| %>
-  <%= f.input :name, label: "Name" %>
-  <%= f.input :shortname, label: "Short Name" %>
-  <%= f.user :creator %>
+  <%= f.input(:name, label: "Name") %>
+  <%= f.input(:shortname, label: "Short Name") %>
+  <%= f.user(:creator) %>
   <% if CurrentUser.is_moderator? %>
-    <%= f.input :is_public, label: "Public?", collection: [["Yes", true], ["No", false]], include_blank: true %>
+    <%= f.input(:is_public, label: "Public?", collection: [["Yes", true], ["No", false]], include_blank: true) %>
   <% end %>
-  <%= f.input :order, collection: [%w[Name name], ['Short Name', 'shortname'], ['Post Count', 'post_count'], %w[Created created_at], %w[Updated updated_at]], include_blank: false %>
+  <%= f.input(:order, collection: [%w[Name name], ['Short Name', 'shortname'], ['Post Count', 'post_count'], %w[Created created_at], %w[Updated updated_at]], include_blank: false) %>
 <% end %>

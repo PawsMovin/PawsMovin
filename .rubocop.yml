@@ -165,3 +165,6 @@ Lint/MissingSuper:
 
 Style/MissingRespondToMissing:
   Enabled: false
+
+Style/MethodCallWithArgsParentheses:
+  Enabled: true

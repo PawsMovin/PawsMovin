@@ -10,6 +10,6 @@ ModAction.find_each do |p|
   rescue Encoding::UndefinedConversionError => e
     # Interacting with the model at all throws the exception again. Yay rails.
   rescue => e
-    puts "#{p.id} has an exception"
+    puts("#{p.id} has an exception")
   end
 end

@@ -1,6 +1,6 @@
 <%= custom_form_for(@reason) do |f| %>
-  <%= f.input :reason, as: :string, hint: "Use %PARENT_ID% for a post id, and %OTHER_ID% for anything else." %>
-  <%= f.input :title, as: :string, hint: "Shown on posts as a quick deletion button. This is the text shown on the button. If provided, prompt is required." %>
-  <%= f.input :prompt, as: :string, hint: "Shown when confirming the deletion. Prefixed with \"Delete post for\". If provided, title is required." %>
-  <%= f.button :submit, "Submit", name: nil %>
+  <%= f.input(:reason, as: :string, hint: "Use %PARENT_ID% for a post id, and %OTHER_ID% for anything else.") %>
+  <%= f.input(:title, as: :string, hint: "Shown on posts as a quick deletion button. This is the text shown on the button. If provided, prompt is required.") %>
+  <%= f.input(:prompt, as: :string, hint: "Shown when confirming the deletion. Prefixed with \"Delete post for\". If provided, title is required.") %>
+  <%= f.button(:submit, "Submit", name: nil) %>
 <% end %>

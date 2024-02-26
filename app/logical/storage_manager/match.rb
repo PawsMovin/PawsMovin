@@ -29,7 +29,7 @@ class StorageManager::Match < StorageManager
   def initialize
     @managers = []
 
-    yield self if block_given?
+    yield(self) if block_given?
   end
 
   def add_manager(constraints)

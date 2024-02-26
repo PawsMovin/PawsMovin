@@ -19,18 +19,18 @@ class EditHistoriesController < ApplicationController
 
   def diff
     if params[:otherversion].blank? || params[:thisversion].blank?
-      redirect_back fallback_location: { action: :index }, notice: "You must select two versions to diff"
+      redirect_back(fallback_location: { action: :index }, notice: "You must select two versions to diff")
       return
     end
 
     @otherversion = EditHistory.find(params[:otherversion])
     @thisversion = EditHistory.find(params[:thisversion])
-    redirect_back fallback_location: { action: :index }, notice: "You cannot diff different versionables" if @otherversion.versionable_type != @thisversion.versionable_type || @otherversion.versionable_id != @thisversion.versionable_id
+    redirect_back(fallback_location: { action: :index }, notice: "You cannot diff different versionables") if @otherversion.versionable_type != @thisversion.versionable_type || @otherversion.versionable_id != @thisversion.versionable_id
   end
 
   def search_params
     permitted_params = %i[versionable_type versionable_id edit_type user_id user_name]
     permitted_params += %i[ip_addr] if CurrentUser.is_admin?
-    permit_search_params permitted_params
+    permit_search_params(permitted_params)
   end
 end

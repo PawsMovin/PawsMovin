@@ -21,7 +21,7 @@ module Users
     def validate_sig
       message = EmailLinkValidator.validate(params[:sig], :unsubscribe)
       if message.blank? || !message || message != params[:user_id].to_s
-        raise VerificationError
+        raise(VerificationError)
       end
     end
   end

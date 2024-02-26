@@ -31,6 +31,6 @@ class IpBansController < ApplicationController
   end
 
   def search_params
-    permit_search_params %i[ip_addr banner_id banner_name reason]
+    permit_search_params(%i[ip_addr banner_id banner_name reason])
   end
 end

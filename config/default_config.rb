@@ -698,7 +698,7 @@ module PawsMovin
     end
 
     def env_to_boolean(method, var)
-      is_boolean = method.to_s.end_with? "?"
+      is_boolean = method.to_s.end_with?("?")
       return true if is_boolean && var.truthy?
       return false if is_boolean && var.falsy?
       var

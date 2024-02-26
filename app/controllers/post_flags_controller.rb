@@ -26,7 +26,7 @@ class PostFlagsController < ApplicationController
           @post = Post.find(params[:post_flag][:post_id])
           respond_with(@post_flag)
         else
-          redirect_to post_path(id: @post_flag.post_id)
+          redirect_to(post_path(id: @post_flag.post_id))
         end
       end
     end
@@ -44,7 +44,7 @@ class PostFlagsController < ApplicationController
   def show
     @post_flag = PostFlag.find(params[:id])
     respond_with(@post_flag) do |fmt|
-      fmt.html {redirect_to post_flags_path(search: {id: @post_flag.id})}
+      fmt.html {redirect_to(post_flags_path(search: {id: @post_flag.id}))}
     end
   end
 
@@ -54,7 +54,7 @@ class PostFlagsController < ApplicationController
     # creator_id and creator_name are special cased in the model search function
     permitted_params = %i[reason_matches creator_id creator_name post_id post_tags_match type is_resolved]
     permitted_params += %i[ip_addr] if CurrentUser.is_admin?
-    permit_search_params permitted_params
+    permit_search_params(permitted_params)
   end
 
   def post_flag_params

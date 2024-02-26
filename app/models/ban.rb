@@ -120,7 +120,7 @@ class Ban < ApplicationRecord
 
   def humanized_expiration
     return 'never' if expires_at == nil
-    ApplicationController.helpers.compact_time expires_at
+    ApplicationController.helpers.compact_time(expires_at)
   end
 
   def expire_days

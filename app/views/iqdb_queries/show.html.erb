@@ -2,10 +2,10 @@
   <div id="a-show">
     <h1>Similar Images Search</h1>
     <%= form_search(path: iqdb_queries_path, hideable: false, method: :post) do |f| %>
-      <%= f.input :post_id, label: "Post ID" %>
-      <%= f.input :url, label: "URL" %>
-      <%= f.input :file, as: :file %>
-      <%= f.input :score_cutoff, label: "Similarity", default: 60 %>
+      <%= f.input(:post_id, label: "Post ID") %>
+      <%= f.input(:url, label: "URL") %>
+      <%= f.input(:file, as: :file) %>
+      <%= f.input(:score_cutoff, label: "Similarity", default: 60) %>
     <% end %>
 
     <%= render "posts/partials/common/inline_blacklist" %>

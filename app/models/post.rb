@@ -69,7 +69,7 @@ class Post < ApplicationRecord
     module ClassMethods
       def delete_files(post_id, md5, file_ext, force: false)
         if Post.where(md5: md5).exists? && !force
-          raise DeletionError.new("Files still in use; skipping deletion.")
+          raise(DeletionError.new("Files still in use; skipping deletion."))
         end
 
         PawsMovin.config.storage_manager.delete_post_files(md5, file_ext)
@@ -530,7 +530,7 @@ class Post < ApplicationRecord
       max_count = PawsMovin.config.max_tags_per_post
       if TagQuery.scan(tag_string).size > max_count
         self.errors.add(:tag_string, "tag count exceeds maximum of #{max_count}")
-        throw :abort
+        throw(:abort)
       end
       true
     end
@@ -553,7 +553,7 @@ class Post < ApplicationRecord
       # over the limit and posts will fail to edit later on.
       if normalized_tags.size > PawsMovin.config.max_tags_per_post
         self.errors.add(:tag_string, "tag count exceeds maximum of #{PawsMovin.config.max_tags_per_post}")
-        throw :abort
+        throw(:abort)
       end
       normalized_tags = apply_casesensitive_metatags(normalized_tags)
       normalized_tags = normalized_tags.map {|tag| tag.downcase}
@@ -603,10 +603,10 @@ class Post < ApplicationRecord
 
     def add_dnp_tags_to_locked(tags)
       locked = TagQuery.scan((locked_tags || '').downcase)
-      if tags.include? 'avoid_posting'
+      if tags.include?('avoid_posting')
         locked << 'avoid_posting'
       end
-      if tags.include? 'conditional_dnp'
+      if tags.include?('conditional_dnp')
         locked << 'conditional_dnp'
       end
       self.locked_tags = locked.uniq.join(' ') if locked.size > 0
@@ -738,7 +738,7 @@ class Post < ApplicationRecord
       prefixed, unprefixed = tags.partition {|x| x =~ TagCategory.regexp}
       prefixed = Tag.find_or_create_by_name_list(prefixed)
       prefixed.map! do |tag|
-        @bad_type_changes << tag.name if tag.errors.include? :category
+        @bad_type_changes << tag.name if tag.errors.include?(:category)
         tag.name
       end
       prefixed + unprefixed
@@ -1253,7 +1253,7 @@ class Post < ApplicationRecord
           flag = flags.create(reason: reason, reason_name: 'deletion', is_resolved: false, is_deletion: true, force_flag: force_flag)
 
           if flag.errors.any?
-            raise PostFlag::Error.new(flag.errors.full_messages.join("; "))
+            raise(PostFlag::Error.new(flag.errors.full_messages.join("; ")))
           end
 
           update(
@@ -1286,7 +1286,7 @@ class Post < ApplicationRecord
       end
 
       if !CurrentUser.is_admin? && uploader_id == CurrentUser.id
-        raise User::PrivilegeError, "You cannot undelete a post you uploaded"
+        raise(User::PrivilegeError, "You cannot undelete a post you uploaded")
       end
 
       if !is_deleted
@@ -1337,7 +1337,7 @@ class Post < ApplicationRecord
 
     def revert_to(target)
       if id != target.post_id
-        raise RevertError.new("You cannot revert to a previous version of another post.")
+        raise(RevertError.new("You cannot revert to a previous version of another post."))
       end
 
       self.tag_string = target.tags
@@ -1362,11 +1362,11 @@ class Post < ApplicationRecord
     def copy_notes_to(other_post, copy_tags: NOTE_COPY_TAGS)
       transaction do
         if id == other_post.id
-          errors.add :base, "Source and destination posts are the same"
+          errors.add(:base, "Source and destination posts are the same")
           return false
         end
         unless has_notes?
-          errors.add :post, "has no notes"
+          errors.add(:post, "has no notes")
           return false
         end
 

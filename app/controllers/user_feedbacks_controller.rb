@@ -45,13 +45,13 @@ class UserFeedbacksController < ApplicationController
     @user_feedback = UserFeedback.find(params[:id])
     check_privilege(@user_feedback)
     @user_feedback.destroy
-    redirect_back fallback_location: user_feedbacks_path
+    redirect_back(fallback_location: user_feedbacks_path)
   end
 
   private
 
   def check_privilege(user_feedback)
-    raise User::PrivilegeError unless user_feedback.editable_by?(CurrentUser.user)
+    raise(User::PrivilegeError) unless user_feedback.editable_by?(CurrentUser.user)
   end
 
   def user_feedback_params(context)

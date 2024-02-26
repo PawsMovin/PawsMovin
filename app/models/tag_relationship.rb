@@ -203,7 +203,7 @@ class TagRelationship < ApplicationRecord
   concerning :EmbeddedText do
     class_methods do
       def embedded_pattern
-        raise NotImplementedError
+        raise(NotImplementedError)
       end
     end
   end

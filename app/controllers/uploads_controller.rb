@@ -6,8 +6,8 @@ class UploadsController < ApplicationController
   before_action :ensure_uploads_enabled, only: [:new, :create]
   respond_to :html, :json
   content_security_policy only: [:new] do |p|
-    p.img_src :self, :data, :blob, "*"
-    p.media_src :self, :data, :blob, "*"
+    p.img_src(:self, :data, :blob, "*")
+    p.media_src(:self, :data, :blob, "*")
   end
 
   def new
@@ -42,7 +42,7 @@ class UploadsController < ApplicationController
 
     if @upload.invalid?
       flash[:notice] = @upload.errors.full_messages.join("; ")
-      return render json: {success: false, reason: 'invalid', message: @upload.errors.full_messages.join("; ")}, status: 412
+      return render(json: {success: false, reason: 'invalid', message: @upload.errors.full_messages.join("; ")}, status: 412)
     end
     if @service.warnings.any? && !@upload.is_errored? && !@upload.is_duplicate?
       warnings = @service.warnings.join(".\n \n")
@@ -60,10 +60,10 @@ class UploadsController < ApplicationController
 
     respond_to do |format|
       format.json do
-        return render json: {success: false, reason: 'duplicate', location: post_path(@upload.duplicate_post_id), post_id: @upload.duplicate_post_id}, status: 412 if @upload.is_duplicate?
-        return render json: {success: false, reason: 'invalid', message: @upload.sanitized_status}, status: 412 if @upload.is_errored?
+        return render(json: {success: false, reason: 'duplicate', location: post_path(@upload.duplicate_post_id), post_id: @upload.duplicate_post_id}, status: 412) if @upload.is_duplicate?
+        return render(json: {success: false, reason: 'invalid', message: @upload.sanitized_status}, status: 412) if @upload.is_errored?
 
-        render json: {success: true, location: post_path(@upload.post_id), post_id: @upload.post_id}
+        render(json: {success: true, location: post_path(@upload.post_id), post_id: @upload.post_id})
       end
     end
   end
@@ -83,7 +83,7 @@ class UploadsController < ApplicationController
 
   def ensure_uploads_enabled
     if DangerZone.uploads_disabled?(CurrentUser.user)
-      access_denied "Uploads are disabled"
+      access_denied("Uploads are disabled")
     end
   end
 end

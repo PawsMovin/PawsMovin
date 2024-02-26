@@ -16,7 +16,7 @@ module Moderator
       @results = search.execute
       respond_with(@results) do |format|
         format.json do
-          render json: @results[:ip_addrs].uniq
+          render(json: @results[:ip_addrs].uniq)
         end
       end
     end

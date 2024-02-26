@@ -3,9 +3,9 @@
     <h1>IP Bans</h1>
 
     <%= form_search(path: ip_bans_path) do |f| %>
-      <%= f.input :ip_addr, label: "IP Address" %>
-      <%= f.user :banner %>
-      <%= f.input :reason %>
+      <%= f.input(:ip_addr, label: "IP Address") %>
+      <%= f.user(:banner) %>
+      <%= f.input(:reason) %>
     <% end %>
 
     <table class="striped">

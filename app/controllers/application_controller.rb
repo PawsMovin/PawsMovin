@@ -38,7 +38,7 @@ class ApplicationController < ActionController::Base
       headers["X-Api-Limit"] = CurrentUser.user.token_bucket.cached_count.to_s
 
       if throttled
-        raise APIThrottled.new
+        raise(APIThrottled.new)
         return false
       end
     end
@@ -63,7 +63,7 @@ class ApplicationController < ActionController::Base
       render_error_page(400, exception)
     when SessionLoader::AuthenticationFailure
       session.delete(:user_id)
-      cookies.delete :remember
+      cookies.delete(:remember)
       render_expected_error(401, exception.message)
     when ActionController::InvalidAuthenticityToken
       render_expected_error(403, "ActionController::InvalidAuthenticityToken. Did you properly authorize your request?")
@@ -93,10 +93,10 @@ class ApplicationController < ActionController::Base
   def render_404
     respond_to do |fmt|
       fmt.html do
-        render "static/404", formats: [:html, :atom], status: 404
+        render("static/404", formats: [:html, :atom], status: 404)
       end
       fmt.json do
-        render json: { success: false, reason: "not found" }, status: 404
+        render(json: { success: false, reason: "not found" }, status: 404)
       end
       fmt.any do
         render_unsupported_format
@@ -111,7 +111,7 @@ class ApplicationController < ActionController::Base
   def render_expected_error(status, message, format: request.format.symbol)
     format = :html unless format.in?(%i[html json atom])
     @message = message
-    render "static/error", status: status, formats: format
+    render("static/error", status: status, formats: format)
   end
 
   def render_error_page(status, exception, message: exception.message, format: request.format.symbol)
@@ -128,7 +128,7 @@ class ApplicationController < ActionController::Base
     PawsMovin::Logger.log(@exception, expected: @expected)
     log = ExceptionLog.add(exception, CurrentUser.id, request) if !@expected
     @log_code = log&.code
-    render "static/error", status: status, formats: format
+    render("static/error", status: status, formats: format)
   end
 
   def access_denied(exception = nil)
@@ -140,16 +140,16 @@ class ApplicationController < ActionController::Base
       fmt.html do
         if CurrentUser.is_anonymous?
           if request.get?
-            redirect_to new_session_path(:url => previous_url), notice: @message
+            redirect_to(new_session_path(:url => previous_url), notice: @message)
           else
-            redirect_to new_session_path, notice: @message
+            redirect_to(new_session_path, notice: @message)
           end
         else
-          render :template => "static/access_denied", :status => 403
+          render(:template => "static/access_denied", :status => 403)
         end
       end
       fmt.json do
-        render :json => {:success => false, reason: @message}.to_json, :status => 403
+        render(:json => {:success => false, reason: @message}.to_json, :status => 403)
       end
     end
   end
@@ -169,7 +169,7 @@ class ApplicationController < ActionController::Base
 
     last_authenticated_at = session[:last_authenticated_at]
     if last_authenticated_at.blank? || Time.zone.parse(last_authenticated_at) < 60.minutes.ago
-      redirect_to confirm_password_session_path(url: request.fullpath)
+      redirect_to(confirm_password_session_path(url: request.fullpath))
     end
   end
 
@@ -216,7 +216,7 @@ class ApplicationController < ActionController::Base
 
     if nonblank_search_params != params[:search]
       params[:search] = nonblank_search_params
-      redirect_to url_for(params: params.except(:controller, :action, :index).permit!)
+      redirect_to(url_for(params: params.except(:controller, :action, :index).permit!))
     end
   end
 

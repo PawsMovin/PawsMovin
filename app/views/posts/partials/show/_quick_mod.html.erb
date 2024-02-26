@@ -1,18 +1,18 @@
 <div class="quick-mod">
   <% if post.is_approvable? %>
   <div class="quick-mod-group">
-    <%= tag.a "Approve",
+    <%= tag.a("Approve",
       id: "approve-post",
       href: "#",
       class: "approve-post-link button btn-neutral btn-important",
       data: {
         pid: post.id,
         shortcut: "shift+o",
-      }
+      })
     %>
     |
     <% if post.presenter.has_sequential_navigation?(params) %>
-      <%= tag.a "Approve And Prev",
+      <%= tag.a("Approve And Prev",
         id: "approve-post-prev",
         href: "#",
         class: "approve-post-and-navigate-link button btn-neutral",
@@ -20,10 +20,10 @@
           pid: post.id,
           location: show_seq_post_path(post, q: params[:q], seq: "prev"),
           shortcut: "shift+q",
-        }
+        })
       %>
       &bull;
-      <%= tag.a "Approve And Next",
+      <%= tag.a("Approve And Next",
         id: "approve-post-next",
         href: "#",
         class: "approve-post-and-navigate-link button btn-neutral",
@@ -31,7 +31,7 @@
           pid: post.id,
           location: show_seq_post_path(post, q: params[:q], seq: "next"),
           shortcut: "shift+w",
-        }
+        })
       %>
     <% end %>
   </div>
@@ -49,7 +49,7 @@
   </div>
   <div class="quick-mod-group">
     <%= link_to "Disapprove", "#", data: { post_id: post.id }, class: "detailed-rejection-link button btn-neutral btn-important" %> |
-    <%= tag.a "Borderline Quality", href: "#", data: { pid: post.id, reason: "borderline_quality" }, class: "disapprove-post-link button btn-neutral" %> &bull;
-    <%= tag.a "Borderline Relevancy", href: "#", data: { pid: post.id, reason: "borderline_relevancy" }, class: "disapprove-post-link button btn-neutral" %>
+    <%= tag.a("Borderline Quality", href: "#", data: { pid: post.id, reason: "borderline_quality" }, class: "disapprove-post-link button btn-neutral") %> &bull;
+    <%= tag.a("Borderline Relevancy", href: "#", data: { pid: post.id, reason: "borderline_relevancy" }, class: "disapprove-post-link button btn-neutral") %>
   </div>
 </div>

@@ -12,22 +12,22 @@ module IqdbProxy
     url.path = path
     HTTParty.send(request_type, url, { body: params.to_json, headers: { "Content-Type" => "application/json" } })
   rescue Errno::ECONNREFUSED, Errno::EADDRNOTAVAIL, Errno::EHOSTUNREACH
-    raise Error, "This service is temporarily unavailable. Please try again later."
+    raise(Error, "This service is temporarily unavailable. Please try again later.")
   end
 
   def update_post(post)
     return unless post.has_preview?
 
     thumb = generate_thumbnail(post.preview_file_path)
-    raise Error, "failed to generate thumb for #{post.id}" unless thumb
+    raise(Error, "failed to generate thumb for #{post.id}") unless thumb
 
     response = make_request("/images/#{post.id}", :post, get_channels_data(thumb))
-    raise Error, "iqdb request failed" if response.code != 200
+    raise(Error, "iqdb request failed") if response.code != 200
   end
 
   def remove_post(post_id)
     response = make_request("/images/#{post_id}", :delete)
-    raise Error, "iqdb request failed" if response.code != 200
+    raise(Error, "iqdb request failed") if response.code != 200
   end
 
   def query_url(image_url, score_cutoff)
@@ -54,14 +54,14 @@ module IqdbProxy
   end
 
   def query_hash(hash, score_cutoff)
-    response = make_request "/query", :post, { hash: hash }
+    response = make_request("/query", :post, { hash: hash })
     return [] if response.code != 200
 
     process_iqdb_result(response.parsed_response, score_cutoff)
   end
 
   def process_iqdb_result(json, score_cutoff)
-    raise Error, "Server returned an error. Most likely the url is not found." unless json.is_a?(Array)
+    raise(Error, "Server returned an error. Most likely the url is not found.") unless json.is_a?(Array)
 
     json.filter! { |entry| (entry["score"] || 0) >= (score_cutoff.presence || 60).to_i }
     json.map do |x|

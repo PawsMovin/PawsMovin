@@ -12,7 +12,7 @@ class RemoveUnusedTextIndexColumns < ActiveRecord::Migration[7.0]
   end
 
   def drop_trigger_and_column(table, column)
-    execute "DROP TRIGGER trigger_#{table}_on_update ON #{table}"
-    remove_column table, "#{column}_index"
+    execute("DROP TRIGGER trigger_#{table}_on_update ON #{table}")
+    remove_column(table, "#{column}_index")
   end
 end

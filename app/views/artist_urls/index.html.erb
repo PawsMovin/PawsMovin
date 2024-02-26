@@ -1,11 +1,11 @@
 <div id="c-artist-urls">
   <div id="a-index">
     <%= form_search(path: artist_urls_path) do |f| %>
-      <%= f.input :artist_name, label: "Artist Name", autocomplete: "artist" %>
-      <%= f.input :url_matches, label: "URL" %>
-      <%= f.input :normalized_url_matches, label: "Normalized URL" %>
-      <%= f.input :is_active, label: "Active?", collection: [["Yes", true], ["No", false]], include_blank: true %>
-      <%= f.input :order, collection: [["ID", "id"], ["Created", "created_at"], ["Updated", "updated_at"]] %>
+      <%= f.input(:artist_name, label: "Artist Name", autocomplete: "artist") %>
+      <%= f.input(:url_matches, label: "URL") %>
+      <%= f.input(:normalized_url_matches, label: "Normalized URL") %>
+      <%= f.input(:is_active, label: "Active?", collection: [["Yes", true], ["No", false]], include_blank: true) %>
+      <%= f.input(:order, collection: [["ID", "id"], ["Created", "created_at"], ["Updated", "updated_at"]]) %>
     <% end %>
 
     <table class="striped">
@@ -23,13 +23,13 @@
       <tbody>
         <% @artist_urls.each do |artist_url| %>
           <tr>
-            <%= tag.td artist_url.id %>
-            <%= tag.td link_to(artist_url.artist.name, artist_url.artist) %>
-            <%= tag.td external_link_to(artist_url.url.to_s) %>
-            <%= tag.td external_link_to(artist_url.normalized_url) %>
-            <%= tag.td artist_url.is_active.to_s %>
-            <%= tag.td compact_time(artist_url.created_at) %>
-            <%= tag.td compact_time(artist_url.updated_at) %>
+            <%= tag.td(artist_url.id) %>
+            <%= tag.td(link_to(artist_url.artist.name, artist_url.artist)) %>
+            <%= tag.td(external_link_to(artist_url.url.to_s)) %>
+            <%= tag.td(external_link_to(artist_url.normalized_url)) %>
+            <%= tag.td(artist_url.is_active.to_s) %>
+            <%= tag.td(compact_time(artist_url.created_at)) %>
+            <%= tag.td(compact_time(artist_url.updated_at)) %>
           </tr>
         <% end %>
       </tbody>

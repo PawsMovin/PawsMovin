@@ -15,7 +15,7 @@ module PawsMovin
 
           define_singleton_method("flag_value_for") do |key|
             index = attributes.index(key)
-            raise IndexError if index.nil?
+            raise(IndexError) if index.nil?
             1 << index
           end
 

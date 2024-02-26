@@ -135,7 +135,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     context "undelete action" do
       should "render" do
         as(@user) do
-          @post.delete! "test delete"
+          @post.delete!("test delete")
         end
         assert_difference(-> { PostEvent.count }, 1) do
           post_auth undelete_post_path(@post), @admin, params: { format: :json }

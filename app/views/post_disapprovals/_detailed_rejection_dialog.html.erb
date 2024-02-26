@@ -2,8 +2,8 @@
   <p>You can supply a short message to the uploader explaining why you rejected this upload.</p>
 
   <%= custom_form_for(PostDisapproval.new, url: post_disapprovals_path, id: "detailed-rejection-form") do |f| %>
-    <%= f.hidden_field :post_id, value: "x" %>
-    <%= f.input :reason, collection: [["Borderline Relevancy", "borderline_relevancy"], ["Borderline Quality", "borderline_quality"], ["Other", "other"]] %>
-    <%= f.input :message, as: :string %>
+    <%= f.hidden_field(:post_id, value: "x") %>
+    <%= f.input(:reason, collection: [["Borderline Relevancy", "borderline_relevancy"], ["Borderline Quality", "borderline_quality"], ["Other", "other"]]) %>
+    <%= f.input(:message, as: :string) %>
   <% end %>
 </div>

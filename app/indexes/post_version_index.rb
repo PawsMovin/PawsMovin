@@ -40,7 +40,7 @@ module PostVersionIndex
       },
     }
 
-    base.document_store.extend ClassMethods
+    base.document_store.extend(ClassMethods)
   end
 
   module ClassMethods
@@ -52,7 +52,7 @@ module PostVersionIndex
 
       cnt = 0
       q.find_in_batches(batch_size: 10000) do |batch|
-        puts cnt+=1
+        puts(cnt+=1)
         batch.map! do |pv|
           {
               index: {

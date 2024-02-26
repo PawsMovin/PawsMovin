@@ -1,6 +1,6 @@
 <% "#{@post_set.humanized_tag_string} - #{PawsMovin.config.app_name}".tap do |title| %>
-  <%= tag.meta name: "og:title", content: title %>
-  <%= tag.meta name: "twitter:title", content: title %>
+  <%= tag.meta(name: "og:title", content: title) %>
+  <%= tag.meta(name: "twitter:title", content: title) %>
 <% end %>
 
 <meta name="robots" content="nofollow,noindex">
@@ -9,13 +9,13 @@
   <meta name="rating" content="adult">
 <% end %>
 
-<%= tag.meta name: "canonical", content: posts_url(tags: params[:tags], host: PawsMovin.config.hostname, protocol: "https") %>
+<%= tag.meta(name: "canonical", content: posts_url(tags: params[:tags], host: PawsMovin.config.hostname, protocol: "https")) %>
 
 <% PawsMovin.config.description.tap do |desc| %>
-  <%= tag.meta name: "description", content: desc %>
-  <%= tag.meta name: "og:description", content: desc %>
-  <%= tag.meta name: "twitter:description", content: desc %>
+  <%= tag.meta(name: "description", content: desc) %>
+  <%= tag.meta(name: "og:description", content: desc) %>
+  <%= tag.meta(name: "twitter:description", content: desc) %>
 <% end %>
 
-<%= tag.meta name: "og:type", content: "website" %>
-<%= tag.meta name: "og:site", content: PawsMovin.config.app_name %>
+<%= tag.meta(name: "og:type", content: "website") %>
+<%= tag.meta(name: "og:site", content: PawsMovin.config.app_name) %>

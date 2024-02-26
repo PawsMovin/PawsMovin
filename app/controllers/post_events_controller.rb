@@ -9,7 +9,7 @@ class PostEventsController < ApplicationController
     )
     respond_with(@events) do |format|
       format.json do
-        render json: Draper.undecorate(@events)
+        render(json: Draper.undecorate(@events))
       end
     end
   end

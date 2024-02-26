@@ -48,7 +48,7 @@ class ApngInspector
 
         chunk_len, chunk_name = chunkheader.unpack("Na4")
         return false if chunk_name =~ /[^A-Za-z]/
-        yield chunk_name, chunk_len, file
+        yield(chunk_name, chunk_len, file)
 
         #no need to read further if IEND is reached
         if chunk_name == "IEND"

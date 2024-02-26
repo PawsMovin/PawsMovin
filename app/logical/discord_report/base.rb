@@ -3,11 +3,11 @@
 module DiscordReport
   class Base
     def webhook_url
-      raise NotImplementedError
+      raise(NotImplementedError)
     end
 
     def report
-      raise NotImplementedError
+      raise(NotImplementedError)
     end
 
     def run!

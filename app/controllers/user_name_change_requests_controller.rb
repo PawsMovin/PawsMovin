@@ -14,10 +14,10 @@ class UserNameChangeRequestsController < ApplicationController
     @change_request = UserNameChangeRequest.create(change_request_params)
 
     if @change_request.errors.any?
-      render action: "new"
+      render(action: "new")
     else
       @change_request.approve!
-      redirect_to user_name_change_request_path(@change_request), notice: "Your name has been changed"
+      redirect_to(user_name_change_request_path(@change_request), notice: "Your name has been changed")
     end
   end
 
@@ -36,7 +36,7 @@ class UserNameChangeRequestsController < ApplicationController
 
   def check_privileges!(change_request)
     return if CurrentUser.is_moderator?
-    raise User::PrivilegeError if change_request.user_id != CurrentUser.user.id
+    raise(User::PrivilegeError) if change_request.user_id != CurrentUser.user.id
   end
 
   def change_request_params

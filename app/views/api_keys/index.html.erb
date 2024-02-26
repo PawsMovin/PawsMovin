@@ -34,20 +34,20 @@
       <%= link_to "Create API key", new_user_api_key_path(CurrentUser.user.id) %>
     <% else %>
       <%= table_for @api_keys, width: "100%", class: "striped autofit" do |t| %>
-        <% t.column :name %>
-        <% t.column :key, td: { class: "col-expand" } %>
+        <% t.column(:name) %>
+        <% t.column(:key, td: { class: "col-expand" }) %>
 
-        <% t.column :permissions do |api_key| %>
+        <% t.column(:permissions) do |api_key| %>
           <%= safe_join(api_key.pretty_permissions, "<br>".html_safe).presence || "All" %>
         <% end %>
 
-        <% t.column "IPs" do |api_key| %>
+        <% t.column("IPs") do |api_key| %>
           <%= safe_join(api_key.permitted_ip_addresses, "<br>".html_safe).presence || "All" %>
         <% end %>
 
-        <% t.column :uses %>
+        <% t.column(:uses) %>
 
-        <% t.column "Last Used" do |api_key| %>
+        <% t.column("Last Used") do |api_key| %>
           <%= time_ago_in_words_tagged api_key.last_used_at %>
 
           <% if api_key.last_ip_address.present? %>
@@ -55,7 +55,7 @@
           <% end %>
         <% end %>
 
-        <% t.column "Created" do |api_key| %>
+        <% t.column("Created") do |api_key| %>
           <%= time_ago_in_words_tagged api_key.created_at %>
 
           <% unless params[:user_id].present? %>
@@ -63,7 +63,7 @@
           <%  end %>
         <% end %>
 
-        <% t.column column: "control" do |api_key| %>
+        <% t.column(column: "control") do |api_key| %>
           <%= link_to "Edit", edit_api_key_path(api_key) %>
           | <%= link_to "Delete", api_key, method: :delete %>
         <% end %>

@@ -31,7 +31,7 @@ class ForumTopic < ApplicationRecord
 
     if is_hidden?
       errors.add(:topic, "is for an alias, implication, or bulk update request. It cannot be hidden")
-      throw :abort
+      throw(:abort)
     end
   end
 
@@ -58,7 +58,7 @@ class ForumTopic < ApplicationRecord
     def category_valid
       return if category
       errors.add(:category, "is invalid")
-      throw :abort
+      throw(:abort)
     end
 
     def category_allows_creation

@@ -27,7 +27,7 @@ class SessionsController < ApplicationController
   def destroy
     session.delete(:user_id)
     session.delete(:last_authenticated_at)
-    cookies.delete :remember
+    cookies.delete(:remember)
     redirect_to(posts_path, :notice => "You are now logged out")
   end
 

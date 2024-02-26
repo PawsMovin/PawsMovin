@@ -31,9 +31,9 @@ class TagImplicationsController < ApplicationController
         format.html { redirect_back(fallback_location: new_tag_implication_path, notice: @tag_implication_request.errors.full_messages.join("; ")) }
       end
     elsif @tag_implication_request.forum_topic
-      redirect_to forum_topic_path(@tag_implication_request.forum_topic)
+      redirect_to(forum_topic_path(@tag_implication_request.forum_topic))
     else
-      redirect_to tag_implication_path(@tag_implication_request.tag_relationship)
+      redirect_to(tag_implication_path(@tag_implication_request.tag_relationship))
     end
   end
 

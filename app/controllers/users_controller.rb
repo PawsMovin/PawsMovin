@@ -7,7 +7,7 @@ class UsersController < ApplicationController
   before_action :member_only, only: [:custom_style, :upload_limit]
 
   def new
-    raise User::PrivilegeError.new("Already signed in") unless CurrentUser.is_anonymous?
+    raise(User::PrivilegeError.new("Already signed in")) unless CurrentUser.is_anonymous?
     return access_denied("Signups are disabled") unless PawsMovin.config.enable_signups?
     @user = User.new
     respond_with(@user)
@@ -22,14 +22,14 @@ class UsersController < ApplicationController
   def index
     if params[:name].present?
       @user = User.find_by(name: params[:name])
-      raise ActiveRecord::RecordNotFound if @user.blank?
-      redirect_to user_path(@user)
+      raise(ActiveRecord::RecordNotFound) if @user.blank?
+      redirect_to(user_path(@user))
     else
       @users = User.search(search_params).includes(:user_status).paginate(params[:page], limit: params[:limit], search_count: params[:search])
       respond_with(@users) do |format|
         format.json do
-          render json: @users.to_json
-          expires_in params[:expiry].to_i.days if params[:expiry]
+          render(json: @users.to_json)
+          expires_in(params[:expiry].to_i.days) if params[:expiry]
         end
       end
     end
@@ -58,8 +58,8 @@ class UsersController < ApplicationController
   end
 
   def create
-    raise User::PrivilegeError.new("Already signed in") unless CurrentUser.is_anonymous?
-    raise User::PrivilegeError.new("Signups are disabled") unless PawsMovin.config.enable_signups?
+    raise(User::PrivilegeError.new("Already signed in")) unless CurrentUser.is_anonymous?
+    raise(User::PrivilegeError.new("Signups are disabled")) unless PawsMovin.config.enable_signups?
     User.transaction do
       @user = User.new(user_params(:create).merge({last_ip_addr: request.remote_ip}))
       @user.validate_email_format = true
@@ -101,20 +101,20 @@ class UsersController < ApplicationController
       flash[:notice] = "Settings updated"
     end
     respond_with(@user) do |format|
-      format.html { redirect_back fallback_location: edit_user_path(@user) }
+      format.html { redirect_back(fallback_location: edit_user_path(@user)) }
     end
   end
 
   def custom_style
     @css = CustomCss.parse(CurrentUser.user.custom_style)
-    expires_in 10.years
+    expires_in(10.years)
   end
 
   private
 
   def check_privilege(user)
-    raise User::PrivilegeError unless user.id == CurrentUser.id || CurrentUser.is_admin?
-    raise User::PrivilegeError.new("Must verify account email") unless CurrentUser.is_verified?
+    raise(User::PrivilegeError) unless user.id == CurrentUser.id || CurrentUser.is_admin?
+    raise(User::PrivilegeError.new("Must verify account email")) unless CurrentUser.is_verified?
   end
 
   def user_params(context)
@@ -144,6 +144,6 @@ class UsersController < ApplicationController
   def search_params
     permitted_params = %i[name_matches about_me avatar_id level min_level max_level can_upload_free can_approve_posts order]
     permitted_params += %i[ip_addr email_matches] if CurrentUser.is_admin?
-    permit_search_params permitted_params
+    permit_search_params(permitted_params)
   end
 end

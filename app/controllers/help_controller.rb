@@ -15,12 +15,12 @@ class HelpController < ApplicationController
     respond_with(@help) do |format|
       format.html do
         if @help.blank?
-          redirect_to help_pages_path
+          redirect_to(help_pages_path)
         end
       end
       format.json do
-        raise ActiveRecord::RecordNotFound if @help.blank?
-        render json: @help
+        raise(ActiveRecord::RecordNotFound) if @help.blank?
+        render(json: @help)
       end
     end
   end

@@ -35,7 +35,7 @@ module PostSets
     end
 
     def presenter
-      raise NotImplementedError
+      raise(NotImplementedError)
     end
   end
 end

@@ -15,7 +15,7 @@ class CommentVotesController < ApplicationController
       VoteManager.comment_unvote!(comment: @comment, user: CurrentUser.user)
     end
     @comment.reload
-    render json: {score: @comment.score, our_score: @comment_vote != :need_unvote ? @comment_vote.score : 0}
+    render(json: {score: @comment.score, our_score: @comment_vote != :need_unvote ? @comment_vote.score : 0})
   rescue UserVote::Error, ActiveRecord::RecordInvalid => x
     render_expected_error(422, x)
   end
@@ -52,6 +52,6 @@ class CommentVotesController < ApplicationController
   def search_params
     permitted_params = %i[comment_id user_name user_id comment_creator_id comment_creator_name timeframe score]
     permitted_params += %i[user_ip_addr duplicates_only order] if CurrentUser.is_admin?
-    permit_search_params permitted_params
+    permit_search_params(permitted_params)
   end
 end

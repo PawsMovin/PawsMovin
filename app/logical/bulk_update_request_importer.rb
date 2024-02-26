@@ -50,7 +50,7 @@ class BulkUpdateRequestImporter
         # do nothing
 
       else
-        raise Error, "Unparseable line: #{line}"
+        raise(Error, "Unparseable line: #{line}")
       end
     end
   end
@@ -80,7 +80,7 @@ class BulkUpdateRequestImporter
         comment = "# missing" if token[3] == false
         "nuke tag #{token[1]} #{comment}".strip
       else
-        raise Error.new("Unknown token to reverse")
+        raise(Error.new("Unknown token to reverse"))
       end
     end
   end
@@ -186,12 +186,12 @@ class BulkUpdateRequestImporter
     else
       tag_alias = TagAlias.create(:forum_topic_id => forum_id, :status => "pending", :antecedent_name => token[1], :consequent_name => token[2])
       unless tag_alias.valid?
-        raise Error, "Error: #{tag_alias.errors.full_messages.join("; ")} (create alias #{tag_alias.antecedent_name} -> #{tag_alias.consequent_name})"
+        raise(Error, "Error: #{tag_alias.errors.full_messages.join("; ")} (create alias #{tag_alias.antecedent_name} -> #{tag_alias.consequent_name})")
       end
     end
 
     tag_alias.rename_artist
-    raise Error, "Error: Alias would modify other aliases or implications through transitive relationships. (create alias #{tag_alias.antecedent_name} -> #{tag_alias.consequent_name})" if tag_alias.has_transitives
+    raise(Error, "Error: Alias would modify other aliases or implications through transitive relationships. (create alias #{tag_alias.antecedent_name} -> #{tag_alias.consequent_name})") if tag_alias.has_transitives
     tag_alias.approve!(approver: approver, update_topic: false)
   end
 
@@ -203,7 +203,7 @@ class BulkUpdateRequestImporter
     else
       tag_implication = TagImplication.create(:forum_topic_id => forum_id, :status => "pending", :antecedent_name => token[1], :consequent_name => token[2])
       unless tag_implication.valid?
-        raise Error, "Error: #{tag_implication.errors.full_messages.join("; ")} (create implication #{tag_implication.antecedent_name} -> #{tag_implication.consequent_name})"
+        raise(Error, "Error: #{tag_implication.errors.full_messages.join("; ")} (create implication #{tag_implication.antecedent_name} -> #{tag_implication.consequent_name})")
       end
     end
 
@@ -223,12 +223,12 @@ class BulkUpdateRequestImporter
 
         when :remove_alias
           tag_alias = TagAlias.active.find_by(antecedent_name: token[1], consequent_name: token[2])
-          raise Error, "Alias for #{token[1]} not found" if tag_alias.nil?
+          raise(Error, "Alias for #{token[1]} not found") if tag_alias.nil?
           tag_alias.reject!(update_topic: false)
 
         when :remove_implication
           tag_implication = TagImplication.active.find_by(antecedent_name: token[1], consequent_name: token[2])
-          raise Error, "Implication for #{token[1]} not found" if tag_implication.nil?
+          raise(Error, "Implication for #{token[1]} not found") if tag_implication.nil?
           tag_implication.reject!(update_topic: false)
 
         when :mass_update
@@ -239,12 +239,12 @@ class BulkUpdateRequestImporter
 
         when :change_category
           tag = Tag.find_by(name: token[1])
-          raise Error, "Tag for #{token[1]} not found" if tag.nil?
+          raise(Error, "Tag for #{token[1]} not found") if tag.nil?
           tag.category = TagCategory.value_for(token[2])
           tag.save
 
         else
-          raise Error, "Unknown token: #{token[0]}"
+          raise(Error, "Unknown token: #{token[0]}")
         end
       end
     end

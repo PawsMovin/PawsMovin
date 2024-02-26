@@ -19,8 +19,8 @@ class ArtistsController < ApplicationController
     @artists = Artist.includes(:urls).search(search_params).paginate(params[:page], :limit => params[:limit], :search_count => params[:search])
     respond_with(@artists) do |format|
       format.json do
-        render :json => @artists.to_json(:include => [:urls])
-        expires_in params[:expiry].to_i.days if params[:expiry]
+        render(:json => @artists.to_json(:include => [:urls]))
+        expires_in(params[:expiry].to_i.days) if params[:expiry]
       end
     end
   end
@@ -36,7 +36,7 @@ class ArtistsController < ApplicationController
             redirect_to(show_or_new_artists_path(name: params[:id]))
           end
           format.json do
-            raise ActiveRecord::RecordNotFound
+            raise(ActiveRecord::RecordNotFound)
           end
         end
         return
@@ -60,7 +60,7 @@ class ArtistsController < ApplicationController
 
   def destroy
     unless @artist.deletable_by?(CurrentUser.user)
-      raise User::PrivilegeError
+      raise(User::PrivilegeError)
     end
     @artist.destroy
     respond_with(@artist) do |format|
@@ -81,7 +81,7 @@ class ArtistsController < ApplicationController
   def show_or_new
     @artist = Artist.find_by(name: params[:name])
     if @artist
-      redirect_to artist_path(@artist)
+      redirect_to(artist_path(@artist))
     else
       @artist = Artist.new(name: params[:name] || "")
       @post_set = PostSets::Post.new(@artist.name, 1, 10)
@@ -103,7 +103,7 @@ private
 
   def ensure_can_edit(user)
     return if user.is_janitor?
-    raise User::PrivilegeError if @artist.is_locked?
+    raise(User::PrivilegeError) if @artist.is_locked?
   end
 
   def artist_params(context = nil)

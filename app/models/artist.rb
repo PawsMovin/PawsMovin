@@ -297,7 +297,7 @@ class Artist < ApplicationRecord
 
     def revert_to!(version)
       if id != version.artist_id
-        raise RevertError.new("You cannot revert to a previous version of another artist.")
+        raise(RevertError.new("You cannot revert to a previous version of another artist."))
       end
 
       self.name = version.name
@@ -388,7 +388,7 @@ class Artist < ApplicationRecord
 
       if is_locked?
         errors.add(:base, "Artist is locked")
-        throw :abort
+        throw(:abort)
       end
     end
 
@@ -397,7 +397,7 @@ class Artist < ApplicationRecord
 
       if @notes.present? && is_note_locked? && wiki_page&.body != @notes
         errors.add(:base, "Wiki page is locked")
-        throw :abort
+        throw(:abort)
       end
     end
   end

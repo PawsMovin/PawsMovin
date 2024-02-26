@@ -28,7 +28,7 @@ module Downloads
       if res.success?
         res.content_length
       else
-        raise HTTParty::ResponseError.new(res)
+        raise(HTTParty::ResponseError.new(res))
       end
     end
 
@@ -53,7 +53,7 @@ module Downloads
         next if [301, 302].include?(chunk.code)
 
         size += chunk.size
-        raise Error.new("File is too large (max size: #{max_size})") if size > max_size && max_size > 0
+        raise(Error.new("File is too large (max size: #{max_size})")) if size > max_size && max_size > 0
 
         file.write(chunk)
       end
@@ -62,7 +62,7 @@ module Downloads
         file.rewind
         return file
       else
-        raise Error.new("HTTP error code: #{res.code} #{res.message}")
+        raise(Error.new("HTTP error code: #{res.code} #{res.message}"))
       end
     end # def
 
@@ -105,13 +105,13 @@ module Downloads
       ip_addr = IPAddr.new(Resolv.getaddress(uri.hostname))
 
       if ip_blocked?(ip_addr)
-        raise Downloads::File::Error, "Downloads from #{ip_addr} are not allowed"
+        raise(Downloads::File::Error, "Downloads from #{ip_addr} are not allowed")
       end
 
       # Check whitelist here again, in case of open redirect vulnerabilities
       valid, _reason = UploadWhitelist.is_whitelisted?(Addressable::URI.parse(uri))
       unless valid
-        raise Downloads::File::Error, "'#{uri}' is not whitelisted and can't be direct downloaded"
+        raise(Downloads::File::Error, "'#{uri}' is not whitelisted and can't be direct downloaded")
       end
 
       super(uri, options)

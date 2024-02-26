@@ -35,18 +35,18 @@ class StorageManager
   # written, or an error is raised and the original file is left unchanged. The
   # file should never be in a partially written state.
   def store(io, path)
-    raise NotImplementedError, "store not implemented"
+    raise(NotImplementedError, "store not implemented")
   end
 
   # Delete the file at the given path. If the file doesn't exist, no error
   # should be raised.
   def delete(path)
-    raise NotImplementedError, "delete not implemented"
+    raise(NotImplementedError, "delete not implemented")
   end
 
   # Return a readonly copy of the file located at the given path.
   def open(path)
-    raise NotImplementedError, "open not implemented"
+    raise(NotImplementedError, "open not implemented")
   end
 
   def store_file(io, post, type)
@@ -88,11 +88,11 @@ class StorageManager
   end
 
   def move_file_delete(post)
-    raise NotImplementedError, "move_file_delete not implemented"
+    raise(NotImplementedError, "move_file_delete not implemented")
   end
 
   def move_file_undelete(post)
-    raise NotImplementedError, "move_file_undelete not implemented"
+    raise(NotImplementedError, "move_file_undelete not implemented")
   end
 
   def protected_params(url, post, secret: PawsMovin.config.protected_file_secret)

@@ -141,7 +141,7 @@ class ArtistTest < ActiveSupport::TestCase
         assert_artist_found("minko", "https://minko.com/x/test.jpg")
         assert_artist_found("minko", "http://minko.com/x/test.jpg")
       rescue Net::OpenTimeout
-        skip "network failure"
+        skip("network failure")
       end
     end
 

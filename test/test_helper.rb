@@ -20,8 +20,8 @@ end
 
 Shoulda::Matchers.configure do |config|
   config.integrate do |with|
-    with.test_framework :minitest
-    with.library :rails
+    with.test_framework(:minitest)
+    with.library(:rails)
   end
 end
 
@@ -96,7 +96,7 @@ end
 
 class ActionDispatch::IntegrationTest
   def method_authenticated(method_name, url, user, options)
-    post session_path, params: { session: { name: user.name, password: user.password } }
+    post(session_path, params: { session: { name: user.name, password: user.password } })
     self.send(method_name, url, **options)
   end
 

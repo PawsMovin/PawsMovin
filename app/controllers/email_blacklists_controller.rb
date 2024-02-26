@@ -27,7 +27,7 @@ class EmailBlacklistsController < ApplicationController
   private
 
   def search_params
-    permit_search_params %i[order domain reason]
+    permit_search_params(%i[order domain reason])
   end
 
   def blacklist_params

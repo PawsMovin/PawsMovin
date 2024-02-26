@@ -57,7 +57,7 @@ class TagQuery
 
     parse_query(query)
     if @tag_count > PawsMovin.config.tag_query_limit - free_tags_count
-      raise CountExceededError, "You cannot search for more than #{PawsMovin.config.tag_query_limit} tags at a time"
+      raise(CountExceededError, "You cannot search for more than #{PawsMovin.config.tag_query_limit} tags at a time")
     end
   end
 
@@ -174,7 +174,7 @@ class TagQuery
 
           next 0 unless post_set
           unless post_set.can_view?(CurrentUser.user)
-            raise User::PrivilegeError
+            raise(User::PrivilegeError)
           end
 
           post_set_id
@@ -186,7 +186,7 @@ class TagQuery
 
           next 0 unless favuser
           if favuser.hide_favorites?
-            raise Favorite::HiddenError
+            raise(Favorite::HiddenError)
           end
 
           favuser.id

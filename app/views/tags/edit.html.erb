@@ -6,14 +6,14 @@
       <% if @tag.is_locked? %>
         <p>This tag is category locked</p>
       <% else %>
-        <%= f.input :category, collection: TagCategory.for_select, include_blank: false %>
+        <%= f.input(:category, collection: TagCategory.for_select, include_blank: false) %>
       <% end %>
 
       <% if CurrentUser.is_admin? %>
-        <%= f.input :is_locked, :collection => [%w[No false], %w[Yes true]], :include_blank => false %>
+        <%= f.input(:is_locked, :collection => [%w[No false], %w[Yes true]], :include_blank => false) %>
       <% end %>
 
-      <%= f.button :submit, "Submit" %>
+      <%= f.button(:submit, "Submit") %>
     <% end %>
   </div>
 </div>

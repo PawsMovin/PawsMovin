@@ -16,9 +16,9 @@ class PostEventTest < ActiveSupport::TestCase
 
   def assert_post_events_created(user, events, &block)
     count = Array.wrap(events).count
-    as user do
+    as(user) do
       assert_difference(-> { PostEvent.count }, count, &block)
-      assert_equal Array.wrap(events).map(&:to_s), PostEvent.last(count).map(&:action)
+      assert_equal(Array.wrap(events).map(&:to_s), PostEvent.last(count).map(&:action))
     end
   end
 
@@ -49,7 +49,7 @@ class PostEventTest < ActiveSupport::TestCase
       end
 
       assert_post_events_created(@janitor, [:favorites_moved, :favorites_received]) do
-        TransferFavoritesJob.new.perform @post.id, @janitor.id
+        TransferFavoritesJob.new.perform(@post.id, @janitor.id)
       end
 
       assert_post_events_created(@admin, :rating_locked) do
@@ -122,7 +122,7 @@ class PostEventTest < ActiveSupport::TestCase
 
       should "approve" do
         assert_post_events_created(@admin, :replacement_accepted) do
-          @replacement.approve! penalize_current_uploader: true
+          @replacement.approve!(penalize_current_uploader: true)
         end
       end
 

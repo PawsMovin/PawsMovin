@@ -12,7 +12,7 @@ module Admin
 
       if query.blank?
         flash[:notice] = "No query specified"
-        redirect_to new_admin_stuck_dnp_path
+        redirect_to(new_admin_stuck_dnp_path)
         return
       end
 
@@ -37,7 +37,7 @@ module Admin
 
       StaffAuditLog.log(:stuck_dnp, CurrentUser.user, { query: query, post_ids: post_ids })
       flash[:notice] = "DNP tags removed from #{post_ids.count} posts"
-      redirect_to new_admin_stuck_dnp_path
+      redirect_to(new_admin_stuck_dnp_path)
     end
 
     private

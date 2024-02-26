@@ -11,7 +11,7 @@ class TagBatchJob < ApplicationJob
 
     scanned_antecedent = TagQuery.scan(antecedent.downcase)
     scanned_consequent = TagQuery.scan(consequent.downcase)
-    raise JobError, "#{antecedent} or #{consequent} has unexpected format" if scanned_antecedent.count != 1 || scanned_consequent.count != 1
+    raise(JobError, "#{antecedent} or #{consequent} has unexpected format") if scanned_antecedent.count != 1 || scanned_consequent.count != 1
 
     normalized_antecedent = TagAlias.to_aliased(scanned_antecedent).first
     normalized_consequent = TagAlias.to_aliased(scanned_consequent).first

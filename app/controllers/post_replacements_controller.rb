@@ -8,8 +8,8 @@ class PostReplacementsController < ApplicationController
   before_action :ensure_uploads_enabled, only: [:new, :create]
 
   content_security_policy only: [:new] do |p|
-    p.img_src :self, :data, :blob, "*"
-    p.media_src :self, :data, :blob, "*"
+    p.img_src(:self, :data, :blob, "*")
+    p.media_src(:self, :data, :blob, "*")
   end
 
   def new
@@ -28,9 +28,9 @@ class PostReplacementsController < ApplicationController
     end
     respond_to do |format|
       format.json do
-        return render json: { success: false, message: @post_replacement.errors.full_messages.join("; ") }, status: 412 if @post_replacement.errors.any?
+        return render(json: { success: false, message: @post_replacement.errors.full_messages.join("; ") }, status: 412) if @post_replacement.errors.any?
 
-        render json: { success: true, location: post_path(@post) }
+        render(json: { success: true, location: post_path(@post) })
       end
     end
   end
@@ -87,7 +87,7 @@ class PostReplacementsController < ApplicationController
   def check_allow_create
     return if CurrentUser.can_replace?
 
-    raise User::PrivilegeError, "You are not part of the replacements beta"
+    raise(User::PrivilegeError, "You are not part of the replacements beta")
   end
 
   def create_params
@@ -96,7 +96,7 @@ class PostReplacementsController < ApplicationController
 
   def ensure_uploads_enabled
     if DangerZone.uploads_disabled?(CurrentUser.user)
-      access_denied "Uploads are disabled"
+      access_denied("Uploads are disabled")
     end
   end
 end

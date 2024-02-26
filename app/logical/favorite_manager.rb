@@ -9,7 +9,7 @@ class FavoriteManager
       Favorite.transaction(**ISOLATION) do
         unless force
           if user.favorite_count >= user.favorite_limit
-            raise Favorite::Error, "You can only keep up to #{user.favorite_limit} favorites."
+            raise(Favorite::Error, "You can only keep up to #{user.favorite_limit} favorites.")
           end
         end
 
@@ -21,9 +21,9 @@ class FavoriteManager
     rescue ActiveRecord::SerializationFailure => e
       retries -= 1
       retry if retries > 0
-      raise e
+      raise(e)
     rescue ActiveRecord::RecordNotUnique
-      raise Favorite::Error, "You have already favorited this post" unless force
+      raise(Favorite::Error, "You have already favorited this post") unless force
     end
   end
 
@@ -43,7 +43,7 @@ class FavoriteManager
     rescue ActiveRecord::SerializationFailure => e
       retries -= 1
       retry if retries > 0
-      raise e
+      raise(e)
     end
   end
 

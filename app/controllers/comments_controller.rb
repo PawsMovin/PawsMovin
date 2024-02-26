@@ -22,10 +22,10 @@ class CommentsController < ApplicationController
     @post = Post.find(params[:id])
     @comments = @post.comments
     @comment_votes = CommentVote.for_comments_and_user(@comments.map(&:id), CurrentUser.id)
-    comment_html = render_to_string partial: 'comments/partials/show/comment', collection: @comments, locals: { post: @post }, formats: [:html]
+    comment_html = render_to_string(partial: 'comments/partials/show/comment', collection: @comments, locals: { post: @post }, formats: [:html])
     respond_with do |format|
       format.json do
-        render json: {html: comment_html, posts: deferred_posts}
+        render(json: {html: comment_html, posts: deferred_posts})
       end
     end
   end
@@ -47,7 +47,7 @@ class CommentsController < ApplicationController
     flash[:notice] = @comment.valid? ? "Comment posted" : @comment.errors.full_messages.join("; ")
     respond_with(@comment) do |format|
       format.html do
-        redirect_back fallback_location: @comment.post || comments_path
+        redirect_back(fallback_location: @comment.post || comments_path)
       end
     end
   end
@@ -93,8 +93,8 @@ class CommentsController < ApplicationController
       @comment.user_warned!(params[:record_type], CurrentUser.user)
     end
     @comment_votes = CommentVote.for_comments_and_user([@comment.id], CurrentUser.id)
-    html = render_to_string partial: "comments/partials/show/comment", locals: { comment: @comment, post: nil }, formats: [:html]
-    render json: { html: html, posts: deferred_posts }
+    html = render_to_string(partial: "comments/partials/show/comment", locals: { comment: @comment, post: nil }, formats: [:html])
+    render(json: { html: html, posts: deferred_posts })
   end
 
 private
@@ -114,22 +114,22 @@ private
   end
 
   def check_editable(comment)
-    raise User::PrivilegeError unless comment.editable_by?(CurrentUser.user)
+    raise(User::PrivilegeError) unless comment.editable_by?(CurrentUser.user)
   end
 
   def check_visible(comment)
-    raise User::PrivilegeError unless comment.visible_to?(CurrentUser.user)
+    raise(User::PrivilegeError) unless comment.visible_to?(CurrentUser.user)
   end
 
   def check_hidable(comment)
-    raise User::PrivilegeError unless comment.can_hide?(CurrentUser.user)
+    raise(User::PrivilegeError) unless comment.can_hide?(CurrentUser.user)
   end
 
   def search_params
     permitted_params = %i[body_matches post_id post_tags_match creator_name creator_id post_note_updater_name post_note_updater_id poster_id poster_name is_sticky order]
     permitted_params += %i[is_hidden] if CurrentUser.is_moderator?
     permitted_params += %i[ip_addr] if CurrentUser.is_admin?
-    permit_search_params permitted_params
+    permit_search_params(permitted_params)
   end
 
   def comment_params(context)

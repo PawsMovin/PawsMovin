@@ -9,7 +9,7 @@ module Admin
       @audit_logs = StaffAuditLog.search(search_params).paginate(params[:page], limit: params[:limit])
       respond_with(@audit_logs) do |format|
         format.json do
-          render json: @audit_logs, each_serializer: StaffAuditLogSerializer
+          render(json: @audit_logs, each_serializer: StaffAuditLogSerializer)
         end
       end
     end

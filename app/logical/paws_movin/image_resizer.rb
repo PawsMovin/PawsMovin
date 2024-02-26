@@ -33,7 +33,7 @@ module PawsMovin
     def thumbnail(file, width, height, options)
       Vips::Image.thumbnail(file.path, width, height: height, **options)
     rescue Vips::Error => e
-      raise e unless e.message =~ /icc_transform/i
+      raise(e) unless e.message =~ /icc_transform/i
       Vips::Image.thumbnail(file.path, width, height: height, **options.except(:import_profile))
     end
   end

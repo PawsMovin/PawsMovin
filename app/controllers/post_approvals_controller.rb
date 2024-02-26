@@ -16,7 +16,7 @@ class PostApprovalsController < ApplicationController
       post.approve!
       respond_with do |format|
         format.json do
-          render json: {}, status: 201
+          render(json: {}, status: 201)
         end
       end
     elsif post.approver.present?

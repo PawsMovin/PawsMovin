@@ -9,7 +9,7 @@ module UsersHelper
     return unless email.include?("@")
 
     domain = email.split("@").last
-    link_to "»", users_path(search: { email_matches: "*@#{domain}" })
+    link_to("»", users_path(search: { email_matches: "*@#{domain}" }))
   end
 
   def user_levels_for_select(min_level = User::Levels::MEMBER)

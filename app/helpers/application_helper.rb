@@ -11,7 +11,7 @@ module ApplicationHelper
 
   def diff_list_html(new, old, latest)
     diff = SetDiff.new(new, old, latest)
-    render "diff_list", diff: diff
+    render("diff_list", diff: diff)
   end
 
   def nav_link_to(text, url, **options)
@@ -36,11 +36,11 @@ module ApplicationHelper
 
   def dtext_ragel(text, **)
     parsed = DText.parse(text, **)
-    return raw "" if parsed.nil?
+    return raw("") if parsed.nil?
     deferred_post_ids.merge(parsed[:post_ids]) if parsed[:post_ids].present?
-    raw parsed[:dtext]
+    raw(parsed[:dtext])
   rescue DText::Error => e
-    raw ""
+    raw("")
   end
 
   def format_text(text, **options)
@@ -48,7 +48,7 @@ module ApplicationHelper
     if options[:inline]
       dtext_ragel(text, **options)
     else
-      raw %(<div class="styled-dtext">#{dtext_ragel(text, **options)}</div>)
+      raw(%(<div class="styled-dtext">#{dtext_ragel(text, **options)}</div>))
     end
   end
 
@@ -78,9 +78,9 @@ module ApplicationHelper
     elsif time.past?
       text = time_ago_in_words(time) + " ago"
       text = text.gsub(/almost|about|over/, "") if compact
-      raw time_tag(text, time)
+      raw(time_tag(text, time))
     else
-      raw time_tag("in " + distance_of_time_in_words(Time.now, time), time)
+      raw(time_tag("in " + distance_of_time_in_words(Time.now, time), time))
     end
   end
 
@@ -94,7 +94,7 @@ module ApplicationHelper
     text = text.truncate(truncate) if truncate
 
     if url =~ %r!\Ahttps?://!i
-      link_to text, url, {rel: :nofollow}.merge(link_options)
+      link_to(text, url, {rel: :nofollow}.merge(link_options))
     else
       url
     end
@@ -102,7 +102,7 @@ module ApplicationHelper
 
   def link_to_ip(ip)
     return '(none)' unless ip
-    link_to ip, moderator_ip_addrs_path(:search => {:ip_addr => ip})
+    link_to(ip, moderator_ip_addrs_path(:search => {:ip_addr => ip}))
   end
 
   def link_to_wiki(text, title = text, classes: nil, **)
@@ -111,7 +111,7 @@ module ApplicationHelper
 
   def link_to_wikis(*wiki_titles, **)
     links = wiki_titles.map do |title|
-      link_to_wiki title.tr("_", " "), title
+      link_to_wiki(title.tr("_", " "), title)
     end
 
     to_sentence(links, **)
@@ -132,7 +132,7 @@ module ApplicationHelper
 
   def table_for(...)
     table = TableBuilder.new(...)
-    render partial: "table_builder/table", locals: { table: table }
+    render(partial: "table_builder/table", locals: { table: table })
   end
 
   def body_attributes(user = CurrentUser.user)
@@ -167,8 +167,8 @@ module ApplicationHelper
     post_id = user.avatar_id
     return "" unless post_id
     deferred_post_ids.add(post_id)
-    tag.div class: 'post-thumb placeholder', id: "tp-#{post_id}", 'data-id': post_id do
-      tag.img class: 'thumb-img placeholder', src: '/images/thumb-preview.png', height: 100, width: 100
+    tag.div(class: 'post-thumb placeholder', id: "tp-#{post_id}", 'data-id': post_id) do
+      tag.img(class: 'thumb-img placeholder', src: '/images/thumb-preview.png', height: 100, width: 100)
     end
   end
 

@@ -3,13 +3,13 @@
     <h1>Disapprovals</h1>
 
     <%= form_search(path: post_disapprovals_path) do |f| %>
-      <%= f.user :creator %>
-      <%= f.input :post_id, label: "Post ID" %>
-      <%= f.input :post_tags_match, label: "Tags", autocomplete: "tag-query" %>
-      <%= f.input :message, hint: "Use * for wildcard" %>
-      <%= f.input :reason, collection: %w[borderline_quality borderline_relevancy other].map { |x| [x.humanize, x] }, include_blank: true %>
-      <%= f.input :has_message, label: "Has Message?", collection: %w[Yes No], include_blank: true %>
-      <%= f.input :order, collection: [["ID", "id_desc"], ["Post ID", "post_id_desc"]] %>
+      <%= f.user(:creator) %>
+      <%= f.input(:post_id, label: "Post ID") %>
+      <%= f.input(:post_tags_match, label: "Tags", autocomplete: "tag-query") %>
+      <%= f.input(:message, hint: "Use * for wildcard") %>
+      <%= f.input(:reason, collection: %w[borderline_quality borderline_relevancy other].map { |x| [x.humanize, x] }, include_blank: true) %>
+      <%= f.input(:has_message, label: "Has Message?", collection: %w[Yes No], include_blank: true) %>
+      <%= f.input(:order, collection: [["ID", "id_desc"], ["Post ID", "post_id_desc"]]) %>
     <% end %>
 
     <table class="striped autofit">

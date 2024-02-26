@@ -46,7 +46,7 @@ module PostThumbnailer
     unless status == 0
       Rails.logger.warn("[FFMPEG PREVIEW STDOUT] #{stdout.chomp!}")
       Rails.logger.warn("[FFMPEG PREVIEW STDERR] #{stderr.chomp!}")
-      raise CorruptFileError.new("could not generate thumbnail")
+      raise(CorruptFileError.new("could not generate thumbnail"))
     end
     output_file
   end
@@ -58,7 +58,7 @@ module PostThumbnailer
     unless status == 0
       Rails.logger.warn("[FFMPEG SAMPLE STDOUT] #{stdout.chomp!}")
       Rails.logger.warn("[FFMPEG SAMPLE STDERR] #{stderr.chomp!}")
-      raise CorruptFileError.new("could not generate sample")
+      raise(CorruptFileError.new("could not generate sample"))
     end
     output_file
   end

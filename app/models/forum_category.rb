@@ -28,7 +28,7 @@ class ForumCategory < ApplicationRecord
   def prevent_destroy_if_topics
     if forum_topics.any?
       errors.add(:base, "Forum category cannot be deleted because it has topics")
-      throw :abort
+      throw(:abort)
     end
   end
 

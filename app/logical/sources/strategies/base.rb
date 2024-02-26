@@ -49,7 +49,7 @@ module Sources
       # be a list of JPEG, PNG, GIF, WEBM, MP4, ZIP, etc. It is what the
       # downloader will fetch and save to disk.
       def image_urls
-        raise NotImplementedError
+        raise(NotImplementedError)
       end
 
       def image_url

@@ -100,7 +100,7 @@ class ForumPost < ApplicationRecord
 
     if topic.is_locked?
       errors.add(:topic, "is locked")
-      throw :abort
+      throw(:abort)
     end
   end
 
@@ -120,7 +120,7 @@ class ForumPost < ApplicationRecord
 
     if is_hidden?
       errors.add(:post, "is for an alias, implication, or bulk update request. It cannot be hidden")
-      throw :abort
+      throw(:abort)
     end
   end
 

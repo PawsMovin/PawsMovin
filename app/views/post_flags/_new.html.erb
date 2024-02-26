@@ -16,7 +16,7 @@
   <%= error_messages_for :post_flag %>
 
   <%= custom_form_for(post_flag) do |f| %>
-    <%= f.hidden_field :post_id %>
+    <%= f.hidden_field(:post_id) %>
 
     <% PawsMovin.config.flag_reasons.each do |flag_reason| %>
       <% if flag_reason[:name] == "uploading_guidelines" && !@post.flaggable_for_guidelines? %>
@@ -30,13 +30,13 @@
       </label>
       
       <% if flag_reason[:parent] %>
-        <%= f.input :parent_id, as: :string, label: "Inferior of Post #" %>
+        <%= f.input(:parent_id, as: :string, label: "Inferior of Post #") %>
       <% end %>
       
     <% end %>
     
     <div>
-      <%= f.submit "Submit" %>
+      <%= f.submit("Submit") %>
     </div>
   <% end %>
 </div>

@@ -122,7 +122,7 @@ class TagAlias < TagRelationship
 
   def process_undo!(update_topic: true)
     unless valid?
-      raise errors.full_messages.join("; ")
+      raise(errors.full_messages.join("; "))
     end
 
     CurrentUser.scoped(approver) do
@@ -204,7 +204,7 @@ class TagAlias < TagRelationship
       Rails.logger.error("[TA] #{e.message}\n#{e.backtrace}")
       if tries < 5 && !Rails.env.test?
         tries += 1
-        sleep 2 ** tries
+        sleep(2 ** tries)
         retry
       end
 

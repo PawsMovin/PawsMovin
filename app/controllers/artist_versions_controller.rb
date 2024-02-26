@@ -13,6 +13,6 @@ class ArtistVersionsController < ApplicationController
   def search_params
     permitted_params = %i[name updater_name updater_id artist_id order]
     permitted_params += %i[ip_addr] if CurrentUser.is_admin?
-    permit_search_params permitted_params
+    permit_search_params(permitted_params)
   end
 end

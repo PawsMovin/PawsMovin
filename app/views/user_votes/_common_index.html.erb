@@ -4,16 +4,16 @@
   <div id="a-index">
     <%# path is a string here because of duplicate routes %>
     <%= form_search(path: type.model_name.route_key) do |f| %>
-      <%= f.user :user, label: "Voter" %>
-      <%= f.input :"#{type.model_type}_id", label: "#{type.model_type.to_s.titleize} ID" %>
+      <%= f.user(:user, label: "Voter") %>
+      <%= f.input(:"#{type.model_type}_id", label: "#{type.model_type.to_s.titleize} ID") %>
       <br>
-      <%= f.user :"#{type.model_type}_creator", label: "#{type.model_type.to_s.titleize} Creator" %>
-      <%= f.input :timeframe, label: "Timeframe", include_blank: true, collection: [["Last Week", "7"], ["Last Month", "30"], ["Last Three Months", "90"], ["Last Year", "360"]] %>
-      <%= f.input :score, label: "Type", include_blank: true, collection: type.vote_types %>
+      <%= f.user(:"#{type.model_type}_creator", label: "#{type.model_type.to_s.titleize} Creator") %>
+      <%= f.input(:timeframe, label: "Timeframe", include_blank: true, collection: [["Last Week", "7"], ["Last Month", "30"], ["Last Three Months", "90"], ["Last Year", "360"]]) %>
+      <%= f.input(:score, label: "Type", include_blank: true, collection: type.vote_types) %>
       <% if CurrentUser.is_admin? %>
-        <%= f.input :user_ip_addr, label: "IP Address" %>
-        <%= f.input :duplicates_only, label: "Duplicates Only", as: :boolean %>
-        <%= f.input :order, collection: [%w[Created id], ["IP Address", "ip_addr"]] %>
+        <%= f.input(:user_ip_addr, label: "IP Address") %>
+        <%= f.input(:duplicates_only, label: "Duplicates Only", as: :boolean) %>
+        <%= f.input(:order, collection: [%w[Created id], ["IP Address", "ip_addr"]]) %>
       <% end %>
     <% end %>
 
@@ -65,12 +65,12 @@
     <% if deletable || lockable %>
       <br>
       <ul>
-        <li><%= tag.button "Select All", id: "select-all-votes" %></li>
+        <li><%= tag.button("Select All", id: "select-all-votes") %></li>
         <% if lockable %>
-          <li><%= tag.button "Lock Votes", id: "lock-votes" %> Set the votes to 0, preventing the user from voting on the <%= type.model_type %> again</li>
+          <li><%= tag.button("Lock Votes", id: "lock-votes") %> Set the votes to 0, preventing the user from voting on the <%= type.model_type %> again</li>
         <% end %>
         <% if deletable && CurrentUser.is_admin? %>
-          <li><%= tag.button "Delete Votes", id: "delete-votes" %> Remove the votes</li>
+          <li><%= tag.button("Delete Votes", id: "delete-votes") %> Remove the votes</li>
         <% end %>
       </ul>
 

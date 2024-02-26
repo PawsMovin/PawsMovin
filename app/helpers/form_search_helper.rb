@@ -18,7 +18,7 @@ module FormSearchHelper
       updated_at_input = f.input(:updated_at, hide_unless_value: true)
       id_input + created_at_input + updated_at_input + capture { yield(f) } + f.submit("Search")
     end
-    render "application/form_search", hideable: hideable, show_on_load: show_on_load, form: form
+    render("application/form_search", hideable: hideable, show_on_load: show_on_load, form: form)
   end
 
   # When the simple_form has f.input :name and search[name]=test [:name] will be returned

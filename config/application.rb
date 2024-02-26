@@ -26,7 +26,7 @@ require_relative "local_config"
 module PawsMovin
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 7.1
+    config.load_defaults(7.1)
 
     # https://github.com/rails/rails/issues/50897
     config.active_record.raise_on_assign_to_attr_readonly = false

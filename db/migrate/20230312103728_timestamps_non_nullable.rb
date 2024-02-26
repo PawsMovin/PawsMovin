@@ -20,12 +20,12 @@ class TimestampsNonNullable < ActiveRecord::Migration[7.0]
       non_null_timestamps(:user_feedback)
       non_null_timestamps(:user_name_change_requests)
       non_null_timestamps(:user_password_reset_nonces)
-      change_column_null :users, :created_at, false
+      change_column_null(:users, :created_at, false)
     end
   end
 
   def non_null_timestamps(table)
-    change_column_null table, :created_at, false
-    change_column_null table, :updated_at, false
+    change_column_null(table, :created_at, false)
+    change_column_null(table, :updated_at, false)
   end
 end

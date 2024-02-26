@@ -5,9 +5,9 @@
     <%= error_messages_for "blacklist" %>
 
     <%= custom_form_for(@blacklist) do |f| %>
-      <%= f.input :domain, label: "Domain", as: :string %>
-      <%= f.input :reason, label: "Ban Reason", as: :string %>
-      <%= f.button :submit, "Submit" %>
+      <%= f.input(:domain, label: "Domain", as: :string) %>
+      <%= f.input(:reason, label: "Ban Reason", as: :string) %>
+      <%= f.button(:submit, "Submit") %>
     <% end %>
   </div>
 </div>

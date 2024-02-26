@@ -9,13 +9,13 @@ class StorageManager::Local < StorageManager
     FileUtils.mkdir_p(File.dirname(temp_path))
     io.rewind
     bytes_copied = IO.copy_stream(io, temp_path)
-    raise Error, "store failed: #{bytes_copied}/#{io.size} bytes copied" if bytes_copied != io.size
+    raise(Error, "store failed: #{bytes_copied}/#{io.size} bytes copied") if bytes_copied != io.size
 
     FileUtils.chmod(DEFAULT_PERMISSIONS, temp_path)
     File.rename(temp_path, dest_path)
   rescue StandardError => e
     FileUtils.rm_f(temp_path)
-    raise Error, e
+    raise(Error, e)
   ensure
     FileUtils.rm_f(temp_path) if temp_path
   end

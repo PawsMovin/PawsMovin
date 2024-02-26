@@ -17,7 +17,7 @@ class WikiPagesController < ApplicationController
     else
       @wiki_page = WikiPage.find_by_title(params[:id])
       if @wiki_page.nil? && request.format.symbol == :html
-        redirect_to show_or_new_wiki_pages_path(:title => params[:id])
+        redirect_to(show_or_new_wiki_pages_path(:title => params[:id]))
         return
       end
     end
@@ -38,8 +38,8 @@ class WikiPagesController < ApplicationController
         end
       end
       format.json do
-        render json: @wiki_pages.to_json
-        expires_in params[:expiry].to_i.days if params[:expiry]
+        render(json: @wiki_pages.to_json)
+        expires_in(params[:expiry].to_i.days) if params[:expiry]
       end
     end
   end
@@ -60,9 +60,9 @@ class WikiPagesController < ApplicationController
       end
       respond_with(@wiki_page)
     elsif request.format.html?
-      redirect_to show_or_new_wiki_pages_path(title: params[:id])
+      redirect_to(show_or_new_wiki_pages_path(title: params[:id]))
     else
-      raise ActiveRecord::RecordNotFound
+      raise(ActiveRecord::RecordNotFound)
     end
   end
 
@@ -101,7 +101,7 @@ class WikiPagesController < ApplicationController
   def show_or_new
     @wiki_page = WikiPage.find_by_title(params[:title])
     if @wiki_page
-      redirect_to wiki_page_path(@wiki_page)
+      redirect_to(wiki_page_path(@wiki_page))
     else
       @wiki_page = WikiPage.new(:title => params[:title])
       respond_with(@wiki_page)
@@ -112,7 +112,7 @@ class WikiPagesController < ApplicationController
 
   def ensure_can_edit(page, user)
     return if user.is_janitor?
-    raise User::PrivilegeError.new("Wiki page is locked.") if page.is_locked
+    raise(User::PrivilegeError.new("Wiki page is locked.")) if page.is_locked
   end
 
   def normalize_search_params

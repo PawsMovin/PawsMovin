@@ -22,7 +22,7 @@ class PostDeletionReasonsController < ApplicationController
     @reason = PostDeletionReason.create(reason_params)
     flash[:notice] = @reason.valid? ? "Post deletion reason created" : @reason.errors.full_messages.join("; ")
     respond_with(@reason) do |fmt|
-      fmt.html { redirect_to post_deletion_reasons_path }
+      fmt.html { redirect_to(post_deletion_reasons_path) }
     end
   end
 
@@ -30,7 +30,7 @@ class PostDeletionReasonsController < ApplicationController
     @reason.update(reason_params)
     flash[:notice] = @reason.valid? ? "Post deletion reason updated" : @reason.errors.full_messages.join("; ")
     respond_with(@reason) do |fmt|
-      fmt.html { redirect_to post_deletion_reasons_path }
+      fmt.html { redirect_to(post_deletion_reasons_path) }
     end
   end
 
@@ -38,7 +38,7 @@ class PostDeletionReasonsController < ApplicationController
     @reason.destroy
     flash[:notice] = "Post deletion reason deleted"
     respond_with(@reason) do |format|
-      format.html { redirect_to post_deletion_reasons_path }
+      format.html { redirect_to(post_deletion_reasons_path) }
     end
   end
 

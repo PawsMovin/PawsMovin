@@ -56,7 +56,7 @@ class TakedownsController < ApplicationController
     added = @takedown.add_posts_by_ids!(params[:post_ids])
     respond_with(@takedown) do |fmt|
       fmt.json do
-        render json: {added_count: added.size, added_post_ids: added}
+        render(json: {added_count: added.size, added_post_ids: added})
       end
     end
   end
@@ -65,14 +65,14 @@ class TakedownsController < ApplicationController
     added = @takedown.add_posts_by_tags!(params[:post_tags])
     respond_with(@takedown) do |fmt|
       fmt.json do
-        render json: {added_count: added.size, added_post_ids: added}
+        render(json: {added_count: added.size, added_post_ids: added})
       end
     end
   end
 
   def count_matching_posts
     post_count = Post.tag_match_system(params[:post_tags]).count_only
-    render json: {matched_post_count: post_count}
+    render(json: {matched_post_count: post_count})
   end
 
   def remove_by_ids
@@ -85,7 +85,7 @@ class TakedownsController < ApplicationController
     permitted_params = %i[status]
     permitted_params += %i[source reason creator_id creator_name reason_hidden instructions post_id notes] if CurrentUser.is_janitor?
     permitted_params += %i[ip_addr email vericode order] if CurrentUser.is_owner?
-    permit_search_params permitted_params
+    permit_search_params(permitted_params)
   end
 
   def takedown_params

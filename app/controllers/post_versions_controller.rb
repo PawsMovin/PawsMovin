@@ -12,11 +12,11 @@ class PostVersionsController < ApplicationController
 
   def undo
     can_edit = CurrentUser.can_post_edit_with_reason
-    raise User::PrivilegeError.new("Updater #{User.throttle_reason(can_edit)}") unless can_edit == true
+    raise(User::PrivilegeError.new("Updater #{User.throttle_reason(can_edit)}")) unless can_edit == true
 
     @post_version = PostVersion.find(params[:id])
     @post_version.undo!
 
-    redirect_back fallback_location: post_versions_path
+    redirect_back(fallback_location: post_versions_path)
   end
 end

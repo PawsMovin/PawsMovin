@@ -1,6 +1,6 @@
 <%= form_search(path: upload_whitelists_path) do |f| %>
-  <%= f.input :pattern, label: "Pattern", hint: "Use * for wildcard" %>
-  <%= f.input :note, label: "Note", as: :string %>
-  <%= f.input :reason, label: "Ban Reason" %>
-  <%= f.input :order, collection: [["Note", "note"], ["Recently created", "created_at"], ["Last updated", "updated_at"], ["Pattern", "pattern"]] %>
+  <%= f.input(:pattern, label: "Pattern", hint: "Use * for wildcard") %>
+  <%= f.input(:note, label: "Note", as: :string) %>
+  <%= f.input(:reason, label: "Ban Reason") %>
+  <%= f.input(:order, collection: [["Note", "note"], ["Recently created", "created_at"], ["Last updated", "updated_at"], ["Pattern", "pattern"]]) %>
 <% end %>

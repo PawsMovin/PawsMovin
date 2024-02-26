@@ -18,7 +18,7 @@ class StaticController < ApplicationController
   end
 
   def not_found
-    render "static/404", formats: [:html], status: 404
+    render("static/404", formats: [:html], status: 404)
   end
 
   def error
@@ -28,7 +28,7 @@ class StaticController < ApplicationController
   end
 
   def home
-    render layout: "blank"
+    render(layout: "blank")
   end
 
   def theme
@@ -46,12 +46,12 @@ class StaticController < ApplicationController
         cookies.permanent[:nmm] = '1'
       end
     end
-    redirect_back fallback_location: posts_path
+    redirect_back(fallback_location: posts_path)
   end
 
   def discord
     unless CurrentUser.can_discord?
-      raise User::PrivilegeError.new("You must have an account for at least one week in order to join the Discord server.")
+      raise(User::PrivilegeError.new("You must have an account for at least one week in order to join the Discord server."))
       return
     end
     if request.post?

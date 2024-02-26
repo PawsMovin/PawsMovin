@@ -72,7 +72,7 @@ class DmailsController < ApplicationController
     end
     CurrentUser.user.update(unread_dmail_count: 0)
     respond_to do |format|
-      format.html { redirect_to dmails_path, notice: "All messages marked as read" }
+      format.html { redirect_to(dmails_path, notice: "All messages marked as read") }
       format.json
     end
   end
@@ -81,7 +81,7 @@ class DmailsController < ApplicationController
 
   def check_privilege(dmail)
     if !dmail.visible_to?(CurrentUser.user)
-      raise User::PrivilegeError
+      raise(User::PrivilegeError)
     end
   end
 

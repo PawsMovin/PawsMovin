@@ -47,7 +47,7 @@ module FileMethods
     elsif result.is_a?(Vips::Error) && result.message =~ /bad page number/
       false
     else
-      raise result
+      raise(result)
     end
   end
 
@@ -72,7 +72,7 @@ module FileMethods
   end
 
   def file_header_to_file_ext(file_path)
-    File.open file_path do |bin|
+    File.open(file_path) do |bin|
       mime_type = Marcel::MimeType.for(bin)
       case mime_type
       when "image/jpeg"

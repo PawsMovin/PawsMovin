@@ -14,7 +14,7 @@ class PostSetMaintainersController < ApplicationController
     @user = User.find_by_name(params[:username])
     if @user.nil?
       flash[:notice] = "User #{params[:username]} not found"
-      redirect_to maintainers_post_set_path(@set)
+      redirect_to(maintainers_post_set_path(@set))
       return
     end
     check_edit_access(@set)
@@ -23,7 +23,7 @@ class PostSetMaintainersController < ApplicationController
 
     if @invite.invalid?
       flash[:notice] = @invite.errors.full_messages.join('; ')
-      redirect_to maintainers_post_set_path(@set)
+      redirect_to(maintainers_post_set_path(@set))
       return
     end
 
@@ -40,7 +40,7 @@ class PostSetMaintainersController < ApplicationController
     else
       flash[:notice] = @invite.errors.full_messages.join('; ')
     end
-    redirect_to maintainers_post_set_path(@set)
+    redirect_to(maintainers_post_set_path(@set))
   end
 
   def destroy
@@ -58,15 +58,15 @@ class PostSetMaintainersController < ApplicationController
     check_approve_access(@maintainer)
 
     @maintainer.approve!
-    redirect_back fallback_location: post_set_maintainers_path, notice: "You are now a maintainer for the set"
+    redirect_back(fallback_location: post_set_maintainers_path, notice: "You are now a maintainer for the set")
   end
 
   def deny
     @maintainer = PostSetMaintainer.find(params[:id])
-    raise User::PrivilegeError unless @maintainer.user_id == CurrentUser.id
+    raise(User::PrivilegeError) unless @maintainer.user_id == CurrentUser.id
 
     @maintainer.deny!
-    redirect_back fallback_location: post_set_maintainers_path, notice: "You have declined the set maintainer invite"
+    redirect_back(fallback_location: post_set_maintainers_path, notice: "You have declined the set maintainer invite")
   end
 
   def block
@@ -74,29 +74,29 @@ class PostSetMaintainersController < ApplicationController
     check_block_access(@maintainer)
 
     @maintainer.block!
-    redirect_back fallback_location: post_set_maintainers_path, notice: "You will not receive further invites for this set"
+    redirect_back(fallback_location: post_set_maintainers_path, notice: "You will not receive further invites for this set")
   end
 
   private
 
   def check_approve_access(maintainer)
-    raise User::PrivilegeError unless maintainer.user_id == CurrentUser.id
-    raise User::PrivilegeError if ['blocked', 'approved'].include?(maintainer.status)
+    raise(User::PrivilegeError) unless maintainer.user_id == CurrentUser.id
+    raise(User::PrivilegeError) if ['blocked', 'approved'].include?(maintainer.status)
   end
 
   def check_cancel_access(maintainer)
-    raise User::PrivilegeError if maintainer.status == 'blocked'
-    raise User::PrivilegeError if maintainer.status == 'cooldown' && @maintainer.created_at > 24.hours.ago
+    raise(User::PrivilegeError) if maintainer.status == 'blocked'
+    raise(User::PrivilegeError) if maintainer.status == 'cooldown' && @maintainer.created_at > 24.hours.ago
   end
 
   def check_block_access(maintainer)
-    raise User::PrivilegeError unless maintainer.user_id == CurrentUser.id
-    raise User::PrivilegeError if maintainer.status == 'blocked'
+    raise(User::PrivilegeError) unless maintainer.user_id == CurrentUser.id
+    raise(User::PrivilegeError) if maintainer.status == 'blocked'
   end
 
   def check_edit_access(set)
     unless set.can_edit_settings?(CurrentUser)
-      raise User::PrivilegeError
+      raise(User::PrivilegeError)
     end
   end
 end

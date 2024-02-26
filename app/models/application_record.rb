@@ -40,7 +40,7 @@ class ApplicationRecord < ActiveRecord::Base
         when :string, :text
           text_attribute_matches(attribute, value, **)
         else
-          raise ArgumentError, "unhandled attribute type"
+          raise(ArgumentError, "unhandled attribute type")
         end
       end
 
@@ -50,7 +50,7 @@ class ApplicationRecord < ActiveRecord::Base
         elsif value.to_s.falsy?
           value = false
         else
-          raise ArgumentError, "value must be truthy or falsy"
+          raise(ArgumentError, "value must be truthy or falsy")
         end
 
         where(attribute => value)
@@ -165,7 +165,7 @@ class ApplicationRecord < ActiveRecord::Base
         elsif field.is_a?(Hash) && field.size == 1 && field.values.first.is_a?(Symbol)
           { field.keys.first => { field.values.first => value } }
         else
-          raise StandardError, "Unsupported field: #{field.class} => #{field}"
+          raise(StandardError, "Unsupported field: #{field.class} => #{field}")
         end
       end
     end
@@ -225,7 +225,7 @@ class ApplicationRecord < ActiveRecord::Base
   concerning :SimpleVersioningMethods do
     class_methods do
       def simple_versioning(options = {})
-        cattr_accessor :versioning_body_column, :versioning_ip_column, :versioning_user_column, :versioning_subject_column, :versioning_is_hidden_column, :versioning_is_sticky_column
+        cattr_accessor(:versioning_body_column, :versioning_ip_column, :versioning_user_column, :versioning_subject_column, :versioning_is_hidden_column, :versioning_is_sticky_column)
         self.versioning_body_column = options[:body_column] || "body"
         self.versioning_subject_column = options[:subject_column]
         self.versioning_ip_column = options[:ip_column] || "creator_ip_addr"
@@ -234,8 +234,8 @@ class ApplicationRecord < ActiveRecord::Base
         self.versioning_is_sticky_column = options[:is_sticky_column] || "is_sticky"
 
         class_eval do
-          has_many :versions, class_name: "EditHistory", as: :versionable
-          after_update :save_version, if: :should_create_edited_history
+          has_many(:versions, class_name: "EditHistory", as: :versionable)
+          after_update(:save_version, if: :should_create_edited_history)
           after_save(if: :should_create_hidden_history) do |rec|
             type = rec.send("#{versioning_is_hidden_column}?") ? "hide" : "unhide"
             save_version(type)
@@ -245,20 +245,20 @@ class ApplicationRecord < ActiveRecord::Base
             save_version(type)
           end
 
-          define_method :should_create_edited_history do
+          define_method(:should_create_edited_history) do
             return true if versioning_subject_column && saved_change_to_attribute?(versioning_subject_column)
             saved_change_to_attribute?(versioning_body_column)
           end
 
-          define_method :should_create_hidden_history do
+          define_method(:should_create_hidden_history) do
             saved_change_to_attribute?(versioning_is_hidden_column)
           end
 
-          define_method :should_create_stickied_history do
+          define_method(:should_create_stickied_history) do
             saved_change_to_attribute?(versioning_is_sticky_column)
           end
 
-          define_method :save_original_version do
+          define_method(:save_original_version) do
             body = send("#{versioning_body_column}_before_last_save")
             body = send(versioning_body_column) if body.nil?
 
@@ -278,7 +278,7 @@ class ApplicationRecord < ActiveRecord::Base
             new.save!
           end
 
-          define_method :save_version do |edit_type = "edit"|
+          define_method(:save_version) do |edit_type = "edit"|
             EditHistory.transaction do
               our_next_version = next_version
               if our_next_version == 0
@@ -301,7 +301,7 @@ class ApplicationRecord < ActiveRecord::Base
             end
           end
 
-          define_method :next_version do
+          define_method(:next_version) do
             versions.count
           end
         end
@@ -313,19 +313,19 @@ class ApplicationRecord < ActiveRecord::Base
     class_methods do
       def user_status_counter(counter_name, options = {})
         class_eval do
-          belongs_to :user_status, foreign_key: :creator_id, primary_key: :user_id, counter_cache: counter_name, **options
+          belongs_to(:user_status, foreign_key: :creator_id, primary_key: :user_id, counter_cache: counter_name, **options)
         end
       end
 
       def belongs_to_creator(options = {})
         class_eval do
-          belongs_to :creator, **options.merge(class_name: "User")
+          belongs_to(:creator, **options.merge(class_name: "User"))
           before_validation(on: :create) do |rec|
             rec.creator_id = CurrentUser.id if rec.creator_id.nil?
             rec.creator_ip_addr = CurrentUser.ip_addr if rec.respond_to?(:creator_ip_addr=) && rec.creator_ip_addr.nil?
           end
 
-          define_method :creator_name do
+          define_method(:creator_name) do
             User.id_to_name(creator_id)
           end
         end
@@ -333,13 +333,13 @@ class ApplicationRecord < ActiveRecord::Base
 
       def belongs_to_updater(options = {})
         class_eval do
-          belongs_to :updater, **options.merge(class_name: "User")
+          belongs_to(:updater, **options.merge(class_name: "User"))
           before_validation do |rec|
             rec.updater_id = CurrentUser.id
             rec.updater_ip_addr = CurrentUser.ip_addr if rec.respond_to?(:updater_ip_addr=)
           end
 
-          define_method :updater_name do
+          define_method(:updater_name) do
             User.id_to_name(updater_id)
           end
         end
@@ -356,22 +356,22 @@ class ApplicationRecord < ActiveRecord::Base
       # `parse` regex. The resulting strings can be converted to another type
       # with the `cast` option.
       def array_attribute(name, parse: /[^[:space:]]+/, join_character: " ", cast: :itself)
-        define_method "#{name}_string" do
+        define_method("#{name}_string") do
           send(name).join(join_character)
         end
 
-        define_method "#{name}_string=" do |value|
-          raise ArgumentError, "#{name} must be a String" unless value.respond_to?(:to_str)
+        define_method("#{name}_string=") do |value|
+          raise(ArgumentError, "#{name} must be a String") unless value.respond_to?(:to_str)
           send("#{name}=", value)
         end
 
-        define_method "#{name}=" do |value|
+        define_method("#{name}=") do |value|
           if value.respond_to?(:to_str)
             super(value.to_str.scan(parse).flatten.map(&cast))
           elsif value.respond_to?(:to_a)
             super(value.to_a)
           else
-            raise ArgumentError, "#{name} must be a String or an Array"
+            raise(ArgumentError, "#{name} must be a String or an Array")
           end
         end
       end

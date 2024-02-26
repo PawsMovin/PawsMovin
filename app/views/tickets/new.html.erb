@@ -26,10 +26,10 @@
       <% end %>
 
       <% if @found_item %>
-        <%= f.hidden_field :model_id %>
-        <%= f.hidden_field :model_type %>
+        <%= f.hidden_field(:model_id) %>
+        <%= f.hidden_field(:model_type) %>
         <% if @ticket.model_type == "User" %>
-          <%= f.hidden_field :report_type %>
+          <%= f.hidden_field(:report_type) %>
         <% end %>
 
         <div class="section">
@@ -37,7 +37,7 @@
             <strong>Note:</strong> Abuse of this system will lead to disciplinary action
           </span>
 
-          <%= f.input :reason, as: :dtext, limit: PawsMovin.config.ticket_max_size %>
+          <%= f.input(:reason, as: :dtext, limit: PawsMovin.config.ticket_max_size) %>
 
         </div>
         <%= submit_tag "Submit" %>

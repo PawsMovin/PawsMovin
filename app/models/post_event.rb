@@ -70,7 +70,7 @@ class PostEvent < ApplicationRecord
 
     if params[:action].present?
       if !CurrentUser.is_moderator? && MOD_ONLY_SEARCH_ACTIONS.include?(actions[params[:action]])
-        raise User::PrivilegeError
+        raise(User::PrivilegeError)
       end
       q = q.where('action = ?', actions[params[:action]])
     end

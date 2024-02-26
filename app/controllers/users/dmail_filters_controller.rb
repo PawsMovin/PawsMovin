@@ -22,7 +22,7 @@ module Users
       @dmail = Dmail.find(params[:dmail_id])
 
       if @dmail.owner_id != CurrentUser.user.id
-        raise ::User::PrivilegeError
+        raise(::User::PrivilegeError)
       end
     end
 

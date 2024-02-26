@@ -53,7 +53,7 @@ class UploadWhitelistsController < ApplicationController
       }
     end
     respond_with(@whitelist) do |format|
-      format.json { render json: @whitelist }
+      format.json { render(json: @whitelist) }
     end
   end
 
@@ -64,7 +64,7 @@ class UploadWhitelistsController < ApplicationController
   end
 
   def search_params
-    permit_search_params %i[allowed order pattern note reason]
+    permit_search_params(%i[allowed order pattern note reason])
   end
 
   def whitelist_params

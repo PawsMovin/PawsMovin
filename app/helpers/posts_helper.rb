@@ -100,14 +100,14 @@ module PostsHelper
       amount = tag.span(post.fav_count, class: "post-score-faves-faves-#{post.id}")
       icon + amount
     end
-    comments = tag.span "C#{post.visible_comment_count(CurrentUser)}", class: 'post-score-comments'
+    comments = tag.span("C#{post.visible_comment_count(CurrentUser)}", class: 'post-score-comments')
     rating =  tag.span(post.rating.upcase, class: "post-score-rating")
     views = tag.span(class: "post-score-views-classes-#{post.id}") do
       icon = tag.i("", class: "fa-regular fa-eye")
       amount = tag.span(" #{(daily_views ? post.daily_views : post.total_views) || 0}", class: "post-score-views-views-#{post.id}")
       icon + amount
     end
-    tag.div score + favs + comments + views + rating, class: 'post-score', id: "post-score-#{post.id}"
+    tag.div(score + favs + comments + views + rating, class: 'post-score', id: "post-score-#{post.id}")
   end
 
   def user_record_meta(user)
@@ -188,16 +188,16 @@ module PostsHelper
 
   def view_count_js(post)
     sig = generate_report_signature(post.id)
-    render partial: "posts/partials/common/report_js", locals: { sig: sig, type: "post_views" }
+    render(partial: "posts/partials/common/report_js", locals: { sig: sig, type: "post_views" })
   end
 
   def missed_post_search_count_js(tags)
     sig = generate_report_signature(tags)
-    render partial: "posts/partials/common/report_js", locals: { sig: sig, type: "missed_searches" }
+    render(partial: "posts/partials/common/report_js", locals: { sig: sig, type: "missed_searches" })
   end
 
   def post_search_count_js(tags)
     sig = generate_report_signature("ps-#{tags}")
-    render partial: "posts/partials/common/report_js", locals: { sig: sig, type: "post_searches" }
+    render(partial: "posts/partials/common/report_js", locals: { sig: sig, type: "post_searches" })
   end
 end

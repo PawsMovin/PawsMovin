@@ -77,7 +77,7 @@ module PostIndex
       },
     }
 
-    base.document_store.extend ClassMethods
+    base.document_store.extend(ClassMethods)
   end
 
   module ClassMethods

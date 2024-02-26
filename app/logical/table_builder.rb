@@ -99,7 +99,7 @@ class TableBuilder
       @table_attributes[:id] ||= "#{items.model_name.plural.dasherize}-table"
     end
 
-    yield self if block_given?
+    yield(self) if block_given?
   end
 
   # Add a column to the table.

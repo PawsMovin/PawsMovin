@@ -29,25 +29,25 @@ class BansController < ApplicationController
     @ban = Ban.create(ban_params(:create))
 
     if @ban.errors.any?
-      render :action => "new"
+      render(:action => "new")
     else
-      redirect_to ban_path(@ban), :notice => "Ban created"
+      redirect_to(ban_path(@ban), :notice => "Ban created")
     end
   end
 
   def update
     @ban = Ban.find(params[:id])
     if @ban.update(ban_params(:update))
-      redirect_to ban_path(@ban), :notice => "Ban updated"
+      redirect_to(ban_path(@ban), :notice => "Ban updated")
     else
-      render :action => "edit"
+      render(:action => "edit")
     end
   end
 
   def destroy
     @ban = Ban.find(params[:id])
     @ban.destroy
-    redirect_to bans_path, :notice => "Ban destroyed"
+    redirect_to(bans_path, :notice => "Ban destroyed")
   end
 
   private

@@ -31,9 +31,9 @@ class TagAliasesController < ApplicationController
         format.html { redirect_back(fallback_location: new_tag_alias_path, notice: @tag_alias_request.errors.full_messages.join("; ")) }
       end
     elsif @tag_alias_request.forum_topic
-      redirect_to forum_topic_path(@tag_alias_request.forum_topic)
+      redirect_to(forum_topic_path(@tag_alias_request.forum_topic))
     else
-      redirect_to tag_alias_path(@tag_alias_request.tag_relationship)
+      redirect_to(tag_alias_path(@tag_alias_request.tag_relationship))
     end
   end
 

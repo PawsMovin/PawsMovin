@@ -79,8 +79,8 @@ class ForumPostsController < ApplicationController
     else
       @forum_post.user_warned!(params[:record_type], CurrentUser.user)
     end
-    html = render_to_string partial: "forum_posts/forum_post", locals: { forum_post: @forum_post, original_forum_post_id: @forum_post.topic.original_post.id }, formats: [:html]
-    render json: { html: html, posts: deferred_posts }
+    html = render_to_string(partial: "forum_posts/forum_post", locals: { forum_post: @forum_post, original_forum_post_id: @forum_post.topic.original_post.id }, formats: [:html])
+    render(json: { html: html, posts: deferred_posts })
   end
 
   private
@@ -91,17 +91,17 @@ class ForumPostsController < ApplicationController
   end
 
   def check_min_level
-    raise User::PrivilegeError unless @forum_topic.visible?(CurrentUser.user)
-    raise User::PrivilegeError if @forum_topic.is_hidden? && !@forum_topic.can_hide?(CurrentUser.user)
-    raise User::PrivilegeError if @forum_post.is_hidden? && !@forum_post.can_hide?(CurrentUser.user)
+    raise(User::PrivilegeError) unless @forum_topic.visible?(CurrentUser.user)
+    raise(User::PrivilegeError) if @forum_topic.is_hidden? && !@forum_topic.can_hide?(CurrentUser.user)
+    raise(User::PrivilegeError) if @forum_post.is_hidden? && !@forum_post.can_hide?(CurrentUser.user)
   end
 
   def check_editable(forum_post)
-    raise User::PrivilegeError unless forum_post.editable_by?(CurrentUser.user)
+    raise(User::PrivilegeError) unless forum_post.editable_by?(CurrentUser.user)
   end
 
   def check_hidable(forum_post)
-    raise User::PrivilegeError unless forum_post.can_hide?(CurrentUser.user)
+    raise(User::PrivilegeError) unless forum_post.can_hide?(CurrentUser.user)
   end
 
   def forum_post_params(context)

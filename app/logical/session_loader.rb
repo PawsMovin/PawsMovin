@@ -32,7 +32,7 @@ class SessionLoader
       if recent_ban && recent_ban.expires_at.present?
         ban_message = "Account is suspended for another #{recent_ban.expire_days}"
       end
-      raise AuthenticationFailure.new(ban_message)
+      raise(AuthenticationFailure.new(ban_message))
     end
     set_statement_timeout
     update_last_logged_in_at
@@ -87,7 +87,7 @@ private
     elsif params[:login].present? && params[:api_key].present?
       authenticate_api_key(params[:login], params[:api_key])
     else
-      raise AuthenticationFailure
+      raise(AuthenticationFailure)
     end
   end
 
@@ -99,15 +99,15 @@ private
 
   def authenticate_api_key(name, key)
     user, api_key = User.find_by_name(name)&.authenticate_api_key(key)
-    raise AuthenticationFailure, "Invalid API key" if user.blank?
+    raise(AuthenticationFailure, "Invalid API key") if user.blank?
     update_api_key(api_key)
-    raise User::PrivilegeError unless api_key.has_permission?(request.remote_ip, request.params[:controller], request.params[:action])
+    raise(User::PrivilegeError) unless api_key.has_permission?(request.remote_ip, request.params[:controller], request.params[:action])
     CurrentUser.user = user
   end
 
   def load_session_user
     user = User.find_by_id(session[:user_id])
-    raise AuthenticationFailure if user.nil?
+    raise(AuthenticationFailure) if user.nil?
     return if session[:ph] != user.password_token
     CurrentUser.user = user
   end

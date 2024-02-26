@@ -13,13 +13,13 @@ class FavoritesController < ApplicationController
       @user = User.find(user_id)
 
       if @user.hide_favorites?
-        raise Favorite::HiddenError
+        raise(Favorite::HiddenError)
       end
 
       @favorite_set = PostSets::Favorites.new(@user, params[:page], params[:limit])
       respond_with(@favorite_set.posts) do |fmt|
         fmt.json do
-          render json: @favorite_set.api_posts, root: 'posts'
+          render(json: @favorite_set.api_posts, root: 'posts')
         end
       end
     end

@@ -11,7 +11,7 @@ module Admin
       offset -= 1
       offset = offset.clamp(0, 9999)
       offset *= 250
-      @alts = User.connection.select_all <<~SQL.squish
+      @alts = User.connection.select_all(<<~SQL.squish)
         SELECT u1.id as u1id, u2.id as u2id
         FROM (SELECT * FROM users ORDER BY id DESC LIMIT 250 OFFSET #{offset}) u1
         INNER JOIN users u2 ON u1.last_ip_addr = u2.last_ip_addr AND u1.id != u2.id AND u2.last_logged_in_at > now() - interval '3 months'
@@ -59,7 +59,7 @@ module Admin
         change_request.approve!
         ModAction.log!(:user_name_change, @user)
       end
-      redirect_to user_path(@user), notice: "User updated"
+      redirect_to(user_path(@user), notice: "User updated")
     end
 
     def edit_blacklist
@@ -70,7 +70,7 @@ module Admin
       @user = User.find(params[:id])
       @user.update!(params[:user].permit([:blacklisted_tags]))
       ModAction.log!(:user_blacklist_change, @user)
-      redirect_to edit_blacklist_admin_user_path(@user), notice: "Blacklist updated"
+      redirect_to(edit_blacklist_admin_user_path(@user), notice: "Blacklist updated")
     end
 
     def request_password_reset
@@ -81,7 +81,7 @@ module Admin
       @user = User.find(params[:id])
 
       unless User.authenticate(CurrentUser.name, params[:admin][:password])
-        return redirect_to request_password_reset_admin_user_path(@user), notice: "Password wrong"
+        return redirect_to(request_password_reset_admin_user_path(@user), notice: "Password wrong")
       end
 
       @user.update_columns(password_hash: "", bcrypt_password_hash: "*AC*") if params[:admin][:invalidate_old_password]&.truthy?

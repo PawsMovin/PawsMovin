@@ -73,14 +73,14 @@ class Note < ApplicationRecord
 
   def post_must_exist
     if !Post.exists?(post_id)
-      errors.add :post, "must exist"
+      errors.add(:post, "must exist")
       return false
     end
   end
 
   def post_must_not_be_note_locked
     if is_locked?
-      errors.add :post, "is note locked"
+      errors.add(:post, "is note locked")
       return false
     end
   end
@@ -142,7 +142,7 @@ class Note < ApplicationRecord
 
   def revert_to(version)
     if id != version.note_id
-      raise RevertError.new("You cannot revert to a previous version of another note.")
+      raise(RevertError.new("You cannot revert to a previous version of another note."))
     end
 
     self.x = version.x

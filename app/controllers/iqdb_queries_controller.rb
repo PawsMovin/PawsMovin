@@ -16,9 +16,9 @@ class IqdbQueriesController < ApplicationController
       @matches = IqdbProxy.query_file(search_params[:file].tempfile, search_params[:score_cutoff])
     elsif search_params[:url].present?
       parsed_url = Addressable::URI.heuristic_parse(search_params[:url]) rescue nil
-      raise User::PrivilegeError, "Invalid URL" unless parsed_url
+      raise(User::PrivilegeError, "Invalid URL") unless parsed_url
       whitelist_result = UploadWhitelist.is_whitelisted?(parsed_url)
-      raise User::PrivilegeError, "Not allowed to request content from this URL" unless whitelist_result[0]
+      raise(User::PrivilegeError, "Not allowed to request content from this URL") unless whitelist_result[0]
       @matches = IqdbProxy.query_url(search_params[:url], search_params[:score_cutoff])
     elsif search_params[:post_id].present?
       @matches = IqdbProxy.query_post(Post.find_by(id: search_params[:post_id]), search_params[:score_cutoff])
@@ -28,7 +28,7 @@ class IqdbQueriesController < ApplicationController
 
     respond_with(@matches) do |fmt|
       fmt.json do
-        render json: @matches, root: "posts"
+        render(json: @matches, root: "posts")
       end
     end
   rescue IqdbProxy::Error => e
@@ -42,7 +42,7 @@ class IqdbQueriesController < ApplicationController
 
     if %i[file url post_id hash].any? { |key| search_params[key].present? }
       if RateLimiter.check_limit("img:#{CurrentUser.ip_addr}", 1, 2.seconds)
-        raise APIThrottled
+        raise(APIThrottled)
       else
         RateLimiter.hit("img:#{CurrentUser.ip_addr}", 2.seconds)
       end
@@ -50,6 +50,6 @@ class IqdbQueriesController < ApplicationController
   end
 
   def validate_enabled
-    raise FeatureUnavailable if PawsMovin.config.iqdb_server.blank?
+    raise(FeatureUnavailable) if PawsMovin.config.iqdb_server.blank?
   end
 end

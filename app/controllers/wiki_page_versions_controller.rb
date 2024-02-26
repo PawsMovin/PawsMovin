@@ -15,7 +15,7 @@ class WikiPageVersionsController < ApplicationController
 
   def diff
     if params[:thispage].blank? || params[:otherpage].blank?
-      redirect_back fallback_location: wiki_pages_path, notice: "You must select two versions to diff"
+      redirect_back(fallback_location: wiki_pages_path, notice: "You must select two versions to diff")
       return
     end
 
@@ -28,6 +28,6 @@ class WikiPageVersionsController < ApplicationController
   def search_params
     permitted_params = %i[updater_id updater_name wiki_page_id title body is_locked]
     permitted_params += %i[ip_addr] if CurrentUser.is_admin?
-    permit_search_params permitted_params
+    permit_search_params(permitted_params)
   end
 end

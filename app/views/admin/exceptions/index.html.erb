@@ -1,6 +1,6 @@
 <%= form_search(path: admin_exceptions_path) do |f| %>
-  <%= f.input :version, label: "Commit" %>
-  <%= f.input :without_timeouts, as: :boolean %>
+  <%= f.input(:version, label: "Commit") %>
+  <%= f.input(:without_timeouts, as: :boolean) %>
 <% end %>
 
 <table class="striped">

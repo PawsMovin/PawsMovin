@@ -3,18 +3,18 @@
 module Moderator
   module IpAddrsHelper
     def link_to_ip_search(type, ip_addr, count)
-      path = ip_addr_search_path type, ip_addr
+      path = ip_addr_search_path(type, ip_addr)
       if path.present?
-        link_to count, path
+        link_to(count, path)
       else
         count
       end
     end
 
     def link_to_user_id_search(type, user_id, count)
-      path = user_id_search_path type, user_id
+      path = user_id_search_path(type, user_id)
       if path.present?
-        link_to count, path
+        link_to(count, path)
       else
         count
       end
@@ -51,7 +51,7 @@ module Moderator
       when :posts
         posts_path(tags: "user_id:#{user_id}")
       when :last_login
-        user_path user_id
+        user_path(user_id)
       when :artist_version
         artist_versions_path(search: { updater_id: user_id })
       when :note_version

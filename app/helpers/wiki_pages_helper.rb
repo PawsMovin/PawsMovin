@@ -10,7 +10,7 @@ module WikiPagesHelper
   end
 
   def wiki_page_alias_and_implication_list(wiki_page)
-    render "tags/alias_and_implication_list", tag: wiki_page.tag || Tag.new(name: wiki_page.title)
+    render("tags/alias_and_implication_list", tag: wiki_page.tag || Tag.new(name: wiki_page.title))
   end
 
   def wiki_page_post_previews(wiki_page)

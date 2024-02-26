@@ -73,7 +73,7 @@ class UserPromotion
   end
 
   def validate
-    raise User::PrivilegeError, "Can't demote owner" if user.is_owner? && !promoter.is_owner?
-    raise User::PrivilegeError, "Only owner can promote to admin" if new_level.to_i >= User::Levels::ADMIN && !promoter.is_owner?
+    raise(User::PrivilegeError, "Can't demote owner") if user.is_owner? && !promoter.is_owner?
+    raise(User::PrivilegeError, "Only owner can promote to admin") if new_level.to_i >= User::Levels::ADMIN && !promoter.is_owner?
   end
 end

@@ -29,7 +29,7 @@ class TagImplication < TagRelationship
       def descendants_with_originals(names)
         active.where(antecedent_name: names).each_with_object({}) do |x, result|
           result[x.antecedent_name] ||= Set.new
-          result[x.antecedent_name].merge x.descendant_names
+          result[x.antecedent_name].merge(x.descendant_names)
         end
       end
 
@@ -132,7 +132,7 @@ class TagImplication < TagRelationship
       rescue Exception => e
         if tries < 5 && !Rails.env.test?
           tries += 1
-          sleep 2 ** tries
+          sleep(2 ** tries)
           retry
         end
 
@@ -205,7 +205,7 @@ class TagImplication < TagRelationship
 
     def process_undo!(update_topic: true)
       unless valid?
-        raise errors.full_messages.join("; ")
+        raise(errors.full_messages.join("; "))
       end
 
       CurrentUser.scoped(approver) do

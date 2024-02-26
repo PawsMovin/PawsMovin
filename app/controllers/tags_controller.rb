@@ -20,7 +20,7 @@ class TagsController < ApplicationController
     @preview = TagsPreview.new(tags: params[:tags])
     respond_to do |format|
       format.json do
-        render json: @preview.serializable_hash
+        render(json: @preview.serializable_hash)
       end
     end
   end
@@ -44,7 +44,7 @@ class TagsController < ApplicationController
   private
 
   def check_privilege(tag)
-    raise User::PrivilegeError unless tag.category_editable_by?(CurrentUser.user)
+    raise(User::PrivilegeError) unless tag.category_editable_by?(CurrentUser.user)
   end
 
   def tag_params

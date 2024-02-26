@@ -2,22 +2,22 @@
 
 <div id="form-content">
   <%= custom_form_for(forum_topic) do |f| %>
-    <%= f.input :title, input_html: {size: 100} %>
+    <%= f.input(:title, input_html: {size: 100}) %>
 
     <div class="input">
       <label for="forum_topic_category_id">Category</label>
       <%= forum_topic_category_select("forum_topic", "category_id") %>
     </div>
 
-    <%= f.simple_fields_for :original_post do |pf| %>
-      <%= pf.input :body, as: :dtext, limit: PawsMovin.config.forum_post_max_size %>
+    <%= f.simple_fields_for(:original_post) do |pf| %>
+      <%= pf.input(:body, as: :dtext, limit: PawsMovin.config.forum_post_max_size) %>
     <% end %>
 
     <% if CurrentUser.is_moderator? %>
-      <%= f.input :is_sticky, :label => "Sticky" %>
-      <%= f.input :is_locked, :label => "Locked" %>
+      <%= f.input(:is_sticky, :label => "Sticky") %>
+      <%= f.input(:is_locked, :label => "Locked") %>
     <% end %>
 
-    <%= f.button :submit, "Submit" %>
+    <%= f.button(:submit, "Submit") %>
   <% end %>
 </div>

@@ -25,10 +25,10 @@ class CommentVote < LockableUserVote
 
   def validate_comment_can_be_voted
     if (is_positive? || is_negative?) && comment.creator == CurrentUser.user
-      errors.add :base, "You cannot vote on your own comments"
+      errors.add(:base, "You cannot vote on your own comments")
     end
     if comment.is_sticky
-      errors.add :base, "You cannot vote on sticky comments"
+      errors.add(:base, "You cannot vote on sticky comments")
     end
   end
 end

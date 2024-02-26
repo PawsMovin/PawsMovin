@@ -15,9 +15,9 @@ class ForumPostVotesController < ApplicationController
 
   def create
     @forum_post_vote = @forum_post.votes.create(forum_post_vote_params)
-    raise User::PrivilegeError.new(@forum_post_vote.errors.full_messages.join('; ')) if @forum_post_vote.errors.size > 0
+    raise(User::PrivilegeError.new(@forum_post_vote.errors.full_messages.join('; '))) if @forum_post_vote.errors.size > 0
     respond_with(@forum_post_vote) do |fmt|
-      fmt.json { render json: @forum_post_vote, code: 201 }
+      fmt.json { render(json: @forum_post_vote, code: 201) }
     end
   end
 
@@ -42,12 +42,12 @@ class ForumPostVotesController < ApplicationController
   end
 
   def validate_forum_post
-    raise User::PrivilegeError.new unless @forum_post.visible?(CurrentUser.user)
-    raise User::PrivilegeError.new unless @forum_post.votable?
+    raise(User::PrivilegeError.new) unless @forum_post.visible?(CurrentUser.user)
+    raise(User::PrivilegeError.new) unless @forum_post.votable?
   end
 
   def validate_no_vote_on_own_post
-    raise User::PrivilegeError, "You cannot vote on your own requests" if @forum_post.creator == CurrentUser.user
+    raise(User::PrivilegeError, "You cannot vote on your own requests") if @forum_post.creator == CurrentUser.user
   end
 
   def forum_post_vote_params

@@ -68,7 +68,7 @@ class PostReplacement < ApplicationRecord
     uploadable = creator.can_upload_with_reason
     if uploadable != true
       self.errors.add(:creator, User.upload_reason_string(uploadable))
-      throw :abort
+      throw(:abort)
     end
 
     # Janitor bypass replacement limits
@@ -76,11 +76,11 @@ class PostReplacement < ApplicationRecord
 
     if post.replacements.where(creator_id: creator.id).where('created_at > ?', 1.day.ago).count >= PawsMovin.config.post_replacement_per_day_limit
       self.errors.add(:creator, 'has already suggested too many replacements for this post today')
-      throw :abort
+      throw(:abort)
     end
     if post.replacements.where(creator_id: creator.id).count >= PawsMovin.config.post_replacement_per_post_limit
       self.errors.add(:creator, 'has already suggested too many total replacements for this post')
-      throw :abort
+      throw(:abort)
     end
     true
   end
@@ -101,7 +101,7 @@ class PostReplacement < ApplicationRecord
       valid, reason = UploadWhitelist.is_whitelisted?(replacement_url_parsed)
       if !valid
         self.errors.add(:replacement_url, "is not whitelisted: #{reason}")
-        throw :abort
+        throw(:abort)
       end
 
       download = Downloads::File.new(replacement_url_parsed)
@@ -111,7 +111,7 @@ class PostReplacement < ApplicationRecord
       self.source = "#{self.source}\n" + replacement_url
     rescue Downloads::File::Error
       self.errors.add(:replacement_url, "failed to fetch file")
-      throw :abort
+      throw(:abort)
     end
 
     def update_file_attributes
@@ -129,11 +129,11 @@ class PostReplacement < ApplicationRecord
       else
         if replacement_url_parsed.blank? && replacement_url.present?
           self.errors.add(:replacement_url, "is invalid")
-          throw :abort
+          throw(:abort)
         end
         if replacement_url_parsed.blank?
           self.errors.add(:base, "No file or replacement URL provided")
-          throw :abort
+          throw(:abort)
         end
         self.file_name = replacement_url_parsed.basename
       end
@@ -173,7 +173,7 @@ class PostReplacement < ApplicationRecord
 
   module ProcessingMethods
     def approve!(penalize_current_uploader:)
-      unless ["pending", "original"].include? status
+      unless ["pending", "original"].include?(status)
         errors.add(:status, "must be pending or original to approve")
         return
       end

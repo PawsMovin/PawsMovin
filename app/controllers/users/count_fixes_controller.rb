@@ -10,7 +10,7 @@ module Users
     def create
       CurrentUser.user.refresh_counts!
       flash[:notice] = "Counts have been refreshed"
-      redirect_to user_path(CurrentUser.id)
+      redirect_to(user_path(CurrentUser.id))
     end
   end
 end

@@ -54,7 +54,7 @@ module Recommender
     end
 
     if user.present?
-      raise Favorite::HiddenError if user.hide_favorites?
+      raise(Favorite::HiddenError) if user.hide_favorites?
       max_recommendations = params.fetch(:max_recommendations, user.favorite_count + 500).to_i.clamp(0, 50_000)
       recs = recommend_for_user(user, tags: params[:post_tags_match], limit: max_recommendations)
     elsif post.present?

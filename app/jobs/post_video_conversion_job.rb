@@ -12,7 +12,7 @@ class PostVideoConversionJob < ApplicationJob
     Post.transaction do
       post = Post.find(id)
       unless post.is_video?
-        logger.info "Exiting as not a video"
+        logger.info("Exiting as not a video")
         next
       end
       samples = generate_video_samples(post)
@@ -144,7 +144,7 @@ class PostVideoConversionJob < ApplicationJob
     unless status == 0
       logger.warn("[FFMPEG TRANSCODE STDOUT] #{stdout.chomp}")
       logger.warn("[FFMPEG TRANSCODE STDERR] #{stderr.chomp}")
-      raise StandardError, "unable to transcode files\n#{stdout.chomp}\n\n#{stderr.chomp}"
+      raise(StandardError, "unable to transcode files\n#{stdout.chomp}\n\n#{stderr.chomp}")
     end
     [webm_file, mp4_file]
   end

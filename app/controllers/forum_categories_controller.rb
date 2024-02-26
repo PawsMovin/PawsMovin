@@ -18,7 +18,7 @@ class ForumCategoriesController < ApplicationController
     @forum_category = ForumCategory.create(category_params)
     flash[:notice] = @forum_category.valid? ? "Forum category created" : @forum_category.errors.full_messages.join("; ")
     respond_with(@forum_category) do |format|
-      format.html { redirect_to forum_categories_path }
+      format.html { redirect_to(forum_categories_path) }
     end
   end
 
@@ -26,7 +26,7 @@ class ForumCategoriesController < ApplicationController
     @forum_category.destroy
     flash[:notice] = @forum_category.errors.any? ? @forum_category.errors.full_messages.join("; ") : "Forum category deleted"
     respond_with(@forum_category) do |format|
-      format.html { redirect_to forum_categories_path }
+      format.html { redirect_to(forum_categories_path) }
     end
   end
 
@@ -38,7 +38,7 @@ class ForumCategoriesController < ApplicationController
 
     flash[:notice] = @forum_category.valid? ? "Category updated" : @forum_category.errors.full_messages.join('; ')
     respond_with(@forum_category) do |format|
-      format.html { redirect_to forum_categories_path }
+      format.html { redirect_to(forum_categories_path) }
     end
   end
 
