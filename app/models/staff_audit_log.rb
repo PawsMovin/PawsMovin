@@ -43,7 +43,7 @@ class StaffAuditLog < ApplicationRecord
     },
     post_owner_reassign: {
       text: ->(log) { "Reassigned #{log.post_ids.length} #{'post'.pluralize(log.post_ids.length)} with query \"#{log.query}\" from \"#{User.id_to_name(log.old_user_id)}\":/users/#{log.old_user_id} to \"#{User.id_to_name(log.new_user_id)}\":/users/#{log.new_user_id}" },
-      json: %i[query post_ids old_user_ud new_user_id],
+      json: %i[query post_ids old_user_id new_user_id],
     },
 
     ### IP Ban ###
@@ -120,6 +120,10 @@ class StaffAuditLog < ApplicationRecord
     FORMATTERS[action.to_sym]&.[](:text)&.call(self) || format_unknown(self)
   end
 
+  def json_keys
+    FORMATTERS[action.to_sym]&.[](:json) || (CurrentUser.is_admin? ? values.keys : [])
+  end
+
   def format_json
     FORMATTERS[action.to_sym]&.[](:json)&.index_with { |k| send(k) } || (CurrentUser.is_admin? ? values : {})
   end
@@ -139,5 +143,16 @@ class StaffAuditLog < ApplicationRecord
     end
   end
 
+  module ApiMethods
+    def method_attributes
+      json_keys
+    end
+
+    def hidden_attributes
+      super + %i[values]
+    end
+  end
+
+  include ApiMethods
   extend SearchMethods
 end

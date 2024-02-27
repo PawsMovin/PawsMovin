@@ -427,6 +427,10 @@ class ModAction < ApplicationRecord
     FORMATTERS[action.to_sym]&.[](:text)&.call(self, user) || format_unknown(self, user)
   end
 
+  def json_keys
+    FORMATTERS[action.to_sym]&.[](:json) || (CurrentUser.is_admin? ? values.keys : [])
+  end
+
   def format_json
     keys = FORMATTERS[action.to_sym]&.[](:json)
     return CurrentUser.is_admin? ? values : {} if keys.nil?
@@ -449,5 +453,21 @@ class ModAction < ApplicationRecord
     end
   end
 
+  module ApiMethods
+    def method_attributes
+      json_keys
+    end
+
+    def hidden_attributes
+      super + %i[values]
+    end
+
+    def serializable_hash(*)
+      return super.merge("#{subject_type.underscore}_id": subject_id) if subject
+      super
+    end
+  end
+
+  include ApiMethods
   extend SearchMethods
 end

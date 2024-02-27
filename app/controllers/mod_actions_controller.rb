@@ -5,11 +5,7 @@ class ModActionsController < ApplicationController
 
   def index
     @mod_actions = ModAction.includes(:creator).search(search_params).paginate(params[:page], limit: params[:limit])
-    respond_with(@mod_actions) do |format|
-      format.json do
-        render(json: @mod_actions, each_serializer: ModActionSerializer)
-      end
-    end
+    respond_with(@mod_actions)
   end
 
   def show

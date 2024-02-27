@@ -1398,7 +1398,7 @@ class Post < ApplicationRecord
   module ApiMethods
     def hidden_attributes
       list = super + [:pool_string, :fav_string]
-      if !visible?
+      unless visible?
         list += [:md5, :file_ext]
       end
       super + list
@@ -1445,6 +1445,40 @@ class Post < ApplicationRecord
       hash
     end
 
+    def alternate_samples
+      alternates = {}
+      PawsMovin.config.video_rescales.each do |k, v|
+        next unless has_sample_size?(k)
+        dims = scaled_sample_dimensions(v)
+        alternates[k] = {
+          type: "video",
+          height: dims[1],
+          width: dims[0],
+          urls: visible? ? [scaled_url_ext(k, "webm"), scaled_url_ext(k, "mp4")] : [nil, nil],
+        }
+      end
+      if has_sample_size?("original")
+        fixed_dims = scaled_sample_dimensions([image_width, image_height])
+        alternates["original"] = {
+          type: "video",
+          height: fixed_dims[1],
+          width: fixed_dims[0],
+          urls: visible? ? [nil, file_url_ext("mp4")] : [nil, nil],
+        }
+      end
+      PawsMovin.config.image_rescales.each do |k, v|
+        next unless has_sample_size?(k)
+        dims = scaled_sample_dimensions(v)
+        alternates[k] = {
+          type: "image",
+          height: dims[1],
+          width: dims[0],
+          url: visible? ? scaled_url_ext(k, "webp") : nil,
+        }
+      end
+      alternates
+    end
+
     def status
       if is_pending?
         "pending"
@@ -1455,6 +1489,72 @@ class Post < ApplicationRecord
       else
         "active"
       end
+    end
+
+    def serializable_hash(*)
+      preview_height, preview_width = preview_dimensions
+      {
+        id: id,
+        created_at: created_at,
+        updated_at: updated_at,
+        file: {
+          width: image_width,
+          height: image_height,
+          ext: file_ext,
+          size: file_size,
+          md5: md5,
+          url: visible? ? file_url : nil,
+        },
+        preview: {
+          width: preview_width,
+          height: preview_height,
+          url: visible? ? preview_file_url : nil,
+        },
+        sample: {
+          has: has_large?,
+          height: large_image_height,
+          width: large_image_width,
+          url: visible? ? large_file_url : nil,
+          alternates: alternate_samples,
+        },
+        score: {
+          up: up_score,
+          down: down_score,
+          total: score,
+        },
+        views: {
+          daily: daily_views,
+          total: total_views,
+        },
+        tags: TagCategory.category_names.index_with { |category| typed_tags(TagCategory.get(category).id) },
+        locked_tags: locked_tags&.split(" ") || [],
+        change_seq: change_seq,
+        flags: {
+          pending: is_pending,
+          flagged: is_flagged,
+          note_locked: is_note_locked,
+          status_locked: is_status_locked,
+          rating_locked: is_rating_locked,
+          deleted: is_deleted,
+        },
+        rating: rating,
+        fav_count: fav_count,
+        sources: source.split("\n"),
+        pools: pool_ids,
+        relationships: {
+          parent_id: parent_id,
+          has_children: has_children,
+          has_active_children: has_active_children,
+          children: children_ids&.split(" ")&.map(&:to_i) || [],
+        },
+        approver_id: approver_id,
+        uploader_id: uploader_id,
+        description: description,
+        comment_count: visible_comment_count(CurrentUser.user),
+        is_favorited: is_favorited?,
+        has_notes: has_notes?,
+        duration: duration&.to_f,
+      }
     end
   end
 

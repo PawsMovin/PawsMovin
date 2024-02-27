@@ -11,7 +11,7 @@ x-environment: &common-env
   PAWSMOVIN_REPORTS_SERVER: http://localhost:${EXPOSED_SERVER_PORT:-3001}/reports
   # Must be internally accessible
   PAWSMOVIN_REPORTS_SERVER_INTERNAL: http://reports:3000
-  PAWSMOVIN_REPORTS_ENABLED: true
+  PAWSMOVIN_REPORTS_ENABLED: 1
   PAWSMOVIN_DISCORD_SITE: http://localhost:8000
   PAWSMOVIN_DISCORD_SECRET: super_secret_for_url_discord
   PAWSMOVIN_REPORT_KEY: super_secret_key_for_reports_signature
@@ -151,7 +151,7 @@ services:
   # To change this, set the PAWSMOVIN_REPORTS_SERVER env variable
   # For internal access, change the PAWSMOVIN_REPORTS_SERVER_INTERNAL env varable (defaults to http://reports:3000)
   reports:
-    image: ghcr.io/pawsmovin/reports:2441adf25869a7231da6899c012790dd23ae9ea9
+    image: ghcr.io/pawsmovin/reports:b110f35e3b9baed09e0e3b99382108751545f767
     environment:
       - DB_HOST=postgres
       - DB_PORT=5432

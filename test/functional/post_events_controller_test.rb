@@ -58,7 +58,7 @@ class PostEventsControllerTest < ActionDispatch::IntegrationTest
     context "for the creator of a flag" do
       setup do
         get_auth post_events_path, @user1, params: { format: :json }
-        @flag_actions = JSON.parse(response.body)["post_events"].select { |e| e["action"] == "flag_created" }
+        @flag_actions = JSON.parse(response.body).select { |e| e["action"] == "flag_created" }
       end
 
       should "expose themselves as the flagger" do
@@ -70,13 +70,13 @@ class PostEventsControllerTest < ActionDispatch::IntegrationTest
       should "hide all flaggers" do
         get_auth post_events_path, @user3, params: { format: :json }
         @json = JSON.parse(response.body)
-        @flag_actions = JSON.parse(response.body)["post_events"].select { |e| e["action"] == "flag_created" }
+        @flag_actions = JSON.parse(response.body).select { |e| e["action"] == "flag_created" }
         assert_equal [nil, nil, nil], (@flag_actions.map { |action| action["creator_id"] })
       end
 
       should "return no flag_created when searching by creator" do
         get_auth post_events_path, @user3, params: { search: { creator_id: @user1.id }, format: :json }
-        assert JSON.parse(response.body)["post_events"].count == 0
+        assert JSON.parse(response.body).count == 0
       end
     end
 
@@ -84,7 +84,7 @@ class PostEventsControllerTest < ActionDispatch::IntegrationTest
       setup do
         get_auth post_events_path, @janitor, params: { format: :json }
         @json = JSON.parse(response.body)
-        @flag_actions = JSON.parse(response.body)["post_events"].select { |e| e["action"] == "flag_created" }
+        @flag_actions = JSON.parse(response.body).select { |e| e["action"] == "flag_created" }
       end
 
       should "show all flaggers" do

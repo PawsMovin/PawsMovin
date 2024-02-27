@@ -54,27 +54,49 @@ class PostEvent < ApplicationRecord
     end
   end
 
-  def self.search(params)
-    q = super
+  module SearchMethods
+    def search(params)
+      q = super
 
-    if params[:post_id].present?
-      q = q.where("post_id = ?", params[:post_id].to_i)
-    end
-
-    q = q.where_user(:creator_id, :creator, params) do |condition, user_ids|
-      condition.where.not(
-        action: actions[:flag_created],
-        creator_id: user_ids.reject { |user_id| CurrentUser.can_view_flagger?(user_id) },
-      )
-    end
-
-    if params[:action].present?
-      if !CurrentUser.is_moderator? && MOD_ONLY_SEARCH_ACTIONS.include?(actions[params[:action]])
-        raise(User::PrivilegeError)
+      if params[:post_id].present?
+        q = q.where("post_id = ?", params[:post_id].to_i)
       end
-      q = q.where("action = ?", actions[params[:action]])
+
+      q = q.where_user(:creator_id, :creator, params) do |condition, user_ids|
+        condition.where.not(
+          action: actions[:flag_created],
+          creator_id: user_ids.reject { |user_id| CurrentUser.can_view_flagger?(user_id) },
+        )
+      end
+
+      if params[:action].present?
+        if !CurrentUser.is_moderator? && MOD_ONLY_SEARCH_ACTIONS.include?(actions[params[:action]])
+          raise(User::PrivilegeError)
+        end
+        q = q.where("action = ?", actions[params[:action]])
+      end
+
+      q.apply_basic_order(params)
+    end
+  end
+
+  module ApiMethods
+    def hidden_attributes
+      super + %i[extra_data]
     end
 
-    q.apply_basic_order(params)
+    # whitelisted data attributes
+    def allowed_data
+      %w[reason parent_id child_id bg_color replacement_id old_md5 new_md5 source_post_id md5]
+    end
+
+    def serializable_hash(*)
+      hash = super.merge(**extra_data.slice(*allowed_data))
+      hash[:creator_id] = nil unless is_creator_visible?(CurrentUser.user)
+      hash
+    end
   end
+
+  include ApiMethods
+  extend SearchMethods
 end

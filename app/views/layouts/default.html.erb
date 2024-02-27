@@ -28,6 +28,10 @@
   </header>
 
   <div id="page">
+    <% if content_for(:html_body) %>
+      <%= yield :html_body %>
+    <% end %>
+
     <%= render "news_updates/notice", news_update: NewsUpdate.recent %>
 
     <% if CurrentUser.is_member? && (name_error = CurrentUser.name_error) %>
