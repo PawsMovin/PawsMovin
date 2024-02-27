@@ -10,9 +10,8 @@
     </tr>
   </thead>
   <tbody>
-    <% bulk_update_requests.each do |request| %>
-      <tr id="request-<%= request.id %>">
-        <td><%= link_to_user(request.user) %></td>
+    <% bulk_update_requests.each do |request| %><tr id="request-<%= request.id %>">
+        <td><%= link_to_user(request.creator) %></td>
         <td><% if request.approver %><%= link_to_user(request.approver) %><% end %></td>
         <td>
           <% if request.forum_post_id %>

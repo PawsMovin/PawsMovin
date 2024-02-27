@@ -245,7 +245,7 @@ ALTER SEQUENCE public.bans_id_seq OWNED BY public.bans.id;
 
 CREATE TABLE public.bulk_update_requests (
     id integer NOT NULL,
-    user_id integer NOT NULL,
+    creator_id integer NOT NULL,
     forum_topic_id integer,
     script text NOT NULL,
     status character varying DEFAULT 'pending'::character varying NOT NULL,
@@ -254,7 +254,7 @@ CREATE TABLE public.bulk_update_requests (
     approver_id integer,
     forum_post_id integer,
     title text,
-    user_ip_addr inet DEFAULT '127.0.0.1'::inet NOT NULL
+    creator_ip_addr inet DEFAULT '127.0.0.1'::inet NOT NULL
 );
 
 
@@ -4518,6 +4518,7 @@ ALTER TABLE ONLY public.staff_notes
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20240227091418'),
 ('20240217235926'),
 ('20240217025400'),
 ('20240214190653'),

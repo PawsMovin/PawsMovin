@@ -1,14 +1,13 @@
 # frozen_string_literal: true
 
 class BulkUpdateRequest < ApplicationRecord
+  belongs_to_creator
   attr_accessor :reason, :skip_forum, :should_validate
 
-  belongs_to :user
   belongs_to :forum_topic, optional: true
   belongs_to :forum_post, optional: true
   belongs_to :approver, optional: true, class_name: "User"
 
-  validates :user, presence: true
   validates :script, presence: true
   validates :title, presence: { if: ->(rec) {rec.forum_topic_id.blank?} }
   validates :status, inclusion: { in: %w(pending approved rejected) }
@@ -17,22 +16,15 @@ class BulkUpdateRequest < ApplicationRecord
   validate :validate_script, on: :create
   validate :check_validate_script, on: :update
   validates :reason, length: { minimum: 5 }, on: :create, unless: :skip_forum
-  before_validation :initialize_attributes, on: :create
   before_validation :normalize_text
   after_create :create_forum_topic
 
   scope :pending_first, -> { order(Arel.sql("(case status when 'pending' then 0 when 'approved' then 1 else 2 end)")) }
   scope :pending, -> {where(status: "pending")}
 
-  module ApiMethods
-    def hidden_attributes
-      super + [:user_ip_addr]
-    end
-  end
-
   module SearchMethods
     def for_creator(id)
-      where("user_id = ?", id)
+      where(creator_id: id)
     end
 
     def default_order
@@ -42,7 +34,7 @@ class BulkUpdateRequest < ApplicationRecord
     def search(params)
       q = super
 
-      q = q.where_user(:user_id, :user, params)
+      q = q.where_user(:creator_id, :creator, params)
       q = q.where_user(:approver_id, :approver, params)
 
       if params[:forum_topic_id].present?
@@ -94,7 +86,7 @@ class BulkUpdateRequest < ApplicationRecord
     def approve!(approver)
       transaction do
         CurrentUser.scoped(approver) do
-          BulkUpdateRequestImporter.new(script, forum_topic_id, user_id, user_ip_addr).process!
+          BulkUpdateRequestImporter.new(script, forum_topic_id, creator_id, creator_ip_addr).process!
           update(status: "approved", approver: CurrentUser.user)
           forum_updater.update("The #{bulk_update_request_link} (forum ##{forum_post&.id}) has been approved by @#{approver.name}.", "APPROVED")
         end
@@ -167,7 +159,6 @@ class BulkUpdateRequest < ApplicationRecord
   extend SearchMethods
   include ApprovalMethods
   include ValidationMethods
-  include ApiMethods
 
   concerning :EmbeddedText do
     class_methods do
@@ -178,7 +169,7 @@ class BulkUpdateRequest < ApplicationRecord
   end
 
   def editable?(user)
-    is_pending? && (user_id == user.id || user.is_admin?)
+    is_pending? && (creator_id == user.id || user.is_admin?)
   end
 
   def approvable?(user)
@@ -187,12 +178,6 @@ class BulkUpdateRequest < ApplicationRecord
 
   def rejectable?(user)
     is_pending? && editable?(user)
-  end
-
-  def initialize_attributes
-    self.user_id = CurrentUser.user.id unless self.user_id
-    self.user_ip_addr = Currentuser.ip_addr unless self.user_ip_addr
-    self.status = "pending"
   end
 
   def normalize_text

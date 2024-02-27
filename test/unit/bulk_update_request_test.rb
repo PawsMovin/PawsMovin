@@ -194,8 +194,8 @@ class BulkUpdateRequestTest < ActiveSupport::TestCase
 
     context "when searching" do
       setup do
-        @bur1 = create(:bulk_update_request, title: "foo", script: "create alias aaa -> bbb", user_id: @admin.id)
-        @bur2 = create(:bulk_update_request, title: "bar", script: "create implication bbb -> ccc", user_id: @admin.id)
+        @bur1 = create(:bulk_update_request, title: "foo", script: "create alias aaa -> bbb", creator_id: @admin.id)
+        @bur2 = create(:bulk_update_request, title: "bar", script: "create implication bbb -> ccc", creator_id: @admin.id)
         @bur1.approve!(@admin)
       end
 
