@@ -6,6 +6,7 @@
     <th>Post</th>
     <th>Poster</th>
     <th width="50%">Tags</th>
+    <th>Deleter</th>
     <th>Deleted At</th>
     <th>Reason</th>
   </tr>
@@ -16,7 +17,8 @@
     <tr>
       <td><%= link_to post.id, post_path(post) %></td>
       <td><%= link_to_user post.uploader %></td>
-      <td><%= post.tag_string %></td>
+      <td><%= post.presenter.inline_tag_list_html %></td>
+      <td><%= link_to_user post.flags.where(is_deletion: true).last.creator %></td>
       <td><%= compact_time post.deletion_flag&.created_at %></td>
       <td class="dtext-container"><%= format_text(post.deletion_flag&.reason) %></td>
     </tr>
