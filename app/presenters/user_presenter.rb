@@ -32,6 +32,10 @@ class UserPresenter
       permissions << "unrestricted uploads"
     end
 
+    if user.can_manage_aibur?
+      permissions << "manage tag change requests"
+    end
+
     permissions.join(", ")
   end
 

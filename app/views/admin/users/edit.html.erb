@@ -48,6 +48,12 @@
         <label for="user_no_replacements" class="optional">Banned From Replacements</label>
         <%= select(:user, :no_replacements, [["Yes", true], ["No", false]]) %>
       </div>
+
+      <div class="input">
+        <label for="user_can_manage_aibur" class="optional">Manage Tag Change Requests</label>
+        <%= select(:user, :can_manage_aibur, [["Yes", true], ["No", false]]) %>
+      </div>
+
       <%= f.button(:submit, value: "Update") %>
     <% end %>
   </div>

@@ -185,7 +185,7 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  %i[can_view_staff_notes can_handle_takedowns].each do |role|
+  %i[can_view_staff_notes can_handle_takedowns can_manage_aibur].each do |role|
     define_method("#{role}_only") do
       user_access_check("#{role}?")
     end

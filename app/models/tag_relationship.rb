@@ -75,15 +75,16 @@ class TagRelationship < ApplicationRecord
   end
 
   def approvable_by?(user)
-    is_pending? && user.is_admin?
+    return false if is_approved? || !user.can_manage_aibur?
+    creator_id != user.id || user.is_admin?
   end
 
-  def deletable_by?(user)
-    user.is_admin? || (is_pending? && creator.id == user.id)
+  def rejectable_by?(user)
+    user.can_manage_aibur? || (is_pending? && creator_id == user.id)
   end
 
   def editable_by?(user)
-    is_pending? && user.is_admin?
+    is_pending? && user.can_manage_aibur?
   end
 
   module SearchMethods

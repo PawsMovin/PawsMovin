@@ -2,7 +2,7 @@
 
 class TagAliasesController < ApplicationController
   before_action :member_only, except: %i[index show]
-  before_action :admin_only, only: %i[edit update approve]
+  before_action :can_manage_aibur_only, only: %i[edit update]
   respond_to :html, :json
 
   def index
@@ -53,7 +53,7 @@ class TagAliasesController < ApplicationController
 
   def destroy
     @tag_alias = TagAlias.find(params[:id])
-    if @tag_alias.deletable_by?(CurrentUser.user)
+    if @tag_alias.rejectable_by?(CurrentUser.user)
       @tag_alias.reject!
       respond_with(@tag_alias, location: tag_aliases_path)
     else

@@ -2,7 +2,7 @@
 
 class TagImplicationsController < ApplicationController
   before_action :member_only, except: %i[index show]
-  before_action :admin_only, only: %i[edit update approve]
+  before_action :can_manage_aibur_only, only: %i[edit update]
   respond_to :html, :json
 
   def index
@@ -49,7 +49,7 @@ class TagImplicationsController < ApplicationController
 
   def destroy
     @tag_implication = TagImplication.find(params[:id])
-    if @tag_implication.deletable_by?(CurrentUser.user)
+    if @tag_implication.rejectable_by?(CurrentUser.user)
       @tag_implication.reject!
       if @tag_implication.errors.any?
         flash[:notice] = @tag_implication.errors.full_messages.join("; ")

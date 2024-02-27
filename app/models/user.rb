@@ -68,6 +68,7 @@ class User < ApplicationRecord
     hover_zoom_shift
     hover_zoom_play_audio
     hover_zoom_sticky_shift
+    can_manage_aibur
   ].freeze
 
   include PawsMovin::HasBitFlags
@@ -325,6 +326,7 @@ class User < ApplicationRecord
         self.created_at = 2.weeks.ago
         self.can_approve_posts = true
         self.can_upload_free = true
+        self.can_manage_aibur = true
       end
     end
 

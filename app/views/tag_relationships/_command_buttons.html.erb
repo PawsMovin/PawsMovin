@@ -8,7 +8,7 @@
   <% if tag_relation.approvable_by?(CurrentUser.user) %>
     <% links.push(link_to("Approve", "#", class: "tag-relationship-accept")) %>
   <% end %>
-  <% if tag_relation.deletable_by?(CurrentUser.user) %>
+  <% if tag_relation.rejectable_by?(CurrentUser.user) %>
     <% links.push(link_to("Reject", "#", class: "tag-relationship-reject")) %>
   <% end %>
   <% if tag_relation.editable_by?(CurrentUser.user) %>
