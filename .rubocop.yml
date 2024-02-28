@@ -90,6 +90,8 @@ Rails/Output:
     - db/seeds.rb
     - db/seeds/*.rb
     - db/fixes/*.rb
+  Include:
+    - test/**/*.rb
 
 Rails/ReversibleMigration:
   Enabled: false
