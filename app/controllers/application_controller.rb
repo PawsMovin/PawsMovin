@@ -78,7 +78,7 @@ class ApplicationController < ActionController::Base
     when TagQuery::CountExceededError
       render_expected_error(422, exception.message)
     when FeatureUnavailable
-      render_expected_error(400, "This feature isn't available")
+      render_expected_error(501, "This feature isn't available")
     when PG::ConnectionBad
       render_error_page(503, exception, message: "The database is unavailable. Try again later.")
     when ActionController::ParameterMissing
