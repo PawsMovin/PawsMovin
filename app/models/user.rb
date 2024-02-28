@@ -598,6 +598,19 @@ class User < ApplicationRecord
       end
     end
 
+    def uploaders_list_pieces
+      @uploaders_list_pieces ||= {
+          pending: Post.pending.for_user(id).count,
+          approved: Post.for_user(id).where(is_flagged: false, is_deleted: false, is_pending: false).count,
+          deleted: Post.deleted.for_user(id).count,
+          flagged: Post.flagged.for_user(id).count,
+          replaced: own_post_replaced_count,
+          replacement_pending: post_replacements.pending.count,
+          replacement_rejected: post_replacement_rejected_count,
+          replacement_promoted: post_replacements.promoted.count
+        }
+    end
+
     def post_upload_throttle
       @post_upload_throttle ||= is_trusted? ? hourly_upload_limit : [hourly_upload_limit, post_edit_limit].min
     end

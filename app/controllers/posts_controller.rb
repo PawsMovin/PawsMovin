@@ -3,7 +3,7 @@
 class PostsController < ApplicationController
   before_action :member_only, except: %i[show show_seq index random]
   before_action :admin_only, only: %i[update_iqdb expunge]
-  before_action :janitor_only, only: %i[regenerate_thumbnails regenerate_videos]
+  before_action :janitor_only, only: %i[regenerate_thumbnails regenerate_videos uploaders]
   before_action :approver_only, only: %i[delete destroy undelete confirm_move_favorites move_favorites expunge approve unapprove]
   skip_before_action :api_check, only: %i[delete destroy undelete move_favorites expunge approve unapprove]
   respond_to :html, :json
@@ -191,6 +191,12 @@ class PostsController < ApplicationController
     end
   end
 
+  def uploaders
+    @relation = Post.where(is_pending: true).search_uploaders(search_uploaders_params).group(:uploader_id).order("COUNT(uploader_id) DESC").paginate(params[:page], limit: params[:limit] || 20)
+    @counts = @relation.count
+    @users = User.where(id: @counts.keys)
+  end
+
   private
 
   def tag_query
@@ -258,5 +264,10 @@ class PostsController < ApplicationController
     permitted_params += %i[is_status_locked is_comment_disabled locked_tags hide_from_anonymous hide_from_search_engines] if CurrentUser.is_admin?
 
     params.require(:post).permit(permitted_params)
+  end
+
+  def search_uploaders_params
+    permitted_params = %i[user_id user_name]
+    permit_search_params(permitted_params)
   end
 end

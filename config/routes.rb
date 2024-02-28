@@ -218,6 +218,7 @@ Rails.application.routes.draw do
     resources :favorites, controller: "post_favorites", only: [:index]
     collection do
       get :random
+      get :uploaders
     end
     member do
       get :update_iqdb

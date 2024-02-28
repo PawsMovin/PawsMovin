@@ -1913,4 +1913,10 @@ class Post < ApplicationRecord
   def visible_comment_count(user)
     comments_visible_to?(user) ? comment_count : 0
   end
+
+  def self.search_uploaders(params)
+    q = all
+    q = q.where_user(:uploader_id, :user, params)
+    q
+  end
 end

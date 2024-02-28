@@ -279,6 +279,10 @@ class PostReplacement < ApplicationRecord
         where(status: "approved")
       end
 
+      def promoted
+        where(status: "promoted")
+      end
+
       def for_user(id)
         where(creator_id: id.to_i)
       end
