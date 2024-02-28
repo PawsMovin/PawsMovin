@@ -39,6 +39,7 @@ class PostsDecorator < ApplicationDecorator
         "data-score-down": post.down_score,
         "data-fav-count": post.fav_count,
         "data-is-favorited": post.favorited_by?(CurrentUser.user.id),
+        "data-own-vote": post.own_vote&.score,
         "data-created-at": post.created_at.iso8601,
         "data-created-ago": "#{Class.new.extend(ActionView::Helpers::DateHelper).time_ago_in_words(post.created_at)} ago",
         "data-width": post.image_width,

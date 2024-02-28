@@ -1397,17 +1397,17 @@ class Post < ApplicationRecord
 
   module ApiMethods
     def hidden_attributes
-      list = super + [:pool_string, :fav_string]
+      list = super + %i[pool_string fav_string]
       unless visible?
-        list += [:md5, :file_ext]
+        list += %i[md5 file_ext]
       end
       super + list
     end
 
     def method_attributes
-      list = super + [:has_large, :has_visible_children, :children_ids, :pool_ids, :is_favorited?]
+      list = super + %i[has_large has_visible_children children_ids pool_ids is_favorited? is_voted_up? is_voted_down?]
       if visible?
-        list += [:file_url, :large_file_url, :preview_file_url]
+        list += %i[file_url large_file_url preview_file_url]
       end
       list
     end
@@ -1552,6 +1552,7 @@ class Post < ApplicationRecord
         description: description,
         comment_count: visible_comment_count(CurrentUser.user),
         is_favorited: is_favorited?,
+        own_vote: own_vote&.score,
         has_notes: has_notes?,
         duration: duration&.to_f,
       }

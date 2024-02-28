@@ -119,7 +119,8 @@ class PostPresenter < Presenter
         "data-file-ext" => post.file_ext,
         "data-uploader-id" => post.uploader_id,
         "data-uploader" => post.uploader_name,
-        "data-is-favorited" => post.favorited_by?(CurrentUser.user.id)
+        "data-is-favorited" => post.favorited_by?(CurrentUser.user.id),
+        "data-own-vote" => post.own_vote&.score
     }
 
     if post.visible?
@@ -212,7 +213,8 @@ class PostPresenter < Presenter
         sources: post.source&.split('\n'),
         tags: post.tag_string.split(" "),
         locked_tags: post.locked_tags&.split(" ") || [],
-        is_favorited: post.is_favorited?
+        is_favorited: post.is_favorited?,
+        own_vote: post.own_vote&.score
     }
 
   end
