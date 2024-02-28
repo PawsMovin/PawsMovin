@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class PostFlagsController < ApplicationController
-  before_action :member_only, except: [:index, :show]
+  before_action :member_only, except: %i[index show]
   before_action :janitor_only, only: [:destroy]
   respond_to :html, :json
 
@@ -13,7 +13,7 @@ class PostFlagsController < ApplicationController
 
   def index
     @search_params = search_params
-    @post_flags = PostFlag.search(@search_params).includes(:creator, post: [:flags, :uploader, :approver])
+    @post_flags = PostFlag.search(@search_params).includes(:creator, post: %i[flags uploader approver])
     @post_flags = @post_flags.paginate(params[:page], limit: params[:limit])
     respond_with(@post_flags)
   end

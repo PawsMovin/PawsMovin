@@ -26,7 +26,7 @@ class PostReplacement < ApplicationRecord
   after_destroy -> { post.update_index }
 
   TAGS_TO_REMOVE_AFTER_ACCEPT = ["better_version_at_source"]
-  HIGHLIGHTED_TAGS = ["better_version_at_source", "avoid_posting", "conditional_dnp"]
+  HIGHLIGHTED_TAGS = %w[better_version_at_source avoid_posting conditional_dnp]
 
   def replacement_url_parsed
     return nil unless replacement_url =~ %r!\Ahttps?://!i
@@ -173,7 +173,7 @@ class PostReplacement < ApplicationRecord
 
   module ProcessingMethods
     def approve!(penalize_current_uploader:)
-      unless ["pending", "original"].include?(status)
+      unless %w[pending original].include?(status)
         errors.add(:status, "must be pending or original to approve")
         return
       end

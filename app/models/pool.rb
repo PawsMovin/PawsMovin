@@ -315,7 +315,7 @@ class Pool < ApplicationRecord
   end
 
   def method_attributes
-    super + [:creator_name, :post_count]
+    super + %i[creator_name post_count]
   end
 
   def category_changeable_by?(user)

@@ -92,7 +92,7 @@ class WikiPage < ApplicationRecord
 
   module ApiMethods
     def method_attributes
-      super + [:creator_name, :category_id]
+      super + %i[creator_name category_id]
     end
   end
 

@@ -2,11 +2,11 @@
 
 class ForumPostsController < ApplicationController
   respond_to :html, :json
-  before_action :member_only, except: [:index, :show, :search]
-  before_action :moderator_only, only: [:unhide, :warning]
+  before_action :member_only, except: %i[index show search]
+  before_action :moderator_only, only: %i[unhide warning]
   before_action :admin_only, only: [:destroy]
-  before_action :load_post, only: [:edit, :show, :update, :destroy, :hide, :unhide, :warning]
-  before_action :check_min_level, only: [:edit, :show, :update, :destroy, :hide, :unhide]
+  before_action :load_post, only: %i[edit show update destroy hide unhide warning]
+  before_action :check_min_level, only: %i[edit show update destroy hide unhide]
   skip_before_action :api_check
 
   def new

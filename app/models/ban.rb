@@ -13,7 +13,7 @@ class Ban < ApplicationRecord
   validate :user_is_inferior
   validates :user_id, :reason, :duration, presence: true
   before_validation :initialize_banner_id, on: :create
-  before_validation :initialize_permaban, on: [:update, :create]
+  before_validation :initialize_permaban, on: %i[update create]
 
   scope :unexpired, -> { where("bans.expires_at > ? OR bans.expires_at IS NULL", Time.now) }
   scope :expired, -> { where("bans.expires_at IS NOT NULL").where("bans.expires_at <= ?", Time.now) }

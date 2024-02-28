@@ -81,7 +81,7 @@ class User < ApplicationRecord
   validates :email, presence: { if: :enable_email_verification? }
   validates :email, uniqueness: { case_sensitive: false, if: :enable_email_verification? }
   validates :email, format: { with: /\A.+@[^ ,;@]+\.[^ ,;@]+\z/, if: :enable_email_verification? }
-  validate :validate_email_address_allowed, on: [:create, :update], if: ->(rec) { (rec.new_record? && rec.email.present?) || (rec.email.present? && rec.email_changed?) }
+  validate :validate_email_address_allowed, on: %i[create update], if: ->(rec) { (rec.new_record? && rec.email.present?) || (rec.email.present? && rec.email_changed?) }
 
   validates :name, user_name: true, on: :create
   validates :default_image_size, inclusion: { in: %w(large fit fitv original) }
@@ -648,11 +648,11 @@ class User < ApplicationRecord
     end
 
     def method_attributes
-      list = super + [
-        :id, :created_at, :name, :level, :base_upload_limit,
-        :post_upload_count, :post_update_count, :note_update_count,
-        :is_banned, :can_approve_posts, :can_upload_free,
-        :level_string, :avatar_id
+      list = super + %i[
+        id created_at name level base_upload_limit
+        post_upload_count post_update_count note_update_count
+        is_banned can_approve_posts can_upload_free
+        level_string avatar_id
       ]
 
       if id == CurrentUser.user.id
@@ -667,14 +667,14 @@ class User < ApplicationRecord
           disable_responsive_mode no_flagging disable_user_dmails
           enable_compact_uploader no_replacements
         ]
-        list += boolean_attributes + [
-          :updated_at, :email, :last_logged_in_at, :last_forum_read_at,
-          :recent_tags, :comment_threshold, :default_image_size,
-          :favorite_tags, :blacklisted_tags, :time_zone, :per_page,
-          :custom_style, :favorite_count,
-          :api_regen_multiplier, :api_burst_limit, :remaining_api_limit,
-          :statement_timeout, :favorite_limit,
-          :tag_query_limit, :has_mail?
+        list += boolean_attributes + %i[
+          updated_at email last_logged_in_at last_forum_read_at
+          recent_tags comment_threshold default_image_size
+          favorite_tags blacklisted_tags time_zone per_page
+          custom_style favorite_count
+          api_regen_multiplier api_burst_limit remaining_api_limit
+          statement_timeout favorite_limit
+          tag_query_limit has_mail?
         ]
       end
 
@@ -683,11 +683,11 @@ class User < ApplicationRecord
 
     # extra attributes returned for /users/:id.json but not for /users.json.
     def full_attributes
-      [
-        :wiki_page_version_count, :artist_version_count, :pool_version_count,
-        :forum_post_count, :comment_count,
-        :flag_count, :favorite_count, :positive_feedback_count,
-        :neutral_feedback_count, :negative_feedback_count, :upload_limit
+      %i[
+        wiki_page_version_count artist_version_count pool_version_count
+        forum_post_count comment_count
+        flag_count favorite_count positive_feedback_count
+        neutral_feedback_count negative_feedback_count upload_limit
       ]
     end
   end
@@ -836,7 +836,7 @@ class User < ApplicationRecord
       bitprefs_include = nil
       bitprefs_exclude = nil
 
-      [:can_approve_posts, :can_upload_free].each do |x|
+      %i[can_approve_posts can_upload_free].each do |x|
         if params[x].present?
           attr_idx = BOOLEAN_ATTRIBUTES.index(x.to_s)
           if params[x].to_s.truthy?

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class UserNameChangeRequestsController < ApplicationController
-  before_action :member_only, only: [:new, :create, :show]
+  before_action :member_only, only: %i[new create show]
   before_action :moderator_only, only: :index
   respond_to :html, :json
 

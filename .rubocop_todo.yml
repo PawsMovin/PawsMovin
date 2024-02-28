@@ -2034,54 +2034,6 @@ Style/StructInheritance:
     - 'app/logical/moderator/dashboard/queries/upload.rb'
     - 'app/logical/moderator/dashboard/queries/wiki_page.rb'
 
-# Offense count: 61
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: EnforcedStyle, MinSize.
-# SupportedStyles: percent, brackets
-Style/SymbolArray:
-  Exclude:
-    - 'app/controllers/application_controller.rb'
-    - 'app/controllers/artists_controller.rb'
-    - 'app/controllers/bans_controller.rb'
-    - 'app/controllers/bulk_update_requests_controller.rb'
-    - 'app/controllers/comment_votes_controller.rb'
-    - 'app/controllers/comments_controller.rb'
-    - 'app/controllers/deleted_posts_controller.rb'
-    - 'app/controllers/forum_posts_controller.rb'
-    - 'app/controllers/forum_topics_controller.rb'
-    - 'app/controllers/help_controller.rb'
-    - 'app/controllers/notes_controller.rb'
-    - 'app/controllers/pools_controller.rb'
-    - 'app/controllers/post_flags_controller.rb'
-    - 'app/controllers/post_replacements_controller.rb'
-    - 'app/controllers/post_sets_controller.rb'
-    - 'app/controllers/post_votes_controller.rb'
-    - 'app/controllers/tag_corrections_controller.rb'
-    - 'app/controllers/tags_controller.rb'
-    - 'app/controllers/upload_whitelists_controller.rb'
-    - 'app/controllers/uploads_controller.rb'
-    - 'app/controllers/user_feedbacks_controller.rb'
-    - 'app/controllers/user_name_change_requests_controller.rb'
-    - 'app/controllers/users_controller.rb'
-    - 'app/controllers/wiki_pages_controller.rb'
-    - 'app/helpers/application_helper.rb'
-    - 'app/logical/post_sets/base.rb'
-    - 'app/models/application_record.rb'
-    - 'app/models/ban.rb'
-    - 'app/models/comment.rb'
-    - 'app/models/pool.rb'
-    - 'app/models/post.rb'
-    - 'app/models/tag.rb'
-    - 'app/models/takedown.rb'
-    - 'app/models/user.rb'
-    - 'app/models/user_name_change_request.rb'
-    - 'app/models/wiki_page.rb'
-    - 'app/views/takedowns/_editor.html.erb'
-    - 'config/initializers/filter_parameter_logging.rb'
-    - 'test/factories/user.rb'
-    - 'test/unit/post_event_test.rb'
-    - 'test/unit/storage_manager_test.rb'
-
 # Offense count: 14
 # This cop supports unsafe autocorrection (--autocorrect-all).
 # Configuration parameters: AllowMethodsWithArguments, AllowedMethods, AllowedPatterns, AllowComments.
@@ -2184,35 +2136,6 @@ Style/TrivialAccessors:
 Style/WhileUntilModifier:
   Exclude:
     - 'app/logical/user_deletion.rb'
-
-# Offense count: 43
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: EnforcedStyle, MinSize, WordRegex.
-# SupportedStyles: percent, brackets
-Style/WordArray:
-  Exclude:
-    - 'app/controllers/post_set_maintainers_controller.rb'
-    - 'app/logical/storage_manager.rb'
-    - 'app/logical/storage_manager/local.rb'
-    - 'app/logical/upload_service/utils.rb'
-    - 'app/models/post_replacement.rb'
-    - 'app/models/post_set_maintainer.rb'
-    - 'app/models/takedown.rb'
-    - 'app/views/artist_urls/index.html.erb'
-    - 'app/views/bulk_update_requests/_search.html.erb'
-    - 'app/views/notes/_search.html.erb'
-    - 'app/views/pools/_search.html.erb'
-    - 'app/views/pools/edit.html.erb'
-    - 'app/views/pools/new.html.erb'
-    - 'app/views/post_flags/_search.html.erb'
-    - 'app/views/post_replacements/_search.html.erb'
-    - 'app/views/post_sets/maintainers.html.erb'
-    - 'app/views/tag_relationships/_search.html.erb'
-    - 'app/views/takedowns/_editor.html.erb'
-    - 'app/views/user_feedbacks/_form.html.erb'
-    - 'test/unit/post_test.rb'
-    - 'test/unit/related_tag_query_test.rb'
-    - 'test/unit/tag_alias_test.rb'
 
 # Offense count: 16
 # This cop supports unsafe autocorrection (--autocorrect-all).

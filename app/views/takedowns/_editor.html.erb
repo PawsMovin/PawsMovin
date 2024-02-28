@@ -17,7 +17,7 @@
     <br><br>
 
     <div id="takedown-post-buttons">
-      <% @takedown.actual_posts.select([:id, :is_deleted, :is_pending, :is_flagged]).each do |post| %>
+      <% @takedown.actual_posts.select(%i[id is_deleted is_pending is_flagged]).each do |post| %>
         <% if post %>
           <div id="takedown-post-<%= post.id %>" data-post-id="<%= post.id %>" class="takedown-post">
             <div class="takedown-post-label takedown-post-remove" title="Remove this post from the takedown">X</div>
@@ -56,7 +56,7 @@
       <% if @takedown.status == "pending" || @takedown.status == "inactive" %>
         <tr>
           <td><label for="status">Status</label></td>
-          <td><%= select_tag "takedown[status]", options_for_select([["Pending", "pending"], ["Inactive", "inactive"]], @takedown.status) %>
+          <td><%= select_tag "takedown[status]", options_for_select([%w[Pending pending], %w[Inactive inactive]], @takedown.status) %>
             <span id="post-status-select"></span></td>
         </tr>
       <% end %>

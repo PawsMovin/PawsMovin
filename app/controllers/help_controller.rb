@@ -3,8 +3,8 @@
 class HelpController < ApplicationController
   respond_to :html, :json
   helper :wiki_pages
-  before_action :admin_only, only: [:new, :create, :edit,
-                                    :update, :destroy]
+  before_action :admin_only, only: %i[new create edit
+                                      update destroy]
 
   def show
     if params[:id] =~ /\A\d+\Z/

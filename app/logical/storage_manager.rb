@@ -69,7 +69,7 @@ class StorageManager
       delete(file_path(md5, file_ext, type, true))
     end
     PawsMovin.config.video_rescales.each_key do |k|
-      ["mp4","webm"].each do |ext|
+      %w[mp4 webm].each do |ext|
         delete(file_path(md5, ext, :scaled, false, scale_factor: k.to_s))
         delete(file_path(md5, ext, :scaled, true, scale_factor: k.to_s))
       end

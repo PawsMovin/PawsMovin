@@ -204,7 +204,7 @@ class Comment < ApplicationRecord
   end
 
   def method_attributes
-    super + [:creator_name, :updater_name]
+    super + %i[creator_name updater_name]
   end
 
   def hide!

@@ -21,7 +21,7 @@ class RelatedTagQueryTest < ActiveSupport::TestCase
       end
 
       should "work" do
-        assert_equal(["aaa", "bbb", "ccc"], @query.tags)
+        assert_equal(%w[aaa bbb ccc], @query.tags)
       end
 
       should "render the json" do

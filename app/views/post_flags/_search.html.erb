@@ -3,8 +3,8 @@
   <%= f.input(:post_tags_match, label: "Tags", autocomplete: "tag-query") %>
   <%= f.input(:post_id, label: "Post ID") %>
   <%= f.input(:type, collection: [
-    ["Flag", "flag"],
-    ["Deletion", "deletion"],
+    %w[Flag flag],
+    %w[Deletion deletion],
   ], include_blank: true) %>
   <%= f.input(:is_resolved, label: "Resolved?", collection: [["Yes", true], ["No", false]], include_blank: true) %>
   <% if CurrentUser.is_janitor? %>

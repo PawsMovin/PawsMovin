@@ -27,7 +27,7 @@
       </tr>
       </thead>
       <tbody>
-      <% @maintainers.where(status: ["pending", "approved"]).order(updated_at: :desc).each do |m| %>
+      <% @maintainers.where(status: %w[pending approved]).order(updated_at: :desc).each do |m| %>
         <tr>
           <td><%= link_to_user m.user %></td>
           <td><%= m.status.capitalize %></td>

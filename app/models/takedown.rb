@@ -252,7 +252,7 @@ class Takedown < ApplicationRecord
 
   module StatusMethods
     def completed?
-      ["approved", "denied", "partial"].include?(status)
+      %w[approved denied partial].include?(status)
     end
 
     def calculated_status
@@ -271,7 +271,7 @@ class Takedown < ApplicationRecord
 
   module APIMethods
     def hidden_attributes
-      super + [:source, :vericode, :email, :reason, :instructions, :post_ids, :del_post_ids, :creator_id, :notes]
+      super + %i[source vericode email reason instructions post_ids del_post_ids creator_id notes]
     end
   end
 

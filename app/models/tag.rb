@@ -65,7 +65,7 @@ class Tag < ApplicationRecord
       def categories_for(tag_names, disable_cache: false)
         if disable_cache
           tag_cats = {}
-          Tag.where(name: Array(tag_names)).select([:id, :name, :category]).find_each do |tag|
+          Tag.where(name: Array(tag_names)).select(%i[id name category]).find_each do |tag|
             tag_cats[tag.name] = tag.category
           end
           tag_cats
@@ -74,7 +74,7 @@ class Tag < ApplicationRecord
           not_found = tag_names - found.keys
           if not_found.count > 0
             # Is multi_write worth it here? Normal usage of this will be short put lists and then never touched.
-            Tag.where(name: not_found).select([:id, :name, :category]).find_each do |tag|
+            Tag.where(name: not_found).select(%i[id name category]).find_each do |tag|
               Cache.write("tc:#{tag.name}", tag.category)
               found[tag.name] = tag.category
             end

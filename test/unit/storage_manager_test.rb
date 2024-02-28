@@ -12,7 +12,7 @@ class StorageManagerTest < ActiveSupport::TestCase
           "crop"
         end
 
-        matcher.add_manager(type: [:large, :original]) do
+        matcher.add_manager(type: %i[large original]) do
           "large or original"
         end
 

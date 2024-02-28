@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class BansController < ApplicationController
-  before_action :moderator_only, except: [:show, :index]
+  before_action :moderator_only, except: %i[show index]
   respond_to :html
   helper_method :search_params
 

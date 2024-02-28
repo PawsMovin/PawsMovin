@@ -109,7 +109,7 @@ class PostSetMaintainer < ApplicationRecord
       if existing.nil?
         return
       end
-      if ["approved", "pending"].include?(existing.status)
+      if %w[approved pending].include?(existing.status)
         errors.add(:base, "Already a maintainer of this set")
         return false
       end

@@ -5,7 +5,7 @@
       <%= f.input(:url_matches, label: "URL") %>
       <%= f.input(:normalized_url_matches, label: "Normalized URL") %>
       <%= f.input(:is_active, label: "Active?", collection: [["Yes", true], ["No", false]], include_blank: true) %>
-      <%= f.input(:order, collection: [["ID", "id"], ["Created", "created_at"], ["Updated", "updated_at"]]) %>
+      <%= f.input(:order, collection: [%w[ID id], %w[Created created_at], %w[Updated updated_at]]) %>
     <% end %>
 
     <table class="striped">

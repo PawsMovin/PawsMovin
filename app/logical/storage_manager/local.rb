@@ -36,7 +36,7 @@ class StorageManager::Local < StorageManager
     end
     return unless post.is_video?
     PawsMovin.config.video_rescales.each_key do |k|
-      ["mp4","webm"].each do |ext|
+      %w[mp4 webm].each do |ext|
         path = file_path(post, ext, :scaled, false, scale_factor: k.to_s)
         new_path = file_path(post, ext, :scaled, true, scale_factor: k.to_s)
         move_file(path, new_path)
@@ -55,7 +55,7 @@ class StorageManager::Local < StorageManager
     end
     return unless post.is_video?
     PawsMovin.config.video_rescales.each_key do |k|
-      ["mp4","webm"].each do |ext|
+      %w[mp4 webm].each do |ext|
         path = file_path(post, ext, :scaled, true, scale_factor: k.to_s)
         new_path = file_path(post, ext, :scaled, false, scale_factor: k.to_s)
         move_file(path, new_path)

@@ -2,8 +2,8 @@
 
 class UploadsController < ApplicationController
   before_action :member_only
-  before_action :janitor_only, only: [:index, :show]
-  before_action :ensure_uploads_enabled, only: [:new, :create]
+  before_action :janitor_only, only: %i[index show]
+  before_action :ensure_uploads_enabled, only: %i[new create]
   respond_to :html, :json
   content_security_policy only: [:new] do |p|
     p.img_src(:self, :data, :blob, "*")

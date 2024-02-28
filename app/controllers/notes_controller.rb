@@ -2,7 +2,7 @@
 
 class NotesController < ApplicationController
   respond_to :html, :json, :js
-  before_action :member_only, except: [:index, :show, :search]
+  before_action :member_only, except: %i[index show search]
 
   def search
   end

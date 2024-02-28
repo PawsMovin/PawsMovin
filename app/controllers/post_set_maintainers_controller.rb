@@ -81,7 +81,7 @@ class PostSetMaintainersController < ApplicationController
 
   def check_approve_access(maintainer)
     raise(User::PrivilegeError) unless maintainer.user_id == CurrentUser.id
-    raise(User::PrivilegeError) if ["blocked", "approved"].include?(maintainer.status)
+    raise(User::PrivilegeError) if %w[blocked approved].include?(maintainer.status)
   end
 
   def check_cancel_access(maintainer)

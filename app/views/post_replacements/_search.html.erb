@@ -4,5 +4,5 @@
   <%= f.user(:creator) %>
   <%= f.user(:approver) %>
   <%= f.user(%i[uploader_name_on_approve uploader_id_on_approve], label: "Original Uploader") %>
-  <%= f.input(:status, collection: ["pending", "rejected", "approved", "promoted"], include_blank: true) %>
+  <%= f.input(:status, collection: %w[pending rejected approved promoted], include_blank: true) %>
 <% end %>

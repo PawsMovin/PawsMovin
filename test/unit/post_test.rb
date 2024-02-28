@@ -1265,14 +1265,14 @@ class PostTest < ActiveSupport::TestCase
       subject { @post }
 
       should "not allow values S, safe, derp" do
-        ["S", "safe", "derp"].each do |rating|
+        %w[S safe derp].each do |rating|
           subject.rating = rating
           assert(!subject.valid?)
         end
       end
 
       should "allow values s, q, e" do
-        ["s", "q", "e"].each do |rating|
+        %w[s q e].each do |rating|
           subject.rating = rating
           assert(subject.valid?)
         end
@@ -1284,14 +1284,14 @@ class PostTest < ActiveSupport::TestCase
       subject { @post }
 
       should "not allow values S, safe, derp" do
-        ["S", "safe", "derp"].each do |rating|
+        %w[S safe derp].each do |rating|
           subject.rating = rating
           assert(!subject.valid?)
         end
       end
 
       should "not allow values s, e" do
-        ["s", "e"].each do |rating|
+        %w[s e].each do |rating|
           subject.rating = rating
           assert(!subject.valid?)
         end
@@ -1463,7 +1463,7 @@ class PostTest < ActiveSupport::TestCase
         setup { @post = build(:post) }
 
         should "call Tag.increment_post_counts with the correct params" do
-          Tag.expects(:increment_post_counts).once.with(["tag1", "tag2"])
+          Tag.expects(:increment_post_counts).once.with(%w[tag1 tag2])
           @post.save
         end
       end

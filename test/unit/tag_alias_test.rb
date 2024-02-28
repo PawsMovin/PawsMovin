@@ -71,9 +71,9 @@ class TagAliasTest < ActiveSupport::TestCase
       ta = create(:tag_alias, antecedent_name: "aaa", consequent_name: "bbb")
 
       assert_equal(["bbb"], TagAlias.to_aliased("aaa"))
-      assert_equal(["bbb", "ccc"], TagAlias.to_aliased(["aaa", "ccc"]))
-      assert_equal(["ccc", "bbb"], TagAlias.to_aliased(["ccc", "bbb"]))
-      assert_equal(["bbb"], TagAlias.to_aliased(["aaa", "aaa"]))
+      assert_equal(%w[bbb ccc], TagAlias.to_aliased(%w[aaa ccc]))
+      assert_equal(%w[ccc bbb], TagAlias.to_aliased(%w[ccc bbb]))
+      assert_equal(["bbb"], TagAlias.to_aliased(%w[aaa aaa]))
     end
 
     should "update any affected posts when saved" do

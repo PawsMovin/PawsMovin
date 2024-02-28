@@ -72,7 +72,7 @@ class UserNameChangeRequest < ApplicationRecord
     if CurrentUser.is_admin? || user == CurrentUser.user
       []
     else
-      super + [:change_reason, :rejection_reason]
+      super + %i[change_reason rejection_reason]
     end
   end
 end

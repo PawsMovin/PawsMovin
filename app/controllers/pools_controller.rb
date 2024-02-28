@@ -2,7 +2,7 @@
 
 class PoolsController < ApplicationController
   respond_to :html, :json
-  before_action :member_only, except: [:index, :show, :gallery]
+  before_action :member_only, except: %i[index show gallery]
   before_action :janitor_only, only: [:destroy]
 
   def new
