@@ -52,8 +52,6 @@
         <%= f.input(:enable_safe_mode, label: "Safe mode", hint: "Show only safe images. Hide questionable and explicit images.", as: :select, include_blank: false, collection: [%w[No false], %w[Yes true]]) %>
 
         <%= f.input(:blacklisted_tags, hint: "Put any tag combinations you never want to see here. Each combination should go on a separate line. <a href='/help/blacklist'>View help.</a>".html_safe, autocomplete: "tag-query", input_html: { size: "40x5" }) %>
-
-        <%= f.input(:blacklist_users, hint: "Hide comments and forum posts from users that have been blacklisted, in addition to posts.", as: :select, include_blank: false, collection: [%w[No false], %w[Yes true]]) %>
       </fieldset>
 
       <fieldset id="advanced-settings-section">

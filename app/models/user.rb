@@ -38,7 +38,7 @@ class User < ApplicationRecord
   BOOLEAN_ATTRIBUTES = %w[
     _show_avatars
     _blacklist_avatars
-    blacklist_users
+    _blacklist_users
     description_collapsed_initially
     hide_comments
     show_hidden_comments
@@ -134,6 +134,7 @@ class User < ApplicationRecord
   has_many :user_name_change_requests, -> { order(id: :asc) }
   has_many :text_versions, -> { order(id: :desc) }, class_name: "UserTextVersion"
   has_many :artists, foreign_key: "linked_user_id"
+  has_many :blocks, class_name: "UserBlock"
 
   belongs_to :avatar, class_name: "Post", optional: true
   accepts_nested_attributes_for :dmail_filter
@@ -670,7 +671,7 @@ class User < ApplicationRecord
 
       if id == CurrentUser.user.id
         boolean_attributes = %i[
-          blacklist_users description_collapsed_initially
+          description_collapsed_initially
           hide_comments show_hidden_comments show_post_statistics
           is_banned receive_email_notifications
           enable_keyboard_navigation enable_privacy_mode
@@ -907,6 +908,36 @@ class User < ApplicationRecord
     end
   end
 
+  module BlockMethods
+    def is_blocking?(target)
+      blocks.exists?(target: target)
+    end
+
+    def block_for(target)
+      blocks.find_by(target: target)
+    end
+
+    def is_blocking_uploads_from?(target)
+      is_blocking?(target) && block_for(target).hide_uploads?
+    end
+
+    def is_blocking_comments_from?(target)
+      is_blocking?(target) && block_for(target).hide_comments?
+    end
+
+    def is_blocking_forum_topics_from?(target)
+      is_blocking?(target) && block_for(target).hide_forum_topics?
+    end
+
+    def is_blocking_forum_posts_from?(target)
+      is_blocking?(target) && block_for(target).hide_forum_posts?
+    end
+
+    def is_blocking_messages_from?(target)
+      is_blocking?(target) && block_for(target).disable_messages?
+    end
+  end
+
   include BanMethods
   include NameMethods
   include PasswordMethods
@@ -918,6 +949,7 @@ class User < ApplicationRecord
   include LimitMethods
   include ApiMethods
   include CountMethods
+  include BlockMethods
   extend SearchMethods
   extend ThrottleMethods
 

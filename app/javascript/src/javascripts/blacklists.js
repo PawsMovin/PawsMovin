@@ -57,9 +57,7 @@ Blacklist.entryParse = function (string) {
     "optional": [],
     "disabled": false,
     "hits": 0,
-    "score_comparison": null,
-    "username": false,
-    "user_id": 0
+    "score_comparison": null
   };
   const matches = string.match(/\S+/g) || [];
   for (const tag of matches) {
@@ -73,16 +71,6 @@ Blacklist.entryParse = function (string) {
     } else {
       entry.require.push(tag);
     }
-  }
-  // Use negative lookahead so it doesn't match user:!123 here
-  const user_matches = string.match(/user:(?!!)([\S]+)/) || [];
-  if (user_matches.length === 2) {
-    entry.username = user_matches[1];
-  }
-  // Allow both userid:123 and user:!123
-  const userid_matches = string.match(/user(?:id)?:!?(\d+)/) || [];
-  if (userid_matches.length === 2) {
-    entry.user_id = parseInt(userid_matches[1], 10);
   }
   return entry;
 };
@@ -207,15 +195,6 @@ Blacklist.apply = function () {
       Blacklist.postHide($post);
     } else {
       Blacklist.postShow($post);
-    }
-  }
-
-  if (Utility.meta("blacklist-users") === "true") {
-    for (const entry of this.entries.filter(x => x.username !== false)) {
-      $(`article[data-creator="${entry.username}"]`).hide();
-    }
-    for (const entry of this.entries.filter(x => x.user_id !== 0)) {
-      $(`article[data-creator-id="${entry.user_id}"]`).hide();
     }
   }
 

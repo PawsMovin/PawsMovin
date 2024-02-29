@@ -2067,6 +2067,43 @@ ALTER SEQUENCE public.uploads_id_seq OWNED BY public.uploads.id;
 
 
 --
+-- Name: user_blocks; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.user_blocks (
+    id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    target_id bigint NOT NULL,
+    hide_uploads boolean DEFAULT false NOT NULL,
+    hide_comments boolean DEFAULT false NOT NULL,
+    hide_forum_topics boolean DEFAULT false NOT NULL,
+    hide_forum_posts boolean DEFAULT false NOT NULL,
+    disable_messages boolean DEFAULT false NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: user_blocks_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.user_blocks_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: user_blocks_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.user_blocks_id_seq OWNED BY public.user_blocks.id;
+
+
+--
 -- Name: user_feedback; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -2763,6 +2800,13 @@ ALTER TABLE ONLY public.uploads ALTER COLUMN id SET DEFAULT nextval('public.uplo
 
 
 --
+-- Name: user_blocks id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.user_blocks ALTER COLUMN id SET DEFAULT nextval('public.user_blocks_id_seq'::regclass);
+
+
+--
 -- Name: user_feedback id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -3250,6 +3294,14 @@ ALTER TABLE ONLY public.upload_whitelists
 
 ALTER TABLE ONLY public.uploads
     ADD CONSTRAINT uploads_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: user_blocks user_blocks_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.user_blocks
+    ADD CONSTRAINT user_blocks_pkey PRIMARY KEY (id);
 
 
 --
@@ -4221,6 +4273,20 @@ CREATE INDEX index_uploads_on_uploader_ip_addr ON public.uploads USING btree (up
 
 
 --
+-- Name: index_user_blocks_on_target_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_user_blocks_on_target_id ON public.user_blocks USING btree (target_id);
+
+
+--
+-- Name: index_user_blocks_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_user_blocks_on_user_id ON public.user_blocks USING btree (user_id);
+
+
+--
 -- Name: index_user_feedback_on_created_at; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -4504,6 +4570,14 @@ ALTER TABLE ONLY public.favorites
 
 
 --
+-- Name: user_blocks fk_rails_d2416b669a; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.user_blocks
+    ADD CONSTRAINT fk_rails_d2416b669a FOREIGN KEY (target_id) REFERENCES public.users(id);
+
+
+--
 -- Name: staff_notes fk_rails_eaa7223eea; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4518,6 +4592,7 @@ ALTER TABLE ONLY public.staff_notes
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20240229070342'),
 ('20240227091418'),
 ('20240217235926'),
 ('20240217025400'),

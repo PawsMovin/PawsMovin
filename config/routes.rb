@@ -279,6 +279,7 @@ Rails.application.routes.draw do
       put :undelete
     end
     resources :text_versions, only: %i[index], to: "moderator/user_text_versions#for_user"
+    resources :blocks, only: %i[index new create edit update destroy], controller: "users/blocks"
 
     collection do
       get :home
