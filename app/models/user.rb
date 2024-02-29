@@ -620,7 +620,7 @@ class User < ApplicationRecord
     end
 
     def favorite_limit
-      PawsMovin.config.legacy_favorite_limit.fetch(id, 80_000)
+      100_000
     end
 
     def api_regen_multiplier
