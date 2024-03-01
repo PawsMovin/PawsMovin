@@ -210,4 +210,14 @@ class ForumTopic < ApplicationRecord
       original_post.update_columns(updater_id: CurrentUser.id, updated_at: Time.now)
     end
   end
+
+  def is_stale?
+    return false if posts.empty?
+    posts.last.created_at < 6.months.ago
+  end
+
+  def is_stale_for?(user)
+    return false if user.is_moderator?
+    is_stale?
+  end
 end

@@ -20,11 +20,15 @@
 
     <% if CurrentUser.is_member? %>
       <% if CurrentUser.is_moderator? || !@forum_topic.is_locked? %>
-        <p><%= link_to "Reply »", new_forum_post_path(forum_post: { topic_id: @forum_topic.id }), id: "new-response-link" %></p>
+        <% if @forum_topic.is_stale_for?(CurrentUser.user) %>
+          <p>This topic is stale. New posts cannot be added.</p>
+        <% else %>
+          <p><%= link_to "Reply »", new_forum_post_path(forum_post: { topic_id: @forum_topic.id }), id: "new-response-link" %></p>
 
-        <div style="display: none;" id="topic-response">
-          <%= render "forum_posts/partials/new/form", forum_post: ForumPost.new(topic_id: @forum_topic.id) %>
-        </div>
+          <div style="display: none;" id="topic-response">
+            <%= render "forum_posts/partials/new/form", forum_post: ForumPost.new(topic_id: @forum_topic.id) %>
+          </div>
+        <% end %>
       <% end %>
     <% elsif !@forum_topic.is_locked? %>
       <h5 id="respond-link"><%= link_to "Login to respond »", new_session_path %></h5>

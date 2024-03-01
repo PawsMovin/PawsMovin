@@ -32,7 +32,7 @@
       <%= render "application/warned_notice", record: forum_post %>
       <div class="content-menu">
         <menu>
-          <% if CurrentUser.is_member? && @forum_topic && params[:controller] != "forum_posts" %>
+          <% if CurrentUser.is_member? && !@forum_topic&.is_stale_for?(CurrentUser.user) && params[:controller] != "forum_posts" %>
             <li><%= tag.a("Reply", href: "#", class: "reply-link forum-post-reply-link") %></li>
           <% end %>
           <% if !forum_post.is_original_post?(original_forum_post_id) %>

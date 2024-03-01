@@ -4,7 +4,6 @@ class TagCorrectionsController < ApplicationController
   respond_to :html, :json
   before_action :janitor_only, only: %i[create]
 
-
   def show
     @correction = TagCorrection.new(params[:tag_id])
     respond_with(@correction)

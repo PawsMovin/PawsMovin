@@ -111,7 +111,27 @@ class ForumPostsControllerTest < ActionDispatch::IntegrationTest
     context "create action" do
       should "create a new forum post" do
         assert_difference("ForumPost.count", 1) do
-          post_auth forum_posts_path, @user, params: {forum_post: {body: "xaxaxa", topic_id: @forum_topic.id}}
+          post_auth forum_posts_path, @user, params: { forum_post: { body: "xaxaxa", topic_id: @forum_topic.id } }
+          assert_redirected_to(forum_topic_path(ForumPost.last.topic, page: ForumPost.last.forum_topic_page, anchor: "forum_post_#{ForumPost.last.id}"))
+        end
+      end
+
+      should "not create a new forum post if topic is stale" do
+        travel_to(1.year.from_now) do
+          assert_no_difference("ForumPost.count") do
+            post_auth forum_posts_path, @user, params: { forum_post: { body: "xaxaxa", topic_id: @forum_topic.id }, format: :json }
+            assert_response :unprocessable_entity
+            assert_includes(@response.parsed_body.dig("errors", "topic"), "is stale. New posts cannot be created")
+          end
+        end
+      end
+
+      should "still create a new forum post if topic is stale for moderators" do
+        travel_to(1.year.from_now) do
+          assert_difference("ForumPost.count", 1) do
+            post_auth forum_posts_path, @mod, params: { forum_post: { body: "xaxaxa", topic_id: @forum_topic.id }, format: :json }
+            assert_response :success
+          end
         end
       end
     end

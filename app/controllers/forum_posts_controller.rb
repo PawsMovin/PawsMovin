@@ -45,7 +45,9 @@ class ForumPostsController < ApplicationController
       @forum_post.save
       respond_with(@forum_post, location: forum_topic_path(@forum_post.topic, page: @forum_post.forum_topic_page, anchor: "forum_post_#{@forum_post.id}"))
     else
-      respond_with(@forum_post)
+      respond_with(@forum_post) do |format|
+        format.html { redirect_back(fallback_location: forum_topic_path(@forum_post.topic), notice: @forum_post.errors.full_messages.join("; ")) }
+      end
     end
   end
 
