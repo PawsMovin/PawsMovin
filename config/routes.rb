@@ -194,7 +194,7 @@ Rails.application.routes.draw do
   resources :posts, only: %i[index show update delete destroy] do
     resource :recommended, only: %i[show], controller: "posts/recommendations"
     resource :similar, only: %i[show], controller: "posts/iqdb"
-    resource :votes, controller: "posts/votes", as: "post_votes", only: %i[create destroy]
+    resource :votes, controller: "posts/votes", only: %i[create destroy]
     resource :flag, controller: "posts/flags", only: %i[destroy]
     collection do
       get :random
@@ -354,7 +354,7 @@ Rails.application.routes.draw do
   post "/static/discord" => "static#discord", :as => "discord_post"
   get "/static/toggle_mobile_mode" => "static#disable_mobile_mode", :as => "disable_mobile_mode"
   get "/static/theme" => "static#theme", :as => "theme"
-
+  get "/robots", to: "static#robots", as: "robots"
   root to: "static#home"
 
   get "*other", to: "static#not_found"

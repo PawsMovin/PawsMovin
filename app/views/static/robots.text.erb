@@ -1,0 +1,90 @@
+User-agent: *
+Crawl-delay: 1
+Disallow: /admin
+Disallow: /moderator
+Disallow: <%= artist_urls_path %>
+Disallow: <%= artist_versions_path %>
+Disallow: <%= api_keys_path %>
+Disallow: <%= show_or_new_artists_path %>
+Disallow: <%= artist_versions_path %>
+Disallow: <%= bans_path %>
+Disallow: <%= bulk_update_requests_path %>
+Disallow: <%= comments_path %>
+Disallow: <%= comment_votes_path(comment_id: "*") %>
+Disallow: <%= dmails_path %>
+Disallow: <%= dtext_preview_path %>
+Disallow: <%= edit_histories_path %>
+Disallow: <%= email_blacklists_path %>
+Disallow: /email
+Disallow: <%= favorites_path %>
+Disallow: <%= forum_categories_path %>
+Disallow: <%= forum_posts_path %>
+Disallow: <%= ip_bans_path %>
+Disallow: <%= mascots_path %>
+Disallow: <%= mod_actions_path %>
+Disallow: <%= news_updates_path %>
+Disallow: <%= notes_path %>
+Disallow: <%= edit_pool_order_path(pool_id: "*") %>
+Disallow: <%= pool_versions_path %>
+Disallow: <%= post_sets_path %>
+Disallow: <%= post_approvals_path %>
+Disallow: <%= deleted_posts_path %>
+Disallow: <%= post_deletion_reasons_path %>
+Disallow: <%= post_disapprovals_path %>
+Disallow: <%= post_events_path %>
+Disallow: <%= post_flags_path %>
+Disallow: <%= posts_iqdb_path %>
+Disallow: <%= post_recommendations_path %>
+Disallow: <%= post_replacements_path %>
+Disallow: <%= post_versions_path %>
+Disallow: <%= url_for(controller: "posts/votes", action: "index") %>
+Disallow: <%= random_posts_path %>
+Disallow: <%= uploaders_posts_path %>
+Disallow: <%= posts_path(format: "atom") %>
+Disallow: /posts*?*tags=*
+Disallow: /posts*?*q=*
+Disallow: /posts*?*md5*
+Disallow: /posts*?*limit*
+Disallow: /posts*?*random*
+Disallow: /posts*?*pool_id*
+Disallow: /posts*?*post_set_id*
+Disallow: <%= post_recommended_path(post_id: "*") %>
+Disallow: <%= post_similar_path(post_id: "*") %>
+Disallow: <%= post_votes_path(post_id: "*") %>
+Disallow: <%= post_flag_path(post_id: "*") %>
+Disallow: <%= comments_post_path(id: "*") %>
+<% %w[update_iqdb revert copy_notes show_seq mark_as_translated favorites expunge delete undelete confirm_move_favorites move_favorites regenerate_thumbnails regenerate_videos add_to_pool remove_from_pool].each do |action| %>
+Disallow: <%= url_for(controller: "posts", action: action, id: "*") %>
+<% end %>
+Disallow: /popular
+Disallow: <%= post_sets_path %>
+Disallow: /sessions
+Disallow: <%= stats_path %>
+Disallow: <%= tags_path %>
+Disallow: <%= takedowns_path %>
+Disallow: <%= tickets_path %>
+Disallow: <%= upload_whitelists_path %>
+Disallow: <%= uploads_path %>
+Disallow: <%= users_path %>
+Disallow: <%= wiki_page_versions_path %>
+Disallow: <%= search_wiki_pages_path %>
+Disallow: <%= show_or_new_wiki_pages_path %>
+Disallow: <%= revert_wiki_page_path(id: "*") %>
+Disallow: <%= keyboard_shortcuts_path %>
+Disallow: <%= discord_get_path %>
+Disallow: <%= disable_mobile_mode_path %>
+Disallow: <%= theme_path %>
+
+User-agent: MJ12bot
+User-agent: dotbot
+User-agent: coccocbot-web
+User-agent: BLEXBot
+User-agent: HTTrack
+User-agent: Slurp
+User-agent: Baiduspider
+User-agent: Yandex
+User-agent: magpie-crawler
+User-agent: SemrushBot
+User-agent: SemrushBot-SA
+User-agent: AhrefsBot
+Disallow: /

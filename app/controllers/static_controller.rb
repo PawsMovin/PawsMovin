@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class StaticController < ApplicationController
+  respond_to :text, only: %i[robots]
+
   def privacy
     @page = WikiPage.find_by(title: "help:privacy_policy")
   end
@@ -63,5 +65,9 @@ class StaticController < ApplicationController
 
       redirect_to(PawsMovin.config.discord_site + user_hash, allow_other_host: true)
     end
+  end
+
+  def robots
+    expires_in(1.hour, public: true)
   end
 end
