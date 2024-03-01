@@ -6,11 +6,12 @@
       <option value="edit">Edit</option>
       <option value="add-fav">Favorite</option>
       <option value="remove-fav">Unfavorite</option>
+      <option value="vote-up">Vote up</option>
+      <option value="vote-down">Vote down</option>
+      <option value="remove-vote">Remove vote</option>
       <option value="add-to-set">Add To Set</option>
       <option value="remove-from-set">Remove From Set</option>
       <% if CurrentUser.is_trusted? %>
-        <option value="vote-up">Vote up</option>
-        <option value="vote-down">Vote down</option>
         <option value="rating-s">Rate Safe</option>
         <option value="rating-q">Rate Questionable</option>
         <option value="rating-e">Rate Explicit</option>

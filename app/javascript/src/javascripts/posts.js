@@ -957,6 +957,13 @@ Post.vote_down = function (e) {
   Post.vote(id, -1);
 }
 
+Post.unvote = function(id) {
+  const score = $(`#post_${id}`).attr("data-own-vote");
+  if(score !== undefined && score !== "0") {
+    Post.vote(id, score, false);
+  }
+}
+
 Post.vote = function (id, score, prevent_unvote) {
   Post.notice_update("inc");
   SendQueue.add(function() {
@@ -976,8 +983,19 @@ Post.vote = function (id, score, prevent_unvote) {
       const postID = id;
       const postScore = data.score;
       const ourScore = data.our_score;
+      const post = $(`#post_${id}`);
+      // TODO: some way to distinguish locked votes from no vote
+      if (ourScore === 0) {
+        post.removeAttr("data-own-vote");
+      }
+      else {
+        post.attr("data-own-vote", ourScore);
+      }
+      post.attr("data-score-up", data.up)
+      post.attr("data-score-down", data.down)
+      post.attr("data-score", data.score)
       function scoreToClass(inScore) {
-        if(inScore == 0) return "score-neutral";
+        if(inScore === 0) return "score-neutral";
         return inScore > 0 ? "score-positive" : "score-negative";
       }
 

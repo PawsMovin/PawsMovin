@@ -182,56 +182,42 @@ PostModeMenu.open_edit = function(post_id) {
 }
 
 PostModeMenu.click = function(e) {
-  var s = $("#mode-box-mode").val();
-  var post_id = $(e.target).closest("article").data("id");
+  const mode = $("#mode-box-mode").val();
+  const post_id = $(e.target).closest("article").data("id");
 
-  if (s === "add-fav") {
-    Favorite.create(post_id);
-  } else if (s === "remove-fav") {
-    Favorite.destroy(post_id);
-  } else if (s === "edit") {
-    PostModeMenu.open_edit(post_id);
-  } else if (s === 'vote-down') {
-    Post.vote(post_id, -1, true);
-  } else if (s === 'vote-up') {
-    Post.vote(post_id, 1, true);
-  } else if (s === 'add-to-set') {
-    PostSet.add_post($("#set-id").val(), post_id);
-  } else if (s === 'remove-from-set') {
-    PostSet.remove_post($("#set-id").val(), post_id);
-  } else if (s === 'rating-q') {
-    Post.update(post_id, {"post[rating]": "q"})
-  } else if (s === 'rating-s') {
-    Post.update(post_id, {"post[rating]": "s"})
-  } else if (s === 'rating-e') {
-    Post.update(post_id, {"post[rating]": "e"})
-  } else if (s === 'lock-rating') {
-    Post.update(post_id, {"post[is_rating_locked]": "1"});
-  } else if (s === 'lock-note') {
-    Post.update(post_id, {"post[is_note_locked]": "1"});
-  } else if (s === 'delete') {
-    Post.delete_with_reason(post_id, $("#quick-mode-reason").val(), false);
-  } else if (s === 'undelete') {
-    Post.undelete(post_id);
-  } else if (s === 'unflag') {
-    Post.unflag(post_id, "none", false);
-  } else if (s === 'approve') {
-    Post.approve(post_id);
-  } else if (s === 'remove-parent') {
-    Post.update(post_id, {"post[parent_id]": ""});
-  } else if (s === "tag-script") {
-    const current_script_id = LS.get("current_tag_script_id");
-    const tag_script = LS.get("tag-script-" + current_script_id);
-    if (!tag_script) {
-      e.preventDefault();
-      return;
+  switch(mode) {
+    case "add-fav": Favorite.create(post_id); break;
+    case "remove-fav": Favorite.destroy(post_id); break;
+    case "edit": PostModeMenu.open_edit(post_id); break;
+    case "vote-down": Post.vote(post_id, -1, true); break;
+    case "vote-up": Post.vote(post_id, 1, true); break;
+    case "remove-vote": Post.unvote(post_id); break;
+    case "add-to-set": PostSet.add_post($("#set-id").val(), post_id); break;
+    case "remove-from-set": PostSet.remove_post($("#set-id").val(), post_id); break;
+    case "rating-s": Post.update(post_id, { "post[rating]": "s"}); break;
+    case "rating-q": Post.update(post_id, { "post[rating]": "q"}); break;
+    case "rating-e": Post.update(post_id, { "post[rating]": "e"}); break;
+    case "lock-rating": Post.update(post_id, { "post[is_rating_locked]": "1" }); break;
+    case "lock-note": Post.update(post_id, { "post[is_note_locked]": "1" }); break;
+    case "delete": Post.delete_with_reason(post_id, $("#quick-mode-reason").val(), false); break;
+    case "undelete": Post.undelete(post_id); break;
+    case "unflag": Post.unflag(post_id, "none", false); break;
+    case "approve": Post.approve(post_id); break;
+    case "remove-parent": Post.update(post_id, { "post[parent_id]": "" }); break;
+    case "tag-script": {
+      const current_script_id = LS.get("current_tag_script_id");
+      const tag_script = LS.get("tag-script-" + current_script_id);
+      if (!tag_script) {
+        e.preventDefault();
+        return;
+      }
+      const postTags = $("#post_" + post_id).data('tags').split(' ');
+      const tags = new Set(postTags);
+      const changes = TagScript.run(tags, tag_script);
+      Post.tagScript(post_id, changes);
+      break;
     }
-    const postTags = $("#post_" + post_id).data('tags').split(' ');
-    const tags = new Set(postTags);
-    const changes = TagScript.run(tags, tag_script);
-    Post.tagScript(post_id, changes);
-  } else {
-    return;
+    default: return;
   }
 
   e.preventDefault();
