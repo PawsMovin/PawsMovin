@@ -12,7 +12,7 @@
           (locked)
         <% end %>
       </h1>
-      <% if !@wiki_redirect.nil? %>
+      <% unless @wiki_redirect.nil? %>
       <div class="wiki-page-redirect"><i class="fa-solid fa-turn-up fa-rotate-90"></i> <%= @wiki_page.title %></div>
       <% end %>
 

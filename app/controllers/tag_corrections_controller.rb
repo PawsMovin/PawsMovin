@@ -2,12 +2,8 @@
 
 class TagCorrectionsController < ApplicationController
   respond_to :html, :json
-  before_action :janitor_only, only: %i[new create]
+  before_action :janitor_only, only: %i[create]
 
-  def new
-    @correction = TagCorrection.new(params[:tag_id])
-    respond_with(@correction)
-  end
 
   def show
     @correction = TagCorrection.new(params[:tag_id])
@@ -16,12 +12,11 @@ class TagCorrectionsController < ApplicationController
 
   def create
     @correction = TagCorrection.new(params[:tag_id])
+    @correction.fix!
 
-    if params[:commit] == "Fix"
-      @correction.fix!
-      redirect_to(tags_path(search: {name_matches: @correction.tag.name, hide_empty: "no"}), notice: "Tag will be fixed in a few seconds")
-    else
-      redirect_to(tags_path(search: {name_matches: @correction.tag.name}))
+    respond_to do |format|
+      format.html { redirect_back(fallback_location: tags_path(search: { name_matches: @correction.tag.name, hide_empty: "no" }), notice: "Tag will be fixed in a few seconds") }
+      format.json
     end
   end
 end
