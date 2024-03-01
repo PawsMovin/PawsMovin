@@ -143,11 +143,11 @@ module ApplicationHelper
     action_param = params[:action].parameterize.dasherize
 
     {
-      lang: "en",
+      lang:  "en",
       class: "c-#{controller_param} a-#{action_param} #{'resp' unless disable_mobile_mode?}",
-      data: {
+      data:  {
         controller: controller_param,
-        action: action_param,
+        action:     action_param,
         **data_attributes_for(user, "user", attributes)
       }
     }

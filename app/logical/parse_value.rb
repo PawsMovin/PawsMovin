@@ -67,9 +67,9 @@ module ParseValue
 
   RANGE_INVERSIONS = {
     lte: :gte,
-    lt: :gt,
+    lt:  :gt,
     gte: :lte,
-    gt: :lt,
+    gt:  :lt,
   }.freeze
 
   def invert_range(range)

@@ -335,10 +335,10 @@ class Ticket < ApplicationRecord
         end
       end
       Dmail.create_split(
-        from_id: CurrentUser.id,
-        to_id: creator.id,
-        title: title,
-        body: msg,
+        from_id:       CurrentUser.id,
+        to_id:         creator.id,
+        title:         title,
+        body:          msg,
         bypass_limits: true,
       )
     end
@@ -355,16 +355,16 @@ class Ticket < ApplicationRecord
       {
         action: action,
         ticket: {
-          id: id,
-          user_id: creator_id,
-          user: creator_id ? User.id_to_name(creator_id) : nil,
-          claimant: claimant_id ? User.id_to_name(claimant_id) : nil,
-          target: bot_target_name,
-          status: status,
-          model_id: model_id,
-          model_type: model_type,
+          id:          id,
+          user_id:     creator_id,
+          user:        creator_id ? User.id_to_name(creator_id) : nil,
+          claimant:    claimant_id ? User.id_to_name(claimant_id) : nil,
+          target:      bot_target_name,
+          status:      status,
+          model_id:    model_id,
+          model_type:  model_type,
           report_type: report_type,
-          reason: reason,
+          reason:      reason,
         }
       }
     end

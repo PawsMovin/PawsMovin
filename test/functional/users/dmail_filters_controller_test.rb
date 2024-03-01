@@ -19,9 +19,9 @@ module Users
 
         should "not allow a user to create a filter belonging to another user" do
           params = {
-            dmail_id: @dmail.id,
+            dmail_id:     @dmail.id,
             dmail_filter: {
-              words: "owned",
+              words:   "owned",
               user_id: @user2.id,
             },
           }

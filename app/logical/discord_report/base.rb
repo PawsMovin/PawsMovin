@@ -19,9 +19,9 @@ module DiscordReport
     def post_webhook
       HTTParty.post(
         webhook_url,
-        body: {
+        body:    {
           content: report,
-          flags: 4096,
+          flags:   4096,
         }.to_json,
         headers: {
           "Content-Type" => "application/json",

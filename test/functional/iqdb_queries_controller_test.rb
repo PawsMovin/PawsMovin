@@ -20,9 +20,9 @@ class IqdbQueriesControllerTest < ActionDispatch::IntegrationTest
           @url = "https://google.com"
           @params = { url: @url }
           @mocked_response = [{
-            "post" => @posts[0],
+            "post"    => @posts[0],
             "post_id" => @posts[0].id,
-            "score" => 1
+            "score"   => 1
           }]
         end
 
@@ -38,9 +38,9 @@ class IqdbQueriesControllerTest < ActionDispatch::IntegrationTest
           @params = { post_id: @posts[0].id }
           @url = @posts[0].preview_file_url
           @mocked_response = [{
-            "post" => @posts[0],
+            "post"    => @posts[0],
             "post_id" => @posts[0].id,
-            "score" => 1
+            "score"   => 1
           }]
         end
 

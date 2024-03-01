@@ -6,8 +6,8 @@ module UserWarnable
   included do
     enum warning_type: {
       warning: 1,
-      record: 2,
-      ban: 3,
+      record:  2,
+      ban:     3,
     }
 
     scope :user_warned, -> { where("warning_type IS NOT NULL") }

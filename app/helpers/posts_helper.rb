@@ -145,12 +145,12 @@ module PostsHelper
     up_tag = tag.a(
       tag.span("▲", class: "post-vote-up-#{post.id} " + confirm_score_class(vote_score, 1, buttons)),
       class: "post-vote-up-link",
-      data: { id: post.id },
+      data:  { id: post.id },
     )
     down_tag = tag.a(
       tag.span("▼", class: "post-vote-down-#{post.id} " + confirm_score_class(vote_score, -1, buttons)),
       class: "post-vote-down-link",
-      data: { id: post.id },
+      data:  { id: post.id },
     )
     if buttons
       score_tag = tag.span(post.score, class: "post-score-#{post.id} post-score #{score_class(post_score)}", title: "#{post.up_score} up/#{post.down_score} down")

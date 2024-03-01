@@ -100,7 +100,7 @@ class PostSetsController < ApplicationController
     maintained = PostSet.active_maintainer(CurrentUser.user).order(:name)
 
     @for_select = {
-        "Owned" => owned.map {|x| [x.name.tr("_", " ").truncate(35), x.id]},
+        "Owned"      => owned.map {|x| [x.name.tr("_", " ").truncate(35), x.id]},
         "Maintained" => maintained.map {|x| [x.name.tr("_", " ").truncate(35), x.id]}
     }
 

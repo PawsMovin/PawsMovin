@@ -174,13 +174,13 @@ class WikiPage < ApplicationRecord
 
   def create_new_version
     versions.create(
-      updater_id: CurrentUser.user.id,
+      updater_id:      CurrentUser.user.id,
       updater_ip_addr: CurrentUser.ip_addr,
-      title: title,
-      body: body,
-      is_locked: is_locked,
-      parent: parent,
-      reason: edit_reason,
+      title:           title,
+      body:            body,
+      is_locked:       is_locked,
+      parent:          parent,
+      reason:          edit_reason,
     )
   end
 

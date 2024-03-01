@@ -6,12 +6,12 @@ module FormSearchHelper
     search_params = params[:search] || {}
     show_on_load = filled_form_fields(search_params, &).any? || always_display || !hideable
     form = simple_form_for(:search, {
-      method: method,
-      url: path,
-      builder: SearchFormBuilder,
+      method:        method,
+      url:           path,
+      builder:       SearchFormBuilder,
       search_params: search_params,
-      defaults: { required: false },
-      html: { class: "inline-form" },
+      defaults:      { required: false },
+      html:          { class: "inline-form" },
     }) do |f|
       id_input = f.input(:id, label: "ID", hide_unless_value: true)
       created_at_input = f.input(:created_at, hide_unless_value: true)

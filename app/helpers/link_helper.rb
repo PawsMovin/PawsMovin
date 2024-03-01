@@ -106,45 +106,45 @@ module LinkHelper
 
   DECORATABLE_ALIASES = {
     # alt names
-    "archiveofourown.com" => "archiveofourown.org",
-    "curiouscat.live" => "curiouscat.me",
-    "e926.net" => "e621.net",
-    "exhentai.org" => "e-hentai.org",
-    "discord.gg" => "discord.com",
-    "pillowfort.io" => "pillowfort.social",
-    "pixiv.me" => "pixiv.net",
-    "subscribestar.com" => "subscribestar.adult",
-    "wikia.com" => "fandom.com",
-    "x.com" => "twitter.com",
-    "youtu.be" => "youtube.com",
+    "archiveofourown.com"       => "archiveofourown.org",
+    "curiouscat.live"           => "curiouscat.me",
+    "e926.net"                  => "e621.net",
+    "exhentai.org"              => "e-hentai.org",
+    "discord.gg"                => "discord.com",
+    "pillowfort.io"             => "pillowfort.social",
+    "pixiv.me"                  => "pixiv.net",
+    "subscribestar.com"         => "subscribestar.adult",
+    "wikia.com"                 => "fandom.com",
+    "x.com"                     => "twitter.com",
+    "youtu.be"                  => "youtube.com",
 
     # same icon
-    "baraag.net" => "mastodon.social",
-    "cloudfront.net" => "amazonaws.com",
-    "mastodon.art" => "mastodon.social",
-    "meow.social" => "mastodon.social",
-    "sta.sh" => "deviantart.com",
+    "baraag.net"                => "mastodon.social",
+    "cloudfront.net"            => "amazonaws.com",
+    "mastodon.art"              => "mastodon.social",
+    "meow.social"               => "mastodon.social",
+    "sta.sh"                    => "deviantart.com",
 
     # image servers
-    "4cdn.org" => "4chan.org",
-    "cohostcdn.org" => "cohost.org",
-    "discordapp.com" => "discord.com",
-    "derpicdn.net" => "derpibooru.org",
-    "deviantart.net" => "deviantart.com",
-    "dropboxusercontent.com" => "dropbox.com",
-    "facdn.net" => "furaffinity.net",
-    "fbcdn.net" => "facebook.com",
-    "furrycdn.org" => "furbooru.org",
-    "ib.metapix.net" => "inkbunny.net",
-    "ngfiles.com" => "newgrounds.com",
-    "patreonusercontent.com" => "patreon.com",
-    "pximg.net" => "pixiv.net",
-    "redd.it" => "reddit.com",
-    "sofurryfiles.com" => "sofurry.com",
+    "4cdn.org"                  => "4chan.org",
+    "cohostcdn.org"             => "cohost.org",
+    "discordapp.com"            => "discord.com",
+    "derpicdn.net"              => "derpibooru.org",
+    "deviantart.net"            => "deviantart.com",
+    "dropboxusercontent.com"    => "dropbox.com",
+    "facdn.net"                 => "furaffinity.net",
+    "fbcdn.net"                 => "facebook.com",
+    "furrycdn.org"              => "furbooru.org",
+    "ib.metapix.net"            => "inkbunny.net",
+    "ngfiles.com"               => "newgrounds.com",
+    "patreonusercontent.com"    => "patreon.com",
+    "pximg.net"                 => "pixiv.net",
+    "redd.it"                   => "reddit.com",
+    "sofurryfiles.com"          => "sofurry.com",
     "static.wikia.nocookie.net" => "fandom.com",
-    "twimg.com" => "twitter.com",
-    "ungrounded.net" => "newgrounds.com",
-    "wixmp.com" => "deviantart.com",
+    "twimg.com"                 => "twitter.com",
+    "ungrounded.net"            => "newgrounds.com",
+    "wixmp.com"                 => "deviantart.com",
   }.freeze
 
   def decorated_link_to(text, path, **)
@@ -158,15 +158,15 @@ module LinkHelper
     if hostname
       tag.img(
         class: "link-decoration",
-        src: asset_pack_path("static/#{hostname}.png"),
-        data: {
+        src:   asset_pack_path("static/#{hostname}.png"),
+        data:  {
           hostname: hostname,
         },
       )
     else
       tag.i(
         class: "fa-solid fa-globe link-decoration",
-        data: { hostname: "none" },
+        data:  { hostname: "none" },
       )
     end
   end

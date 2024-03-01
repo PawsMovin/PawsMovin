@@ -60,15 +60,15 @@ Rails.application.configure do
 
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
-    address: PawsMovin.config.smtp_address,
-    port: PawsMovin.config.smtp_port,
-    domain: PawsMovin.config.smtp_domain,
-    user_name: PawsMovin.config.smtp_username,
-    password: PawsMovin.config.smtp_password,
-    authentication: PawsMovin.config.smtp_authentication,
+    address:              PawsMovin.config.smtp_address,
+    port:                 PawsMovin.config.smtp_port,
+    domain:               PawsMovin.config.smtp_domain,
+    user_name:            PawsMovin.config.smtp_username,
+    password:             PawsMovin.config.smtp_password,
+    authentication:       PawsMovin.config.smtp_authentication,
     enable_starttls_auto: PawsMovin.config.smtp_tls,
-    open_timeout: 5,
-    read_timeout: 5
+    open_timeout:         5,
+    read_timeout:         5
   }
 
   # Ignore bad email addresses and do not raise email delivery errors.

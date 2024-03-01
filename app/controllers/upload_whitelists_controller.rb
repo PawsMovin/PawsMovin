@@ -39,17 +39,17 @@ class UploadWhitelistsController < ApplicationController
       url_parsed = Addressable::URI.heuristic_parse(params[:url])
       allowed, reason = UploadWhitelist.is_whitelisted?(url_parsed)
       @whitelist = {
-          url: params[:url],
-          domain: url_parsed.domain,
+          url:        params[:url],
+          domain:     url_parsed.domain,
           is_allowed: allowed,
-          reason: reason
+          reason:     reason
       }
     rescue Addressable::URI::InvalidURIError => e
       @whitelist = {
-          url: params[:url],
-          domain: "invalid domain",
+          url:        params[:url],
+          domain:     "invalid domain",
           is_allowed: false,
-          reason: "invalid domain"
+          reason:     "invalid domain"
       }
     end
     respond_with(@whitelist) do |format|

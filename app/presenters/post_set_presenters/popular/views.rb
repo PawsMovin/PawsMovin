@@ -28,8 +28,8 @@ module PostSetPresenters
           template.views_popular_index_path(
             date: prev_date,
           ),
-          "id": "paginator-prev",
-          "rel": "prev",
+          "id":            "paginator-prev",
+          "rel":           "prev",
           "data-shortcut": "a left",
         )
         html << template.link_to(
@@ -44,8 +44,8 @@ module PostSetPresenters
           template.views_popular_index_path(
             date: next_date,
           ),
-          "id": "paginator-next",
-          "rel": "next",
+          "id":            "paginator-next",
+          "rel":           "next",
           "data-shortcut": "d right",
         )
         html << "</span>"

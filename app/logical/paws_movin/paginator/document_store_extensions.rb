@@ -9,11 +9,11 @@ module PawsMovin
         super(page, options)
 
         new_opts = {
-          pagination_mode: pagination_mode,
+          pagination_mode:    pagination_mode,
           max_numbered_pages: max_numbered_pages,
-          records_per_page: records_per_page,
-          total_count: total_count,
-          current_page: current_page,
+          records_per_page:   records_per_page,
+          total_count:        total_count,
+          current_page:       current_page,
         }
 
         PaginatedArray.new(records(includes: options[:includes]), new_opts)

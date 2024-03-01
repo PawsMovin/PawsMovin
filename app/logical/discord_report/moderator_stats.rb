@@ -28,7 +28,7 @@ module DiscordReport
         pending: Ticket.active.count,
         created: Ticket.where("created_at >= ? ", 1.day.ago).count,
         handled: Ticket.approved.where("updated_at >= ? ", 1.day.ago).count,
-        oldest: (Time.now - oldest).seconds.in_days.to_i,
+        oldest:  (Time.now - oldest).seconds.in_days.to_i,
       }
     end
   end

@@ -33,8 +33,8 @@ class BulkRelatedTagQuery
 
       hash[tag.name] = related.map do |name, count|
         {
-          name: name,
-          count: count.to_i,
+          name:        name,
+          count:       count.to_i,
           category_id: categories.fetch(name, -1),
         }
       end
@@ -48,8 +48,8 @@ class BulkRelatedTagQuery
 
       hash[tag_name] = related.map do |name, count|
         {
-          name: name,
-          count: count.to_i,
+          name:        name,
+          count:       count.to_i,
           category_id: categories.fetch(name, -1),
         }
       end

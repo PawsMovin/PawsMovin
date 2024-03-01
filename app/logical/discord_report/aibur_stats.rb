@@ -36,9 +36,9 @@ module DiscordReport
 
     def stats
       {
-        aliases: counting(TagAlias),
+        aliases:      counting(TagAlias),
         implications: counting(TagImplication),
-        burs: {
+        burs:         {
           **counting(BulkUpdateRequest),
           details: bur_details,
         },

@@ -138,10 +138,10 @@ class Tag < ApplicationRecord
 
     def write_category_change_entry
       TagTypeVersion.create(creator_id: CurrentUser.id,
-                            tag_id: id,
-                            old_type: category_was.to_i,
-                            new_type: category.to_i,
-                            is_locked: is_locked?)
+                            tag_id:     id,
+                            old_type:   category_was.to_i,
+                            new_type:   category.to_i,
+                            is_locked:  is_locked?)
     end
   end
 

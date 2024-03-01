@@ -285,13 +285,13 @@ class Artist < ApplicationRecord
 
     def create_new_version
       ArtistVersion.create(
-        artist_id: id,
-        name: name,
-        updater_id: CurrentUser.id,
+        artist_id:       id,
+        name:            name,
+        updater_id:      CurrentUser.id,
         updater_ip_addr: CurrentUser.ip_addr,
-        urls: url_array,
-        other_names: other_names,
-        notes_changed: saved_change_to_notes?
+        urls:            url_array,
+        other_names:     other_names,
+        notes_changed:   saved_change_to_notes?
       )
     end
 

@@ -47,9 +47,9 @@ class TagQuery
   def initialize(query, resolve_aliases: true, free_tags_count: 0)
     @q = {
       tags: {
-        must: [],
+        must:     [],
         must_not: [],
-        should: [],
+        should:   [],
       },
     }
     @resolve_aliases = resolve_aliases

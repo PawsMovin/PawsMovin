@@ -233,16 +233,16 @@ class PostReplacement < ApplicationRecord
   module PromotionMethods
     def new_upload_params
       {
-          uploader_id: creator_id,
+          uploader_id:      creator_id,
           uploader_ip_addr: creator_ip_addr,
-          file: PawsMovin.config.storage_manager.open(PawsMovin.config.storage_manager.replacement_path(self, file_ext, :original)),
-          tag_string: post.tag_string,
-          rating: post.rating,
-          source: "#{self.source}\n" + post.source,
-          parent_id: post.id,
-          description: post.description,
-          locked_tags: post.locked_tags,
-          replacement_id: self.id
+          file:             PawsMovin.config.storage_manager.open(PawsMovin.config.storage_manager.replacement_path(self, file_ext, :original)),
+          tag_string:       post.tag_string,
+          rating:           post.rating,
+          source:           "#{self.source}\n" + post.source,
+          parent_id:        post.id,
+          description:      post.description,
+          locked_tags:      post.locked_tags,
+          replacement_id:   self.id
       }
     end
   end

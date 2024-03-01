@@ -5,14 +5,14 @@ class EditHistory < ApplicationRecord
   belongs_to :user
 
   EDIT_MAP = {
-    hide: "Hidden",
-    unhide: "Unhidden",
-    stick: "Stickied",
-    unstick: "Unstickied",
+    hide:         "Hidden",
+    unhide:       "Unhidden",
+    stick:        "Stickied",
+    unstick:      "Unstickied",
     mark_warning: "Marked For Warning",
-    wark_record: "Marked For Record",
-    mark_ban: "Marked For Ban",
-    unmark: "Unmarked",
+    wark_record:  "Marked For Record",
+    mark_ban:     "Marked For Ban",
+    unmark:       "Unmarked",
   }.freeze
 
   KNOWN_TYPES = %i[

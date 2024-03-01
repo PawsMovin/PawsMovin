@@ -171,3 +171,8 @@ Style/MissingRespondToMissing:
 
 Style/MethodCallWithArgsParentheses:
   Enabled: true
+
+Style/HashAlignment:
+  Enabled: true
+  EnforcedHashRocketStyle: table
+  EnforcedColonStyle: table

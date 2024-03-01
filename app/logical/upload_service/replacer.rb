@@ -32,15 +32,15 @@ class UploadService
         replacement.replacement_file = PawsMovin.config.storage_manager.open(PawsMovin.config.storage_manager.replacement_path(replacement, replacement.file_ext, :original))
 
         upload = Upload.create(
-          uploader_id: CurrentUser.id,
+          uploader_id:      CurrentUser.id,
           uploader_ip_addr: CurrentUser.ip_addr,
-          rating: post.rating,
-          tag_string: (post.tag_array - PostReplacement::TAGS_TO_REMOVE_AFTER_ACCEPT).join(" "),
-          source: replacement.source,
-          file: replacement.replacement_file,
-          replaced_post: post,
+          rating:           post.rating,
+          tag_string:       (post.tag_array - PostReplacement::TAGS_TO_REMOVE_AFTER_ACCEPT).join(" "),
+          source:           replacement.source,
+          file:             replacement.replacement_file,
+          replaced_post:    post,
           original_post_id: post.id,
-          replacement_id: replacement.id,
+          replacement_id:   replacement.id,
         )
 
         if upload.invalid? || upload.is_errored?
@@ -84,9 +84,9 @@ class UploadService
         rescale_notes(post)
 
         replacement.update({
-          status: "approved",
-          approver_id: CurrentUser.id,
-          uploader_id_on_approve: previous_uploader,
+          status:                       "approved",
+          approver_id:                  CurrentUser.id,
+          uploader_id_on_approve:       previous_uploader,
           penalize_uploader_on_approve: penalize_current_uploader.to_s.truthy?
         })
 

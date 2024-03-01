@@ -70,17 +70,17 @@ module PostSetPresenters
         html << template.link_to(
           "«prev",
           template.uploads_popular_index_path(
-            date: prev_date_for_scale(scale),
+            date:  prev_date_for_scale(scale),
             scale: scale.downcase,
           ),
-          "id": (link_rel_for_scale?(template, scale.downcase) ? "paginator-prev" : nil),
-          "rel": (link_rel_for_scale?(template, scale.downcase) ? "prev" : nil),
+          "id":            (link_rel_for_scale?(template, scale.downcase) ? "paginator-prev" : nil),
+          "rel":           (link_rel_for_scale?(template, scale.downcase) ? "prev" : nil),
           "data-shortcut": (link_rel_for_scale?(template, scale.downcase) ? "a left" : nil),
         )
         html << template.link_to(
           scale,
           template.uploads_popular_index_path(
-            date: date,
+            date:  date,
             scale: scale.downcase,
           ),
           class: "desc",
@@ -88,11 +88,11 @@ module PostSetPresenters
         html << template.link_to(
           "next»",
           template.uploads_popular_index_path(
-            date: next_date_for_scale(scale),
+            date:  next_date_for_scale(scale),
             scale: scale.downcase,
           ),
-          "id": (link_rel_for_scale?(template, scale.downcase) ? "paginator-next" : nil),
-          "rel": (link_rel_for_scale?(template, scale.downcase) ? "next" : nil),
+          "id":            (link_rel_for_scale?(template, scale.downcase) ? "paginator-next" : nil),
+          "rel":           (link_rel_for_scale?(template, scale.downcase) ? "next" : nil),
           "data-shortcut": (link_rel_for_scale?(template, scale.downcase) ? "d right" : nil),
         )
         html << "</span>"

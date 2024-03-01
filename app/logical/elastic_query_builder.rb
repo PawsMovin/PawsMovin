@@ -20,9 +20,9 @@ class ElasticQueryBuilder
 
     query = {
       bool: {
-        must: must,
+        must:     must,
         must_not: must_not,
-        should: should,
+        should:   should,
       },
     }
     query[:bool][:minimum_should_match] = 1 if should.any?
@@ -32,8 +32,8 @@ class ElasticQueryBuilder
       query = { function_score: @function_score }
     end
     search_body = {
-      query: query,
-      sort: order,
+      query:   query,
+      sort:    order,
       _source: false,
       timeout: "#{CurrentUser.user.try(:statement_timeout) || 3_000}ms",
     }

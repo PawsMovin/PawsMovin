@@ -5,10 +5,10 @@ class ExceptionLog < ApplicationRecord
 
   def self.add(exception, user_id, request)
     extra_params = {
-      host: Socket.gethostname,
-      params: request.filtered_parameters,
-      user_id: user_id,
-      referrer: request.referrer,
+      host:       Socket.gethostname,
+      params:     request.filtered_parameters,
+      user_id:    user_id,
+      referrer:   request.referrer,
       user_agent: request.user_agent,
     }
 
@@ -25,12 +25,12 @@ class ExceptionLog < ApplicationRecord
     end
 
     create!(
-      ip_addr: request.remote_ip || "0.0.0.0",
-      class_name: unwrapped_exception.class.name,
-      message: unwrapped_exception.message,
-      trace: unwrapped_exception.backtrace.join("\n"),
-      code: SecureRandom.uuid,
-      version: GitHelper.short_hash,
+      ip_addr:      request.remote_ip || "0.0.0.0",
+      class_name:   unwrapped_exception.class.name,
+      message:      unwrapped_exception.message,
+      trace:        unwrapped_exception.backtrace.join("\n"),
+      code:         SecureRandom.uuid,
+      version:      GitHelper.short_hash,
       extra_params: extra_params,
     )
   end

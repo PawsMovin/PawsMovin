@@ -6,8 +6,8 @@ class UserTextVersion < ApplicationRecord
   array_attribute :text_changes # "changes" is used by Rails
 
   CHANGE_TYPES = {
-    about: "About",
-    artinfo: "Artist Info",
+    about:     "About",
+    artinfo:   "Artist Info",
     blacklist: "Blacklist",
   }.freeze
 
@@ -16,25 +16,25 @@ class UserTextVersion < ApplicationRecord
     if count == 0
       count += 1
       create({
-        user: user,
-        updater: user,
+        user:            user,
+        updater:         user,
         updater_ip_addr: user.last_ip_addr,
-        about_text: user.profile_about_before_last_save || user.profile_about,
-        artinfo_text: user.profile_artinfo_before_last_save || user.profile_artinfo,
-        blacklist_text: user.blacklisted_tags_before_last_save || user.blacklisted_tags,
-        version: 1,
-        text_changes: [],
+        about_text:      user.profile_about_before_last_save || user.profile_about,
+        artinfo_text:    user.profile_artinfo_before_last_save || user.profile_artinfo,
+        blacklist_text:  user.blacklisted_tags_before_last_save || user.blacklisted_tags,
+        version:         1,
+        text_changes:    [],
       })
     end
     create({
-      user: user,
-      updater: CurrentUser.user,
+      user:            user,
+      updater:         CurrentUser.user,
       updater_ip_addr: CurrentUser.ip_addr,
-      about_text: user.profile_about,
-      artinfo_text: user.profile_artinfo,
-      blacklist_text: user.blacklisted_tags,
-      version: count + 1,
-      text_changes: changes_for_create(user),
+      about_text:      user.profile_about,
+      artinfo_text:    user.profile_artinfo,
+      blacklist_text:  user.blacklisted_tags,
+      version:         count + 1,
+      text_changes:    changes_for_create(user),
     })
   end
 

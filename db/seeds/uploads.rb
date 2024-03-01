@@ -57,13 +57,13 @@ module Uploads
         end
 
         service = UploadService.new({
-          uploader: CurrentUser.user,
+          uploader:         CurrentUser.user,
           uploader_ip_addr: CurrentUser.ip_addr,
-          direct_url: url,
-          tag_string: post["tags"].values.flatten.join(" "),
-          source: post["sources"].join("\n"),
-          description: post["description"],
-          rating: post["rating"],
+          direct_url:       url,
+          tag_string:       post["tags"].values.flatten.join(" "),
+          source:           post["sources"].join("\n"),
+          description:      post["description"],
+          rating:           post["rating"],
         })
 
         upload = service.start!

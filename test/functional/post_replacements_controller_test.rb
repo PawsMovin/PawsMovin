@@ -17,11 +17,11 @@ class PostReplacementsControllerTest < ActionDispatch::IntegrationTest
       should "accept new non duplicate replacement" do
         file = fixture_file_upload("alpha.png")
         params = {
-          format: :json,
-          post_id: @post.id,
+          format:           :json,
+          post_id:          @post.id,
           post_replacement: {
             replacement_file: file,
-            reason: "test replacement"
+            reason:           "test replacement"
           }
         }
 

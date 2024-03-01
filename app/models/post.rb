@@ -1175,23 +1175,23 @@ class Post < ApplicationRecord
   module DeletionMethods
     def backup_post_data_destroy
       post_data = {
-          id: id,
-          description: description,
-          md5: md5,
-          tags: tag_string,
-          height: image_height,
-          width: image_width,
-          file_size: file_size,
-          sources: source,
-          approver_id: approver_id,
-          locked_tags: locked_tags,
-          rating: rating,
-          parent_id: parent_id,
-          change_seq: change_seq,
-          is_deleted: is_deleted,
-          is_pending: is_pending,
-          duration: duration,
-          fav_count: fav_count,
+          id:            id,
+          description:   description,
+          md5:           md5,
+          tags:          tag_string,
+          height:        image_height,
+          width:         image_width,
+          file_size:     file_size,
+          sources:       source,
+          approver_id:   approver_id,
+          locked_tags:   locked_tags,
+          rating:        rating,
+          parent_id:     parent_id,
+          change_seq:    change_seq,
+          is_deleted:    is_deleted,
+          is_pending:    is_pending,
+          duration:      duration,
+          fav_count:     fav_count,
           comment_count: comment_count
       }
       DestroyedPost.create!(post_id: id, post_data: post_data, md5: md5,
@@ -1415,24 +1415,24 @@ class Post < ApplicationRecord
     def minimal_attributes
       preview_dims = preview_dimensions
       hash = {
-        created_ago: "#{Class.new.extend(ActionView::Helpers::DateHelper).time_ago_in_words(created_at)} ago",
-        created_at: created_at.iso8601,
-        down_score: down_score,
-        file_ext: file_ext,
-        file_size: file_size,
-        flags: status_flags,
-        height: image_height,
-        id: id,
+        created_ago:    "#{Class.new.extend(ActionView::Helpers::DateHelper).time_ago_in_words(created_at)} ago",
+        created_at:     created_at.iso8601,
+        down_score:     down_score,
+        file_ext:       file_ext,
+        file_size:      file_size,
+        flags:          status_flags,
+        height:         image_height,
+        id:             id,
         preview_height: preview_dims[0],
-        preview_width: preview_dims[1],
-        rating: rating,
-        score: score,
-        status: status,
-        tags: tag_string,
-        up_score: up_score,
-        uploader: uploader_name,
-        uploader_id: uploader_id,
-        width: image_width,
+        preview_width:  preview_dims[1],
+        rating:         rating,
+        score:          score,
+        status:         status,
+        tags:           tag_string,
+        up_score:       up_score,
+        uploader:       uploader_name,
+        uploader_id:    uploader_id,
+        width:          image_width,
       }
 
       if visible?
@@ -1451,29 +1451,29 @@ class Post < ApplicationRecord
         next unless has_sample_size?(k)
         dims = scaled_sample_dimensions(v)
         alternates[k] = {
-          type: "video",
+          type:   "video",
           height: dims[1],
-          width: dims[0],
-          urls: visible? ? [scaled_url_ext(k, "webm"), scaled_url_ext(k, "mp4")] : [nil, nil],
+          width:  dims[0],
+          urls:   visible? ? [scaled_url_ext(k, "webm"), scaled_url_ext(k, "mp4")] : [nil, nil],
         }
       end
       if has_sample_size?("original")
         fixed_dims = scaled_sample_dimensions([image_width, image_height])
         alternates["original"] = {
-          type: "video",
+          type:   "video",
           height: fixed_dims[1],
-          width: fixed_dims[0],
-          urls: visible? ? [nil, file_url_ext("mp4")] : [nil, nil],
+          width:  fixed_dims[0],
+          urls:   visible? ? [nil, file_url_ext("mp4")] : [nil, nil],
         }
       end
       PawsMovin.config.image_rescales.each do |k, v|
         next unless has_sample_size?(k)
         dims = scaled_sample_dimensions(v)
         alternates[k] = {
-          type: "image",
+          type:   "image",
           height: dims[1],
-          width: dims[0],
-          url: visible? ? scaled_url_ext(k, "webp") : nil,
+          width:  dims[0],
+          url:    visible? ? scaled_url_ext(k, "webp") : nil,
         }
       end
       alternates
@@ -1494,67 +1494,67 @@ class Post < ApplicationRecord
     def serializable_hash(*)
       preview_height, preview_width = preview_dimensions
       {
-        id: id,
-        created_at: created_at,
-        updated_at: updated_at,
-        file: {
-          width: image_width,
+        id:            id,
+        created_at:    created_at,
+        updated_at:    updated_at,
+        file:          {
+          width:  image_width,
           height: image_height,
-          ext: file_ext,
-          size: file_size,
-          md5: md5,
-          url: visible? ? file_url : nil,
+          ext:    file_ext,
+          size:   file_size,
+          md5:    md5,
+          url:    visible? ? file_url : nil,
         },
-        preview: {
-          width: preview_width,
+        preview:       {
+          width:  preview_width,
           height: preview_height,
-          url: visible? ? preview_file_url : nil,
+          url:    visible? ? preview_file_url : nil,
         },
-        sample: {
-          has: has_large?,
-          height: large_image_height,
-          width: large_image_width,
-          url: visible? ? large_file_url : nil,
+        sample:        {
+          has:        has_large?,
+          height:     large_image_height,
+          width:      large_image_width,
+          url:        visible? ? large_file_url : nil,
           alternates: alternate_samples,
         },
-        score: {
-          up: up_score,
-          down: down_score,
+        score:         {
+          up:    up_score,
+          down:  down_score,
           total: score,
         },
-        views: {
+        views:         {
           daily: daily_views,
           total: total_views,
         },
-        tags: TagCategory.category_names.index_with { |category| typed_tags(TagCategory.get(category).id) },
-        locked_tags: locked_tags&.split(" ") || [],
-        change_seq: change_seq,
-        flags: {
-          pending: is_pending,
-          flagged: is_flagged,
-          note_locked: is_note_locked,
+        tags:          TagCategory.category_names.index_with { |category| typed_tags(TagCategory.get(category).id) },
+        locked_tags:   locked_tags&.split(" ") || [],
+        change_seq:    change_seq,
+        flags:         {
+          pending:       is_pending,
+          flagged:       is_flagged,
+          note_locked:   is_note_locked,
           status_locked: is_status_locked,
           rating_locked: is_rating_locked,
-          deleted: is_deleted,
+          deleted:       is_deleted,
         },
-        rating: rating,
-        fav_count: fav_count,
-        sources: source.split("\n"),
-        pools: pool_ids,
+        rating:        rating,
+        fav_count:     fav_count,
+        sources:       source.split("\n"),
+        pools:         pool_ids,
         relationships: {
-          parent_id: parent_id,
-          has_children: has_children,
+          parent_id:           parent_id,
+          has_children:        has_children,
           has_active_children: has_active_children,
-          children: children_ids&.split(" ")&.map(&:to_i) || [],
+          children:            children_ids&.split(" ")&.map(&:to_i) || [],
         },
-        approver_id: approver_id,
-        uploader_id: uploader_id,
-        description: description,
+        approver_id:   approver_id,
+        uploader_id:   uploader_id,
+        description:   description,
         comment_count: visible_comment_count(CurrentUser.user),
-        is_favorited: is_favorited?,
-        own_vote: own_vote&.score,
-        has_notes: has_notes?,
-        duration: duration&.to_f,
+        is_favorited:  is_favorited?,
+        own_vote:      own_vote&.score,
+        has_notes:     has_notes?,
+        duration:      duration&.to_f,
       }
     end
   end
@@ -1622,9 +1622,9 @@ class Post < ApplicationRecord
     def tag_match(query, resolve_aliases: true, free_tags_count: 0, enable_safe_mode: CurrentUser.safe_mode?, always_show_deleted: false)
       ElasticPostQueryBuilder.new(
         query,
-        resolve_aliases: resolve_aliases,
-        free_tags_count: free_tags_count,
-        enable_safe_mode: enable_safe_mode,
+        resolve_aliases:     resolve_aliases,
+        free_tags_count:     free_tags_count,
+        enable_safe_mode:    enable_safe_mode,
         always_show_deleted: always_show_deleted,
       ).search
     end

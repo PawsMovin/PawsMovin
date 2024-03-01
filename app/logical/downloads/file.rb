@@ -85,9 +85,9 @@ module Downloads
 
     def httparty_options
       {
-        timeout: 10,
-        stream_body: true,
-        headers: strategy.headers,
+        timeout:            10,
+        stream_body:        true,
+        headers:            strategy.headers,
         connection_adapter: ValidatingConnectionAdapter,
       }.deep_merge(PawsMovin.config.httparty_options)
     end

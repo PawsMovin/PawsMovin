@@ -174,8 +174,8 @@ class UserPresenter
     indices = tag_names.each_with_index.map {|x, i| [x, i]}.to_h
     tags = Tag.where(name: tag_names).map do |tag|
       {
-        name: tag.name,
-        count: tag.post_count,
+        name:        tag.name,
+        count:       tag.post_count,
         category_id: tag.category,
       }
     end
@@ -189,8 +189,8 @@ class UserPresenter
     tags = tags.take(50)
     Tag.where(name: tags).map do |tag|
       {
-        name: tag.name,
-        count: tag.post_count,
+        name:        tag.name,
+        count:       tag.post_count,
         category_id: tag.category,
       }
     end

@@ -127,16 +127,16 @@ class Note < ApplicationRecord
 
   def create_new_version(updater_id, updater_ip_addr)
     versions.create(
-      updater_id: updater_id,
+      updater_id:      updater_id,
       updater_ip_addr: updater_ip_addr,
-      post_id: post_id,
-      x: x,
-      y: y,
-      width: width,
-      height: height,
-      is_active: is_active,
-      body: body,
-      version: version
+      post_id:         post_id,
+      x:               x,
+      y:               y,
+      width:           width,
+      height:          height,
+      is_active:       is_active,
+      body:            body,
+      version:         version
     )
   end
 

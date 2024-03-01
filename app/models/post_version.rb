@@ -109,8 +109,8 @@ class PostVersion < ApplicationRecord
       end
 
       {
-        query: { bool: { must: must, must_not: must_not } },
-        sort: { id: :desc },
+        query:   { bool: { must: must, must_not: must_not } },
+        sort:    { id: :desc },
         _source: false,
         timeout: "#{CurrentUser.user.try(:statement_timeout) || 3_000}ms"
       }
@@ -132,17 +132,17 @@ class PostVersion < ApplicationRecord
 
   def self.queue(post)
     self.create({
-        post_id: post.id,
-        rating: post.rating,
-        parent_id: post.parent_id,
-        source: post.source,
-        updater_id: CurrentUser.id,
+        post_id:         post.id,
+        rating:          post.rating,
+        parent_id:       post.parent_id,
+        source:          post.source,
+        updater_id:      CurrentUser.id,
         updater_ip_addr: CurrentUser.ip_addr,
-        tags: post.tag_string,
-        original_tags: post.tag_string_before_parse || "",
-        locked_tags: post.locked_tags,
-        description: post.description,
-        reason: post.edit_reason
+        tags:            post.tag_string,
+        original_tags:   post.tag_string_before_parse || "",
+        locked_tags:     post.locked_tags,
+        description:     post.description,
+        reason:          post.edit_reason
     })
   end
 
@@ -216,9 +216,9 @@ class PostVersion < ApplicationRecord
     removed_sources = old_sources - new_sources
 
     return {
-        added_sources: added_sources,
+        added_sources:     added_sources,
         unchanged_sources: new_sources & old_sources,
-        removed_sources: removed_sources
+        removed_sources:   removed_sources
     }
   end
 
@@ -239,13 +239,13 @@ class PostVersion < ApplicationRecord
     removed_locked = old_locked - new_locked
 
     return {
-        added_tags: added_tags,
-        removed_tags: removed_tags,
-        obsolete_added_tags: added_tags - latest_tags,
+        added_tags:            added_tags,
+        removed_tags:          removed_tags,
+        obsolete_added_tags:   added_tags - latest_tags,
         obsolete_removed_tags: removed_tags & latest_tags,
-        unchanged_tags: new_tags & old_tags,
-        added_locked_tags: added_locked,
-        removed_locked_tags: removed_locked,
+        unchanged_tags:        new_tags & old_tags,
+        added_locked_tags:     added_locked,
+        removed_locked_tags:   removed_locked,
         unchanged_locked_tags: new_locked & old_locked
     }
   end
@@ -260,11 +260,11 @@ class PostVersion < ApplicationRecord
     return @changes if defined?(@changes)
 
     delta = {
-      added_tags: added_tags,
-      removed_tags: removed_tags,
+      added_tags:            added_tags,
+      removed_tags:          removed_tags,
       obsolete_removed_tags: [],
-      obsolete_added_tags: [],
-      unchanged_tags: [],
+      obsolete_added_tags:   [],
+      unchanged_tags:        [],
     }
 
     latest_tags = post.tag_array

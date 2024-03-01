@@ -3,7 +3,7 @@
 class ElasticPostQueryBuilder < ElasticQueryBuilder
   LOCK_TYPE_TO_INDEX_FIELD = {
     rating: :rating_locked,
-    note: :note_locked,
+    note:   :note_locked,
     status: :status_locked,
   }.freeze
 
@@ -304,12 +304,12 @@ class ElasticPostQueryBuilder < ElasticQueryBuilder
       if q[:random_seed].present?
         @function_score = {
           random_score: { seed: q[:random_seed], field: "id" },
-          boost_mode: :replace,
+          boost_mode:   :replace,
         }
       else
         @function_score = {
           random_score: {},
-          boost_mode: :replace,
+          boost_mode:   :replace,
         }
       end
 

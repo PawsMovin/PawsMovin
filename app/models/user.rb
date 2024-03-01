@@ -429,7 +429,7 @@ class User < ApplicationRecord
   module ThrottleMethods
     def throttle_reason(reason, timeframe = "hourly")
       reasons = {
-        REJ_NEWBIE: "can not yet perform this action. Account is too new",
+        REJ_NEWBIE:  "can not yet perform this action. Account is too new",
         REJ_LIMITED: "have reached the #{timeframe} limit for this action",
       }
       reasons.fetch(reason, "unknown throttle reason, please report this as a bug")
@@ -438,8 +438,8 @@ class User < ApplicationRecord
     def upload_reason_string(reason)
       reasons = {
           REJ_UPLOAD_HOURLY: "have reached your hourly upload limit",
-          REJ_UPLOAD_EDIT: "have no remaining tag edits available",
-          REJ_UPLOAD_LIMIT: "have reached your upload limit",
+          REJ_UPLOAD_EDIT:   "have no remaining tag edits available",
+          REJ_UPLOAD_LIMIT:  "have reached your upload limit",
           REJ_UPLOAD_NEWBIE: "cannot upload during your first week"
       }
       reasons.fetch(reason, "unknown upload rejection reason")
@@ -591,22 +591,22 @@ class User < ApplicationRecord
         approved_count = Post.for_user(id).where(is_flagged: false, is_deleted: false, is_pending: false).count
 
         {
-          deleted: deleted_count + replaced_penalize_count + rejected_replacement_count,
+          deleted:        deleted_count + replaced_penalize_count + rejected_replacement_count,
           deleted_ignore: own_post_replaced_count - replaced_penalize_count,
-          approved: approved_count,
-          pending: unapproved_count + unapproved_replacements_count,
+          approved:       approved_count,
+          pending:        unapproved_count + unapproved_replacements_count,
         }
       end
     end
 
     def uploaders_list_pieces
       @uploaders_list_pieces ||= {
-          pending: Post.pending.for_user(id).count,
-          approved: Post.for_user(id).where(is_flagged: false, is_deleted: false, is_pending: false).count,
-          deleted: Post.deleted.for_user(id).count,
-          flagged: Post.flagged.for_user(id).count,
-          replaced: own_post_replaced_count,
-          replacement_pending: post_replacements.pending.count,
+          pending:              Post.pending.for_user(id).count,
+          approved:             Post.for_user(id).where(is_flagged: false, is_deleted: false, is_pending: false).count,
+          deleted:              Post.deleted.for_user(id).count,
+          flagged:              Post.flagged.for_user(id).count,
+          replaced:             own_post_replaced_count,
+          replacement_pending:  post_replacements.pending.count,
           replacement_rejected: post_replacement_rejected_count,
           replacement_promoted: post_replacements.promoted.count
         }
@@ -790,14 +790,14 @@ class User < ApplicationRecord
     def refresh_counts!
       self.class.without_timeout do
         UserStatus.where(user_id: id).update_all(
-          post_count: Post.for_user(id).count,
-          post_deleted_count: Post.for_user(id).deleted.count,
-          post_update_count: PostVersion.for_user(id).count,
-          favorite_count: Favorite.for_user(id).count,
-          note_count: NoteVersion.for_user(id).count,
-          own_post_replaced_count: PostReplacement.for_uploader_on_approve(id).count,
+          post_count:                       Post.for_user(id).count,
+          post_deleted_count:               Post.for_user(id).deleted.count,
+          post_update_count:                PostVersion.for_user(id).count,
+          favorite_count:                   Favorite.for_user(id).count,
+          note_count:                       NoteVersion.for_user(id).count,
+          own_post_replaced_count:          PostReplacement.for_uploader_on_approve(id).count,
           own_post_replaced_penalize_count: PostReplacement.penalized.for_uploader_on_approve(id).count,
-          post_replacement_rejected_count: post_replacements.rejected.count,
+          post_replacement_rejected_count:  post_replacements.rejected.count,
         )
       end
     end

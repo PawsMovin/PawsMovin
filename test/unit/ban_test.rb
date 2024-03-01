@@ -97,11 +97,11 @@ class BanTest < ActiveSupport::TestCase
       user = create(:user)
       ban = create(:ban, user: user)
       params = {
-        user_name: user.name,
+        user_name:   user.name,
         banner_name: ban.banner.name,
-        reason: ban.reason,
-        expired: false,
-        order: :id_desc
+        reason:      ban.reason,
+        expired:     false,
+        order:       :id_desc
       }
 
       bans = Ban.search(params)

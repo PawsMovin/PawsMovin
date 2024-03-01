@@ -30,18 +30,18 @@ module DiscordReport
     def stats
       deletions = PostFlag.where(is_deletion: true).where("created_at >= ?", 1.day.ago)
       {
-        pending: {
-          posts: Post.pending.count,
-          flags: Post.where(is_flagged: true).count,
+        pending:   {
+          posts:        Post.pending.count,
+          flags:        Post.where(is_flagged: true).count,
           replacements: PostReplacement.pending.count,
         },
         deletions: {
-          total: deletions.count,
-          automod: deletions.where(creator_id: User.system.id).count,
+          total:     deletions.count,
+          automod:   deletions.where(creator_id: User.system.id).count,
           takedowns: deletions.where("reason LIKE ?", "takedown #%").count,
         },
         approvals: PostApproval.where("created_at >= ?", 1.day.ago).count,
-        posts: Post.where("created_at >= ? ", 1.day.ago).count,
+        posts:     Post.where("created_at >= ? ", 1.day.ago).count,
       }
     end
   end

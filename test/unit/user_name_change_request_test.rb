@@ -13,10 +13,10 @@ class UserNameChangeRequestTest < ActiveSupport::TestCase
     context "approving a request" do
       setup do
         @change_request = UserNameChangeRequest.create(
-          user_id: @requester.id,
+          user_id:       @requester.id,
           original_name: @requester.name,
-          status: "pending",
-          desired_name: "abc",
+          status:        "pending",
+          desired_name:  "abc",
         )
         CurrentUser.user = @admin
       end
@@ -43,10 +43,10 @@ class UserNameChangeRequestTest < ActiveSupport::TestCase
       should "not validate if the desired name already exists" do
         assert_difference(-> { UserNameChangeRequest.count }, 0) do
           req = UserNameChangeRequest.create(
-            user_id: @requester.id,
+            user_id:       @requester.id,
             original_name: @requester.name,
-            status: "pending",
-            desired_name: @requester.name,
+            status:        "pending",
+            desired_name:  @requester.name,
           )
           assert_equal(["Desired name already exists"], req.errors.full_messages)
         end

@@ -46,9 +46,9 @@ module PawsMovin
       config.ssl_options = PawsMovin.config.ssl_options
     else
       config.ssl_options = {
-        hsts: false,
+        hsts:           false,
         secure_cookies: false,
-        redirect: { exclude: ->(request) { true } }
+        redirect:       { exclude: ->(request) { true } }
       }
     end
 

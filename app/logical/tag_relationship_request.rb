@@ -58,11 +58,11 @@ class TagRelationshipRequest
 
   def build_forum_topic
     ForumTopic.new(
-      title: self.class.topic_title(antecedent_name, consequent_name),
+      title:                    self.class.topic_title(antecedent_name, consequent_name),
       original_post_attributes: {
         body: "Reason: #{reason}"
       },
-      category_id: PawsMovin.config.alias_implication_forum_category
+      category_id:              PawsMovin.config.alias_implication_forum_category
     )
   end
 
