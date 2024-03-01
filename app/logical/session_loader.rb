@@ -51,7 +51,7 @@ class SessionLoader
     cookies.encrypted[:remember].present?
   end
 
-private
+  private
 
   def set_statement_timeout
     timeout = CurrentUser.user.statement_timeout

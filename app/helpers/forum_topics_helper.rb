@@ -45,7 +45,6 @@ module ForumTopicsHelper
         begin
           obj = tag_request.find($~[:id])
           tag_request_message(obj) || match
-
         rescue ActiveRecord::RecordNotFound
           match
         end

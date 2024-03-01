@@ -2,6 +2,7 @@
 
 class User < ApplicationRecord
   class Error < Exception ; end
+
   class PrivilegeError < Exception
     attr_accessor :message
 
@@ -488,7 +489,7 @@ class User < ApplicationRecord
     create_user_throttle(:pool_edit, ->{ PawsMovin.config.pool_edit_limit - PoolVersion.for_user(id).where("updated_at > ?", 1.hour.ago).count },
                          :is_janitor?, 3.days)
     create_user_throttle(:pool_post_edit, -> { PawsMovin.config.pool_post_edit_limit - PoolVersion.for_user(id).where("updated_at > ?", 1.hour.ago).group(:pool_id).count(:pool_id).length },
-                          :general_bypass_throttle?, 7.days)
+                         :general_bypass_throttle?, 7.days)
     create_user_throttle(:note_edit, ->{ PawsMovin.config.note_edit_limit - NoteVersion.for_user(id).where("updated_at > ?", 1.hour.ago).count },
                          :general_bypass_throttle?, 3.days)
     create_user_throttle(:comment, ->{ PawsMovin.config.member_comment_limit - Comment.for_creator(id).where("created_at > ?", 1.hour.ago).count },

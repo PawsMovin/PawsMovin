@@ -7,12 +7,15 @@ class PostSet < ApplicationRecord
     def in_cooldown(user)
       where(creator_id: user.id, status: "cooldown").where("created_at < ?", 24.hours.ago)
     end
+
     def active
       where(status: "approved")
     end
+
     def pending
       where(status: "pending")
     end
+
     def banned
       where(status: "banned")
     end

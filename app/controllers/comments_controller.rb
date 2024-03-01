@@ -97,7 +97,8 @@ class CommentsController < ApplicationController
     render(json: { html: html, posts: deferred_posts })
   end
 
-private
+  private
+
   def index_by_post
     tags = params[:tags] || ""
     @posts = Post.tag_match(tags + " order:comment_bumped").paginate(params[:page], limit: 5, search_count: params[:search])

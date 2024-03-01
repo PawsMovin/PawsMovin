@@ -110,7 +110,7 @@ class ForumTopicTest < ActiveSupport::TestCase
       should "create a matching forum post" do
         assert_difference(["ForumTopic.count", "ForumPost.count"], 1) do
           @topic = create(:forum_topic, title: "abc", original_post_attributes: { body: "abc" })
-       end
+        end
       end
     end
 

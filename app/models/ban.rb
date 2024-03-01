@@ -2,6 +2,7 @@
 
 class Ban < ApplicationRecord
   attr_accessor :is_permaban
+
   after_create :create_feedback
   after_create :update_user_on_create
   after_create :create_ban_mod_action

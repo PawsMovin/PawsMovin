@@ -31,7 +31,6 @@ require "openssl"
 require "base64"
 
 module Pbkdf2
-
   PBKDF2_ITERATIONS = 20000
   SALT_BYTE_SIZE = 24
   HASH_BYTE_SIZE = 24
@@ -49,7 +48,7 @@ module Pbkdf2
         salt,
         PBKDF2_ITERATIONS,
         HASH_BYTE_SIZE
-    )
+      )
     return ["sha1", PBKDF2_ITERATIONS, salt, Base64.encode64( pbkdf2 )].join( SECTION_DELIMITER )
   end
 
@@ -63,7 +62,7 @@ module Pbkdf2
         params[SALT_INDEX],
         params[ITERATIONS_INDEX].to_i,
         pbkdf2.length
-    )
+      )
 
     return pbkdf2 == testHash
   end
@@ -78,5 +77,4 @@ module Pbkdf2
     end
     return false
   end
-
 end

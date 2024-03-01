@@ -33,5 +33,4 @@ class EmailBlacklistsController < ApplicationController
   def blacklist_params
     params.require(:email_blacklist).permit(%i[domain reason])
   end
-
 end

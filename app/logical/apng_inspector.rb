@@ -21,7 +21,6 @@ class ApngInspector
   #Any data after chunk named IEND is irrelevant
   #APNG frame count is inside a chunk named acTL, in first 4 bytes of data.
 
-
   #This function calls associated block for each PNG chunk
   #parameters passed are |chunk_name, chunk_length, file_descriptor|
   #returns true if file is read succesfully from start to IEND,
@@ -110,5 +109,4 @@ class ApngInspector
       end
       framedata.unpack1("N")
     end
-
 end

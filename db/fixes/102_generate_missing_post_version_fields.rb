@@ -17,7 +17,7 @@ Post.find_each do |post|
         parent_changed:      v.parent_changed,
         source_changed:      v.source_changed,
         description_changed: v.description_changed
-    )
+      )
     prev = v
   end
 end

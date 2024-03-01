@@ -21,6 +21,7 @@ class WikiPage < ApplicationRecord
   after_save :log_changes
 
   attr_accessor :skip_secondary_validations, :edit_reason
+
   belongs_to_creator
   belongs_to_updater
   has_one :tag, foreign_key: "name", primary_key: "title"

@@ -59,7 +59,7 @@ class PostsDecorator < ApplicationDecorator
   def cropped_url(options)
     cropped_url = if PawsMovin.config.enable_image_cropping? && options[:show_cropped] && object.has_cropped? && !CurrentUser.user.disable_cropped_thumbnails?
       object.crop_file_url
-    else
+                  else
       object.preview_file_url
     end
 
@@ -117,14 +117,14 @@ class PostsDecorator < ApplicationDecorator
 
     cropped_url = if PawsMovin.config.enable_image_cropping? && options[:show_cropped] && post.has_cropped? && !CurrentUser.user.disable_cropped_thumbnails?
       post.crop_file_url
-    else
+                  else
       post.preview_file_url
     end
 
     cropped_url = PawsMovin.config.deleted_preview_url if post.deleteblocked?
     preview_url = if post.deleteblocked?
       PawsMovin.config.deleted_preview_url
-    else
+                  else
       post.preview_file_url
     end
 
@@ -149,7 +149,7 @@ class PostsDecorator < ApplicationDecorator
       t.tag.div(class: "desc") do
         t.post_stats_section(post) if options[:stats]
       end
-    else
+                    else
       "".html_safe
     end
 

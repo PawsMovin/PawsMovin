@@ -8,7 +8,6 @@ module ApplicationHelper
     cookies[:nmm].present?
   end
 
-
   def diff_list_html(new, old, latest)
     diff = SetDiff.new(new, old, latest)
     render("diff_list", diff: diff)
@@ -180,54 +179,55 @@ module ApplicationHelper
     end
   end
 
-protected
+  protected
+
   def nav_link_match(controller, url)
     # Static routes must match completely
     return url == request.path if controller == "static"
 
     url =~ case controller
-    when "sessions", "users", "users/login_reminders", "users/password_resets", "admin/users", "dmails"
-      /^\/(session|users)/
+           when "sessions", "users", "users/login_reminders", "users/password_resets", "admin/users", "dmails"
+             /^\/(session|users)/
 
-    when "post_sets"
-      /^\/post_sets/
+           when "post_sets"
+             /^\/post_sets/
 
-    when "forum_posts"
-      /^\/forum_topics/
+           when "forum_posts"
+             /^\/forum_topics/
 
-    when "comments"
-      /^\/comments/
+           when "comments"
+             /^\/comments/
 
-    when "notes", "note_versions"
-      /^\/notes/
+           when "notes", "note_versions"
+             /^\/notes/
 
-    when "posts", "uploads", "post_versions", "popular", "favorites", "post_favorites"
-      /^\/posts/
+           when "posts", "uploads", "post_versions", "popular", "favorites", "post_favorites"
+             /^\/posts/
 
-    when "artists", "artist_versions"
-      /^\/artist/
+           when "artists", "artist_versions"
+             /^\/artist/
 
-    when "tags", "meta_searches", "tag_aliases", "tag_implications", "related_tags"
-      /^\/tags/
+           when "tags", "meta_searches", "tag_aliases", "tag_implications", "related_tags"
+             /^\/tags/
 
-    when "pools", "pool_versions"
-      /^\/pools/
+           when "pools", "pool_versions"
+             /^\/pools/
 
-    when "moderator/dashboards"
-      /^\/moderator/
+           when "moderator/dashboards"
+             /^\/moderator/
 
-    when "wiki_pages", "wiki_page_versions"
-      /^\/wiki_pages/
+           when "wiki_pages", "wiki_page_versions"
+             /^\/wiki_pages/
 
-    when "forum_topics", "forum_posts"
-      /^\/forum_topics/
+           when "forum_topics", "forum_posts"
+             /^\/forum_topics/
 
-    when "help"
-      /^\/help/
+           when "help"
+             /^\/help/
 
-    # If there is no match activate the site map only
-    else
-      /^#{site_map_path}/
+           # If there is no match activate the site map only
+           else
+             /^#{site_map_path}/
     end
   end
 end

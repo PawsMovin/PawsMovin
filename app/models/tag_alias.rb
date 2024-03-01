@@ -27,19 +27,12 @@ class TagAlias < TagRelationship
 
   module ForumMethods
     def forum_updater
-      @forum_updater ||= begin
-        post = if forum_topic
-                 forum_post
-               else
-                 nil
-               end
-        ForumUpdater.new(
-            forum_topic,
-            forum_post:     post,
-            expected_title: TagAliasRequest.topic_title(antecedent_name, consequent_name),
-            skip_update:    !TagRelationship::SUPPORT_HARD_CODED
+      @forum_updater ||= ForumUpdater.new(
+          forum_topic,
+          forum_post:     (forum_post if forum_topic),
+          expected_title: TagAliasRequest.topic_title(antecedent_name, consequent_name),
+          skip_update:    !TagRelationship::SUPPORT_HARD_CODED,
         )
-      end
     end
   end
 
@@ -223,8 +216,6 @@ class TagAlias < TagRelationship
     if TagAlias.active.exists?(antecedent_name: consequent_name)
       errors.add(:base, "A tag alias for #{consequent_name} already exists")
     end
-
-
   end
 
   def move_aliases_and_implications

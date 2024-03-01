@@ -30,7 +30,6 @@ module Sources
       end
 
       def parse
-
       end
 
       def remove_duplicates(sources)

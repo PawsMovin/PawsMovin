@@ -4,6 +4,7 @@ class Note < ApplicationRecord
   class RevertError < Exception ; end
 
   attr_accessor :html_id
+
   belongs_to :post
   belongs_to_creator
   has_many :versions, -> {order("note_versions.id ASC")}, class_name: "NoteVersion", dependent: :destroy

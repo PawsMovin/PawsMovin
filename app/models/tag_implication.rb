@@ -153,7 +153,6 @@ class TagImplication < TagRelationship
           tag_rel_undos.create!(undo_data: post_info)
         end
       end
-
     end
 
     def approve!(approver: CurrentUser.user, update_topic: true)
@@ -190,16 +189,11 @@ class TagImplication < TagRelationship
     end
 
     def forum_updater
-      post = if forum_topic
-        forum_post
-      else
-        nil
-      end
       ForumUpdater.new(
         forum_topic,
-        forum_post:     post,
+        forum_post:     (forum_post if forum_topic),
         expected_title: TagImplicationRequest.topic_title(antecedent_name, consequent_name),
-        skip_update:    !TagRelationship::SUPPORT_HARD_CODED
+        skip_update:    !TagRelationship::SUPPORT_HARD_CODED,
       )
     end
 

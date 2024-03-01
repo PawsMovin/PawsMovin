@@ -89,7 +89,7 @@ class ArtistsController < ApplicationController
     end
   end
 
-private
+  private
 
   def load_artist
     @artist = Artist.find(params[:id])

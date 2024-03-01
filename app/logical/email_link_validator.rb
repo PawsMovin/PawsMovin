@@ -2,7 +2,6 @@
 
 class EmailLinkValidator
   def self.generate(message, purpose, expires = nil)
-
     validator.generate(message, purpose: purpose, expires_in: expires)
   end
 

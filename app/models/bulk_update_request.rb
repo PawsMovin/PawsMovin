@@ -68,19 +68,12 @@ class BulkUpdateRequest < ApplicationRecord
 
   module ApprovalMethods
     def forum_updater
-      @forum_updater ||= begin
-        post = if forum_topic
-          forum_post || forum_topic.posts.first
-        else
-          nil
-        end
-        ForumUpdater.new(
-          forum_topic,
-          forum_post:     post,
-          expected_title: title,
-          skip_update:    !TagRelationship::SUPPORT_HARD_CODED
-        )
-      end
+      @forum_updater ||= ForumUpdater.new(
+        forum_topic,
+        forum_post:     (forum_post || forum_topic.posts.first if forum_topic),
+        expected_title: title,
+        skip_update:    !TagRelationship::SUPPORT_HARD_CODED
+      )
     end
 
     def approve!(approver)
@@ -91,7 +84,6 @@ class BulkUpdateRequest < ApplicationRecord
           forum_updater.update("The #{bulk_update_request_link} (forum ##{forum_post&.id}) has been approved by @#{approver.name}.", "APPROVED")
         end
       end
-
     rescue BulkUpdateRequestImporter::Error => x
       self.approver = approver
       CurrentUser.scoped(approver) do

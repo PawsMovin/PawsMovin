@@ -1,3 +1,5 @@
+<%# locals: (forum_post:, original_forum_post_id:) -%>
+
 <% if forum_post.visible?(CurrentUser.user) %>
   <article class="forum-post comment-post-grid" id="forum_post_<%= forum_post.id %>"
            data-forum-post-id="<%= forum_post.id %>" data-creator="<%= forum_post.creator&.name.downcase %>"

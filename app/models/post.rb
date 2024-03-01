@@ -801,7 +801,6 @@ class Post < ApplicationRecord
           end
         end
       end
-
     end
 
     def apply_pre_metatags
@@ -884,7 +883,6 @@ class Post < ApplicationRecord
       parent.tag_string += " #{tag_string}"
     end
   end
-
 
   module FavoriteMethods
     def clean_fav_string!

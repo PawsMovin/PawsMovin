@@ -689,7 +689,6 @@ class PostTest < ActiveSupport::TestCase
       # end
 
       context "tagged with a metatag" do
-
         context "for typing a tag" do
           setup do
             @post = create(:post, tag_string: "char:hoge")
