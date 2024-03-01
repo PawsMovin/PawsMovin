@@ -6,8 +6,12 @@
   <% if params[:action] == "index" %>
     | <%= subnav_link_to "Undo selected", "" %>
     <%= subnav_link_to "Select All", "" %>
-    <% if CurrentUser.is_admin? %>
-    | <%= subnav_link_to "Apply Tag Script To Selected", "" %>
+    <% if CurrentUser.is_moderator? %>
+      |
+      <% if CurrentUser.is_admin? %>
+        <%= subnav_link_to "Apply Tag Script To Selected", "" %>
+      <% end %>
+      <%= latest_link(@post_versions, raw: true) %>
     <% end %>
   <% end %>
 <% end %>

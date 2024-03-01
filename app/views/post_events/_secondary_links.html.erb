@@ -4,3 +4,4 @@
   <%= subnav_link_to "Replacements", post_replacements_path(search: { post_id: params.dig(:search, :post_id) }) %>
   <%= subnav_link_to "Tag History", post_versions_path(search: { post_id: params.dig(:search, :post_id) }) %>
 <% end %>
+<%= latest_link(@events) %>

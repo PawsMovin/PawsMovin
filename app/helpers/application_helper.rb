@@ -179,6 +179,22 @@ module ApplicationHelper
     end
   end
 
+  def link_to_latest(id)
+    return "" unless id
+    subnav_link_to("Latest", params.permit!.merge(page: "b#{id + 1}"))
+  end
+
+  def latest_link(records, raw: false, separator: !raw)
+    return unless CurrentUser.is_moderator?
+    return if params[:action] != "index" || records.blank?
+    link = link_to_latest(records.first.id)
+    if raw
+      link
+    else
+      content_for(:secondary_links) { "#{'| ' if separator}#{link}".html_safe }
+    end
+  end
+
   protected
 
   def nav_link_match(controller, url)

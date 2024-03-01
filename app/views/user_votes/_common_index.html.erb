@@ -83,6 +83,8 @@
   </div>
 </div>
 
+<%= render(partial: "user_votes/secondary_links", locals: { votes: votes }) %>
+
 <% content_for(:page_title) do %>
   <%= type.model_name.plural.titleize %>
 <% end %>

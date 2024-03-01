@@ -1,5 +1,5 @@
 <% content_for(:secondary_links) do %>
-  <%= subnav_link_to "List", forum_categories_path %>
+  <%= subnav_link_to "Listing", forum_categories_path %>
   <% if CurrentUser.is_admin? %>
     <%= subnav_link_to "New", new_forum_category_path %>
     <% if params[:action] == "index" %>

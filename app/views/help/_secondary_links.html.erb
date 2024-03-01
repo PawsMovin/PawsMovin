@@ -1,5 +1,5 @@
 <% content_for(:secondary_links) do %>
-  <%= subnav_link_to "List", help_pages_path %>
+  <%= subnav_link_to "Listing", help_pages_path %>
   <% if CurrentUser.is_janitor? %>
     <% if CurrentUser.is_admin? %>
       <%= subnav_link_to "New", new_help_page_path %>

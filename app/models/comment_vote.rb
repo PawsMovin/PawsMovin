@@ -4,6 +4,7 @@ class CommentVote < LockableUserVote
   validate :validate_user_can_vote
   validate :validate_comment_can_be_voted
   delegate :post, to: :comment
+  delegate :id, to: :post, prefix: true
 
   def self.for_comments_and_user(comment_ids, user_id)
     return {} unless user_id

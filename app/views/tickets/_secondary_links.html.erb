@@ -1,5 +1,5 @@
 <% content_for(:secondary_links) do %>
-  <%= subnav_link_to "List", tickets_path %>
+  <%= subnav_link_to "Listing", tickets_path %>
   <% unless CurrentUser.is_anonymous? %>
     <%= subnav_link_to "Mine", tickets_path(search: { creator_id: CurrentUser.id }) %>
   <% end %>
@@ -7,3 +7,4 @@
   <%= subnav_link_to "Claimed", tickets_path(search: { claimant_id: CurrentUser.id }) %>
   <% end %>
 <% end %>
+<%= latest_link(@tickets) %>

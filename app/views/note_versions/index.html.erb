@@ -11,10 +11,11 @@
     <% end %>
 
     <%= numbered_paginator(@note_versions) %>
-
-    <%= render "notes/secondary_links" %>
   </div>
 </div>
+
+<%= render "notes/secondary_links" %>
+<%= latest_link(@note_versions) %>
 
 <% content_for(:page_title) do %>
   Note Versions
