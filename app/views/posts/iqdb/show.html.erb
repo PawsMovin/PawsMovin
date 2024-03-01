@@ -1,0 +1,18 @@
+<div id="c-iqdb-queries">
+  <div id="a-show">
+    <h1>Similar Images Search</h1>
+    <%= form_search(path: posts_iqdb_path, hideable: false, method: :post) do |f| %>
+      <%= f.input(:post_id, label: "Post ID") %>
+      <%= f.input(:url, label: "URL") %>
+      <%= f.input(:file, as: :file) %>
+      <%= f.input(:score_cutoff, label: "Similarity", default: 60) %>
+    <% end %>
+
+    <%= render "posts/partials/common/inline_blacklist" %>
+    <%= render "posts/iqdb/matches" %>
+  </div>
+</div>
+
+<% content_for(:page_title) do %>
+  Similar Images Search
+<% end %>

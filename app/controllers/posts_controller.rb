@@ -197,6 +197,49 @@ class PostsController < ApplicationController
     @users = User.where(id: @counts.keys)
   end
 
+  def add_to_pool
+    @post = Post.find(params[:id])
+
+    if params[:pool_id].present?
+      @pool = Pool.find(params[:pool_id])
+    else
+      @pool = Pool.find_by!(name: params[:pool_name])
+    end
+
+    @pool.with_lock do
+      @pool.add(@post.id)
+      @pool.save
+    end
+    append_pool_to_session(@pool)
+    respond_with(@pool, location: post_path(@post))
+  end
+
+  def remove_from_pool
+    @post = Post.find(params[:id])
+    if params[:pool_id].present?
+      @pool = Pool.find(params[:pool_id])
+    else
+      @pool = Pool.find_by!(name: params[:pool_name])
+    end
+
+    @pool.with_lock do
+      @pool.remove!(@post)
+      @pool.save
+    end
+    respond_with(@pool, location: post_path(@post))
+  end
+
+  def favorites
+    @post = Post.find(params[:id])
+    query = User.includes(:user_status).joins(:favorites)
+    unless CurrentUser.is_moderator?
+      query = query.where("bit_prefs & :value != :value", { value: User.flag_value_for("enable_privacy_mode") }).or(query.where(favorites: { user_id: CurrentUser.id }))
+    end
+    query = query.where(favorites: { post_id: @post.id })
+    query = query.order("users.name asc")
+    @users = query.paginate(params[:page], limit: params[:limit])
+  end
+
   private
 
   def tag_query
@@ -269,5 +312,12 @@ class PostsController < ApplicationController
   def search_uploaders_params
     permitted_params = %i[user_id user_name]
     permit_search_params(permitted_params)
+  end
+
+  def append_pool_to_session(pool)
+    recent_pool_ids = session[:recent_pool_ids].to_s.scan(/\d+/)
+    recent_pool_ids << pool.id.to_s
+    recent_pool_ids = recent_pool_ids.slice(1, 5) if recent_pool_ids.size > 5
+    session[:recent_pool_ids] = recent_pool_ids.uniq.join(",")
   end
 end

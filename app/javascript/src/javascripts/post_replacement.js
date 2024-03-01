@@ -27,7 +27,7 @@ PostReplacement.approve = function (id, penalize_current_uploader) {
   make_processing($row);
   $.ajax({
     type: "PUT",
-    url: `/post_replacements/${id}/approve.json`,
+    url: `/posts/replacements/${id}/approve.json`,
     data: {
       penalize_current_uploader: penalize_current_uploader
     },
@@ -47,7 +47,7 @@ PostReplacement.reject = function (id) {
   make_processing($row);
   $.ajax({
     type: "PUT",
-    url: `/post_replacements/${id}/reject.json`,
+    url: `/posts/replacements/${id}/reject.json`,
     dataType: 'json'
   }).done(function () {
     set_status($row, "rejected");
@@ -64,7 +64,7 @@ PostReplacement.promote = function (id) {
   make_processing($row);
   $.ajax({
     type: "POST",
-    url: `/post_replacements/${id}/promote.json`,
+    url: `/posts/replacements/${id}/promote.json`,
     dataType: 'json'
   }).done(function (data) {
     Utility.notice(`Replacement promoted to post #${data.post.id}`);
@@ -81,7 +81,7 @@ PostReplacement.toggle_penalize = function ($target) {
   $target.addClass("disabled-link");
   $.ajax({
     type: "PUT",
-    url: `/post_replacements/${id}/toggle_penalize.json`,
+    url: `/posts/replacements/${id}/toggle_penalize.json`,
     dataType: 'json'
   }).done(function (data) {
     $target.removeClass("disabled-link");

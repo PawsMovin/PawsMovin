@@ -44,7 +44,7 @@ PostVersion.undo_selected = function () {
     let id = $(row).data("post-version-id");
 
     SendQueue.add(function () {
-      $.ajax(`/post_versions/${id}/undo.json`, {method: "PUT"});
+      $.ajax(`/posts/versions/${id}/undo.json`, {method: "PUT"});
 
       Utility.notice(`${++PostVersion.updated}/${selected_rows.length} changes undone.`);
     });

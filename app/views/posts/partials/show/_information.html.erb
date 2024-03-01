@@ -7,7 +7,7 @@
   </li>
   <li>Rating: <%= pretty_html_rating(post) %></li>
   <li>Score: <%= post_vote_block(post, post.own_vote) %>
-    <% if CurrentUser.is_moderator? %><span><%= link_to "(votes)", controller: :post_votes, search: { post_id: post.id} %></span><% end %>
+    <% if CurrentUser.is_moderator? %><span><%= link_to "(votes)", controller: "posts/votes", search: { post_id: post.id} %></span><% end %>
   </li>
   <li>
     Posted: <%= link_to time_ago_in_words_tagged(post.created_at), posts_path(tags: "date:#{post.created_at.to_date}"), rel: "nofollow" %>
@@ -52,7 +52,7 @@
   </li>
   <li>
     Favorites: <span id="favcount-for-post-<%= post.id %>"><%= post.fav_count %></span>
-    <%= link_to "Show", post_favorites_path(post.id), style: ("display: none;" if post.fav_count == 0) %>
+    <%= link_to "Show", favorites_post_path(post), style: ("display: none;" if post.fav_count == 0) %>
   </li>
   <li>Views Today: <span id="daily-viewcount-for-post-<%= post.id %>"><%= post.daily_views %></span></li>
   <li>Total Views: <span id="total-viewcount-for-post-<%= post.id %>"><%= post.total_views %></span></li>

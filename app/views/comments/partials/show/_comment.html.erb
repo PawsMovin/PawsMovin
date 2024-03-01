@@ -65,7 +65,7 @@
       <% if CurrentUser.is_moderator? %>
         <li><%= tag.a("Mark", class: "comment-mark-link") %></li>
         <li><%= link_to "History", edit_history_path(id: comment.id, type: "Comment"), class: "comment-edit-history-link" %></li>
-        <li><%= link_to "Votes", controller: "comment_votes", search: { comment_id: comment.id }, class: "comment-vote-history-link" %></li>
+        <li><%= link_to "Votes", controller: "comments/votes", search: { comment_id: comment.id }, class: "comment-vote-history-link" %></li>
       <% end %>
       <% if CurrentUser.is_admin? %>
         <li class="dot"></li>

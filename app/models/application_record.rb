@@ -383,4 +383,12 @@ class ApplicationRecord < ActiveRecord::Base
   end
 
   include ApiMethods
+
+  def self.override_route_key(value)
+    define_singleton_method(:model_name) do
+      mn = ActiveModel::Name.new(self)
+      mn.instance_variable_set(:@route_key, value)
+      mn
+    end
+  end
 end

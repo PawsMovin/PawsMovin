@@ -42,7 +42,7 @@
           <ul>
             <li><%= link_to "Sets with this post", post_sets_path(post_id: @post.id), rel: "nofollow" %></li>
             <% if PawsMovin.config.iqdb_server.present? && @post.has_preview? %>
-              <li><%= link_to "Visually similar", iqdb_queries_path(search: { post_id: @post.id }), rel: "nofollow" %></li>
+              <li><%= link_to "Visually similar", posts_iqdb_path(search: { post_id: @post.id }), rel: "nofollow" %></li>
               <li><%= link_to "Recommendations", post_recommendations_path(search: { post_id: @post.id }), rel: "nofollow" %></li>
             <% end %>
             <% if @post.is_image? %>
@@ -236,7 +236,7 @@
 
   <% if CurrentUser.is_member? %>
     <div id="add-to-pool-dialog" title="Add to pool" style="display: none;">
-      <%= render "pool_elements/new" %>
+      <%= render "pools/add_dialogue" %>
     </div>
     <div id="add-to-set-dialog" title="Add to set" style="display: none;">
       <%= render "post_sets/add_dialog" %>

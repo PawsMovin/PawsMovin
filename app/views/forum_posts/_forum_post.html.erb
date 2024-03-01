@@ -80,9 +80,9 @@
             </li>
           <% end %>
           <% if forum_post.votable? %>
-            <%= render "forum_post_votes/list", votes: forum_post.votes, forum_post: forum_post %>
+            <%= render "forum_posts/votes/list", votes: forum_post.votes, forum_post: forum_post %>
             <% if CurrentUser.is_moderator? %>
-              <li><%= link_to "(List)", controller: "forum_post_votes", search: { forum_post_id: forum_post.id } %></li>
+              <li><%= link_to "(List)", controller: "forum_posts/votes", search: { forum_post_id: forum_post.id } %></li>
             <% end %>
           <% end %>
         </menu>

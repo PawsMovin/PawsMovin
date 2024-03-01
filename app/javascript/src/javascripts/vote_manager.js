@@ -50,7 +50,7 @@ class VoteManager {
     const votes = this.selectedVotes();
     if (!votes.length) return;
     $.ajax({
-      url: `/${this._type}_votes/lock.json`,
+      url: `/${this._type}s/votes/lock.json`,
       method: "post",
       data: {
         ids: votes.join(',')
@@ -64,13 +64,13 @@ class VoteManager {
     const votes = this.selectedVotes();
     if (!votes.length) return;
     $.ajax({
-      url: `/${this._type}_votes/delete.json`,
+      url: `/${this._type}s/votes/delete.json`,
       method: "post",
       data: {
         ids: votes.join(',')
       }
     }).done(() => {
-      Utility.notice(`${this._type} votes deleted.`)
+      Utility.notice(`${this._type.replace("_", " ")} votes deleted.`)
     });
   }
 }

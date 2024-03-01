@@ -5,13 +5,13 @@ class PostSetsController < ApplicationController
   before_action :member_only, except: %i[index show]
 
   def index
-    if !params[:post_id].blank?
+    if params[:post_id].present?
       if CurrentUser.is_moderator?
         @post_sets = PostSet.where_has_post(params[:post_id].to_i).paginate(params[:page], limit: 50)
       else
         @post_sets = PostSet.visible(CurrentUser.user).where_has_post(params[:post_id].to_i).paginate(params[:page], limit: 50)
       end
-    elsif !params[:maintainer_id].blank?
+    elsif params[:maintainer_id].present?
       if CurrentUser.is_moderator?
         @post_sets = PostSet.where_has_maintainer(params[:maintainer_id].to_i).paginate(params[:page], limit: 50)
       else

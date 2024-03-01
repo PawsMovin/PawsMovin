@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class PostReplacement < ApplicationRecord
-  self.table_name = "post_replacements2"
+  self.table_name = "post_replacements2" # TODO: Remove this line after the table is renamed
   belongs_to :post
   belongs_to :creator, class_name: "User"
   belongs_to :approver, class_name: "User", optional: true

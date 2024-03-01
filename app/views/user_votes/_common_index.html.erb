@@ -3,7 +3,7 @@
 <div id="c-<%= type.model_name.plural %>">
   <div id="a-index">
     <%# path is a string here because of duplicate routes %>
-    <%= form_search(path: type.model_name.route_key) do |f| %>
+    <%= form_search(path: { controller: "#{type.model_type}s/votes", action: :index }) do |f| %>
       <%= f.user(:user, label: "Voter") %>
       <%= f.input(:"#{type.model_type}_id", label: "#{type.model_type.to_s.titleize} ID") %>
       <br>

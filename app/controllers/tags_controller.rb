@@ -2,6 +2,7 @@
 
 class TagsController < ApplicationController
   before_action :member_only, only: %i[edit update preview]
+  before_action :janitor_only, only: %i[correct]
   respond_to :html, :json
 
   def edit
@@ -39,6 +40,22 @@ class TagsController < ApplicationController
     check_privilege(@tag)
     @tag.update(tag_params)
     respond_with(@tag)
+  end
+
+  def correct
+    @correction = TagCorrection.new(params[:id])
+    @correction.fix!
+
+    respond_to do |format|
+      format.html { redirect_back(fallback_location: tags_path(search: { name_matches: @correction.tag.name, hide_empty: "no" }), notice: "Tag will be fixed in a few seconds") }
+      format.json
+    end
+  end
+
+  def meta_search
+    @meta_search = MetaSearches::Tag.new(params)
+    @meta_search.load_all
+    respond_with(@meta_search)
   end
 
   private

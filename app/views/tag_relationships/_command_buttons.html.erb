@@ -1,9 +1,9 @@
-<span class="tag-relationship" data-relationship-route="<%= tag_relation.model_name.route_key %>"
+<span class="tag-relationship" data-relationship-route="<%= send("#{tag_relation.model_name.route_key}_path")[1..] %>"
                                data-relationship-human="<%= tag_relation.model_name.singular.titleize %>"
                                data-relationship-id="<%= tag_relation.id %>">
   <% links = [] %>
   <% if with_show_link %>
-    <% links.push(link_to("Show", action: "show", controller: "/#{tag_relation.model_name.route_key}", id: tag_relation.id)) %>
+    <% links.push(link_to("Show", { controller: send("#{tag_relation.model_name.route_key}_path"), id: tag_relation.id, action: :show })) %>
   <% end %>
   <% if tag_relation.approvable_by?(CurrentUser.user) %>
     <% links.push(link_to("Approve", "#", class: "tag-relationship-accept")) %>
@@ -12,7 +12,7 @@
     <% links.push(link_to("Reject", "#", class: "tag-relationship-reject")) %>
   <% end %>
   <% if tag_relation.editable_by?(CurrentUser.user) %>
-    <% links.push(link_to("Edit", action: "edit", controller: "/#{tag_relation.model_name.route_key}", id: tag_relation.id)) %>
+    <% links.push(link_to("Edit", { controller: send("#{tag_relation.model_name.route_key}_path"), id: tag_relation.id, action: :edit })) %>
   <% end %>
   <%= safe_join(links, " | ") %>
 </span>

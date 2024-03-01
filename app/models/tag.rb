@@ -384,4 +384,8 @@ class Tag < ApplicationRecord
   extend NameMethods
   include RelationMethods
   extend SearchMethods
+
+  def serializable_hash(*)
+    super.merge(related_tags: related_tag_array.map { |r| { tag: r[0], count: r[1].to_i } })
+  end
 end

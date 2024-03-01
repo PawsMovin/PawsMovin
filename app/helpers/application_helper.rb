@@ -214,25 +214,25 @@ module ApplicationHelper
            when "comments"
              /^\/comments/
 
-           when "notes", "note_versions"
+           when "notes", "notes/versions"
              /^\/notes/
 
-           when "posts", "uploads", "post_versions", "popular", "favorites", "post_favorites"
+           when "posts", "uploads", "posts/versions", "popular", "favorites"
              /^\/posts/
 
            when "artists", "artist_versions"
              /^\/artist/
 
-           when "tags", "meta_searches", "tag_aliases", "tag_implications", "related_tags"
+           when "tags", "meta_searches", "tags/aliases", "tags/implications", "tags/related"
              /^\/tags/
 
-           when "pools", "pool_versions"
+           when "pools", "pools/versions"
              /^\/pools/
 
            when "moderator/dashboards"
              /^\/moderator/
 
-           when "wiki_pages", "wiki_page_versions"
+           when "wiki_pages", "wiki_pages/versions"
              /^\/wiki_pages/
 
            when "forum_topics", "forum_posts"

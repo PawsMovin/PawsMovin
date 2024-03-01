@@ -27,7 +27,7 @@
       <span class="spacer"></span>
       <%= link_to("Comments", comments_path(group_by: "comment", search: { poster_id: user.id })) %>
       <% if CurrentUser.is_moderator? %>
-        <%= link_to("Votes", action: "index", controller: "post_votes", search: { user_name: user.name }) %>
+        <%= link_to("Votes", action: "index", controller: "posts/votes", search: { user_name: user.name }) %>
       <% end %>
     </span>
     <div class="box-posts">

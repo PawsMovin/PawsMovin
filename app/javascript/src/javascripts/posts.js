@@ -840,7 +840,7 @@ Post.unapprove = function(post_id) {
   SendQueue.add(function() {
     $.ajax({
       type: "DELETE",
-      url: `/post_approvals/${post_id}.json`
+      url: `/posts/approvals/${post_id}.json`
     }).fail(function(data) {
       var message = $.map(data.responseJSON.errors, function(msg, attr) { return msg; }).join('; ');
       $(window).trigger('danbooru:error', "Error: " + message);
@@ -885,7 +885,7 @@ Post.approve = function(post_id, callback) {
   Post.notice_update("inc");
   SendQueue.add(function() {
     $.post(
-      `/post_approvals.json`,
+      `/posts/approvals.json`,
       { post_id }
     ).fail(function(data) {
       const message = $.map(data.responseJSON.errors, function(msg, attr) { return msg; }).join("; ");
@@ -910,7 +910,7 @@ Post.disapprove = function(post_id, reason, should_reload) {
   Post.notice_update("inc");
   SendQueue.add(function() {
     $.post(
-      "/post_disapprovals.json",
+      "/posts/disapprovals.json",
       {"post_disapproval[post_id]": post_id, "post_disapproval[reason]": reason}
     ).fail(function(data) {
       var message = $.map(data.responseJSON.errors, function(msg, attr) { return msg; }).join("; ");

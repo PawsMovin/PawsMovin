@@ -2,7 +2,7 @@
 
 class NotesController < ApplicationController
   respond_to :html, :json, :js
-  before_action :member_only, except: %i[index show search]
+  before_action :member_only, except: %i[index show search preview]
 
   def search
   end
@@ -44,6 +44,15 @@ class NotesController < ApplicationController
         else
           render(json: @note.to_json)
         end
+      end
+    end
+  end
+
+  def preview
+    @body = helpers.format_text(params[:body].to_s)
+    respond_with(@body) do |format|
+      format.json do
+        render(json: { body: @body }.to_json)
       end
     end
   end

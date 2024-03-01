@@ -6,5 +6,5 @@
   <% if current_user.is_moderator? %>
     <li><%= link_to "Claimed", action: "index", claim_id: current_user.id %></li>
   <% end %>
-  <li><%= link_to "Help", controller: "help" %></li>
+  <li><%= link_to "Help", help_page_path %></li>
 <% end %>
