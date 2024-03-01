@@ -2,5 +2,6 @@
 
 FactoryBot.define do
   factory(:user_block) do
+    # nothing
   end
 end

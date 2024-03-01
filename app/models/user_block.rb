@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class UserBlock < ApplicationRecord
   belongs_to :user
   belongs_to :target, class_name: "User"
@@ -18,7 +20,7 @@ class UserBlock < ApplicationRecord
     return if target_id.blank?
     if target_id == user_id
       errors.add(:base, "You cannot block yourself")
-      throw :abort
+      throw(:abort)
     end
 
     if target.is_staff? && disable_messages?
@@ -29,7 +31,7 @@ class UserBlock < ApplicationRecord
   def validate_staff_user_not_blocking_messages
     if user.is_staff? && disable_messages?
       errors.add(:base, "You cannot block messages")
-      throw :abort
+      throw(:abort)
     end
   end
 end

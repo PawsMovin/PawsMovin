@@ -178,10 +178,10 @@ class PostFlag < ApplicationRecord
 
   def parent_post
     @parent_post ||= begin
-                       Post.where("id = ?", parent_id).first
-                     rescue
-                       nil
-                     end
+       Post.where("id = ?", parent_id).first
+    rescue
+      nil
+     end
   end
 
   def create_post_event
