@@ -1,6 +1,6 @@
-<%# record %>
+<%# locals: (record:) -%>
 
-<% advanced = %w[Comment ForumPost].include?(record.model_name.name) %>
+<% advanced = %w[ForumPost].include?(record.model_name.name) %>
 <% always_show_edits = advanced && CurrentUser.is_moderator? %>
 <% timestamp = advanced ? record.edited_at : record.updated_at %>
 

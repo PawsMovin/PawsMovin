@@ -225,7 +225,11 @@ class Comment < ApplicationRecord
     versions.marked.last&.created_at
   end
 
+  def edited_version
+    versions.edited.last
+  end
+
   def edited_at
-    versions.edited.last&.created_at
+    edited_version&.created_at
   end
 end
