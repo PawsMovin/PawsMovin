@@ -10,9 +10,9 @@ module PostSets
         CurrentUser.user = @user
 
         @post_1 = create(:post)
-        @post_2 = create(:post)
+        @post2 = create(:post)
         @post_3 = create(:post)
-        FavoriteManager.add!(user: @user, post: @post_2)
+        FavoriteManager.add!(user: @user, post: @post2)
         FavoriteManager.add!(user: @user, post: @post_1)
         FavoriteManager.add!(user: @user, post: @post_3)
       end
@@ -38,7 +38,7 @@ module PostSets
 
       context "a favorite set for after the third most recent post" do
         setup do
-          id = ::Favorite.where(user_id: @user.id, post_id: @post_2.id).first.id
+          id = ::Favorite.where(user_id: @user.id, post_id: @post2.id).first.id
           @set = PostSets::Favorites.new(@user, "a#{id}", 1)
         end
 
@@ -57,7 +57,7 @@ module PostSets
 
         context "a sequential paginator" do
           should "return the third most recent element" do
-            assert_equal(@post_2.id, @set.posts.first.id)
+            assert_equal(@post2.id, @set.posts.first.id)
           end
         end
       end

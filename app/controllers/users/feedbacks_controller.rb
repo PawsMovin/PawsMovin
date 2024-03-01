@@ -5,6 +5,16 @@ module Users
     before_action :moderator_only, only: %i[new edit create update destroy]
     respond_to :html, :json
 
+    def index
+      @user_feedbacks = UserFeedback.search(search_params).paginate(params[:page], limit: params[:limit])
+      respond_with(@user_feedbacks)
+    end
+
+    def show
+      @user_feedback = UserFeedback.find(params[:id])
+      respond_with(@user_feedback)
+    end
+
     def new
       @user_feedback = UserFeedback.new(user_feedback_params(:create))
       respond_with(@user_feedback)
@@ -14,16 +24,6 @@ module Users
       @user_feedback = UserFeedback.find(params[:id])
       check_privilege(@user_feedback)
       respond_with(@user_feedback)
-    end
-
-    def show
-      @user_feedback = UserFeedback.find(params[:id])
-      respond_with(@user_feedback)
-    end
-
-    def index
-      @user_feedbacks = UserFeedback.search(search_params).paginate(params[:page], limit: params[:limit])
-      respond_with(@user_feedbacks)
     end
 
     def create

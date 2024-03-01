@@ -25,7 +25,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
       end
 
       should "list all users (with search)" do
-        get users_path, params: {search: {name_matches: @user.name}}
+        get users_path, params: { search: { name_matches: @user.name } }
         assert_response :success
       end
 
@@ -49,8 +49,8 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
       end
 
       should "show hidden attributes to the owner" do
-        get_auth user_path(@user), @user, params: {format: :json}
-        json = JSON.parse(response.body)
+        get_auth user_path(@user), @user, params: { format: :json }
+        json = response.parsed_body
 
         assert_response :success
         assert_not_nil(json["last_logged_in_at"])
@@ -59,8 +59,8 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
       should "not show hidden attributes to others" do
         @another = create(:user)
 
-        get_auth user_path(@another), @user, params: {format: :json}
-        json = JSON.parse(response.body)
+        get_auth user_path(@another), @user, params: { format: :json }
+        json = response.parsed_body
 
         assert_response :success
         assert_nil(json["last_logged_in_at"])
@@ -96,7 +96,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
         should "not allow registering multiple accounts with the same IP" do
           assert_difference("User.count", 0) do
-            post users_path, params: {user: {name: "dupe", password: "xxxxx1", password_confirmation: "xxxxx1"}}
+            post users_path, params: { user: { name: "dupe", password: "xxxxx1", password_confirmation: "xxxxx1" } }
           end
         end
       end
@@ -156,7 +156,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
       end
 
       should "update a user" do
-        put_auth user_path(@user), @user, params: {user: {favorite_tags: "xyz"}}
+        put_auth user_path(@user), @user, params: { user: { favorite_tags: "xyz" } }
         @user.reload
         assert_equal("xyz", @user.favorite_tags)
       end
@@ -167,7 +167,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
         end
 
         should "not work" do
-          put_auth user_path(@user), @cuser, params: {user: {level: User::Levels::MODERATOR}}
+          put_auth user_path(@user), @cuser, params: { user: { level: User::Levels::MODERATOR } }
           @user.reload
           assert_equal(User::Levels::MEMBER, @user.level)
         end

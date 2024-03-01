@@ -20,7 +20,7 @@
       <% if CurrentUser.is_member? %>
         <%= subnav_link_to "Edit Tag Type", edit_tag_path(@wiki_page.tag) %>
         <% if CurrentUser.is_janitor? %>
-          <%= subnav_link_to "Fix Tag Count", correct_tag_path(tag@wiki_page.tag), method: :post %>
+          <%= subnav_link_to "Fix Tag Count", correct_tag_path(tag(@wiki_page.tag)), method: :post %>
         <% end %>
       <% end %>
     <% end %>

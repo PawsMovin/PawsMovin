@@ -7,26 +7,26 @@ module Posts
     before_action :admin_only, only: [:delete]
     skip_before_action :api_check
 
+    def index
+      @post_votes = PostVote.includes(:user).search(search_params).paginate(params[:page], limit: 100)
+    end
+
     def create
       @post = Post.find(params[:post_id])
       @post_vote = VoteManager.vote!(post: @post, user: CurrentUser.user, score: params[:score])
       if @post_vote == :need_unvote && !params[:no_unvote].to_s.truthy?
         VoteManager.unvote!(post: @post, user: CurrentUser.user)
       end
-      render(json: {score: @post.score, up: @post.up_score, down: @post.down_score, our_score: @post_vote != :need_unvote ? @post_vote.score : 0})
-    rescue UserVote::Error, ActiveRecord::RecordInvalid => x
-      render_expected_error(422, x)
+      render(json: { score: @post.score, up: @post.up_score, down: @post.down_score, our_score: @post_vote == :need_unvote ? 0 : @post_vote.score })
+    rescue UserVote::Error, ActiveRecord::RecordInvalid => e
+      render_expected_error(422, e)
     end
 
     def destroy
       @post = Post.find(params[:post_id])
       VoteManager.unvote!(post: @post, user: CurrentUser.user)
-    rescue UserVote::Error => x
-      render_expected_error(422, x)
-    end
-
-    def index
-      @post_votes = PostVote.includes(:user).search(search_params).paginate(params[:page], limit: 100)
+    rescue UserVote::Error => e
+      render_expected_error(422, e)
     end
 
     def lock

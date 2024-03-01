@@ -13,7 +13,7 @@ module Users
             user_id:       @user.id,
             original_name: @user.name,
             desired_name:  "abc",
-            change_reason: "hello"
+            change_reason: "hello",
           )
         end
       end
@@ -27,7 +27,7 @@ module Users
 
       context "create action" do
         should "work" do
-          post_auth user_name_change_requests_path, @user, params: { user_name_change_request: { desired_name: "zun" }}
+          post_auth user_name_change_requests_path, @user, params: { user_name_change_request: { desired_name: "zun" } }
           assert_response :success
         end
       end

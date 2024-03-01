@@ -16,7 +16,7 @@ class FavoritesControllerTest < ActionDispatch::IntegrationTest
 
       context "with a specified tags parameter" do
         should "redirect to the posts controller" do
-          get_auth favorites_path, @user, params: {tags: "fav:#{@user.name} abc"}
+          get_auth favorites_path, @user, params: { tags: "fav:#{@user.name} abc" }
           assert_redirected_to(posts_path(tags: "fav:#{@user.name} abc"))
         end
       end
@@ -34,7 +34,7 @@ class FavoritesControllerTest < ActionDispatch::IntegrationTest
 
       should "create a favorite for the current user" do
         assert_difference("Favorite.count", 1) do
-          post_auth favorites_path, @user, params: {format: "js", post_id: @post.id}
+          post_auth favorites_path, @user, params: { format: "js", post_id: @post.id }
         end
       end
     end
@@ -47,7 +47,7 @@ class FavoritesControllerTest < ActionDispatch::IntegrationTest
 
       should "remove the favorite from the current user" do
         assert_difference("Favorite.count", -1) do
-          delete_auth favorite_path(@post.id), @user, params: {format: "js"}
+          delete_auth favorite_path(@post.id), @user, params: { format: "js" }
         end
       end
     end

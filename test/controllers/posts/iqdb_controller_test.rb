@@ -21,10 +21,10 @@ module Posts
             @url = "https://google.com"
             @params = { url: @url }
             @mocked_response = [{
-                                  "post"    => @posts[0],
-                                  "post_id" => @posts[0].id,
-                                  "score"   => 1
-                                }]
+              "post"    => @posts[0],
+              "post_id" => @posts[0].id,
+              "score"   => 1,
+            }]
           end
 
           should "render a response" do
@@ -39,10 +39,10 @@ module Posts
             @params = { post_id: @posts[0].id }
             @url = @posts[0].preview_file_url
             @mocked_response = [{
-                                  "post"    => @posts[0],
-                                  "post_id" => @posts[0].id,
-                                  "score"   => 1
-                                }]
+              "post"    => @posts[0],
+              "post_id" => @posts[0].id,
+              "score"   => 1,
+            }]
           end
 
           should "redirect to iqdb" do

@@ -12,30 +12,29 @@ module Posts
       @post_flags = @post_flags.paginate(params[:page], limit: params[:limit])
       respond_with(@post_flags)
     end
-    
+
     def show
       @post_flag = PostFlag.find(params[:id])
       respond_with(@post_flag) do |fmt|
-        fmt.html { redirect_to(post_flags_path(search: {id: @post_flag.id})) }
+        fmt.html { redirect_to(post_flags_path(search: { id: @post_flag.id })) }
       end
     end
-    
+
     def new
       @post_flag = PostFlag.new(post_flag_params)
       @post = Post.find(params[:post_flag].try(:[], :post_id))
       respond_with(@post_flag)
     end
 
-
     def create
       @post_flag = PostFlag.create(post_flag_params)
       respond_with(@post_flag) do |fmt|
         fmt.html do
-          if @post_flag.errors.size > 0
+          if @post_flag.errors.empty?
+            redirect_to(post_path(id: @post_flag.post_id))
+          else
             @post = Post.find(params[:post_flag][:post_id])
             respond_with(@post_flag)
-          else
-            redirect_to(post_path(id: @post_flag.post_id))
           end
         end
       end
@@ -49,7 +48,6 @@ module Posts
       end
       respond_with(nil)
     end
-
 
     private
 

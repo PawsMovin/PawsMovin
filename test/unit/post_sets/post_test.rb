@@ -10,7 +10,7 @@ module PostSets
         CurrentUser.user = @user
 
         @post_1 = create(:post, tag_string: "a")
-        @post_2 = create(:post, tag_string: "b")
+        @post2 = create(:post, tag_string: "b")
         @post_3 = create(:post, tag_string: "c")
       end
 
@@ -20,7 +20,7 @@ module PostSets
         end
 
         should "return the second element" do
-          assert_equal(@post_2.id, @set.posts.first.id)
+          assert_equal(@post2.id, @set.posts.first.id)
         end
       end
 

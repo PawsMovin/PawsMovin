@@ -24,13 +24,13 @@
           <td>
             <%= link_to note_version.post_id, post_path(note_version.post_id) %>
             <% if params.dig(:search, :note_id).present? %>
-              <%= link_to "»", note_versions_path(search: {post_id: note_version.post_id}) %>
+              <%= link_to "»", note_versions_path(search: { post_id: note_version.post_id }) %>
             <% end %>
           </td>
           <td>
             <%= link_to "#{note_version.note_id}.#{note_version.version}", post_path(note_version.post_id, anchor: "note-#{note_version.note_id}") %>
             <% if params.dig(:search, :post_id).present? %>
-              <%= link_to "»", note_versions_path(search: {note_id: note_version.note_id}) %>
+              <%= link_to "»", note_versions_path(search: { note_id: note_version.note_id }) %>
             <% end %>
           </td>
           <td class="col-expand">
@@ -52,7 +52,7 @@
           <td><%= compact_time note_version.updated_at %></td>
           <% if CurrentUser.is_member? %>
             <td>
-              <%= link_to "Revert to", revert_note_path(note_version.note_id, version_id: note_version.id, format: :json), class: "revert-item-link", 'data-noun': "note" %>
+              <%= link_to "Revert to", revert_note_path(note_version.note_id, version_id: note_version.id, format: :json), "class": "revert-item-link", 'data-noun': "note" %>
             </td>
           <% end %>
         </tr>

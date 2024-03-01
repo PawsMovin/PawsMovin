@@ -22,8 +22,8 @@ module Posts
             post_id:          @post.id,
             post_replacement: {
               replacement_file: file,
-              reason:           "test replacement"
-            }
+              reason:           "test replacement",
+            },
           }
 
           assert_difference(-> { @post.replacements.size }) do
@@ -77,7 +77,7 @@ module Posts
           put_auth toggle_penalize_post_replacement_path(@replacement), @user
           assert_redirected_to post_replacement_path(@replacement)
           @replacement.reload
-          assert !@replacement.penalize_uploader_on_approve
+          assert_not @replacement.penalize_uploader_on_approve
         end
       end
 
@@ -90,7 +90,7 @@ module Posts
 
       context "new action" do
         should "render" do
-          get_auth new_post_replacement_path, @user, params: {post_id: @post.id}
+          get_auth new_post_replacement_path, @user, params: { post_id: @post.id }
           assert_response :success
         end
       end

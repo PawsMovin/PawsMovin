@@ -1,4 +1,4 @@
-<% if CurrentUser.can_approve_posts? && disapprovals.length > 0 %>
+<% if CurrentUser.can_approve_posts? && !disapprovals.empty? %>
   <p>
     It has been reviewed by <%= link_to pluralize(disapprovals.length, "approver"), post_disapprovals_path(search: { post_id: post.id }) %>.
 
@@ -14,7 +14,7 @@
       Messages: <%= disapprovals.map(&:message).select(&:present?).map { |msg| format_text(msg, inline: true) }.to_sentence.html_safe %>.
     <% end %>
 
-    <% @our_disapproval = disapprovals.select {|x| x.user_id == CurrentUser.id }.first %>
+    <% @our_disapproval = disapprovals.select { |x| x.user_id == CurrentUser.id }.first %>
     <% if @our_disapproval.present? %>
       <div>
         You are currently disapproving of this post for the following reason: <strong><%= @our_disapproval.reason %></strong>

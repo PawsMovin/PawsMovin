@@ -13,6 +13,13 @@ module Posts
       p.media_src(:self, :data, :blob, "*")
     end
 
+    def index
+      params[:search][:post_id] = params.delete(:post_id) if params.key?(:post_id)
+      @post_replacements = PostReplacement.includes(:post).visible(CurrentUser.user).search(search_params).paginate(params[:page], limit: params[:limit])
+
+      respond_with(@post_replacements)
+    end
+
     def new
       check_allow_create
       @post = Post.find(params[:post_id])
@@ -25,7 +32,7 @@ module Posts
       @post = Post.find(params[:post_id])
       @post_replacement = @post.replacements.create(create_params.merge(creator_id: CurrentUser.id, creator_ip_addr: CurrentUser.ip_addr))
       if @post_replacement.errors.none?
-        flash[:notice] = "Post replacement submitted"
+        flash.now[:notice] = "Post replacement submitted"
       end
       respond_to do |format|
         format.json do
@@ -74,13 +81,6 @@ module Posts
       else
         respond_with(@upload.post)
       end
-    end
-
-    def index
-      params[:search][:post_id] = params.delete(:post_id) if params.key?(:post_id)
-      @post_replacements = PostReplacement.includes(:post).visible(CurrentUser.user).search(search_params).paginate(params[:page], limit: params[:limit])
-
-      respond_with(@post_replacements)
     end
 
     private

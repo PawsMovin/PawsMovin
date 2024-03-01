@@ -16,7 +16,11 @@ module Posts
       if search_params[:file].present?
         @matches = IqdbProxy.query_file(search_params[:file].tempfile, search_params[:score_cutoff])
       elsif search_params[:url].present?
-        parsed_url = Addressable::URI.heuristic_parse(search_params[:url]) rescue nil
+        parsed_url = begin
+          Addressable::URI.heuristic_parse(search_params[:url])
+        rescue StandardError
+          nil
+        end
         raise(User::PrivilegeError, "Invalid URL") unless parsed_url
         whitelist_result = UploadWhitelist.is_whitelisted?(parsed_url)
         raise(User::PrivilegeError, "Not allowed to request content from this URL") unless whitelist_result[0]

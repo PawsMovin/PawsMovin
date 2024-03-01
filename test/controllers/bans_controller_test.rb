@@ -33,20 +33,20 @@ class BansControllerTest < ActionDispatch::IntegrationTest
     end
 
     should "search" do
-      get_auth bans_path(search: {user_name: @user.name}), @mod
+      get_auth bans_path(search: { user_name: @user.name }), @mod
       assert_response :success
     end
 
     should "create a ban" do
       assert_difference("Ban.count", 1) do
-        post_auth bans_path, @mod, params: {ban: {duration: 60, reason: "xxx", user_id: @user.id}}
+        post_auth bans_path, @mod, params: { ban: { duration: 60, reason: "xxx", user_id: @user.id } }
       end
       ban = Ban.last
       assert_redirected_to(ban_path(ban))
     end
 
     should "update a ban" do
-      put_auth ban_path(@ban.id), @mod, params: {ban: {reason: "xxx", duration: 60}}
+      put_auth ban_path(@ban.id), @mod, params: { ban: { reason: "xxx", duration: 60 } }
       @ban.reload
       assert_equal("xxx", @ban.reason)
       assert_redirected_to(ban_path(@ban))

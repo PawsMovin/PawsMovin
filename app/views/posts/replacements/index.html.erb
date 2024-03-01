@@ -68,12 +68,12 @@
                 <dt>Status</dt>
                 <dd><div class="replacement-status">
                   <%= post_replacement.status %>
-                  <% if post_replacement.status == "pending" && (post_replacement.post.tag_array & PostReplacement::HIGHLIGHTED_TAGS).any? %>
+                  <% if post_replacement.status == "pending" && post_replacement.post.tag_array.intersect?(PostReplacement::HIGHLIGHTED_TAGS) %>
                     <%= tag.i(class: "fa-solid fa-circle-exclamation", title: (post_replacement.post.tag_array & PostReplacement::HIGHLIGHTED_TAGS).join(", ")) %>
                   <% end %>
                 </div></dd>
                 <dt>Reason</dt>
-                <dd class="replacement-reason"><%= post_replacement.reason.present? ? post_replacement.reason : "None provided" %></dd>
+                <dd class="replacement-reason"><%= post_replacement.reason.presence || "None provided" %></dd>
                 <% if post_replacement.status == "approved" %>
                   <dt>Original Uploader</dt>
                   <dd>
@@ -82,7 +82,7 @@
                       | penalized: <span class="penalized-status"><%= post_replacement.penalize_uploader_on_approve ? "yes" : "no" %></span>
                     <% end %>
                     <% if CurrentUser.can_approve_posts? %>
-                      <%= link_to "toggle", "#toggle", class: "replacement-toggle-penalize-action", data: { replacement_id: post_replacement.id} %><br>
+                      <%= link_to "toggle", "#toggle", class: "replacement-toggle-penalize-action", data: { replacement_id: post_replacement.id } %><br>
                     <% end %>
                   </dd>
                   <dt>Approver</dt>
@@ -109,16 +109,16 @@
                   <% if post_replacement.status == "pending"%>
                     <%= link_to "Approve", "#approve", class: "replacement-approve-action", data: { replacement_id: post_replacement.id, penalize: post_replacement.post.uploader != post_replacement.creator } %><br>
                     <br>
-                    <%= link_to "Reject", "#reject", class: "replacement-reject-action", data: { replacement_id: post_replacement.id} %><br>
-                    <%= link_to "As New Post", "#promote", class: "replacement-promote-action", data: { replacement_id: post_replacement.id} %><br>
+                    <%= link_to "Reject", "#reject", class: "replacement-reject-action", data: { replacement_id: post_replacement.id } %><br>
+                    <%= link_to "As New Post", "#promote", class: "replacement-promote-action", data: { replacement_id: post_replacement.id } %><br>
                   <% end %>
                 </div>
                 <% if post_replacement.status == "original" %>
-                  <%= link_to "Reset To", "#approve", class: "replacement-approve-action", data: { replacement_id: post_replacement.id, penalize: false} %><br>
+                  <%= link_to "Reset To", "#approve", class: "replacement-approve-action", data: { replacement_id: post_replacement.id, penalize: false } %><br>
                 <% end %>
               <% end %>
               <% if CurrentUser.is_admin? %>
-                <%= link_to "Destroy", post_replacement_path(post_replacement), method: :DELETE, 'data-confirm': "Are you sure you want to destroy this replacement?" %>
+                <%= link_to "Destroy", post_replacement_path(post_replacement), "method": :DELETE, 'data-confirm': "Are you sure you want to destroy this replacement?" %>
               <% end %>
             </td>
           </tr>

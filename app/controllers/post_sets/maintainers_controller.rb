@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module PostSets
   class MaintainersController < ApplicationController
     before_action :member_only
@@ -26,7 +28,7 @@ module PostSets
         return
       end
 
-      if RateLimiter.check_limit("set.invite.#{CurrentUser.id}", 5, 1.hours)
+      if RateLimiter.check_limit("set.invite.#{CurrentUser.id}", 5, 1.hour)
         flash[:notice] = "You must wait an hour before inviting more set maintainers"
       end
 
@@ -34,7 +36,7 @@ module PostSets
       @invite.save
 
       if @invite.valid?
-        RateLimiter.hit("set.invite.#{CurrentUser.id}", 1.hours)
+        RateLimiter.hit("set.invite.#{CurrentUser.id}", 1.hour)
         flash[:notice] = "#{@user.pretty_name} invited to be a maintainer"
       else
         flash[:notice] = @invite.errors.full_messages.join("; ")

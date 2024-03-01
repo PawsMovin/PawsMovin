@@ -27,7 +27,7 @@ class ForumTopicsControllerTest < ActionDispatch::IntegrationTest
       end
 
       should "not record a topic visit for non-html requests" do
-        get_auth forum_topic_path(@forum_topic), @user, params: {format: :json}
+        get_auth forum_topic_path(@forum_topic), @user, params: { format: :json }
         @user.reload
         assert_nil(@user.last_forum_read_at)
       end
@@ -47,26 +47,26 @@ class ForumTopicsControllerTest < ActionDispatch::IntegrationTest
       end
 
       should "not list stickied topics first for JSON responses" do
-        get forum_topics_path, params: {format: :json}
-        forum_topics = JSON.parse(response.body)
-        assert_equal([@topic2.id, @topic1.id, @forum_topic.id], forum_topics.map {|t| t["id"]})
+        get forum_topics_path, params: { format: :json }
+        forum_topics = response.parsed_body
+        assert_equal([@topic2.id, @topic1.id, @forum_topic.id], forum_topics.pluck("id"))
       end
 
       context "with search conditions" do
         should "list all matching forum topics" do
-          get forum_topics_path, params: {search: {title_matches: "forum"}}
+          get forum_topics_path, params: { search: { title_matches: "forum" } }
           assert_response :success
           assert_select "a.forum-post-link", @forum_topic.title
-          assert_select "a.forum-post-link", {count: 0, text: @topic1.title}
-          assert_select "a.forum-post-link", {count: 0, text: @topic2.title}
+          assert_select "a.forum-post-link", { count: 0, text: @topic1.title }
+          assert_select "a.forum-post-link", { count: 0, text: @topic2.title }
         end
 
         should "list nothing for when the search matches nothing" do
-          get forum_topics_path, params: {search: {title_matches: "bababa"}}
+          get forum_topics_path, params: { search: { title_matches: "bababa" } }
           assert_response :success
-          assert_select "a.forum-post-link", {count: 0, text: @forum_topic.title}
-          assert_select "a.forum-post-link", {count: 0, text: @topic1.title}
-          assert_select "a.forum-post-link", {count: 0, text: @topic2.title}
+          assert_select "a.forum-post-link", { count: 0, text: @forum_topic.title }
+          assert_select "a.forum-post-link", { count: 0, text: @topic1.title }
+          assert_select "a.forum-post-link", { count: 0, text: @topic2.title }
         end
       end
     end
@@ -98,7 +98,7 @@ class ForumTopicsControllerTest < ActionDispatch::IntegrationTest
     context "create action" do
       should "create a new forum topic and post" do
         assert_difference(["ForumPost.count", "ForumTopic.count"], 1) do
-          post_auth forum_topics_path, @user, params: {forum_topic: {title: "bababa", category_id: PawsMovin.config.alias_implication_forum_category, original_post_attributes: {body: "xaxaxa"}}}
+          post_auth forum_topics_path, @user, params: { forum_topic: { title: "bababa", category_id: PawsMovin.config.alias_implication_forum_category, original_post_attributes: { body: "xaxaxa" } } }
         end
 
         forum_topic = ForumTopic.last
@@ -137,7 +137,7 @@ class ForumTopicsControllerTest < ActionDispatch::IntegrationTest
         post_auth unhide_forum_topic_path(@forum_topic), @mod
         assert_redirected_to(forum_topic_path(@forum_topic))
         @forum_topic.reload
-        assert(!@forum_topic.is_hidden?)
+        assert_not(@forum_topic.is_hidden?)
       end
     end
   end

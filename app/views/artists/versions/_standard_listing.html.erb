@@ -18,7 +18,7 @@
           <% if artist_version.visible? %>
             <td>
               <%= link_to artist_version.name, artist_path(artist_version.artist_id) %>
-              <%= link_to "»", artist_versions_path(search: {artist_id: artist_version.artist_id}) %>
+              <%= link_to "»", artist_versions_path(search: { artist_id: artist_version.artist_id }) %>
             </td>
             <td><%= artist_version_other_names_diff(artist_version) %></td>
           <% else %>
@@ -30,7 +30,7 @@
           </td>
           <td>
             <% if artist_version.notes_changed %>
-              <%= link_to "Note Changes", wiki_page_versions_path(search: {wiki_page_id: artist_version.artist.wiki_page})%>
+              <%= link_to "Note Changes", wiki_page_versions_path(search: { wiki_page_id: artist_version.artist.wiki_page })%>
             <% else %>
               (No Changes)
             <% end %>
@@ -46,7 +46,7 @@
             </p>
           </td>
           <% if artist_versions_listing_type == :revert %>
-            <td><%= link_to "Revert to", revert_artist_path(artist_version.artist_id, version_id: artist_version.id), method: :put, "data-confirm": "Are you sure you want to revert to this version?" %></td>
+            <td><%= link_to "Revert to", revert_artist_path(artist_version.artist_id, version_id: artist_version.id), "method": :put, "data-confirm": "Are you sure you want to revert to this version?" %></td>
           <% end %>
         </tr>
       <% end %>

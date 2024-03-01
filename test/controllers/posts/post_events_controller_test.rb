@@ -59,37 +59,37 @@ module Posts
       context "for the creator of a flag" do
         setup do
           get_auth post_events_path, @user1, params: { format: :json }
-          @flag_actions = JSON.parse(response.body).select { |e| e["action"] == "flag_created" }
+          @flag_actions = response.parsed_body.select { |e| e["action"] == "flag_created" }
         end
 
         should "expose themselves as the flagger" do
-          assert_equal [nil, nil, @user1.id], (@flag_actions.map { |action| action["creator_id"] })
+          assert_equal [nil, nil, @user1.id], @flag_actions.pluck("creator_id")
         end
       end
 
       context "for a normal user" do
         should "hide all flaggers" do
           get_auth post_events_path, @user3, params: { format: :json }
-          @json = JSON.parse(response.body)
-          @flag_actions = JSON.parse(response.body).select { |e| e["action"] == "flag_created" }
-          assert_equal [nil, nil, nil], (@flag_actions.map { |action| action["creator_id"] })
+          @json = response.parsed_body
+          @flag_actions = response.parsed_body.select { |e| e["action"] == "flag_created" }
+          assert_equal [nil, nil, nil], @flag_actions.pluck("creator_id")
         end
 
         should "return no flag_created when searching by creator" do
           get_auth post_events_path, @user3, params: { search: { creator_id: @user1.id }, format: :json }
-          assert JSON.parse(response.body).count == 0
+          assert response.parsed_body.count == 0
         end
       end
 
       context "for janitors" do
         setup do
           get_auth post_events_path, @janitor, params: { format: :json }
-          @json = JSON.parse(response.body)
-          @flag_actions = JSON.parse(response.body).select { |e| e["action"] == "flag_created" }
+          @json = response.parsed_body
+          @flag_actions = response.parsed_body.select { |e| e["action"] == "flag_created" }
         end
 
         should "show all flaggers" do
-          assert_equal [@user2.id, @user2.id, @user1.id], (@flag_actions.map { |action| action["creator_id"] })
+          assert_equal [@user2.id, @user2.id, @user1.id], @flag_actions.pluck("creator_id")
         end
       end
     end

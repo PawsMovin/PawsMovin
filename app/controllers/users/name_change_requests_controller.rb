@@ -6,6 +6,17 @@ module Users
     before_action :moderator_only, only: :index
     respond_to :html, :json
 
+    def index
+      @change_requests = UserNameChangeRequest.search(search_params).paginate(params[:page], limit: params[:limit])
+      respond_with(@change_requests)
+    end
+
+    def show
+      @change_request = UserNameChangeRequest.find(params[:id])
+      check_privileges!(@change_request)
+      respond_with(@change_request)
+    end
+
     def new
       @change_request = UserNameChangeRequest.new(change_request_params)
       respond_with(@change_request)
@@ -20,17 +31,6 @@ module Users
         @change_request.approve!
         redirect_to(user_name_change_request_path(@change_request), notice: "Your name has been changed")
       end
-    end
-
-    def show
-      @change_request = UserNameChangeRequest.find(params[:id])
-      check_privileges!(@change_request)
-      respond_with(@change_request)
-    end
-
-    def index
-      @change_requests = UserNameChangeRequest.search(search_params).paginate(params[:page], limit: params[:limit])
-      respond_with(@change_requests)
     end
 
     private

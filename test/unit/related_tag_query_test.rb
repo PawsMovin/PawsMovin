@@ -11,7 +11,7 @@ class RelatedTagQueryTest < ActiveSupport::TestCase
   context "a related tag query without a category constraint" do
     setup do
       @post_1 = create(:post, tag_string: "aaa bbb")
-      @post_2 = create(:post, tag_string: "aaa bbb ccc")
+      @post2 = create(:post, tag_string: "aaa bbb ccc")
     end
 
     context "for a tag that already exists" do
@@ -78,7 +78,7 @@ class RelatedTagQueryTest < ActiveSupport::TestCase
   context "a related tag query with a category constraint" do
     setup do
       @post_1 = create(:post, tag_string: "aaa bbb")
-      @post_2 = create(:post, tag_string: "aaa art:ccc")
+      @post2 = create(:post, tag_string: "aaa art:ccc")
       @post_3 = create(:post, tag_string: "aaa copy:ddd")
       @query = RelatedTagQuery.new(query: "aaa", category_id: TagCategory.artist)
     end

@@ -14,9 +14,9 @@ module Notes
           as(@user) do
             @note = create(:note)
           end
-          @user_2 = create(:user)
+          @user2 = create(:user)
 
-          as(@user_2, "1.2.3.4") do
+          as(@user2, "1.2.3.4") do
             @note.update(body: "1 2")
           end
 
@@ -31,7 +31,7 @@ module Notes
         end
 
         should "list all versions that match the search criteria" do
-          get note_versions_path, params: {search: {updater_id: @user_2.id}}
+          get note_versions_path, params: { search: { updater_id: @user2.id } }
           assert_response :success
         end
       end

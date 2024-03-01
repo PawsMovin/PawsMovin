@@ -34,5 +34,4 @@ module Posts
       end
     end
   end
-
 end
