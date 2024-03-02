@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
 class WikiPage < ApplicationRecord
-  class RevertError < Exception ; end
+  class RevertError < Exception; end
+
+  INTERNAL_PREFIXES = %w[internal: help:].freeze
 
   before_validation :normalize_title
   before_validation :normalize_parent
@@ -12,10 +14,12 @@ class WikiPage < ApplicationRecord
   validates :body, presence: true, unless: -> { parent.present? }
   validates :title, length: { minimum: 1, maximum: 100 }
   validates :body, length: { maximum: PawsMovin.config.wiki_page_max_size }
+  validate :validate_name_not_restricted, on: :create
   validate :user_not_limited
   validate :validate_rename
   validate :validate_not_locked
 
+  before_validation :ensure_internal_locked
   before_destroy :validate_not_used_as_help_page
   before_destroy :log_destroy
   after_save :log_changes
@@ -122,6 +126,19 @@ class WikiPage < ApplicationRecord
     tag_was = Tag.find_by_name(Tag.normalize_name(title_was))
     if tag_was.present? && tag_was.post_count > 0
       errors.add(:title, "cannot be changed: '#{tag_was.name}' still has #{tag_was.post_count} posts. Move the posts and update any wikis linking to this page first.")
+    end
+  end
+
+  def validate_name_not_restricted
+    if INTERNAL_PREFIXES.any? { |prefix| title.starts_with?(prefix) } && !CurrentUser.is_janitor?
+      errors.add(:title, "cannot start with '#{title.split(':')[0]}:'")
+      throw(:abort)
+    end
+  end
+
+  def ensure_internal_locked
+    if INTERNAL_PREFIXES.any? { |prefix| title.starts_with?(prefix) }
+      self.is_locked = true
     end
   end
 
