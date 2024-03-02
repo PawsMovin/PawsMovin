@@ -1,8 +1,11 @@
 <% content_for(:secondary_links) do %>
   <li><%= render "quick_search" %></li>
-  <%= subnav_link_to "All", all_dmails_path(set_default_folder: true) %>
-  <%= subnav_link_to "Received", received_dmails_path(set_default_folder: true) %>
-  <%= subnav_link_to "Sent", sent_dmails_path(set_default_folder: true) %>
+  <% if CurrentUser.is_owner? %>
+    <%= subnav_link_to "Index", dmails_path %>
+  <% end %>
+  <%= subnav_link_to "All", all_dmails_path %>
+  <%= subnav_link_to "Received", received_dmails_path %>
+  <%= subnav_link_to "Sent", sent_dmails_path %>
   <li>|</li>
   <%= subnav_link_to "New", new_dmail_path %>
   <%= subnav_link_to "Mark all as read", mark_all_as_read_dmails_path, method: :put %></li>

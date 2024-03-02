@@ -18,9 +18,6 @@ class DmailsController < ApplicationController
   end
 
   def index
-    if params[:folder] && params[:set_default_folder]
-      cookies.permanent[:dmail_folder] = params[:folder]
-    end
     @query = Dmail.active.visible.search(search_params)
     @dmails = @query.paginate(params[:page], limit: params[:limit])
     respond_with(@dmails)
@@ -28,9 +25,9 @@ class DmailsController < ApplicationController
 
   def show
     @dmail = Dmail.find(params[:id])
-    check_privilege(@dmail)
+    check_privilege(@dmail, :show)
     respond_with(@dmail) do |format|
-      format.html { @dmail.mark_as_read! }
+      format.html { @dmail.mark_as_read! if CurrentUser.user == @dmail.owner }
     end
   end
 
@@ -79,10 +76,13 @@ class DmailsController < ApplicationController
 
   private
 
-  def check_privilege(dmail)
-    if !dmail.visible_to?(CurrentUser.user)
-      raise(User::PrivilegeError)
-    end
+  def check_privilege(dmail, action = nil)
+    raise(User::PrivilegeError) unless dmail.visible_to?(CurrentUser.user)
+    raise(User::PrivilegeError) if CurrentUser.user != dmail.owner && action != :show
+  end
+
+  def search_params
+    permit_search_params(%i[title_matches message_matches to_name to_id from_name from_id is_read is_deleted read owner_id owner_name])
   end
 
   def create_params

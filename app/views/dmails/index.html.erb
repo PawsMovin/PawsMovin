@@ -12,6 +12,9 @@
   <thead>
     <tr>
       <th>Date</th>
+      <% if CurrentUser.is_owner? && params[:folder].blank? %>
+        <th>Owner</th>
+      <% end %>
       <th>From</th>
       <th>To</th>
       <th>Subject</th>
@@ -22,6 +25,9 @@
     <% @dmails.each do |dmail| %>
       <tr class="read-<%= dmail.is_read? %>">
         <td><%= compact_time(dmail.created_at) %></td>
+        <% if CurrentUser.is_owner? && params[:folder].blank? %>
+          <td><%= link_to_user dmail.owner %></td>
+        <% end %>
         <td>
           <% if dmail.filtered? %>
             <%= link_to "[filtered]", user_path(dmail.from) %>

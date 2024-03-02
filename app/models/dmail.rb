@@ -81,19 +81,19 @@ class Dmail < ApplicationRecord
 
   module SearchMethods
     def sent_by_id(user_id)
-      where("dmails.from_id = ? AND dmails.owner_id != ?", user_id, user_id)
+      where(from_id: user_id).and(where.not(owner_id: user_id))
     end
 
     def sent_by(user)
-      where("dmails.from_id = ? AND dmails.owner_id != ?", user.id, user.id)
+      where(from_id: user.id).and(where.not(owner_id: user.id))
     end
 
     def active
-      where("is_deleted = ?", false)
+      where(is_deleted: false)
     end
 
     def deleted
-      where("is_deleted = ?", true)
+      where(is_deleted: true)
     end
 
     def read
@@ -101,11 +101,24 @@ class Dmail < ApplicationRecord
     end
 
     def unread
-      where("is_read = false and is_deleted = false")
+      where(is_read: false, is_deleted: false)
     end
 
     def visible
-      where("owner_id = ?", CurrentUser.id)
+      return all if CurrentUser.is_owner?
+      where(owner_id: CurrentUser.id)
+    end
+
+    def for_folder(folder)
+      return all if folder.nil?
+      case folder
+      when "all"
+        where(owner_id: CurrentUser.id)
+      when "sent"
+        where(from_id: CurrentUser.id, owner_id: CurrentUser.id)
+      when "received"
+        where(to_id: CurrentUser.id, owner_id: CurrentUser.id)
+      end
     end
 
     def search(params)
@@ -116,6 +129,7 @@ class Dmail < ApplicationRecord
 
       q = q.where_user(:to_id, :to, params)
       q = q.where_user(:from_id, :from, params)
+      q = q.where_user(:owner_id, :owner, params)
 
       q = q.attribute_matches(:is_read, params[:is_read])
       q = q.attribute_matches(:is_deleted, params[:is_deleted])
