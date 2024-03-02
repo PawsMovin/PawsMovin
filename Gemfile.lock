@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/PawsMovin/dtext_rb.git
-  revision: 7c5ae637ab9910745043ca33bf38730b2a1f1b2c
+  revision: 9da7764f251f6f61dc789c13d28ce0df6802d88e
   branch: master
   specs:
-    dtext_rb (1.13.7)
+    dtext_rb (1.13.8)
 
 GEM
   remote: https://rubygems.org/
@@ -170,7 +170,7 @@ GEM
       net-smtp
     mailgun-ruby (1.2.14)
       rest-client (>= 2.0.2)
-    marcel (1.0.3)
+    marcel (1.0.4)
     mime-types (3.5.2)
       mime-types-data (~> 3.2015)
     mime-types-data (3.2024.0206)
@@ -207,7 +207,7 @@ GEM
     parser (3.3.0.5)
       ast (~> 2.4.1)
       racc
-    pg (1.5.5)
+    pg (1.5.6)
     prism (0.24.0)
     psych (5.1.2)
       stringio
@@ -335,7 +335,7 @@ GEM
       actionpack (>= 5.2)
       activemodel (>= 5.2)
     smart_properties (1.17.0)
-    sorbet-runtime (0.5.11282)
+    sorbet-runtime (0.5.11284)
     streamio-ffmpeg (3.0.2)
       multi_json (~> 1.8)
     stringio (3.1.0)
