@@ -6,6 +6,7 @@ class Dmail < ApplicationRecord
   validates :body, length: { minimum: 1, maximum: PawsMovin.config.dmail_max_size }
   validate :recipient_accepts_dmails, on: :create
   validate :user_not_limited, on: :create
+  has_secure_token :key
 
   belongs_to :owner, class_name: "User"
   belongs_to :to, class_name: "User"
@@ -26,6 +27,12 @@ class Dmail < ApplicationRecord
     def initialize_attributes
       self.from_id ||= CurrentUser.id
       self.creator_ip_addr ||= CurrentUser.ip_addr
+    end
+  end
+
+  module ApiMethods
+    def hidden_attributes
+      super + %i[key]
     end
   end
 
@@ -143,6 +150,7 @@ class Dmail < ApplicationRecord
 
   include AddressMethods
   include FactoryMethods
+  include ApiMethods
   extend SearchMethods
 
   def user_not_limited
@@ -229,8 +237,9 @@ class Dmail < ApplicationRecord
     end
   end
 
-  def visible_to?(user)
-    return true if user.is_moderator? && (from_id == User.system.id || Ticket.exists?(model: self))
+  def visible_to?(user, key = nil)
+    return true if user.is_owner?
+    return true if user.is_moderator? && (from_id == User.system.id || Ticket.exists?(model: self) || key == self.key)
     return true if user.is_admin? && (to.is_admin? || from.is_admin?)
     owner_id == user.id
   end

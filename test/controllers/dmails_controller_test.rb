@@ -6,7 +6,8 @@ class DmailsControllerTest < ActionDispatch::IntegrationTest
   context "The dmails controller" do
     setup do
       @user = create(:user)
-      @unrelated_user = create(:user)
+      @user2 = create(:user)
+      @mod = create(:moderator_user)
       as(@user) do
         @dmail = create(:dmail, owner: @user)
       end
@@ -22,7 +23,7 @@ class DmailsControllerTest < ActionDispatch::IntegrationTest
         should "check privileges" do
           @user2 = create(:user)
           get_auth new_dmail_path, @user2, params: { respond_to_id: @dmail.id }
-          assert_response 403
+          assert_response :forbidden
         end
 
         should "prefill the fields" do
@@ -41,12 +42,12 @@ class DmailsControllerTest < ActionDispatch::IntegrationTest
 
     context "index action" do
       should "show dmails owned by the current user by sent" do
-        get_auth dmails_path, @user, params: { search: { owner_id: @dmail.owner_id, folder: "sent" } }
+        get_auth dmails_path, @user, params: { folder: "sent" }
         assert_response :success
       end
 
       should "show dmails owned by the current user by received" do
-        get_auth dmails_path, @user, params: { search: { owner_id: @dmail.owner_id, folder: "received" } }
+        get_auth dmails_path, @user, params: { older: "received" }
         assert_response :success
       end
 
@@ -74,9 +75,25 @@ class DmailsControllerTest < ActionDispatch::IntegrationTest
         assert_not_predicate @dmail.reload, :is_read?
       end
 
+      should "not mark the dmail as read when shown to users that don't own it" do
+        get_auth dmail_path(@dmail, key: @dmail.key), @mod
+        assert_response :success
+        assert_not_predicate @dmail.reload, :is_read?
+      end
+
       should "not show dmails not owned by the current user" do
-        get_auth dmail_path(@dmail), @unrelated_user
-        assert_response(403)
+        get_auth dmail_path(@dmail), @user2
+        assert_response :forbidden
+      end
+
+      should "show dmails with a key for moderators" do
+        get_auth dmail_path(@dmail, key: @dmail.key), @mod
+        assert_response :success
+      end
+
+      should "not show dmails with a key for non-moderators" do
+        get_auth dmail_path(@dmail, key: @dmail.key), @user2
+        assert_response :forbidden
       end
     end
 
@@ -126,7 +143,7 @@ class DmailsControllerTest < ActionDispatch::IntegrationTest
       end
 
       should "not allow deletion if the dmail is not owned by the current user" do
-        delete_auth dmail_path(@dmail), @unrelated_user
+        delete_auth dmail_path(@dmail), @user2
         @dmail.reload
         assert_not @dmail.is_deleted
       end

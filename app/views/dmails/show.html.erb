@@ -25,6 +25,7 @@
   <p>
     <%= link_to "Respond", new_dmail_path(respond_to_id: @dmail) %>
     | <%= link_to "Forward", new_dmail_path(respond_to_id: @dmail, forward: true) %>
+    | <%= link_to "Share", dmail_url(@dmail, key: @dmail.key), id: "share-dmail-link" %>
     | <%= link_to "Filter messages like these", edit_users_dmail_filter_path(dmail_id: @dmail.id) %>
     <% if @dmail.owner_id == CurrentUser.id %>
       | <%= link_to "Delete", dmail_path(@dmail), method: :delete, data: { confirm: "Are you sure you want to delete this DMail?" } %>
@@ -37,7 +38,44 @@
   </p>
 </div>
 
+<div id="share-modal" style="display: none; text-align: center;">
+  <a href="" id="share-link" data-clipboard-action="copy" data-clipboard-target="#dmail-share-key"></a>
+
+  <p style="margin-top: 1rem;">This link can be shared with staff members to allow them to view this dmail.</p>
+  <span style="display: none;" id="dmail-share-key"><%= @dmail.key %></span>
+</div>
+
 <%= render "secondary_links" %>
+
+<%= content_for(:html_header) do %>
+  <% javascript_tag nonce: true do -%>
+    $(function() {
+      $("#share-dmail-link").on("click", function(e) {
+        e.preventDefault();
+        const url = $(this).attr("href");
+        const $dialog = $("#share-modal");
+        const $link = $($dialog.find("#share-link"))
+        $link.text(url);
+        $link.attr("href", url);
+        $dialog.dialog({
+          title: "Share DMail",
+          width: 550,
+          height: 200,
+          modal: true,
+          buttons: {
+            "Close": function() {
+              $(this).dialog("close");
+            },
+            "Copy": function() {
+              navigator.clipboard.writeText($link.attr("href"))
+                .then(() => Danbooru.notice("Link copied to clipboard."), () => Danbooru.error("Failed to copy to clipboard."));
+             }
+           }
+        });
+      });
+    });
+  <% end -%>
+<% end %>
 
 <% content_for(:page_title) do %>
   Message - <%= @dmail.title %>

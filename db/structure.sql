@@ -442,7 +442,8 @@ CREATE TABLE public.dmails (
     is_deleted boolean DEFAULT false NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    creator_ip_addr inet NOT NULL
+    creator_ip_addr inet NOT NULL,
+    key character varying DEFAULT ''::character varying NOT NULL
 );
 
 
@@ -4592,6 +4593,7 @@ ALTER TABLE ONLY public.staff_notes
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20240302084449'),
 ('20240229070342'),
 ('20240227091418'),
 ('20240217235926'),

@@ -18,13 +18,17 @@ class DmailsController < ApplicationController
   end
 
   def index
-    @query = Dmail.active.visible.search(search_params)
+    @query = Dmail.active.visible.for_folder(params[:folder]).search(search_params)
     @dmails = @query.paginate(params[:page], limit: params[:limit])
     respond_with(@dmails)
   end
 
   def show
-    @dmail = Dmail.find(params[:id])
+    if params[:key].present?
+      @dmail = Dmail.find_by!(id: params[:id], key: params[:key])
+    else
+      @dmail = Dmail.find(params[:id])
+    end
     check_privilege(@dmail, :show)
     respond_with(@dmail) do |format|
       format.html { @dmail.mark_as_read! if CurrentUser.user == @dmail.owner }
@@ -77,7 +81,7 @@ class DmailsController < ApplicationController
   private
 
   def check_privilege(dmail, action = nil)
-    raise(User::PrivilegeError) unless dmail.visible_to?(CurrentUser.user)
+    raise(User::PrivilegeError) unless dmail.visible_to?(CurrentUser.user, params[:key])
     raise(User::PrivilegeError) if CurrentUser.user != dmail.owner && action != :show
   end
 
@@ -86,6 +90,6 @@ class DmailsController < ApplicationController
   end
 
   def create_params
-    params.fetch(:dmail, {}).permit(:title, :body, :to_name, :to_id)
+    params.fetch(:dmail, {}).permit(%i[title body to_name to_id])
   end
 end
