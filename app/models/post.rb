@@ -63,6 +63,16 @@ class Post < ApplicationRecord
 
   IMAGE_TYPES = %i[original large preview crop]
 
+  module Ratings
+    SAFE = "s"
+    QUESTIONABLE = "q"
+    EXPLICIT = "e"
+
+    def self.map
+      constants.to_h { |x| [x.to_s.downcase, const_get(x)] }
+    end
+  end
+
   module PostFileMethods
     extend ActiveSupport::Concern
 

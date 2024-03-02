@@ -126,9 +126,21 @@
     .dtext-color-#{$tag-category} {
       color: themed("color-tag-#{$tag-category-name}");
     }
+  }
 
+  @each $tag-category-id, $tag-category-name in $tag-categories {
     .dtext-color-#{$tag-category-name} {
       color: themed("color-tag-#{$tag-category-name}");
+    }
+  }
+
+  @each $rating, $rating-name in $ratings {
+    .dtext-color-#{$rating} {
+      color: themed("color-rating-#{$rating-name}");
+    }
+
+    .dtext-color-#{$rating-name} {
+      color: themed("color-rating-#{$rating-name}");
     }
   }
 }
