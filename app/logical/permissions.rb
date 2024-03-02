@@ -12,7 +12,7 @@ module Permissions
     static application sessions emails
   ].freeze
   IGNORED_ACTIONS = %w[new edit search diff show_or_new custom_style edit_user edit_blacklist confirm_move_favorites request_password_reset].freeze
-  IGNORED_ROUTES = %w[related_tags:show users:create users:destroy users:home].freeze
+  IGNORED_ROUTES = %w[users:create users:destroy users:home posts:favorites popular:index].freeze
   PLURAL_ACTIONS = %w[index reorder].freeze
 
   def action(value)
