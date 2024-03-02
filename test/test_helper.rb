@@ -76,17 +76,6 @@ class ActiveSupport::TestCase
     Sidekiq::Testing.inline!(&)
   end
 
-  # TODO: Remove with upgrade to Rails 7.1
-  def stub_const(mod, constant, new_value)
-    old_value = mod.const_get(constant, false)
-    mod.send(:remove_const, constant)
-    mod.const_set(constant, new_value)
-    yield
-  ensure
-    mod.send(:remove_const, constant)
-    mod.const_set(constant, old_value)
-  end
-
   def reset_post_index
     # This seems slightly faster than deleting and recreating the index
     Post.document_store.delete_by_query(query: "*", body: {})

@@ -525,22 +525,9 @@ module PawsMovin
       100
     end
 
-    def is_post_restricted?(post)
-      false
-    end
-
-    # TODO: Investigate what this does and where it is used.
-    def is_user_restricted?(user)
-      !user.is_trusted?
-    end
-
     def can_user_see_post?(user, post)
       return false if post.is_deleted? && !user.is_janitor?
-      if is_user_restricted?(user) && is_post_restricted?(post)
-        false
-      else
-        true
-      end
+      true
     end
 
     def user_needs_login_for_post?(post)

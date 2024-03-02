@@ -9,7 +9,11 @@
     <%= render "static/guest_warning" %>
   <% end %>
   <div id="page">
-    <%= yield :layout %>
+    <div id="c-<%= params[:controller].parameterize.dasherize %>">
+      <div id="a-<%= params[:action].parameterize.dasherize %>">
+        <%= yield :layout %>
+      </div>
+    </div>
   </div>
 <% end %>
 </html>

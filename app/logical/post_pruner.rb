@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class PostPruner
-  DELETION_WINDOW = 30
+  DELETION_WINDOW = 7
 
   def prune!
     Post.without_timeout do
