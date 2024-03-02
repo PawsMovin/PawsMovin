@@ -1,22 +1,18 @@
-<div id="c-moderator-ip-addrs">
-  <div id="a-index">
-    <h1>IP Addresses</h1>
+<h1>IP Addresses</h1>
 
-    <% if params[:search][:user_id].present? || params[:search][:user_name].present? %>
-      <%= render "search" %>
-      <div id="p-ip-listing">
-        <%= render "ip_listing" %>
-      </div>
-    <% elsif params[:search][:ip_addr] %>
-      <%= render "search" %>
-      <div id="p-user-listing">
-        <%= render "user_listing" %>
-      </div>
-    <% else %>
-      <%= render "search" %>
-    <% end %>
+<% if params[:search][:user_id].present? || params[:search][:user_name].present? %>
+  <%= render "search" %>
+  <div id="p-ip-listing">
+    <%= render "ip_listing" %>
   </div>
-</div>
+<% elsif params[:search][:ip_addr] %>
+  <%= render "search" %>
+  <div id="p-user-listing">
+    <%= render "user_listing" %>
+  </div>
+<% else %>
+  <%= render "search" %>
+<% end %>
 
 <% content_for(:page_title) do %>
   IP Addresses

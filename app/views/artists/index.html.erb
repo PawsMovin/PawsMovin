@@ -1,30 +1,26 @@
-<div id="c-artists">
-  <div id="a-index">
-    <%= render "search" %>
-    <table class="striped">
-      <thead>
-        <tr>
-          <th width="50%">Primary Name</th>
-          <th width="50%">Secondary Names</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @artists.each do |artist| %>
-          <% if artist.visible? %>
-            <%= tag.tr(id: "artist-#{artist.id}") do %>
-              <td>
-                <%= link_to h(artist.name), artist_path(artist) %>
-              </td>
-              <td><%= artist.other_names_string %></td>
-            <% end %>
-          <% end %>
+<%= render "search" %>
+<table class="striped">
+  <thead>
+    <tr>
+      <th width="50%">Primary Name</th>
+      <th width="50%">Secondary Names</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @artists.each do |artist| %>
+      <% if artist.visible? %>
+        <%= tag.tr(id: "artist-#{artist.id}") do %>
+          <td>
+            <%= link_to h(artist.name), artist_path(artist) %>
+          </td>
+          <td><%= artist.other_names_string %></td>
         <% end %>
-      </tbody>
-    </table>
+      <% end %>
+    <% end %>
+  </tbody>
+</table>
 
-    <%= numbered_paginator(@artists) %>
-  </div>
-</div>
+<%= numbered_paginator(@artists) %>
 
 <%= render "secondary_links" %>
 

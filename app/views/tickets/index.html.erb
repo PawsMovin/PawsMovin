@@ -1,65 +1,61 @@
-<div id="c-tickets">
-  <div id="a-index">
-    <%= render partial: "search" %>
+<%= render partial: "search" %>
 
-    <h2>Ticket Center</h2>
-    <table class="striped">
-      <thead>
-        <tr>
-          <th style="width:5%">ID</th>
-          <% if CurrentUser.is_moderator? %>
-            <th style="width:10%">Reporter</th>
-            <th style="width:10%">Accused</th>
-            <th style="width:10%">Claimed By</th>
+<h2>Ticket Center</h2>
+<table class="striped">
+  <thead>
+    <tr>
+      <th style="width:5%">ID</th>
+      <% if CurrentUser.is_moderator? %>
+        <th style="width:10%">Reporter</th>
+        <th style="width:10%">Accused</th>
+        <th style="width:10%">Claimed By</th>
+      <% end %>
+      <th style="width:15%">Type</th>
+      <th style="width:25%">Subject</th>
+      <th style="width:8%">Status</th>
+      <th style="width:10%">Updated</th>
+      <th style="width:18%">Created</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @tickets.each do |ticket| %>
+      <tr data-link="<%= ticket_path(ticket) %>">
+        <td><%= link_to ticket.id, ticket_path(ticket) %></td>
+        <% if CurrentUser.is_moderator? %>
+          <td><%= link_to_user ticket.creator %></td>
+          <td>
+            <% if ticket.accused %>
+              <%= link_to_user ticket.accused %>
+            <% end %>
+          </td>
+          <td>
+          <% if ticket.claimant.nil? %>
+            <span class="redtext">Unclaimed</span>
+          <% else %>
+            <%= link_to_user ticket.claimant %>
           <% end %>
-          <th style="width:15%">Type</th>
-          <th style="width:25%">Subject</th>
-          <th style="width:8%">Status</th>
-          <th style="width:10%">Updated</th>
-          <th style="width:18%">Created</th>
-        </tr>
-      </thead>
-
-      <tbody>
-        <% @tickets.each do |ticket| %>
-          <tr data-link="<%= ticket_path(ticket) %>">
-            <td><%= link_to ticket.id, ticket_path(ticket) %></td>
-            <% if CurrentUser.is_moderator? %>
-              <td><%= link_to_user ticket.creator %></td>
-              <td>
-                <% if ticket.accused %>
-                  <%= link_to_user ticket.accused %>
-                <% end %>
-              </td>
-              <td>
-              <% if ticket.claimant.nil? %>
-                <span class="redtext">Unclaimed</span>
-              <% else %>
-                <%= link_to_user ticket.claimant %>
-              <% end %>
-              </td>
-            <% end %>
-            <td><%= link_to ticket.type_title, ticket_path(ticket) %></td>
-
-            <% if !ticket.can_see_details?(CurrentUser.user) %>
-              <td><span style="cursor:help;" class="redtext" title="Due to privacy concerns, this information is confidential">Confidential</span></td>
-            <% else %>
-              <%= tag.td(class: "ticket-subject full-width-link", title: truncate(strip_tags(format_text(ticket.reason)), length: 200)) do %>
-                <%= link_to truncate(strip_tags(format_text(ticket.subject)), length: 200), ticket_path(ticket.id) %>
-              <% end %>
-            <% end %>
-
-            <td class="<%= ticket.status %>-ticket"><%= ticket.pretty_status %></td>
-            <td style="cursor:help;"><%= time_ago_in_words_tagged(ticket.updated_at) %></td>
-            <td style="cursor:help;"><%= time_ago_in_words_tagged(ticket.created_at) %></td>
-          </tr>
+          </td>
         <% end %>
-      </tbody>
-    </table>
+        <td><%= link_to ticket.type_title, ticket_path(ticket) %></td>
 
-    <%= numbered_paginator(@tickets) %>
-  </div>
-</div>
+        <% if !ticket.can_see_details?(CurrentUser.user) %>
+          <td><span style="cursor:help;" class="redtext" title="Due to privacy concerns, this information is confidential">Confidential</span></td>
+        <% else %>
+          <%= tag.td(class: "ticket-subject full-width-link", title: truncate(strip_tags(format_text(ticket.reason)), length: 200)) do %>
+            <%= link_to truncate(strip_tags(format_text(ticket.subject)), length: 200), ticket_path(ticket.id) %>
+          <% end %>
+        <% end %>
+
+        <td class="<%= ticket.status %>-ticket"><%= ticket.pretty_status %></td>
+        <td style="cursor:help;"><%= time_ago_in_words_tagged(ticket.updated_at) %></td>
+        <td style="cursor:help;"><%= time_ago_in_words_tagged(ticket.created_at) %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<%= numbered_paginator(@tickets) %>
 
 <% render partial: "secondary_links" %>
 

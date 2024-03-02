@@ -1,21 +1,16 @@
-<div id="a-set">
-  <div id="c-edit">
-    <h2>Editing <span class="set-name"><%= @post_set.name %></span></h2>
+<h2>Editing <span class="set-name"><%= @post_set.name %></span></h2>
 
-    <% if @post_set.can_edit_settings?(CurrentUser) %>
-      <div class='section'>
-        <%= render "form" %>
-      </div>
-
-      <%= link_to "» Click here to edit maintainers.", maintainers_post_set_path(@post_set) %><br/>
-    <% end %>
-
-    <% if @post_set.can_edit_posts?(CurrentUser) %>
-      <%= link_to "» Click here to add/remove posts.", post_list_post_set_path(@post_set) %><br/>
-    <% end %>
+<% if @post_set.can_edit_settings?(CurrentUser) %>
+  <div class='section'>
+    <%= render "form" %>
   </div>
-</div>
 
+  <%= link_to "» Click here to edit maintainers.", maintainers_post_set_path(@post_set) %><br/>
+<% end %>
+
+<% if @post_set.can_edit_posts?(CurrentUser) %>
+  <%= link_to "» Click here to add/remove posts.", post_list_post_set_path(@post_set) %><br/>
+<% end %>
 
 <%= render partial: "secondary_links" %>
 

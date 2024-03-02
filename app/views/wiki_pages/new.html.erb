@@ -1,19 +1,15 @@
-<div id="c-wiki-pages">
-  <div id="a-new">
-    <%= render "sidebar" %>
+<%= render "sidebar" %>
 
-    <section id="content">
-      <h1>New Wiki Page</h1>
+<section id="content">
+  <h1>New Wiki Page</h1>
 
-      <%= render "form" %>
+  <%= render "form" %>
 
-      <%= wiki_page_alias_and_implication_list(@wiki_page)%>
-      <%= wiki_page_post_previews(@wiki_page) %>
-      <div class="clearfix"></div>
+  <%= wiki_page_alias_and_implication_list(@wiki_page)%>
+  <%= wiki_page_post_previews(@wiki_page) %>
+  <div class="clearfix"></div>
 
-    </section>
-  </div>
-</div>
+</section>
 
 <%= render "secondary_links" %>
 

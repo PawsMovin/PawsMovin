@@ -1,13 +1,9 @@
-<div id="c-tags">
-  <div id="a-show">
-    <h1>Tag: <%= link_to @tag.name, posts_path(tags: @tag.name), class: "tag-type-#{@tag.category}" %></h1>
+<h1>Tag: <%= link_to @tag.name, posts_path(tags: @tag.name), class: "tag-type-#{@tag.category}" %></h1>
 
-    <ul>
-      <li>Count: <%= @tag.post_count %></li>
-      <li>Category: <%= @tag.category_name %></li>
-    </ul>
-  </div>
-</div>
+<ul>
+  <li>Count: <%= @tag.post_count %></li>
+  <li>Category: <%= @tag.category_name %></li>
+</ul>
 
 <%= render "secondary_links" %>
 

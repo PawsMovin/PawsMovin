@@ -1,25 +1,21 @@
-<div id="c-popular">
-  <div id="a-searches">
-    <h1>Most Searched: <%= date_range_description(@date, @scale, @min_date, @max_date) %></h1>
+<h1>Most Searched: <%= date_range_description(@date, @scale, @min_date, @max_date) %></h1>
 
-    <table class="striped autofit">
-      <thead>
-      <tr>
-        <th>Count</th>
-        <th>Tag</th>
-      </tr>
-      </thead>
-      <tbody>
-      <% @ranking.each do |rank| %>
-        <tr id="popular-search-<%= rank["tag"] %>">
-          <td><%= rank["count"] %></td>
-          <td><%= link_to rank["tag"], posts_path(tags: rank["tag"]) %></td>
-        </tr>
-      <% end %>
-      </tbody>
-    </table>
-  </div>
-</div>
+<table class="striped autofit">
+  <thead>
+  <tr>
+    <th>Count</th>
+    <th>Tag</th>
+  </tr>
+  </thead>
+  <tbody>
+  <% @ranking.each do |rank| %>
+    <tr id="popular-search-<%= rank["tag"] %>">
+      <td><%= rank["count"] %></td>
+      <td><%= link_to rank["tag"], posts_path(tags: rank["tag"]) %></td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
 
 <%= render partial: "popular/secondary_links" %>
 

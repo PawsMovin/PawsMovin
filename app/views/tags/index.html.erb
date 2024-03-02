@@ -1,43 +1,39 @@
-<div id="c-tags">
-  <div id="a-index">
-    <%= render "search" %>
-    <table class="striped">
-      <thead>
-        <tr>
-          <th>Count</th>
-          <th>Name</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @tags.each do |tag| %>
-          <tr>
-            <td><%= tag.post_count %></td>
-            <td class="category-<%= tag.category %>">
-              <% if tag.category == TagCategory.artist %>
-                <%= link_to("?",  show_or_new_artists_path(name: tag.name)) %>
-              <% else %>
-                <%= link_to_wiki_or_new("?", tag.name) %>
-              <% end %>
-              <%= link_to(tag.name, posts_path(tags: tag.name)) %>
-            </td>
-            <td>
-              <% if tag.category_editable_by?(CurrentUser.user) %>
-                <%= link_to "edit", edit_tag_path(tag) %>
-              <% end %>
-              | <%= link_to "history", tag_versions_path(search: { tag: tag.name }) %>
-              <% if CurrentUser.is_janitor? %>
-                | <%= link_to "fix", correct_tag_path(tag), method: :post %>
-              <% end %>
-            </td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
+<%= render "search" %>
+<table class="striped">
+  <thead>
+    <tr>
+      <th>Count</th>
+      <th>Name</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @tags.each do |tag| %>
+      <tr>
+        <td><%= tag.post_count %></td>
+        <td class="category-<%= tag.category %>">
+          <% if tag.category == TagCategory.artist %>
+            <%= link_to("?",  show_or_new_artists_path(name: tag.name)) %>
+          <% else %>
+            <%= link_to_wiki_or_new("?", tag.name) %>
+          <% end %>
+          <%= link_to(tag.name, posts_path(tags: tag.name)) %>
+        </td>
+        <td>
+          <% if tag.category_editable_by?(CurrentUser.user) %>
+            <%= link_to "edit", edit_tag_path(tag) %>
+          <% end %>
+          | <%= link_to "history", tag_versions_path(search: { tag: tag.name }) %>
+          <% if CurrentUser.is_janitor? %>
+            | <%= link_to "fix", correct_tag_path(tag), method: :post %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
 
-    <%= numbered_paginator(@tags) %>
-  </div>
-</div>
+<%= numbered_paginator(@tags) %>
 
 <%= render "secondary_links" %>
 

@@ -60,7 +60,11 @@
 
     <div class="info blocked-notice"></div>
 
-    <%= yield :layout %>
+    <div id="c-<%= params[:controller].parameterize.dasherize %>">
+      <div id="a-<%= params[:action].parameterize.dasherize %>">
+        <%= yield :layout %>
+      </div>
+    </div>
   </div>
 
   <% if CurrentUser.is_anonymous? %>

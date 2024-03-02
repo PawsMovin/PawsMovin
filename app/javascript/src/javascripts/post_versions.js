@@ -6,7 +6,7 @@ let PostVersion = {};
 
 PostVersion.updated = 0;
 PostVersion.initialize_all = function () {
-  if ($("#c-post-versions #a-index").length) {
+  if ($("#c-posts-versions #a-index").length) {
     PostVersion.initialize_undo();
     $('#subnav-select-all-link').on('click', function(event) {
       event.preventDefault();

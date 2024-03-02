@@ -1,42 +1,38 @@
-<div id="c-posts">
-  <div id="a-uploaders">
-    <%= render(partial: "posts/partials/uploaders/search") %>
-    <table class="striped">
-      <thead>
-      <tr>
-        <th>User</th>
-        <th>Remaining Upload Slots</th>
-        <th>Pending Posts</th>
-        <th>Post Stats</th>
-        <th>Replacement Stats</th>
-      </tr>
-      </thead>
-      <tbody>
-      <% @counts.each do |id, count| %>
-        <tr>
-          <% user = @users.find { |u| u.id == id } %>
-          <td><%= link_to_user(user) %></td>
-          <td><%= user.upload_limit %></td>
-          <td><%= link_to(count, posts_path(tags: "user:!#{user.id} status:pending")) %></td>
-          <td>
-            <%= link_to("#{user.uploaders_list_pieces[:approved]} approved", posts_path(tags: "user:!#{user.id} status:active")) %> /
-            <%= link_to("#{user.uploaders_list_pieces[:deleted]} deleted", posts_path(tags: "user:!#{user.id} status:deleted")) %> /
-            <%= link_to("#{user.uploaders_list_pieces[:flagged]} flagged", posts_path(tags: "user:!#{user.id} status:flagged")) %> /
-            <%= link_to("#{user.uploaders_list_pieces[:replaced]} replaced", post_replacements_path(search: { uploader_id_on_approve: user.id })) %>
-          </td>
-          <td>
-            <%= link_to("#{user.uploaders_list_pieces[:replacement_pending]} pending", post_replacements_path(search: { creator_id: user.id })) %> /
-            <%= link_to("#{user.uploaders_list_pieces[:replacement_rejected]} rejected", post_replacements_path(search: { creator_id: user.id, status: "rejected" })) %> /
-            <%= link_to("#{user.uploaders_list_pieces[:replacement_promoted]} promoted", post_replacements_path(search: { creator_id: user.id, status: "promoted" })) %>
-          </td>
-        </tr>
-      <% end %>
-      </tbody>
-    </table>
+<%= render(partial: "posts/partials/uploaders/search") %>
+<table class="striped">
+  <thead>
+  <tr>
+    <th>User</th>
+    <th>Remaining Upload Slots</th>
+    <th>Pending Posts</th>
+    <th>Post Stats</th>
+    <th>Replacement Stats</th>
+  </tr>
+  </thead>
+  <tbody>
+  <% @counts.each do |id, count| %>
+    <tr>
+      <% user = @users.find { |u| u.id == id } %>
+      <td><%= link_to_user(user) %></td>
+      <td><%= user.upload_limit %></td>
+      <td><%= link_to(count, posts_path(tags: "user:!#{user.id} status:pending")) %></td>
+      <td>
+        <%= link_to("#{user.uploaders_list_pieces[:approved]} approved", posts_path(tags: "user:!#{user.id} status:active")) %> /
+        <%= link_to("#{user.uploaders_list_pieces[:deleted]} deleted", posts_path(tags: "user:!#{user.id} status:deleted")) %> /
+        <%= link_to("#{user.uploaders_list_pieces[:flagged]} flagged", posts_path(tags: "user:!#{user.id} status:flagged")) %> /
+        <%= link_to("#{user.uploaders_list_pieces[:replaced]} replaced", post_replacements_path(search: { uploader_id_on_approve: user.id })) %>
+      </td>
+      <td>
+        <%= link_to("#{user.uploaders_list_pieces[:replacement_pending]} pending", post_replacements_path(search: { creator_id: user.id })) %> /
+        <%= link_to("#{user.uploaders_list_pieces[:replacement_rejected]} rejected", post_replacements_path(search: { creator_id: user.id, status: "rejected" })) %> /
+        <%= link_to("#{user.uploaders_list_pieces[:replacement_promoted]} promoted", post_replacements_path(search: { creator_id: user.id, status: "promoted" })) %>
+      </td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
 
-    <%= numbered_paginator(@relation) %>
-  </div>
-</div>
+<%= numbered_paginator(@relation) %>
 
 <%= render "posts/partials/common/secondary_links" %>
 

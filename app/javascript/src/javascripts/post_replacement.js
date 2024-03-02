@@ -103,7 +103,7 @@ function set_status($row, text) {
 }
 
 $(function () {
-  if ($("#c-post-replacements").length)
+  if ($("#c-posts-replacements").length)
     PostReplacement.initialize_all();
 });
 

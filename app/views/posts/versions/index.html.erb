@@ -1,32 +1,28 @@
-<div id="c-post-versions">
-  <div id="a-index">
-    <%= render "search" %>
+<%= render "search" %>
 
-    <h1>Changes</h1>
+<h1>Changes</h1>
 
-    <% if CurrentUser.is_admin? %>
-      <div>
-        <div class="input">
-          <label>Tag Script</label>
-          <input id="update-tag-script" placeholder="tag script to apply here"/>
-        </div>
-      </div>
-    <% end %>
-
-    <% if @post_versions.empty? %>
-      <%= render "posts/blank" %>
-    <% else %>
-    <%= render "listing" %>
-
-
-      <% if params[:lr] && CurrentUser.is_moderator? %>
-        <p><%= link_to "Revert this user's changes", new_user_revert_path(user_id: params[:lr]) %></p>
-      <% end %>
-
-      <%= numbered_paginator(@post_versions) %>
-    <% end %>
+<% if CurrentUser.is_admin? %>
+  <div>
+    <div class="input">
+      <label>Tag Script</label>
+      <input id="update-tag-script" placeholder="tag script to apply here"/>
+    </div>
   </div>
-</div>
+<% end %>
+
+<% if @post_versions.empty? %>
+  <%= render "posts/blank" %>
+<% else %>
+<%= render "listing" %>
+
+
+  <% if params[:lr] && CurrentUser.is_moderator? %>
+    <p><%= link_to "Revert this user's changes", new_user_revert_path(user_id: params[:lr]) %></p>
+  <% end %>
+
+  <%= numbered_paginator(@post_versions) %>
+<% end %>
 
 <%= javascript_tag nonce: true do -%>
   $(".closebutton").on('click', function(e) {

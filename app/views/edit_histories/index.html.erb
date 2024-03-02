@@ -1,45 +1,41 @@
-<div id="c-edit-history">
-  <div id="a-index">
-    <h1>Recent Edits</h1>
+<h1>Recent Edits</h1>
 
-    <%= render "search" %>
+<%= render "search" %>
 
-    <table class="striped">
-      <thead>
-      <tr>
-        <th></th>
-        <th>Type</th>
-        <th>Edit Type</th>
-        <th>Date</th>
-        <th>Editor</th>
-        <th>Body</th>
-        <th>Subject</th>
-      </tr>
-      </thead>
+<table class="striped">
+  <thead>
+  <tr>
+    <th></th>
+    <th>Type</th>
+    <th>Edit Type</th>
+    <th>Date</th>
+    <th>Editor</th>
+    <th>Body</th>
+    <th>Subject</th>
+  </tr>
+  </thead>
 
-      <tbody>
-      <% @edit_histories.each do |edit| %>
-        <tr id="edit-<%= edit.id %>" class="edit-<%= edit.edit_type.tr("_", "-") %>">
-          <td><%= link_to "Show", action: "show", id: edit.versionable_id, type: edit.versionable_type, page: edit.page, anchor: "edit-#{edit.id}" %></td>
-          <td><%= edit.versionable_type %></td>
-          <td><%= edit.pretty_edit_type %></td>
-          <td><%= compact_time edit.updated_at %></td>
-          <td>
-            <h6><%= link_to_user edit.user %></h6>
-            <% if CurrentUser.is_admin? %>
-              <%= link_to_ip edit.ip_addr %>
-            <% end %>
-          </td>
-          <td><%= edit.body[0..30] %></td>
-          <td><%= (edit.subject || "")[0..30] %></td>
-        </tr>
-      <% end %>
-      </tbody>
-    </table>
+  <tbody>
+  <% @edit_histories.each do |edit| %>
+    <tr id="edit-<%= edit.id %>" class="edit-<%= edit.edit_type.tr("_", "-") %>">
+      <td><%= link_to "Show", action: "show", id: edit.versionable_id, type: edit.versionable_type, page: edit.page, anchor: "edit-#{edit.id}" %></td>
+      <td><%= edit.versionable_type %></td>
+      <td><%= edit.pretty_edit_type %></td>
+      <td><%= compact_time edit.updated_at %></td>
+      <td>
+        <h6><%= link_to_user edit.user %></h6>
+        <% if CurrentUser.is_admin? %>
+          <%= link_to_ip edit.ip_addr %>
+        <% end %>
+      </td>
+      <td><%= edit.body[0..30] %></td>
+      <td><%= (edit.subject || "")[0..30] %></td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
 
-    <%= numbered_paginator(@edit_histories) %>
-  </div>
-</div>
+<%= numbered_paginator(@edit_histories) %>
 
 <%= render "secondary_links" %>
 

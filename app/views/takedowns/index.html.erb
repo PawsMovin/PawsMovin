@@ -1,60 +1,56 @@
-<div id="c-takedowns">
-  <div id="a-index">
-    <%= render partial: "search", locals: {path: takedowns_path} %>
-    <table class="striped">
-      <thead>
-      <tr>
-        <th>ID</th>
-        <th>Source</th>
-        <% if CurrentUser.can_handle_takedowns? %>
-          <th>Email</th>
-          <th>IP Address</th>
+<%= render partial: "search", locals: {path: takedowns_path} %>
+<table class="striped">
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>Source</th>
+    <% if CurrentUser.can_handle_takedowns? %>
+      <th>Email</th>
+      <th>IP Address</th>
+    <% end %>
+    <th>Status</th>
+    <th>Post count</th>
+    <th>Date</th>
+    <% if CurrentUser.can_handle_takedowns? %>
+      <th width="5%"></th>
+    <% end %>
+  </tr>
+  </thead>
+  <tbody>
+  <% @takedowns.each do |takedown| %>
+    <tr id="takedown-<%= takedown.id %>">
+    <td><%= link_to takedown.id, takedown_path(takedown) %></td>
+    <td>
+      <% if !takedown.reason_hidden || CurrentUser.is_janitor? %>
+        <% if takedown.source.match(/\Ahttps?:\/\//i) %>
+          <%= link_to takedown.source, takedown.source, rel: "noopener noreferrer nofollow" %>
+        <% else %>
+          <%= link_to takedown.source, "https://#{takedown.source}", rel: "noopener noreferrer nofollow" %>
         <% end %>
-        <th>Status</th>
-        <th>Post count</th>
-        <th>Date</th>
-        <% if CurrentUser.can_handle_takedowns? %>
-          <th width="5%"></th>
-        <% end %>
-      </tr>
-      </thead>
-      <tbody>
-      <% @takedowns.each do |takedown| %>
-        <tr id="takedown-<%= takedown.id %>">
-        <td><%= link_to takedown.id, takedown_path(takedown) %></td>
-        <td>
-          <% if !takedown.reason_hidden || CurrentUser.is_janitor? %>
-            <% if takedown.source.match(/\Ahttps?:\/\//i) %>
-              <%= link_to takedown.source, takedown.source, rel: "noopener noreferrer nofollow" %>
-            <% else %>
-              <%= link_to takedown.source, "https://#{takedown.source}", rel: "noopener noreferrer nofollow" %>
-            <% end %>
-          <% else %>
-            <span class="redtext">(Source hidden)</span>
-          <% end %>
-        </td>
-
-        <% if CurrentUser.can_handle_takedowns? %>
-          <td><%= takedown.email %></td>
-          <td><%= link_to_ip takedown.creator_ip_addr %></td>
-        <% end %>
-
-        <%= pretty_takedown_status(takedown) %>
-
-        <td><%= takedown.post_count %></td>
-
-        <td><%= time_ago_in_words_tagged takedown.created_at %></td>
-        <% if CurrentUser.can_handle_takedowns? %>
-          <td><%= link_to "Delete", takedown_path(takedown), method: :delete, data: { confirm: "Are you sure you want to delete this takedown?" } %></td>
-        <% end %>
-        </tr>
+      <% else %>
+        <span class="redtext">(Source hidden)</span>
       <% end %>
-      </tbody>
-    </table>
+    </td>
 
-    <%= numbered_paginator(@takedowns) %>
-  </div>
-</div>
+    <% if CurrentUser.can_handle_takedowns? %>
+      <td><%= takedown.email %></td>
+      <td><%= link_to_ip takedown.creator_ip_addr %></td>
+    <% end %>
+
+    <%= pretty_takedown_status(takedown) %>
+
+    <td><%= takedown.post_count %></td>
+
+    <td><%= time_ago_in_words_tagged takedown.created_at %></td>
+    <% if CurrentUser.can_handle_takedowns? %>
+      <td><%= link_to "Delete", takedown_path(takedown), method: :delete, data: { confirm: "Are you sure you want to delete this takedown?" } %></td>
+    <% end %>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
+
+<%= numbered_paginator(@takedowns) %>
 
 <%= render "takedowns/secondary_links" %>
 

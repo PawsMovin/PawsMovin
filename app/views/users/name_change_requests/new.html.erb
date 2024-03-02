@@ -1,18 +1,14 @@
-<div id="c-user-name-change-requests">
-  <div id="a-new">
-    <h1>Name Change Request</h1>
+<h1>Name Change Request</h1>
 
-    <p>You can request a name change once per week.</p>
+<p>You can request a name change once per week.</p>
 
-    <%= error_messages_for "change_request" %>
+<%= error_messages_for "change_request" %>
 
-    <%= custom_form_for(@change_request) do |f| %>
-      <%= f.input(:desired_name) %>
-      <%= f.input(:change_reason) %>
-      <%= f.submit("Submit") %>
-    <% end %>
-  </div>
-</div>
+<%= custom_form_for(@change_request) do |f| %>
+  <%= f.input(:desired_name) %>
+  <%= f.input(:change_reason) %>
+  <%= f.submit("Submit") %>
+<% end %>
 
 <%= render "secondary_links" %>
 

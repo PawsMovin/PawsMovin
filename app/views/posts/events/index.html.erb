@@ -1,47 +1,43 @@
-<div id="c-post-events">
-  <div id="a-index">
-    <h1>Post Events</h1>
+<h1>Post Events</h1>
 
-    <%= render "search" %>
+<%= render "search" %>
 
-    <table class="striped autofit">
-      <thead>
-        <tr>
-          <th>Post</th>
-          <th>Type</th>
-          <th>User</th>
-          <th>Info</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @events.each do |event| %>
-          <tr>
-            <td>
-              <%= link_to "post ##{event.post_id}", post_path(event.post_id) %>
-              <%= link_to "»", post_events_path(search: params[:search].merge(post_id: event.post_id)) %>
-            </td>
-            <td>
-              <%= event.action.capitalize.tr("_", " ") %>
-              <%= link_to "»", post_events_path(search: params[:search].merge(action: event.action)) %>
-            </td>
-            <td>
-              <% if event.is_creator_visible?(CurrentUser.user) %>
-                <%= link_to_user event.creator %>
-                <%= link_to "»", post_events_path(search: params[:search].merge(creator_name: event.creator.name)) %>
-              <% else %>
-                <i>hidden</i>
-              <% end %>
-              <br><%= time_ago_in_words_tagged event.created_at %>
-            </td>
-            <td class="col-expand dtext-container"><%= format_text event.format_description %></td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
+<table class="striped autofit">
+  <thead>
+    <tr>
+      <th>Post</th>
+      <th>Type</th>
+      <th>User</th>
+      <th>Info</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @events.each do |event| %>
+      <tr>
+        <td>
+          <%= link_to "post ##{event.post_id}", post_path(event.post_id) %>
+          <%= link_to "»", post_events_path(search: params[:search].merge(post_id: event.post_id)) %>
+        </td>
+        <td>
+          <%= event.action.capitalize.tr("_", " ") %>
+          <%= link_to "»", post_events_path(search: params[:search].merge(action: event.action)) %>
+        </td>
+        <td>
+          <% if event.is_creator_visible?(CurrentUser.user) %>
+            <%= link_to_user event.creator %>
+            <%= link_to "»", post_events_path(search: params[:search].merge(creator_name: event.creator.name)) %>
+          <% else %>
+            <i>hidden</i>
+          <% end %>
+          <br><%= time_ago_in_words_tagged event.created_at %>
+        </td>
+        <td class="col-expand dtext-container"><%= format_text event.format_description %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
 
-    <%= numbered_paginator(@events) %>
-  </div>
-</div>
+<%= numbered_paginator(@events) %>
 
 <%= render "secondary_links" %>
 

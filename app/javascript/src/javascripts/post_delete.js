@@ -52,7 +52,7 @@ PostDeletion.init = function() {
 }
 
 $(function() {
-  if($("div#c-confirm-delete").length)
+  if($("div#c-posts div#a-delete").length)
     Danbooru.PostDeletion.init();
 });
 

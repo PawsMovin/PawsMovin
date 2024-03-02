@@ -1,87 +1,83 @@
 <%# locals: (type:, votes:, deletable: false, lockable: false) -%>
 
-<div id="c-<%= type.model_name.plural %>">
-  <div id="a-index">
-    <%# path is a string here because of duplicate routes %>
-    <%= form_search(path: { controller: "#{type.model_type}s/votes", action: :index }) do |f| %>
-      <%= f.user(:user, label: "Voter") %>
-      <%= f.input(:"#{type.model_type}_id", label: "#{type.model_type.to_s.titleize} ID") %>
-      <br>
-      <%= f.user(:"#{type.model_type}_creator", label: "#{type.model_type.to_s.titleize} Creator") %>
-      <%= f.input(:timeframe, label: "Timeframe", include_blank: true, collection: [["Last Week", "7"], ["Last Month", "30"], ["Last Three Months", "90"], ["Last Year", "360"]]) %>
-      <%= f.input(:score, label: "Type", include_blank: true, collection: type.vote_types) %>
+<%# path is a string here because of duplicate routes %>
+<%= form_search(path: { controller: "#{type.model_type}s/votes", action: :index }) do |f| %>
+  <%= f.user(:user, label: "Voter") %>
+  <%= f.input(:"#{type.model_type}_id", label: "#{type.model_type.to_s.titleize} ID") %>
+  <br>
+  <%= f.user(:"#{type.model_type}_creator", label: "#{type.model_type.to_s.titleize} Creator") %>
+  <%= f.input(:timeframe, label: "Timeframe", include_blank: true, collection: [["Last Week", "7"], ["Last Month", "30"], ["Last Three Months", "90"], ["Last Year", "360"]]) %>
+  <%= f.input(:score, label: "Type", include_blank: true, collection: type.vote_types) %>
+  <% if CurrentUser.is_admin? %>
+    <%= f.input(:user_ip_addr, label: "IP Address") %>
+    <%= f.input(:duplicates_only, label: "Duplicates Only", as: :boolean) %>
+    <%= f.input(:order, collection: [%w[Created id], ["IP Address", "ip_addr"]]) %>
+  <% end %>
+<% end %>
+
+<table class="striped" id="votes">
+  <thead>
+  <tr>
+    <th>ID</th>
+    <% if type == CommentVote %>
+      <th>Post</th>
+    <% end %>
+    <th><%= type.model_type.to_s.titlecase %></th>
+    <th><%= type.model_type.to_s.titlecase %> Creator</th>
+    <th>Voter</th>
+    <% if CurrentUser.is_admin? %>
+      <th>Email</th>
+    <% end %>
+    <th>Signed Up</th>
+    <th>Vote</th>
+    <th>Created</th>
+    <% if CurrentUser.is_admin? %>
+      <th>IP</th>
+    <% end %>
+  </tr>
+  </thead>
+  <tbody>
+  <% votes.each do |vote| %>
+    <tr id="r<%= vote.id %>">
+      <td><%= vote.id %></td>
+      <% if type == CommentVote %>
+        <td><%= link_to vote.post.id, post_path(vote.post) %></td>
+      <% end %>
+      <td><%= link_to vote.send("#{type.model_type}_id"), vote.send(type.model_type) %></td>
+      <td><%= link_to_user vote.send(type.model_type).send(type.model_creator_column) %></td>
+      <td><%= link_to_user vote.user %></td>
       <% if CurrentUser.is_admin? %>
-        <%= f.input(:user_ip_addr, label: "IP Address") %>
-        <%= f.input(:duplicates_only, label: "Duplicates Only", as: :boolean) %>
-        <%= f.input(:order, collection: [%w[Created id], ["IP Address", "ip_addr"]]) %>
+        <td><%= vote.user.email %></td>
       <% end %>
-    <% end %>
-
-    <table class="striped" id="votes">
-      <thead>
-      <tr>
-        <th>ID</th>
-        <% if type == CommentVote %>
-          <th>Post</th>
-        <% end %>
-        <th><%= type.model_type.to_s.titlecase %></th>
-        <th><%= type.model_type.to_s.titlecase %> Creator</th>
-        <th>Voter</th>
-        <% if CurrentUser.is_admin? %>
-          <th>Email</th>
-        <% end %>
-        <th>Signed Up</th>
-        <th>Vote</th>
-        <th>Created</th>
-        <% if CurrentUser.is_admin? %>
-          <th>IP</th>
-        <% end %>
-      </tr>
-      </thead>
-      <tbody>
-      <% votes.each do |vote| %>
-        <tr id="r<%= vote.id %>">
-          <td><%= vote.id %></td>
-          <% if type == CommentVote %>
-            <td><%= link_to vote.post.id, post_path(vote.post) %></td>
-          <% end %>
-          <td><%= link_to vote.send("#{type.model_type}_id"), vote.send(type.model_type) %></td>
-          <td><%= link_to_user vote.send(type.model_type).send(type.model_creator_column) %></td>
-          <td><%= link_to_user vote.user %></td>
-          <% if CurrentUser.is_admin? %>
-            <td><%= vote.user.email %></td>
-          <% end %>
-          <td><%= time_ago_in_words_tagged(vote.user.created_at) %></td>
-          <td><%= vote.vote_display.html_safe %></td>
-          <td><%= time_ago_in_words_tagged(vote.created_at) %></td>
-          <% if CurrentUser.is_admin? %>
-            <td><%= link_to_ip vote.user_ip_addr%></td>
-          <% end %>
-        </tr>
+      <td><%= time_ago_in_words_tagged(vote.user.created_at) %></td>
+      <td><%= vote.vote_display.html_safe %></td>
+      <td><%= time_ago_in_words_tagged(vote.created_at) %></td>
+      <% if CurrentUser.is_admin? %>
+        <td><%= link_to_ip vote.user_ip_addr%></td>
       <% end %>
-      </tbody>
-    </table>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
 
-    <% if deletable || lockable %>
-      <br>
-      <ul>
-        <li><%= tag.button("Select All", id: "select-all-votes") %></li>
-        <% if lockable %>
-          <li><%= tag.button("Lock Votes", id: "lock-votes") %> Set the votes to 0, preventing the user from voting on the <%= type.model_type %> again</li>
-        <% end %>
-        <% if deletable && CurrentUser.is_admin? %>
-          <li><%= tag.button("Delete Votes", id: "delete-votes") %> Remove the votes</li>
-        <% end %>
-      </ul>
-
-      <%= javascript_tag nonce: true do -%>
-        new Danbooru.VoteManager('<%= type.model_type %>');
-      <% end -%>
+<% if deletable || lockable %>
+  <br>
+  <ul>
+    <li><%= tag.button("Select All", id: "select-all-votes") %></li>
+    <% if lockable %>
+      <li><%= tag.button("Lock Votes", id: "lock-votes") %> Set the votes to 0, preventing the user from voting on the <%= type.model_type %> again</li>
     <% end %>
+    <% if deletable && CurrentUser.is_admin? %>
+      <li><%= tag.button("Delete Votes", id: "delete-votes") %> Remove the votes</li>
+    <% end %>
+  </ul>
 
-    <%= numbered_paginator(votes) %>
-  </div>
-</div>
+  <%= javascript_tag nonce: true do -%>
+    new Danbooru.VoteManager('<%= type.model_type %>');
+  <% end -%>
+<% end %>
+
+<%= numbered_paginator(votes) %>
 
 <%= render(partial: "user_votes/secondary_links", locals: { votes: votes }) %>
 

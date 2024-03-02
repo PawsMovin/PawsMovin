@@ -1,28 +1,24 @@
-<div id="c-set-maintainer">
-  <div id="a-index">
-    <h1>Set Maintainer Invites</h1>
-    <table class="striped">
-      <thead>
-        <th>Set</th>
-        <th>Status</th>
-        <th>Date</th>
-        <th>Action</th>
-      </thead>
-      <tbody>
-      <% @invites.where.not(status: "cooldown").find_each do |m| %>
-        <% if m.post_set.is_public %>
-          <tr>
-            <td><%= link_to m.post_set.name, post_set_path(m.post_set) %></td>
-            <td><%= m.status.capitalize %></td>
-            <td><%= compact_time m.updated_at %></td>
-            <td><%= render "post_set_maintainers/invite_links", invite: m %></td>
-          </tr>
-        <% end %>
-      <% end %>
-      </tbody>
-    </table>
-  </div>
-</div>
+<h1>Set Maintainer Invites</h1>
+<table class="striped">
+  <thead>
+    <th>Set</th>
+    <th>Status</th>
+    <th>Date</th>
+    <th>Action</th>
+  </thead>
+  <tbody>
+  <% @invites.where.not(status: "cooldown").find_each do |m| %>
+    <% if m.post_set.is_public %>
+      <tr>
+        <td><%= link_to m.post_set.name, post_set_path(m.post_set) %></td>
+        <td><%= m.status.capitalize %></td>
+        <td><%= compact_time m.updated_at %></td>
+        <td><%= render "post_set_maintainers/invite_links", invite: m %></td>
+      </tr>
+    <% end %>
+  <% end %>
+  </tbody>
+</table>
 
 <%= render partial: "post_sets/secondary_links" %>
 

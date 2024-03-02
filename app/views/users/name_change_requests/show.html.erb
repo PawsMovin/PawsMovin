@@ -1,46 +1,42 @@
-<div id="c-user-name-change-requests">
-  <div id="a-show">
-    <h1>Name Change Request</h1>
+<h1>Name Change Request</h1>
 
-    <table class="aligned-vertical">
-      <tbody>
-        <tr>
-          <th>Date</th>
-          <td>
-            <%= compact_time @change_request.created_at %>
-            <%= render "application/update_notice", record: @change_request %>
-          </td>
-        </tr>
-        <tr>
-          <th>User</th>
-          <td><%= link_to_user @change_request.user %></td>
-        </tr>
-        <tr>
-          <th>Request</th>
-          <td>
-            <strong><%= @change_request.original_name %></strong> ->
-            <strong><%= @change_request.desired_name %></strong>
-          </td>
-        </tr>
-        <tr>
-          <th>Reason</th>
-          <td><%= @change_request.change_reason %></td>
-        </tr>
-        <tr>
-          <th>Status</th>
-          <td>
-            <%= @change_request.status %>
-            <% if @change_request.approved? %>
-              by <%= link_to_user @change_request.approver %>
-            <% elsif @change_request.rejected? %>
-              for reason: <%= link_to @change_request.rejection_reason %>
-            <% end %>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
+<table class="aligned-vertical">
+  <tbody>
+    <tr>
+      <th>Date</th>
+      <td>
+        <%= compact_time @change_request.created_at %>
+        <%= render "application/update_notice", record: @change_request %>
+      </td>
+    </tr>
+    <tr>
+      <th>User</th>
+      <td><%= link_to_user @change_request.user %></td>
+    </tr>
+    <tr>
+      <th>Request</th>
+      <td>
+        <strong><%= @change_request.original_name %></strong> ->
+        <strong><%= @change_request.desired_name %></strong>
+      </td>
+    </tr>
+    <tr>
+      <th>Reason</th>
+      <td><%= @change_request.change_reason %></td>
+    </tr>
+    <tr>
+      <th>Status</th>
+      <td>
+        <%= @change_request.status %>
+        <% if @change_request.approved? %>
+          by <%= link_to_user @change_request.approver %>
+        <% elsif @change_request.rejected? %>
+          for reason: <%= link_to @change_request.rejection_reason %>
+        <% end %>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 <%= render "secondary_links" %>
 

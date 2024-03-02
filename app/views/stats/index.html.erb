@@ -1,94 +1,90 @@
-<div id="c-stats">
-  <div id="a-index">
-    <p>Refreshed once a day.</p>
-    <div class="stats-column">
-      <%= render "stats_table", header_title: "Site", data: [
-          ["Started", compact_time(DateTime.parse(@stats["started"]))],
-          ["Average registrations per day", "average_registrations_per_day"],
-          ["Average posts per day", "average_posts_per_day"],
-          ["Average comments per day", "average_comments_per_day"],
-          ["Average forum posts per day", "average_forum_posts_per_day"],
-        ]
-      %>
+<p>Refreshed once a day.</p>
+<div class="stats-column">
+  <%= render "stats_table", header_title: "Site", data: [
+      ["Started", compact_time(DateTime.parse(@stats["started"]))],
+      ["Average registrations per day", "average_registrations_per_day"],
+      ["Average posts per day", "average_posts_per_day"],
+      ["Average comments per day", "average_comments_per_day"],
+      ["Average forum posts per day", "average_forum_posts_per_day"],
+    ]
+  %>
 
-      <%= render "percentage_table", header_title: "Posts", data: [
-          ["Total posts", "total_posts"],
-          ["Active posts", "active_posts", "total_posts"],
-          ["Deleted posts", "deleted_posts", "total_posts"],
-          ["Destroyed posts", "destroyed_posts", "total_posts"],
-          ["Safe posts", "safe_posts", "existing_posts"],
-          ["Questionable posts", "questionable_posts", "existing_posts"],
-          ["Explicit posts", "explicit_posts", "existing_posts"],
-          ["Total post votes", "total_votes"],
-          ["Note count", "total_notes"],
-          ["Total favorited posts", "total_favorites"],
-          ["Pools", "total_pools"],
-          ["Average posts per pool", "average_posts_per_pool"],
-          ["Public sets", "public_sets", "total_sets"],
-          ["Private sets", "private_sets", "total_sets"],
-          ["Average posts per set", "average_posts_per_set"],
-        ]
-      %>
-    </div>
+  <%= render "percentage_table", header_title: "Posts", data: [
+      ["Total posts", "total_posts"],
+      ["Active posts", "active_posts", "total_posts"],
+      ["Deleted posts", "deleted_posts", "total_posts"],
+      ["Destroyed posts", "destroyed_posts", "total_posts"],
+      ["Safe posts", "safe_posts", "existing_posts"],
+      ["Questionable posts", "questionable_posts", "existing_posts"],
+      ["Explicit posts", "explicit_posts", "existing_posts"],
+      ["Total post votes", "total_votes"],
+      ["Note count", "total_notes"],
+      ["Total favorited posts", "total_favorites"],
+      ["Pools", "total_pools"],
+      ["Average posts per pool", "average_posts_per_pool"],
+      ["Public sets", "public_sets", "total_sets"],
+      ["Private sets", "private_sets", "total_sets"],
+      ["Average posts per set", "average_posts_per_set"],
+    ]
+  %>
+</div>
 
-    <div class="stats-column">
-      <%= render "percentage_table", header_title: "Image files", data: [
-          ["Total existing posts", "existing_posts"],
-          ["JPG posts", "jpg_posts", "existing_posts"],
-          ["PNG posts", "png_posts", "existing_posts"],
-          ["WebP posts", "webp_posts", "existing_posts"],
-          ["GIF posts", "gif_posts", "existing_posts"],
-          ["WebM posts", "webm_posts", "existing_posts"],
-          ["Average file size", number_to_human_size(@stats["average_file_size"], precision: 3)],
-          ["Total file size", number_to_human_size(@stats["total_file_size"], precision: 3)],
-        ]
-      %>
+<div class="stats-column">
+  <%= render "percentage_table", header_title: "Image files", data: [
+      ["Total existing posts", "existing_posts"],
+      ["JPG posts", "jpg_posts", "existing_posts"],
+      ["PNG posts", "png_posts", "existing_posts"],
+      ["WebP posts", "webp_posts", "existing_posts"],
+      ["GIF posts", "gif_posts", "existing_posts"],
+      ["WebM posts", "webm_posts", "existing_posts"],
+      ["Average file size", number_to_human_size(@stats["average_file_size"], precision: 3)],
+      ["Total file size", number_to_human_size(@stats["total_file_size"], precision: 3)],
+    ]
+  %>
 
-      <%= render "percentage_table", header_title: "Users", data: [
-          ["User count", "total_users"],
-          ["Unactivated users", "unactivated_users", "total_users"],
-          ["Banned users", "blocked_users", "total_users"],
-          ["Members", "member_users", "total_users"],
-          ["Trusted users", "trusted_users", "total_users"],
-          ["Janitors", "janitor_users", "total_users"],
-          ["Moderators", "moderator_users", "total_users"],
-          ["Admins", "admin_users", "total_users"],
-          ["Dmails sent", "total_dmails"],
-        ]
-      %>
-    </div>
+  <%= render "percentage_table", header_title: "Users", data: [
+      ["User count", "total_users"],
+      ["Unactivated users", "unactivated_users", "total_users"],
+      ["Banned users", "blocked_users", "total_users"],
+      ["Members", "member_users", "total_users"],
+      ["Trusted users", "trusted_users", "total_users"],
+      ["Janitors", "janitor_users", "total_users"],
+      ["Moderators", "moderator_users", "total_users"],
+      ["Admins", "admin_users", "total_users"],
+      ["Dmails sent", "total_dmails"],
+    ]
+  %>
+</div>
 
-    <div class="stats-column">
-      <%= render "percentage_table", header_title: "Comments", data: [
-          ["Comment count", "total_comments"],
-          ["Active comments", "active_comments", "total_comments"],
-          ["Hidden comments", "hidden_comments", "total_comments"],
-          ["Deleted comments", "deleted_comments", "total_comments"],
-        ]
-      %>
+<div class="stats-column">
+  <%= render "percentage_table", header_title: "Comments", data: [
+      ["Comment count", "total_comments"],
+      ["Active comments", "active_comments", "total_comments"],
+      ["Hidden comments", "hidden_comments", "total_comments"],
+      ["Deleted comments", "deleted_comments", "total_comments"],
+    ]
+  %>
 
-      <%= render "stats_table", header_title: "Forum Posts", data: [
-          ["Thread count", "total_forum_threads"],
-          ["Post count", "total_forum_posts"],
-          ["Average posts per thread", "average_posts_per_thread"],
-        ]
-      %>
+  <%= render "stats_table", header_title: "Forum Posts", data: [
+      ["Thread count", "total_forum_threads"],
+      ["Post count", "total_forum_posts"],
+      ["Average posts per thread", "average_posts_per_thread"],
+    ]
+  %>
 
-      <%= render "percentage_table", header_title: "Tags", data: [
-          ["Tag count", "total_tags"],
-          ["General tag count", "general_tags", "total_tags"],
-          ["Artist tag count", "artist_tags", "total_tags"],
-          ["Voice Actor tag count", "voice_actor_tags", "total_tags"],
-          ["Character tag count", "character_tags", "total_tags"],
-          ["Copyright tag count", "copyright_tags", "total_tags"],
-          ["Species tag count", "species_tags", "total_tags"],
-          ["Meta tag count", "meta_tags", "total_tags"],
-          ["Invalid tag count", "invalid_tags", "total_tags"],
-          ["Lore tag count", "lore_tags", "total_tags"],
-        ]
-      %>
-    </div>
-  </div>
+  <%= render "percentage_table", header_title: "Tags", data: [
+      ["Tag count", "total_tags"],
+      ["General tag count", "general_tags", "total_tags"],
+      ["Artist tag count", "artist_tags", "total_tags"],
+      ["Voice Actor tag count", "voice_actor_tags", "total_tags"],
+      ["Character tag count", "character_tags", "total_tags"],
+      ["Copyright tag count", "copyright_tags", "total_tags"],
+      ["Species tag count", "species_tags", "total_tags"],
+      ["Meta tag count", "meta_tags", "total_tags"],
+      ["Invalid tag count", "invalid_tags", "total_tags"],
+      ["Lore tag count", "lore_tags", "total_tags"],
+    ]
+  %>
 </div>
 
 <% content_for(:page_title) do %>

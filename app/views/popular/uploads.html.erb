@@ -1,18 +1,14 @@
 <%= render partial: "posts/partials/common/zoom_container" %>
 
-<div id="c-popular">
-  <div id="a-uploads">
-    <h1>Popular: <%= date_range_description(@date, @scale, @min_date, @max_date) %></h1>
+<h1>Popular: <%= date_range_description(@date, @scale, @min_date, @max_date) %></h1>
 
-    <%= @post_set.presenter.nav_links(self) %>
+<%= @post_set.presenter.nav_links(self) %>
 
-    <%= render "posts/partials/common/inline_blacklist" %>
+<%= render "posts/partials/common/inline_blacklist" %>
 
-    <div id="posts" class="user-disable-cropped-<%= PawsMovin.config.enable_image_cropping? && CurrentUser.user.disable_cropped_thumbnails? %>">
-      <div id="posts-container">
-        <%= @post_set.presenter.post_previews_html(self, show_cropped: true) %>
-      </div>
-    </div>
+<div id="posts" class="user-disable-cropped-<%= PawsMovin.config.enable_image_cropping? && CurrentUser.user.disable_cropped_thumbnails? %>">
+  <div id="posts-container">
+    <%= @post_set.presenter.post_previews_html(self, show_cropped: true) %>
   </div>
 </div>
 

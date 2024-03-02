@@ -1,58 +1,53 @@
-<div id="c-users">
-  <div id="a-index">
-    <h1>Users</h1>
+<h1>Users</h1>
 
-    <%= render "search" %>
-    <table class="striped">
-      <thead>
-        <tr>
-          <th></th>
-          <th>Name</th>
-          <th>Posts</th>
-          <th>Deleted</th>
+<%= render "search" %>
+<table class="striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Name</th>
+      <th>Posts</th>
+      <th>Deleted</th>
+      <% if CurrentUser.is_admin? %>
+        <th>Email</th>
+        <th>Last IP</th>
+      <% end %>
+      <th>Notes</th>
+      <th>Edits</th>
+      <th>Level</th>
+      <th>Joined</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @users.each do |user| %>
+      <tr>
+        <td>
           <% if CurrentUser.is_admin? %>
-            <th>Email</th>
-            <th>Last IP</th>
+            <%= link_to "Edit", edit_admin_user_path(user) %>
           <% end %>
-          <th>Notes</th>
-          <th>Edits</th>
-          <th>Level</th>
-          <th>Joined</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @users.each do |user| %>
-          <tr>
-            <td>
-              <% if CurrentUser.is_admin? %>
-                <%= link_to "Edit", edit_admin_user_path(user) %>
-              <% end %>
-            </td>
-            <td>
-              <%= link_to_user user %>
-            </td>
-            <td><%= link_to user.post_upload_count, posts_path(tags: "user:#{user.name}") %></td>
-            <td><%= user.post_deleted_count %></td>
-            <% if CurrentUser.is_admin? %>
-              <td>
-                <%= user.email %>
-                <%= email_domain_search(user.email) %>
-              </td>
-              <td><%= link_to_ip(user.last_ip_addr) %></td>
-            <% end %>
-            <td><%= link_to user.note_version_count, note_versions_path(search: {updater_id: user.id}) %></td>
-            <td><%= link_to user.post_update_count, post_versions_path(search: {updater_id: user.id}) %></td>
-            <td><%= "(Unactivated)" unless user.is_verified? %> <%= user.level_string %></td>
-            <td><%= compact_time user.created_at %></td>
-          </tr>
+        </td>
+        <td>
+          <%= link_to_user user %>
+        </td>
+        <td><%= link_to user.post_upload_count, posts_path(tags: "user:#{user.name}") %></td>
+        <td><%= user.post_deleted_count %></td>
+        <% if CurrentUser.is_admin? %>
+          <td>
+            <%= user.email %>
+            <%= email_domain_search(user.email) %>
+          </td>
+          <td><%= link_to_ip(user.last_ip_addr) %></td>
         <% end %>
-      </tbody>
-    </table>
+        <td><%= link_to user.note_version_count, note_versions_path(search: {updater_id: user.id}) %></td>
+        <td><%= link_to user.post_update_count, post_versions_path(search: {updater_id: user.id}) %></td>
+        <td><%= "(Unactivated)" unless user.is_verified? %> <%= user.level_string %></td>
+        <td><%= compact_time user.created_at %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
 
-    <%= numbered_paginator(@users) %>
-
-  </div>
-</div>
+<%= numbered_paginator(@users) %>
 
 <%= render "secondary_links" %>
 

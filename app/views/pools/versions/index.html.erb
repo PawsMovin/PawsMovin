@@ -1,16 +1,12 @@
-<div id="c-pool-versions">
-  <div id="a-index">
-    <h1>Pool History</h1>
+<h1>Pool History</h1>
 
-    <% if params.dig(:search, :pool_id).present? %>
-      <%= render "revert_listing" %>
-    <% else %>
-      <%= render "standard_listing" %>
-    <% end %>
+<% if params.dig(:search, :pool_id).present? %>
+  <%= render "revert_listing" %>
+<% else %>
+  <%= render "standard_listing" %>
+<% end %>
 
-    <%= numbered_paginator(@pool_versions) %>
-  </div>
-</div>
+<%= numbered_paginator(@pool_versions) %>
 
 <%= render "pools/secondary_links" %>
 <%= latest_link(@pool_versions) %>

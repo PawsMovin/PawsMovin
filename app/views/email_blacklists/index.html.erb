@@ -1,37 +1,33 @@
-<div id="c-email-blacklists">
-  <div id="a-index">
-    <%= render "search" %>
-    <h1>Email Blacklists</h1>
+<%= render "search" %>
+<h1>Email Blacklists</h1>
 
-    <table class="striped">
-      <thead>
-        <tr>
-          <th>User</th>
-          <th>Domain</th>
-          <th>Ban Reason</th>
-          <th>Created</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @blacklists.each do |blacklist| %>
-          <tr>
-            <td><%= link_to_user(blacklist.creator) %></td>
-            <td>
-              <%= blacklist.domain %>
-              <%= link_to "»", users_path(search: { email_matches: "*@*#{blacklist.domain}" }) %>
-            </td>
-            <td><%= blacklist.reason %></td>
-            <td><%= compact_time blacklist.created_at %></td>
-            <td><%= link_to "Delete", email_blacklist_path(blacklist), method: :delete, data: {confirm: "Do your really want to delete #{blacklist.domain}?"} %></td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
+<table class="striped">
+  <thead>
+    <tr>
+      <th>User</th>
+      <th>Domain</th>
+      <th>Ban Reason</th>
+      <th>Created</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @blacklists.each do |blacklist| %>
+      <tr>
+        <td><%= link_to_user(blacklist.creator) %></td>
+        <td>
+          <%= blacklist.domain %>
+          <%= link_to "»", users_path(search: { email_matches: "*@*#{blacklist.domain}" }) %>
+        </td>
+        <td><%= blacklist.reason %></td>
+        <td><%= compact_time blacklist.created_at %></td>
+        <td><%= link_to "Delete", email_blacklist_path(blacklist), method: :delete, data: {confirm: "Do your really want to delete #{blacklist.domain}?"} %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
 
-    <%= numbered_paginator(@blacklists) %>
-  </div>
-</div>
+<%= numbered_paginator(@blacklists) %>
 
 <%= render "secondary_links" %>
 

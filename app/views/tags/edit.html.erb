@@ -1,22 +1,18 @@
-<div id="c-tags">
-  <div id="a-edit">
-    <h1>Tag: <%= link_to @tag.name, posts_path(tags: @tag.name), class: "tag-type-#{@tag.category}" %></h1>
+<h1>Tag: <%= link_to @tag.name, posts_path(tags: @tag.name), class: "tag-type-#{@tag.category}" %></h1>
 
-    <%= custom_form_for(@tag) do |f| %>
-      <% if @tag.is_locked? %>
-        <p>This tag is category locked</p>
-      <% else %>
-        <%= f.input(:category, collection: TagCategory.for_select, include_blank: false) %>
-      <% end %>
+<%= custom_form_for(@tag) do |f| %>
+  <% if @tag.is_locked? %>
+    <p>This tag is category locked</p>
+  <% else %>
+    <%= f.input(:category, collection: TagCategory.for_select, include_blank: false) %>
+  <% end %>
 
-      <% if CurrentUser.is_admin? %>
-        <%= f.input(:is_locked, collection: [%w[No false], %w[Yes true]], include_blank: false) %>
-      <% end %>
+  <% if CurrentUser.is_admin? %>
+    <%= f.input(:is_locked, collection: [%w[No false], %w[Yes true]], include_blank: false) %>
+  <% end %>
 
-      <%= f.button(:submit, "Submit") %>
-    <% end %>
-  </div>
-</div>
+  <%= f.button(:submit, "Submit") %>
+<% end %>
 
 <%= render "secondary_links" %>
 

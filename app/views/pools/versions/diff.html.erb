@@ -1,16 +1,12 @@
-<div id="c-pool-versions">
-  <div id="a-diff">
-    <h1>Pool Version Comparison: <%= @pool_version.name %></h1>
+<h1>Pool Version Comparison: <%= @pool_version.name %></h1>
 
-    <ul>
-      <li><strong>Posts</strong>: <%= pool_version_posts_diff(@pool_version) %></li>
-      <% if @pool_version.previous %>
-        <li><strong>Old Desc</strong>: <%= @pool_version.previous.description %></li>
-      <% end %>
-      <li><strong>New Desc</strong>: <%= @pool_version.description %></li>
-    </ul>
-  </div>
-</div>
+<ul>
+  <li><strong>Posts</strong>: <%= pool_version_posts_diff(@pool_version) %></li>
+  <% if @pool_version.previous %>
+    <li><strong>Old Desc</strong>: <%= @pool_version.previous.description %></li>
+  <% end %>
+  <li><strong>New Desc</strong>: <%= @pool_version.description %></li>
+</ul>
 
 <%= render "pools/secondary_links" %>
 

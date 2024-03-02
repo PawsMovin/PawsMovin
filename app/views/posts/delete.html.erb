@@ -1,62 +1,60 @@
-<div id="c-confirm-delete">
-  <h1>Delete Post</h1>
+<h1>Delete Post</h1>
 
-  <div>
-    <%= PostPresenter.preview(@post, show_deleted: true, no_blacklist: true) %>
+<div>
+  <%= PostPresenter.preview(@post, show_deleted: true, no_blacklist: true) %>
+</div>
+
+<%= form_tag(post_path(@post), style: "clear: both;", class: "simple_form", method: :delete) do %>
+  <div class="input">
+    <label for="reason">Reason</label>
+    <%= text_field_tag "reason", @reason %>
   </div>
 
-  <%= form_tag(post_path(@post), style: "clear: both;", class: "simple_form", method: :delete) do %>
-    <div class="input">
-      <label for="reason">Reason</label>
-      <%= text_field_tag "reason", @reason %>
-    </div>
-
-    <% if @post.parent_id %>
-      <div class="post_delete_options">
-        <%= PostPresenter.preview(@post.parent, show_deleted: true, no_blacklist: true) %>
-        <div class="input">
-          <label for="move_favorites">
-            <%= check_box_tag "move_favorites", true, true %>
-            Move favorites to parent?
-          </label>
-          <label for="copy_tags">
-            <%= check_box_tag "copy_tags", false, false %>
-            Merge tags into parent?
-          </label>
-          <label for="copy_sources">
-            <%= check_box_tag "copy_sources", false, false %>
-            Merge sources into parent?
-          </label>
-        </div>
+  <% if @post.parent_id %>
+    <div class="post_delete_options">
+      <%= PostPresenter.preview(@post.parent, show_deleted: true, no_blacklist: true) %>
+      <div class="input">
+        <label for="move_favorites">
+          <%= check_box_tag "move_favorites", true, true %>
+          Move favorites to parent?
+        </label>
+        <label for="copy_tags">
+          <%= check_box_tag "copy_tags", false, false %>
+          Merge tags into parent?
+        </label>
+        <label for="copy_sources">
+          <%= check_box_tag "copy_sources", false, false %>
+          Merge sources into parent?
+        </label>
       </div>
-    <% end %>
-
-    <%= submit_tag "Delete" %>
-    <%= submit_tag "Cancel" %>
-    <%= button_tag "Clear", type: "button", id: "delreason-clear" %>
+    </div>
   <% end %>
 
-  <div id="delreason-prebuilt" class="simple_form">
-    <b>Reason</b>
-    <% last_order = 0 %>
-    <% PostDeletionReason.order(order: :desc).find_each do |reason| %>
-      <%# the latter should never happen, but if it did, this loop would tear down the site %>
-      <% if (last_order + 1) != reason.order && last_order != reason.order %>
-        <% while (last_order + 1) < reason.order %>
-          <br>
-          <% last_order += 1 %>
-        <% end %>
+  <%= submit_tag "Delete" %>
+  <%= submit_tag "Cancel" %>
+  <%= button_tag "Clear", type: "button", id: "delreason-clear" %>
+<% end %>
+
+<div id="delreason-prebuilt" class="simple_form">
+  <b>Reason</b>
+  <% last_order = 0 %>
+  <% PostDeletionReason.order(order: :desc).find_each do |reason| %>
+    <%# the latter should never happen, but if it did, this loop would tear down the site %>
+    <% if (last_order + 1) != reason.order && last_order != reason.order %>
+      <% while (last_order + 1) < reason.order %>
+        <br>
+        <% last_order += 1 %>
       <% end %>
-      <% last_order = reason.order %>
-      <a class="button delreason-button" data-text="<%= reason.reason.gsub(/%(PARENT|OTHER)_ID%/, "%ID%") %>">
-        <%= reason.reason
-              .gsub("%PARENT_ID%", "<input type=\"text\" value=\"#{@post.parent_id || ''}\" />")
-              .gsub("%OTHER_ID%", "<input type=\"text\" />")
-              .html_safe
-        %>
-      </a>
     <% end %>
-  </div>
+    <% last_order = reason.order %>
+    <a class="button delreason-button" data-text="<%= reason.reason.gsub(/%(PARENT|OTHER)_ID%/, "%ID%") %>">
+      <%= reason.reason
+            .gsub("%PARENT_ID%", "<input type=\"text\" value=\"#{@post.parent_id || ''}\" />")
+            .gsub("%OTHER_ID%", "<input type=\"text\" />")
+            .html_safe
+      %>
+    </a>
+  <% end %>
 </div>
 
 <% content_for(:page_title) do %>

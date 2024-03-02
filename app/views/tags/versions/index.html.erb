@@ -1,38 +1,34 @@
-<div id="c-tag-type-version">
-  <div id="a-index">
-    <%= render partial: "search" %>
-    <div>
-      <table class="striped">
-        <thead>
-        <tr>
-          <th style="width:70px;">Tag</th>
-          <th style="width:60px;">Date</th>
-          <th style="width:220px;">User</th>
-          <th style="width:55px;">Old Type</th>
-          <th style="width:70px;">New type</th>
-          <th style="width:200px;">Locked</th>
-        </tr>
-        </thead>
+<%= render partial: "search" %>
+<div>
+  <table class="striped">
+    <thead>
+    <tr>
+      <th style="width:70px;">Tag</th>
+      <th style="width:60px;">Date</th>
+      <th style="width:220px;">User</th>
+      <th style="width:55px;">Old Type</th>
+      <th style="width:70px;">New type</th>
+      <th style="width:200px;">Locked</th>
+    </tr>
+    </thead>
 
-        <tbody>
-        <% @tag_versions.each do |change| %>
-          <tr id="r<%= change.id %>">
-            <td><%= link_to change.tag.name, edit_tag_path(change.tag) %></td>
-            <td><%= compact_time change.created_at %></td>
-            <td><%= link_to_user change.creator %></td>
+    <tbody>
+    <% @tag_versions.each do |change| %>
+      <tr id="r<%= change.id %>">
+        <td><%= link_to change.tag.name, edit_tag_path(change.tag) %></td>
+        <td><%= compact_time change.created_at %></td>
+        <td><%= link_to_user change.creator %></td>
 
-            <td><a class="<%= "tag-type-#{change.old_type}" %>"><%= Tag.category_for_value(change.old_type) %></a></td>
-            <td><a class="<%= "tag-type-#{change.new_type}" %>"><%= Tag.category_for_value(change.new_type) %></a></td>
-            <td><%= change.is_locked %></td>
-          </tr>
-        <% end %>
-        </tbody>
-      </table>
-    </div>
-
-    <%= numbered_paginator(@tag_versions) %>
-  </div>
+        <td><a class="<%= "tag-type-#{change.old_type}" %>"><%= Tag.category_for_value(change.old_type) %></a></td>
+        <td><a class="<%= "tag-type-#{change.new_type}" %>"><%= Tag.category_for_value(change.new_type) %></a></td>
+        <td><%= change.is_locked %></td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
 </div>
+
+<%= numbered_paginator(@tag_versions) %>
 
 <%= render "secondary_links" %>
 

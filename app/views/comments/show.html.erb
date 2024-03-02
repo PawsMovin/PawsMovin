@@ -1,19 +1,15 @@
 <%= render partial: "posts/partials/common/zoom_container" %>
-<div id="c-comments">
-  <div id="a-show">
-    <div class="comments-for-post">
+<div class="comments-for-post">
 
-      <div class="comment-post">
-        <div class="post-container">
-          <%= PostPresenter.preview(@comment.post, inline: true, show_deleted: true) %>
-        </div>
-        <div class="comments-list">
-          <%= render "comments/partials/show/comment", comment: @comment, post: nil %>
-        </div>
-      </div>
-
+  <div class="comment-post">
+    <div class="post-container">
+      <%= PostPresenter.preview(@comment.post, inline: true, show_deleted: true) %>
+    </div>
+    <div class="comments-list">
+      <%= render "comments/partials/show/comment", comment: @comment, post: nil %>
     </div>
   </div>
+
 </div>
 
 <%= render "secondary_links" %>

@@ -1,51 +1,47 @@
-<div id="c-sets">
-  <div id="a-maintainers">
-    <% @maintainers = @post_set.post_set_maintainers %>
-    <h1>Maintainers for set <span class="set-name"><%= @post_set.name %></span></h1>
-    <p>Maintainers are users who are assigned to a set and have the ability to add or remove posts from it. They cannot
-      edit any other details of the set.</p>
+<% @maintainers = @post_set.post_set_maintainers %>
+<h1>Maintainers for set <span class="set-name"><%= @post_set.name %></span></h1>
+<p>Maintainers are users who are assigned to a set and have the ability to add or remove posts from it. They cannot
+  edit any other details of the set.</p>
 
-    <% if @post_set.can_edit_settings?(CurrentUser) && @post_set.is_public %>
-      <h3 style="margin-top:15px;">Add new Maintainer</h3>
-      <div class='section' style="width:380px;">
-        <%= form_tag(post_set_maintainers_path) do %>
-          <label for="set_maintainer_name">Username</label><br/>
-          <%= hidden_field_tag "post_set_id", @post_set.id %>
-          <%= text_field_tag "username", nil, data: { autocomplete: "user" }  %>
-          <%= submit_tag "Invite" %>
-        <% end %>
-      </div>
+<% if @post_set.can_edit_settings?(CurrentUser) && @post_set.is_public %>
+  <h3 style="margin-top:15px;">Add new Maintainer</h3>
+  <div class='section' style="width:380px;">
+    <%= form_tag(post_set_maintainers_path) do %>
+      <label for="set_maintainer_name">Username</label><br/>
+      <%= hidden_field_tag "post_set_id", @post_set.id %>
+      <%= text_field_tag "username", nil, data: { autocomplete: "user" }  %>
+      <%= submit_tag "Invite" %>
     <% end %>
-
-    <table class="striped">
-      <thead>
-      <tr>
-        <th>Username</th>
-        <th>Status</th>
-        <th>Date</th>
-        <th></th>
-      </tr>
-      </thead>
-      <tbody>
-      <% @maintainers.where(status: %w[pending approved]).order(updated_at: :desc).each do |m| %>
-        <tr>
-          <td><%= link_to_user m.user %></td>
-          <td><%= m.status.capitalize %></td>
-          <td><%= compact_time m.updated_at %></td>
-          <td>
-            <% if @post_set.can_edit_settings?(CurrentUser) && m.status == "approved" %>
-              <%= link_to "Remove", post_set_maintainer_path(m), method: :delete, data: {confirm: "Are you sure you want to remove this maintainer?"} %>
-            <% end %>
-            <% if @post_set.can_edit_settings?(CurrentUser) && m.status == "pending" %>
-              <%= link_to "Remove", post_set_maintainer_path(m), method: :delete, data: {confirm: "Are you sure you want to remove this pending invite?"} %>
-            <% end %>
-          </td>
-        </tr>
-      <% end %>
-      </tbody>
-    </table>
   </div>
-</div>
+<% end %>
+
+<table class="striped">
+  <thead>
+  <tr>
+    <th>Username</th>
+    <th>Status</th>
+    <th>Date</th>
+    <th></th>
+  </tr>
+  </thead>
+  <tbody>
+  <% @maintainers.where(status: %w[pending approved]).order(updated_at: :desc).each do |m| %>
+    <tr>
+      <td><%= link_to_user m.user %></td>
+      <td><%= m.status.capitalize %></td>
+      <td><%= compact_time m.updated_at %></td>
+      <td>
+        <% if @post_set.can_edit_settings?(CurrentUser) && m.status == "approved" %>
+          <%= link_to "Remove", post_set_maintainer_path(m), method: :delete, data: {confirm: "Are you sure you want to remove this maintainer?"} %>
+        <% end %>
+        <% if @post_set.can_edit_settings?(CurrentUser) && m.status == "pending" %>
+          <%= link_to "Remove", post_set_maintainer_path(m), method: :delete, data: {confirm: "Are you sure you want to remove this pending invite?"} %>
+        <% end %>
+      </td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
 
 <%= render partial: "secondary_links" %>
 

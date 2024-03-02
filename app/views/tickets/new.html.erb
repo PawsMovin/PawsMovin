@@ -1,50 +1,45 @@
-<div id="c-tickets">
-  <div id="a-new">
-
-    <%= custom_form_for(@ticket) do |f| %>
-      <% @found_item = true %>
-      <% if @ticket.model_type.nil? %>
-        <% @found_item = false %>
-        <div class="section">
-          To submit a ticket about a problematic comment, click "Report" on the comment itself.<br/>
-          To submit a ticket about a problematic forum post, click "Report" on the post itself.<br/>
-          To submit a ticket about a problematic pool, click "Report" on the pool page itself.<br/>
-          To submit a ticket about a problematic set, click "Report" on the set page itself.<br/>
-          To submit a ticket about a problematic user, click "Report" on the user's profile page.<br/>
-          To submit a ticket about a problematic private message, click "Report" on the DMail.<br/>
-          To submit a username request, click "Request Username Change" on <a href='/user/home'>the user home page</a>.<br/>
-        </div>
-      <% else %>
-        <% if @ticket.model %>
-          <div class="section">
-            <%= render partial: "tickets/new_types/#{@ticket.model_type.underscore}" %>
-          </div>
-        <% else %>
-          <% @found_item = false %>
-          <div class="section">That <%= @ticket.model_type.underscore.tr("_", " ") %> does not exist.</div>
-        <% end %>
-      <% end %>
-
-      <% if @found_item %>
-        <%= f.hidden_field(:model_id) %>
-        <%= f.hidden_field(:model_type) %>
-        <% if @ticket.model_type == "User" %>
-          <%= f.hidden_field(:report_type) %>
-        <% end %>
-
-        <div class="section">
-          <span class="ticket-warning">
-            <strong>Note:</strong> Abuse of this system will lead to disciplinary action
-          </span>
-
-          <%= f.input(:reason, as: :dtext, limit: PawsMovin.config.ticket_max_size) %>
-
-        </div>
-        <%= submit_tag "Submit" %>
-      <% end %>
+<%= custom_form_for(@ticket) do |f| %>
+  <% @found_item = true %>
+  <% if @ticket.model_type.nil? %>
+    <% @found_item = false %>
+    <div class="section">
+      To submit a ticket about a problematic comment, click "Report" on the comment itself.<br/>
+      To submit a ticket about a problematic forum post, click "Report" on the post itself.<br/>
+      To submit a ticket about a problematic pool, click "Report" on the pool page itself.<br/>
+      To submit a ticket about a problematic set, click "Report" on the set page itself.<br/>
+      To submit a ticket about a problematic user, click "Report" on the user's profile page.<br/>
+      To submit a ticket about a problematic private message, click "Report" on the DMail.<br/>
+      To submit a username request, click "Request Username Change" on <a href='/user/home'>the user home page</a>.<br/>
+    </div>
+  <% else %>
+    <% if @ticket.model %>
+      <div class="section">
+        <%= render partial: "tickets/new_types/#{@ticket.model_type.underscore}" %>
+      </div>
+    <% else %>
+      <% @found_item = false %>
+      <div class="section">That <%= @ticket.model_type.underscore.tr("_", " ") %> does not exist.</div>
     <% end %>
-  </div>
-</div>
+  <% end %>
+
+  <% if @found_item %>
+    <%= f.hidden_field(:model_id) %>
+    <%= f.hidden_field(:model_type) %>
+    <% if @ticket.model_type == "User" %>
+      <%= f.hidden_field(:report_type) %>
+    <% end %>
+
+    <div class="section">
+      <span class="ticket-warning">
+        <strong>Note:</strong> Abuse of this system will lead to disciplinary action
+      </span>
+
+      <%= f.input(:reason, as: :dtext, limit: PawsMovin.config.ticket_max_size) %>
+
+    </div>
+    <%= submit_tag "Submit" %>
+  <% end %>
+<% end %>
 
 <% render partial: "secondary_links" %>
 

@@ -1,41 +1,36 @@
-<div id="c-forum-categories">
-  <div id="a-index">
-    <h1>Forum Categories</h1>
+<h1>Forum Categories</h1>
 
-    <table class="striped" id="forum-categories-table">
-      <thead>
-      <tr>
-        <th>Name</th>
-        <th>Level Requirements</th>
-        <% if CurrentUser.is_admin? %>
-          <th></th>
-        <% end %>
-      </tr>
-      </thead>
+<table class="striped" id="forum-categories-table">
+  <thead>
+  <tr>
+    <th>Name</th>
+    <th>Level Requirements</th>
+    <% if CurrentUser.is_admin? %>
+      <th></th>
+    <% end %>
+  </tr>
+  </thead>
 
-      <tbody>
-      <% @forum_categories.each do |cat| %>
-        <tr id="forum-category-<%= cat.id %>" data-id="<%= cat.id %>">
-          <td><%= cat.name %></td>
-          <td>
-            <ul>
-              <li>View: <b><%= User.level_string(cat.can_view) %></b></li>
-              <li>Create: <b><%= User.level_string(cat.can_create) %></b></li>
-            </ul>
-          </td>
-          <% if CurrentUser.is_admin? %>
-            <td>
-              <%= link_to "Edit", edit_forum_category_path(cat) %> |
-              <%= link_to "Delete", forum_category_path(cat), method: :delete, data: { confirm: "Are you sure you want to delete this forum category? It must be empty of posts." } %>
-            </td>
-          <% end %>
-        </tr>
+  <tbody>
+  <% @forum_categories.each do |cat| %>
+    <tr id="forum-category-<%= cat.id %>" data-id="<%= cat.id %>">
+      <td><%= cat.name %></td>
+      <td>
+        <ul>
+          <li>View: <b><%= User.level_string(cat.can_view) %></b></li>
+          <li>Create: <b><%= User.level_string(cat.can_create) %></b></li>
+        </ul>
+      </td>
+      <% if CurrentUser.is_admin? %>
+        <td>
+          <%= link_to "Edit", edit_forum_category_path(cat) %> |
+          <%= link_to "Delete", forum_category_path(cat), method: :delete, data: { confirm: "Are you sure you want to delete this forum category? It must be empty of posts." } %>
+        </td>
       <% end %>
-      </tbody>
-    </table>
-  </div>
-</div>
-
+    </tr>
+  <% end %>
+  </tbody>
+</table>
 
 <%= render partial: "secondary_links" %>
 
