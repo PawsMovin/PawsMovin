@@ -1,0 +1,11 @@
+<h1>Order Rules</h1>
+
+<div id="sortable-rules-container">
+  <%= render(partial: "sort", locals: { categories: @categories }) %>
+</div>
+
+<%= render partial: "secondary_links" %>
+
+<% content_for(:page_title) do %>
+  Order Rules
+<% end %>

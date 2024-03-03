@@ -1636,6 +1636,78 @@ ALTER SEQUENCE public.posts_id_seq OWNED BY public.posts.id;
 
 
 --
+-- Name: rule_categories; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.rule_categories (
+    id bigint NOT NULL,
+    creator_id bigint NOT NULL,
+    updater_id bigint NOT NULL,
+    name character varying NOT NULL,
+    "order" integer NOT NULL,
+    anchor character varying NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: rule_categories_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.rule_categories_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: rule_categories_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.rule_categories_id_seq OWNED BY public.rule_categories.id;
+
+
+--
+-- Name: rules; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.rules (
+    id bigint NOT NULL,
+    creator_id bigint NOT NULL,
+    updater_id bigint NOT NULL,
+    category_id bigint NOT NULL,
+    name character varying NOT NULL,
+    description text NOT NULL,
+    "order" integer NOT NULL,
+    anchor character varying NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: rules_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.rules_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: rules_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.rules_id_seq OWNED BY public.rules.id;
+
+
+--
 -- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -2724,6 +2796,20 @@ ALTER TABLE ONLY public.posts ALTER COLUMN change_seq SET DEFAULT nextval('publi
 
 
 --
+-- Name: rule_categories id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.rule_categories ALTER COLUMN id SET DEFAULT nextval('public.rule_categories_id_seq'::regclass);
+
+
+--
+-- Name: rules id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.rules ALTER COLUMN id SET DEFAULT nextval('public.rules_id_seq'::regclass);
+
+
+--
 -- Name: staff_audit_logs id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -3199,6 +3285,22 @@ ALTER TABLE ONLY public.post_votes
 
 ALTER TABLE ONLY public.posts
     ADD CONSTRAINT posts_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: rule_categories rule_categories_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.rule_categories
+    ADD CONSTRAINT rule_categories_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: rules rules_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.rules
+    ADD CONSTRAINT rules_pkey PRIMARY KEY (id);
 
 
 --
@@ -4120,6 +4222,41 @@ CREATE INDEX index_posts_on_uploader_ip_addr ON public.posts USING btree (upload
 
 
 --
+-- Name: index_rule_categories_on_creator_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_rule_categories_on_creator_id ON public.rule_categories USING btree (creator_id);
+
+
+--
+-- Name: index_rule_categories_on_updater_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_rule_categories_on_updater_id ON public.rule_categories USING btree (updater_id);
+
+
+--
+-- Name: index_rules_on_category_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_rules_on_category_id ON public.rules USING btree (category_id);
+
+
+--
+-- Name: index_rules_on_creator_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_rules_on_creator_id ON public.rules USING btree (creator_id);
+
+
+--
+-- Name: index_rules_on_updater_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_rules_on_updater_id ON public.rules USING btree (updater_id);
+
+
+--
 -- Name: index_staff_audit_logs_on_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -4507,11 +4644,51 @@ ALTER TABLE ONLY public.post_deletion_reasons
 
 
 --
+-- Name: rule_categories fk_rails_21909079f3; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.rule_categories
+    ADD CONSTRAINT fk_rails_21909079f3 FOREIGN KEY (creator_id) REFERENCES public.users(id);
+
+
+--
+-- Name: rules fk_rails_272189fc55; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.rules
+    ADD CONSTRAINT fk_rails_272189fc55 FOREIGN KEY (creator_id) REFERENCES public.users(id);
+
+
+--
 -- Name: tickets fk_rails_45cd696dba; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.tickets
     ADD CONSTRAINT fk_rails_45cd696dba FOREIGN KEY (accused_id) REFERENCES public.users(id);
+
+
+--
+-- Name: rules fk_rails_48ba033e3f; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.rules
+    ADD CONSTRAINT fk_rails_48ba033e3f FOREIGN KEY (updater_id) REFERENCES public.users(id);
+
+
+--
+-- Name: rule_categories fk_rails_599a487368; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.rule_categories
+    ADD CONSTRAINT fk_rails_599a487368 FOREIGN KEY (updater_id) REFERENCES public.users(id);
+
+
+--
+-- Name: rules fk_rails_62bf5195cf; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.rules
+    ADD CONSTRAINT fk_rails_62bf5195cf FOREIGN KEY (category_id) REFERENCES public.rule_categories(id);
 
 
 --
@@ -4593,6 +4770,8 @@ ALTER TABLE ONLY public.staff_notes
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20240302152238'),
+('20240302150135'),
 ('20240302142453'),
 ('20240302084449'),
 ('20240229070342'),

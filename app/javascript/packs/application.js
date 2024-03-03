@@ -47,6 +47,7 @@ export { default as PostModeMenu } from '../src/javascripts/post_mode_menu.js';
 export { default as PostReplacement } from '../src/javascripts/post_replacement.js';
 export { default as PostVersions } from '../src/javascripts/post_versions.js';
 export { default as Replacer } from '../src/javascripts/replacer.js';
+export { default as Rules } from '../src/javascripts/rules.js';
 export { default as Shortcuts } from '../src/javascripts/shortcuts.js';
 export { default as StaffNote } from '../src/javascripts/staff_notes.js';
 export { default as Utility } from '../src/javascripts/utility.js';

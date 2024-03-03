@@ -1,0 +1,5 @@
+<%= custom_form_for(@category) do |f| %>
+  <%= f.input(:name, as: :string) %>
+  <%= f.input(:anchor, as: :string, hint: "Used to link to the rule on the rules page.") %>
+  <%= f.button(:submit, "Submit", name: nil) %>
+<% end %>

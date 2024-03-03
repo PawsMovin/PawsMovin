@@ -1,0 +1,19 @@
+<h1>Rules</h1>
+
+<div id="rules-toc">
+  <%= format_rules_toc(@categories) %>
+</div>
+
+<div id="rules-body">
+  <%= format_rules_body(@wiki) %>
+</div>
+
+<div id="rules-content">
+  <%= format_rules_content(@categories) %>
+</div>
+
+<%= render "secondary_links" %>
+
+<% content_for(:page_title) do %>
+  Rules
+<% end %>

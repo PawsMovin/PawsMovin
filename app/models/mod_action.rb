@@ -27,6 +27,7 @@ class ModAction < ApplicationRecord
     pattern old_pattern note hidden
     type type_was
     wiki_page wiki_page_title new_title old_title
+    category_name old_category_name old_description
   ].freeze
 
   store_accessor :values, *VALUES
@@ -412,6 +413,44 @@ class ModAction < ApplicationRecord
     wiki_page_unlock:              {
       text: ->(mod, _user) { "Unlocked wiki page [[#{mod.wiki_page_title}]]" },
       json: %i[wiki_page_title],
+    },
+
+    ### Rule ###
+    rule_create:                   {
+      text: ->(mod, _user) { "Created rule \"#{mod.name}\" in category \"#{mod.category_name}\" with decription:\n[section=Rule Description]\n#{mod.description}[/section]" },
+      json: %i[name description category_name],
+    },
+    rule_delete:                   {
+      text: ->(mod, _user) { "Deleted rule \"#{mod.name}\" in category \"#{mod.category_name}\"" },
+      json: %i[name category_name],
+    },
+    rule_update:                   {
+      text: ->(mod, _user) do
+        text = "Updated rule \"#{mod.name}\" in category \"#{mod.category_name}\""
+        text += "\nChanged name from \"#{mod.old_name}\" to \"#{mod.new_name}\"" if mod.old_name != mod.new_name
+        text += "\nChanged description from \"#{mod.description_was}\" to \"#{mod.description}\"" if mod.description != mod.description_was
+        text += "\nChanged category from \"#{mod.old_category_name}\" to \"#{mod.category_name}\"" if mod.old_category_name != mod.category_name
+        text
+      end,
+      json: %i[name description category_name old_name new_name description_was],
+    },
+
+    ### Rule Category ###
+    rule_category_create:          {
+      text: ->(mod, _user) { "Created rule category \"#{mod.name}\"" },
+      json: %i[name],
+    },
+    rule_category_delete:          {
+      text: ->(mod, _user) { "Deleted rule category \"#{mod.name}\"" },
+      json: %i[name],
+    },
+    rule_category_update:          {
+      text: ->(mod, _user) do
+        text = "Updated rule category \"#{mod.name}\""
+        text += "\nChanged name from \"#{mod.old_name}\" to \"#{mod.name}\"" if mod.old_name != mod.name
+        text
+      end,
+      json: %i[name old_name],
     },
   }.freeze
 

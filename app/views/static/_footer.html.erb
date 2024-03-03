@@ -1,11 +1,10 @@
 <footer id="page-footer">
   <span class="left">
     Running <%= PawsMovin.config.app_name %>
-    – <%= link_to "Rules", terms_of_service_path %>
+    – <%= link_to "Rules", rules_path %>
     – <%= link_to "Takedowns", takedown_static_path %>
     – <%= link_to "Privacy", privacy_policy_path %>
     – <%= link_to "Contact", contact_path %>
-    – <%= link_to "Advertising", help_page_path(id: "advertising") %>
   </span>
   <span class="logo-container">
     <a href="/"><%= image_pack_tag("Blep.png", class: "footer-logo") %></a>

@@ -196,100 +196,100 @@ class DtextTest < ActiveSupport::TestCase
 
     context "[[]]" do
       should "parse" do
-        assert_parse_dtext(%(<p><a rel=\"nofollow\" class=\"dtext-link dtext-wiki-link\" href=\"/wiki_pages/show_or_new?title=test\">test</a></p>), "[[test]]")
+        assert_parse_dtext(%(<p><a rel="nofollow" class="dtext-link dtext-wiki-link" href="/wiki_pages/show_or_new?title=test">test</a></p>), "[[test]]")
       end
 
       should "parse anchor" do
-        assert_parse_dtext(%(<p><a rel=\"nofollow\" class=\"dtext-link dtext-wiki-link\" href=\"/wiki_pages/show_or_new?title=test#anchor\">test#anchor</a></p>), "[[test#anchor]]")
+        assert_parse_dtext(%(<p><a rel="nofollow" class="dtext-link dtext-wiki-link" href="/wiki_pages/show_or_new?title=test#anchor">test#anchor</a></p>), "[[test#anchor]]")
       end
 
       should "include spaces" do
-        assert_parse_dtext(%(<p><a rel=\"nofollow\" class=\"dtext-link dtext-wiki-link\" href=\"/wiki_pages/show_or_new?title=cd_ef\">abcd efgh</a></p>), "ab[[cd ef]]gh")
+        assert_parse_dtext(%(<p><a rel="nofollow" class="dtext-link dtext-wiki-link" href="/wiki_pages/show_or_new?title=cd_ef">abcd efgh</a></p>), "ab[[cd ef]]gh")
       end
 
       should "include adjacent text on the right" do
-        assert_parse_dtext(%(<p>ab <a rel=\"nofollow\" class=\"dtext-link dtext-wiki-link\" href=\"/wiki_pages/show_or_new?title=cd\">cdef</a></p>), "ab [[cd]]ef")
+        assert_parse_dtext(%(<p>ab <a rel="nofollow" class="dtext-link dtext-wiki-link" href="/wiki_pages/show_or_new?title=cd">cdef</a></p>), "ab [[cd]]ef")
       end
 
       should "include adjacent text on the left" do
-        assert_parse_dtext(%(<p><a rel=\"nofollow\" class=\"dtext-link dtext-wiki-link\" href=\"/wiki_pages/show_or_new?title=cd\">abcd</a> ef</p>), "ab[[cd]] ef")
+        assert_parse_dtext(%(<p><a rel="nofollow" class="dtext-link dtext-wiki-link" href="/wiki_pages/show_or_new?title=cd">abcd</a> ef</p>), "ab[[cd]] ef")
       end
 
       should "include adjacent text on both sides" do
-        assert_parse_dtext(%(<p><a rel=\"nofollow\" class=\"dtext-link dtext-wiki-link\" href=\"/wiki_pages/show_or_new?title=cd\">abcdef</a></p>), "ab[[cd]]ef")
+        assert_parse_dtext(%(<p><a rel="nofollow" class="dtext-link dtext-wiki-link" href="/wiki_pages/show_or_new?title=cd">abcdef</a></p>), "ab[[cd]]ef")
       end
 
       context "masked" do
         should "parse" do
-          assert_parse_dtext(%(<p><a rel=\"nofollow\" class=\"dtext-link dtext-wiki-link\" href=\"/wiki_pages/show_or_new?title=test\">Test</a></p>), "[[test|Test]]")
+          assert_parse_dtext(%(<p><a rel="nofollow" class="dtext-link dtext-wiki-link" href="/wiki_pages/show_or_new?title=test">Test</a></p>), "[[test|Test]]")
         end
 
         should "parse anchor" do
-          assert_parse_dtext(%(<p><a rel=\"nofollow\" class=\"dtext-link dtext-wiki-link\" href=\"/wiki_pages/show_or_new?title=test#anchor\">Test</a></p>), "[[test#anchor|Test]]")
+          assert_parse_dtext(%(<p><a rel="nofollow" class="dtext-link dtext-wiki-link" href="/wiki_pages/show_or_new?title=test#anchor">Test</a></p>), "[[test#anchor|Test]]")
         end
 
         should "include spaces" do
-          assert_parse_dtext(%(<p><a rel=\"nofollow\" class=\"dtext-link dtext-wiki-link\" href=\"/wiki_pages/show_or_new?title=cd_ef\">abij klgh</a></p>), "ab[[cd ef|ij kl]]gh")
+          assert_parse_dtext(%(<p><a rel="nofollow" class="dtext-link dtext-wiki-link" href="/wiki_pages/show_or_new?title=cd_ef">abij klgh</a></p>), "ab[[cd ef|ij kl]]gh")
         end
 
         should "include adjacent text on the right" do
-          assert_parse_dtext(%(<p>ab <a rel=\"nofollow\" class=\"dtext-link dtext-wiki-link\" href=\"/wiki_pages/show_or_new?title=cd\">ghef</a></p>), "ab [[cd|gh]]ef")
+          assert_parse_dtext(%(<p>ab <a rel="nofollow" class="dtext-link dtext-wiki-link" href="/wiki_pages/show_or_new?title=cd">ghef</a></p>), "ab [[cd|gh]]ef")
         end
 
         should "include adjacent text on the left" do
-          assert_parse_dtext(%(<p><a rel=\"nofollow\" class=\"dtext-link dtext-wiki-link\" href=\"/wiki_pages/show_or_new?title=cd\">abgh</a> ef</p>), "ab[[cd|gh]] ef")
+          assert_parse_dtext(%(<p><a rel="nofollow" class="dtext-link dtext-wiki-link" href="/wiki_pages/show_or_new?title=cd">abgh</a> ef</p>), "ab[[cd|gh]] ef")
         end
 
         should "include adjacent text on both sides" do
-          assert_parse_dtext(%(<p><a rel=\"nofollow\" class=\"dtext-link dtext-wiki-link\" href=\"/wiki_pages/show_or_new?title=cd\">abghef</a></p>), "ab[[cd|gh]]ef")
+          assert_parse_dtext(%(<p><a rel="nofollow" class="dtext-link dtext-wiki-link" href="/wiki_pages/show_or_new?title=cd">abghef</a></p>), "ab[[cd|gh]]ef")
         end
 
         should "parse with parentheses" do
-          assert_parse_dtext(%(<p><a rel=\"nofollow\" class=\"dtext-link dtext-wiki-link\" href=\"/wiki_pages/show_or_new?title=test_%28testing%29\">test</a></p>), "[[test (testing)|]]")
+          assert_parse_dtext(%(<p><a rel="nofollow" class="dtext-link dtext-wiki-link" href="/wiki_pages/show_or_new?title=test_%28testing%29">test</a></p>), "[[test (testing)|]]")
         end
       end
     end
 
     context "{{}}" do
       should "parse" do
-        assert_parse_dtext(%(<p><a class=\"dtext-link dtext-post-search-link\" href=\"/posts?tags=test\">test</a></p>), "{{test}}")
+        assert_parse_dtext(%(<p><a class="dtext-link dtext-post-search-link" href="/posts?tags=test">test</a></p>), "{{test}}")
       end
 
       should "include spaces" do
-        assert_parse_dtext(%(<p><a class=\"dtext-link dtext-post-search-link\" href=\"/posts?tags=cd%20ef\">abcd efgh</a></p>), "ab{{cd ef}}gh")
+        assert_parse_dtext(%(<p><a class="dtext-link dtext-post-search-link" href="/posts?tags=cd%20ef">abcd efgh</a></p>), "ab{{cd ef}}gh")
       end
 
       should "include adjacent text on the right" do
-        assert_parse_dtext(%(<p>ab <a class=\"dtext-link dtext-post-search-link\" href=\"/posts?tags=cd\">cdef</a></p>), "ab {{cd}}ef")
+        assert_parse_dtext(%(<p>ab <a class="dtext-link dtext-post-search-link" href="/posts?tags=cd">cdef</a></p>), "ab {{cd}}ef")
       end
 
       should "include adjacent text on the left" do
-        assert_parse_dtext(%(<p><a class=\"dtext-link dtext-post-search-link\" href=\"/posts?tags=cd\">abcd</a> ef</p>), "ab{{cd}} ef")
+        assert_parse_dtext(%(<p><a class="dtext-link dtext-post-search-link" href="/posts?tags=cd">abcd</a> ef</p>), "ab{{cd}} ef")
       end
 
       should "include adjacent text on both sides" do
-        assert_parse_dtext(%(<p><a class=\"dtext-link dtext-post-search-link\" href=\"/posts?tags=cd\">abcdef</a></p>), "ab{{cd}}ef")
+        assert_parse_dtext(%(<p><a class="dtext-link dtext-post-search-link" href="/posts?tags=cd">abcdef</a></p>), "ab{{cd}}ef")
       end
 
       context "masked" do
         should "parse" do
-          assert_parse_dtext(%(<p><a class=\"dtext-link dtext-post-search-link\" href=\"/posts?tags=test\">Test</a></p>), "{{test|Test}}")
+          assert_parse_dtext(%(<p><a class="dtext-link dtext-post-search-link" href="/posts?tags=test">Test</a></p>), "{{test|Test}}")
         end
 
         should "include spaces" do
-          assert_parse_dtext(%(<p><a class=\"dtext-link dtext-post-search-link\" href=\"/posts?tags=cd%20ef\">abij klgh</a></p>), "ab{{cd ef|ij kl}}gh")
+          assert_parse_dtext(%(<p><a class="dtext-link dtext-post-search-link" href="/posts?tags=cd%20ef">abij klgh</a></p>), "ab{{cd ef|ij kl}}gh")
         end
 
         should "include adjacent text on the right" do
-          assert_parse_dtext(%(<p>ab <a class=\"dtext-link dtext-post-search-link\" href=\"/posts?tags=cd\">ghef</a></p>), "ab {{cd|gh}}ef")
+          assert_parse_dtext(%(<p>ab <a class="dtext-link dtext-post-search-link" href="/posts?tags=cd">ghef</a></p>), "ab {{cd|gh}}ef")
         end
 
         should "include adjacent text on the left" do
-          assert_parse_dtext(%(<p><a class=\"dtext-link dtext-post-search-link\" href=\"/posts?tags=cd\">abgh</a> ef</p>), "ab{{cd|gh}} ef")
+          assert_parse_dtext(%(<p><a class="dtext-link dtext-post-search-link" href="/posts?tags=cd">abgh</a> ef</p>), "ab{{cd|gh}} ef")
         end
 
         should "include adjacent text on both sides" do
-          assert_parse_dtext(%(<p><a class=\"dtext-link dtext-post-search-link\" href=\"/posts?tags=cd\">abghef</a></p>), "ab{{cd|gh}}ef")
+          assert_parse_dtext(%(<p><a class="dtext-link dtext-post-search-link" href="/posts?tags=cd">abghef</a></p>), "ab{{cd|gh}}ef")
         end
       end
     end

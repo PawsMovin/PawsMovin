@@ -1,0 +1,7 @@
+<%= custom_form_for(@rule) do |f| %>
+  <%= f.input(:name, as: :string) %>
+  <%= f.input(:description, as: :dtext) %>
+  <%= f.input(:category_id, label: "Category", collection: @categories.map { |c| [c.name, c.id] }) %>
+  <%= f.input(:anchor, as: :string, hint: "Used to link to the category on the rules page.") %>
+  <%= f.button(:submit, "Submit", name: nil) %>
+<% end %>

@@ -253,6 +253,18 @@ Rails.application.routes.draw do
       post :remove_from_pool
     end
   end
+  resources :rules, only: %i[index new create edit update destroy] do
+    collection do
+      get :order
+      post :reorder
+      resources :categories, controller: "rules/categories", as: "rule_categories", only: %i[new create edit update destroy] do
+        collection do
+          get :order
+          post :reorder
+        end
+      end
+    end
+  end
   resource :session, only: %i[new create destroy confirm_password] do
     get :confirm_password, on: :collection
   end

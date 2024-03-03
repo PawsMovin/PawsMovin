@@ -1,0 +1,23 @@
+<% content_for(:secondary_links) do %>
+  <%= subnav_link_to "Rules", rules_path  %>
+  <% if CurrentUser.is_admin? %>
+    <%= subnav_link_to "New Rule", new_rule_path %>
+    <%= subnav_link_to "New Rule Category", new_rule_category_path %>
+    <% if params[:action] == "order" %>
+      |
+      <% if params[:controller] == "rules" %>
+        <%= subnav_link_to "Edit Rule Order", "#", class: "edit-order-link" %>
+      <% else %>
+        <%= subnav_link_to "Edit Rule Order", order_rules_path %>
+      <% end %>
+      <% if params[:controller] == "rules/categories" %>
+        <%= subnav_link_to "Edit Category Order", "#", class: "edit-category-order-link" %>
+      <% else %>
+        <%= subnav_link_to "Edit Category Order", order_rule_categories_path %>
+      <% end %>
+      <%= subnav_link_to "Save", "#", class: "save-order-link", li_options: { style: "display: none;" } %>
+      <% else %>
+      <%= subnav_link_to "Reorder Rules", order_rules_path %>
+    <% end %>
+  <% end %>
+<% end %>

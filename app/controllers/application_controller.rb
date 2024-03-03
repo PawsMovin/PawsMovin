@@ -233,4 +233,8 @@ class ApplicationController < ActionController::Base
       format.json { render(json: data.to_json, **) }
     end
   end
+
+  def notice(message)
+    flash[:notice] = message if request.format.html?
+  end
 end
