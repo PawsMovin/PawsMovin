@@ -21,8 +21,7 @@ class PostSet < ApplicationRecord
     end
   end
   has_many :maintainers, class_name: "User", through: :post_set_maintainers, source: :user
-  belongs_to_creator
-  user_status_counter :set_count
+  belongs_to_creator counter_cache: "set_count"
 
   before_validation :normalize_shortname
   validates :name, length: { in: 3..100, message: "must be between three and one hundred characters long" }

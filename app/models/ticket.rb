@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 class Ticket < ApplicationRecord
-  belongs_to_creator
-  user_status_counter :ticket_count
+  belongs_to_creator counter_cache: "ticket_count"
   belongs_to :model, polymorphic: true
   belongs_to :claimant, class_name: "User", optional: true
   belongs_to :handler, class_name: "User", optional: true

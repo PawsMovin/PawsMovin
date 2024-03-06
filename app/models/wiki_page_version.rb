@@ -2,8 +2,7 @@
 
 class WikiPageVersion < ApplicationRecord
   belongs_to :wiki_page
-  belongs_to_updater
-  user_status_counter :wiki_edit_count, foreign_key: :updater_id
+  belongs_to_updater counter_cache: "wiki_update_count"
   belongs_to :artist, optional: true
   delegate :visible?, to: :wiki_page
 

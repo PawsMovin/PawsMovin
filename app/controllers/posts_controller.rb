@@ -231,7 +231,7 @@ class PostsController < ApplicationController
 
   def favorites
     @post = Post.find(params[:id])
-    query = User.includes(:user_status).joins(:favorites)
+    query = User.joins(:favorites)
     unless CurrentUser.is_moderator?
       query = query.where("bit_prefs & :value != :value", { value: User.flag_value_for("enable_privacy_mode") }).or(query.where(favorites: { user_id: CurrentUser.id }))
     end

@@ -42,8 +42,7 @@ class Post < ApplicationRecord
 
   belongs_to :updater, class_name: "User", optional: true # this is handled in versions
   belongs_to :approver, class_name: "User", optional: true
-  belongs_to :uploader, class_name: "User"
-  user_status_counter :post_count, foreign_key: :uploader_id
+  belongs_to :uploader, class_name: "User", counter_cache: "post_count"
   belongs_to :parent, class_name: "Post", optional: true
   has_one :upload, dependent: :destroy
   has_many :flags, class_name: "PostFlag", dependent: :destroy
@@ -928,7 +927,7 @@ class Post < ApplicationRecord
     def remove_from_favorites
       Favorite.where(post_id: id).delete_all
       user_ids = fav_string.scan(/\d+/)
-      UserStatus.where(user_id: user_ids).update_all("favorite_count = favorite_count - 1")
+      User.where(id: user_ids).update_all("favorite_count = favorite_count - 1")
     end
   end
 
@@ -1277,7 +1276,7 @@ class Post < ApplicationRecord
 
       # XXX This must happen *after* the `is_deleted` flag is set to true (issue #3419).
       # We don't care if these fail per-se so they are outside the transaction.
-      UserStatus.for_user(uploader_id).update_all("post_deleted_count = post_deleted_count + 1")
+      User.where(id: uploader_id).update_all("post_deleted_count = post_deleted_count + 1")
       give_favorites_to_parent if options[:move_favorites]
       give_post_sets_to_parent if options[:move_favorites]
       reject_pending_replacements
@@ -1313,7 +1312,7 @@ class Post < ApplicationRecord
         PostEvent.add(id, CurrentUser.user, :undeleted)
       end
       move_files_on_undelete
-      UserStatus.for_user(uploader_id).update_all("post_deleted_count = post_deleted_count - 1")
+      User.where(id: uploader_id).update_all("post_deleted_count = post_deleted_count - 1")
     end
 
     def deletion_flag

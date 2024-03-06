@@ -3,8 +3,7 @@
 class PostVersion < ApplicationRecord
   class UndoError < StandardError; end
   belongs_to :post
-  belongs_to_updater
-  user_status_counter :post_update_count, foreign_key: :updater_id
+  belongs_to_updater counter_cache: "post_update_count"
 
   before_validation :fill_version, on: :create
   before_validation :fill_changes, on: :create

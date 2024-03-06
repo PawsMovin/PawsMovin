@@ -90,9 +90,9 @@ class UploadService
           penalize_uploader_on_approve: penalize_current_uploader.to_s.truthy?
         })
 
-        UserStatus.for_user(previous_uploader).update_all("own_post_replaced_count = own_post_replaced_count + 1")
+        User.where(id: previous_uploader).update_all("own_post_replaced_count = own_post_replaced_count + 1")
         if penalize_current_uploader.to_s.truthy?
-          UserStatus.for_user(previous_uploader).update_all("own_post_replaced_penalize_count = own_post_replaced_penalize_count + 1")
+          User.where(id: previous_uploader).update_all("own_post_replaced_penalize_count = own_post_replaced_penalize_count + 1")
         end
 
         # Everything went through correctly, the old files can now be removed

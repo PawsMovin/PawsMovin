@@ -111,12 +111,10 @@ class User < ApplicationRecord
     UserTextVersion.create_version(rec)
   end
   #after_create :notify_sock_puppets
-  after_create :create_user_status
   after_update :log_update
 
   has_many :api_keys, dependent: :destroy
   has_one :dmail_filter
-  has_one :user_status
   has_one :recent_ban, -> { order("bans.id desc") }, class_name: "Ban"
   has_many :bans, -> { order("bans.id desc") }
   has_many :dmails, -> { order("dmails.id desc") }, foreign_key: "owner_id"
@@ -710,11 +708,7 @@ class User < ApplicationRecord
 
   module CountMethods
     def wiki_page_version_count
-      user_status.wiki_edit_count
-    end
-
-    def post_update_count
-      user_status.post_update_count
+      wiki_update_count
     end
 
     def post_active_count
@@ -722,47 +716,23 @@ class User < ApplicationRecord
     end
 
     def post_upload_count
-      user_status.post_count
-    end
-
-    def post_deleted_count
-      user_status.post_deleted_count
+      post_count
     end
 
     def note_version_count
-      user_status.note_count
-    end
-
-    def note_update_count
-      note_version_count
+      note_update_count
     end
 
     def artist_version_count
-      user_status.artist_edit_count
+      artist_update_count
     end
 
     def pool_version_count
-      user_status.pool_edit_count
-    end
-
-    def forum_post_count
-      user_status.forum_post_count
-    end
-
-    def favorite_count
-      user_status.favorite_count
-    end
-
-    def comment_count
-      user_status.comment_count
+      pool_update_count
     end
 
     def flag_count
-      user_status.post_flag_count
-    end
-
-    def ticket_count
-      user_status.ticket_count
+      post_flag_count
     end
 
     def positive_feedback_count
@@ -777,29 +747,25 @@ class User < ApplicationRecord
       feedback.negative.count
     end
 
-    def post_replacement_rejected_count
-      user_status.post_replacement_rejected_count
-    end
-
-    def own_post_replaced_count
-      user_status.own_post_replaced_count
-    end
-
-    def own_post_replaced_penalize_count
-      user_status.own_post_replaced_penalize_count
-    end
-
     def refresh_counts!
       self.class.without_timeout do
-        UserStatus.where(user_id: id).update_all(
+        User.where(id: id).update_all(
           post_count:                       Post.for_user(id).count,
           post_deleted_count:               Post.for_user(id).deleted.count,
           post_update_count:                PostVersion.for_user(id).count,
+          post_flag_count:                  PostFlag.for_creator(id).count,
           favorite_count:                   Favorite.for_user(id).count,
-          note_count:                       NoteVersion.for_user(id).count,
+          wiki_update_count:                WikiPageVersion.for_user(id).count,
+          note_update_count:                NoteVersion.for_user(id).count,
+          forum_post_count:                 ForumPost.for_user(id).count,
+          comment_count:                    Comment.for_creator(id).count,
+          pool_update_count:                PoolVersion.for_user(id).count,
+          set_count:                        PostSet.owned(self).count,
+          artist_update_count:              ArtistVersion.for_user(id).count,
           own_post_replaced_count:          PostReplacement.for_uploader_on_approve(id).count,
           own_post_replaced_penalize_count: PostReplacement.penalized.for_uploader_on_approve(id).count,
           post_replacement_rejected_count:  post_replacements.rejected.count,
+          ticket_count:                     Ticket.for_creator(id).count,
         )
       end
     end
@@ -820,7 +786,6 @@ class User < ApplicationRecord
 
     def search(params)
       q = super
-      q = q.joins(:user_status)
 
       q = q.attribute_matches(:level, params[:level])
 
@@ -885,11 +850,11 @@ class User < ApplicationRecord
       when "name"
         q = q.order("name")
       when "post_upload_count"
-        q = q.order("user_statuses.post_count desc")
+        q = q.order("post_count desc")
       when "note_count"
-        q = q.order("user_statuses.note_count desc")
+        q = q.order("note_update_count desc")
       when "post_update_count"
-        q = q.order("user_statuses.post_update_count desc")
+        q = q.order("post_update_count desc")
       else
         q = q.apply_basic_order(params)
       end
@@ -990,10 +955,6 @@ class User < ApplicationRecord
     if avatar_id.present? && avatar.nil?
       self.avatar_id = nil
     end
-  end
-
-  def create_user_status
-    UserStatus.create!(user_id: id)
   end
 
   def has_mail?

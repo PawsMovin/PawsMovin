@@ -137,7 +137,7 @@ services:
       - iqdb_data:/iqdb
 
   recommender:
-    image: ghcr.io/pawsmovin/recommender:e3f1089cc2615dcbc19ce4b29cfd319a257df14c
+    image: ghcr.io/pawsmovin/recommender:1f98eace5cecdd61b109dd0134beed062622d339
     volumes:
       - recommender_data:/data
     environment:

@@ -4,7 +4,7 @@ class Comment < ApplicationRecord
   RECENT_COUNT = 6
   include UserWarnable
   simple_versioning
-  belongs_to_creator
+  belongs_to_creator counter_cache: "comment_count"
   belongs_to_updater
   validate :validate_post_exists, on: :create
   validate :validate_creator_is_not_limited, on: :create
@@ -26,7 +26,6 @@ class Comment < ApplicationRecord
     ModAction.log!(action, rec, user_id: rec.creator_id)
   end
 
-  user_status_counter :comment_count
   belongs_to :post, counter_cache: :comment_count
   belongs_to :warning_user, class_name: "User", optional: true
   has_many :votes, class_name: "CommentVote", dependent: :destroy

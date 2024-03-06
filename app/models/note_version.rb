@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 class NoteVersion < ApplicationRecord
-  user_status_counter :note_count, foreign_key: :updater_id
-  belongs_to_updater
+  belongs_to_updater counter_cache: "note_update_count"
   scope :for_user, ->(user_id) {where("updater_id = ?", user_id)}
 
   def self.search(params)

@@ -25,7 +25,7 @@ class UsersController < ApplicationController
       raise(ActiveRecord::RecordNotFound) if @user.blank?
       redirect_to(user_path(@user))
     else
-      @users = User.search(search_params).includes(:user_status).paginate(params[:page], limit: params[:limit], search_count: params[:search])
+      @users = User.search(search_params).paginate(params[:page], limit: params[:limit], search_count: params[:search])
       respond_with(@users) do |format|
         format.json do
           render(json: @users.to_json)

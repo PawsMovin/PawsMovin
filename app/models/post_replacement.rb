@@ -190,9 +190,9 @@ class PostReplacement < ApplicationRecord
       end
 
       if penalize_uploader_on_approve
-        UserStatus.for_user(uploader_on_approve).update_all("own_post_replaced_penalize_count = own_post_replaced_penalize_count - 1")
+        User.where(id: uploader_on_approve).update_all("own_post_replaced_penalize_count = own_post_replaced_penalize_count - 1")
       else
-        UserStatus.for_user(uploader_on_approve).update_all("own_post_replaced_penalize_count = own_post_replaced_penalize_count + 1")
+        User.where(id: uploader_on_approve).update_all("own_post_replaced_penalize_count = own_post_replaced_penalize_count + 1")
       end
       update_attribute(:penalize_uploader_on_approve, !penalize_uploader_on_approve)
     end
@@ -224,7 +224,7 @@ class PostReplacement < ApplicationRecord
 
       PostEvent.add(post.id, CurrentUser.user, :replacement_rejected, { replacement_id: id })
       update_attribute(:status, "rejected")
-      UserStatus.for_user(creator_id).update_all("post_replacement_rejected_count = post_replacement_rejected_count + 1")
+      User.where(id: creator_id).update_all("post_replacement_rejected_count = post_replacement_rejected_count + 1")
       post.update_index
     end
   end

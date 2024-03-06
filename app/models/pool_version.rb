@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 class PoolVersion < ApplicationRecord
-  user_status_counter :pool_edit_count, foreign_key: :updater_id
-  belongs_to :updater, class_name: "User"
+  belongs_to_updater counter_cache: "pool_update_count"
   before_validation :fill_version, on: :create
   before_validation :fill_changes, on: :create
 

@@ -2285,53 +2285,6 @@ ALTER SEQUENCE public.user_password_reset_nonces_id_seq OWNED BY public.user_pas
 
 
 --
--- Name: user_statuses; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.user_statuses (
-    id bigint NOT NULL,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
-    user_id integer NOT NULL,
-    post_count integer DEFAULT 0 NOT NULL,
-    post_deleted_count integer DEFAULT 0 NOT NULL,
-    post_update_count integer DEFAULT 0 NOT NULL,
-    post_flag_count integer DEFAULT 0 NOT NULL,
-    favorite_count integer DEFAULT 0 NOT NULL,
-    wiki_edit_count integer DEFAULT 0 NOT NULL,
-    note_count integer DEFAULT 0 NOT NULL,
-    forum_post_count integer DEFAULT 0 NOT NULL,
-    comment_count integer DEFAULT 0 NOT NULL,
-    pool_edit_count integer DEFAULT 0 NOT NULL,
-    set_count integer DEFAULT 0 NOT NULL,
-    artist_edit_count integer DEFAULT 0 NOT NULL,
-    own_post_replaced_count integer DEFAULT 0,
-    own_post_replaced_penalize_count integer DEFAULT 0,
-    post_replacement_rejected_count integer DEFAULT 0,
-    ticket_count integer DEFAULT 0 NOT NULL
-);
-
-
---
--- Name: user_statuses_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.user_statuses_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: user_statuses_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.user_statuses_id_seq OWNED BY public.user_statuses.id;
-
-
---
 -- Name: user_text_versions; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -2401,7 +2354,23 @@ furry -rating:s'::text,
     unread_dmail_count integer DEFAULT 0 NOT NULL,
     profile_about text DEFAULT ''::text NOT NULL,
     profile_artinfo text DEFAULT ''::text NOT NULL,
-    avatar_id integer
+    avatar_id integer,
+    post_count integer DEFAULT 0 NOT NULL,
+    post_deleted_count integer DEFAULT 0 NOT NULL,
+    post_update_count integer DEFAULT 0 NOT NULL,
+    post_flag_count integer DEFAULT 0 NOT NULL,
+    favorite_count integer DEFAULT 0 NOT NULL,
+    wiki_update_count integer DEFAULT 0 NOT NULL,
+    note_update_count integer DEFAULT 0 NOT NULL,
+    forum_post_count integer DEFAULT 0 NOT NULL,
+    comment_count integer DEFAULT 0 NOT NULL,
+    pool_update_count integer DEFAULT 0 NOT NULL,
+    set_count integer DEFAULT 0 NOT NULL,
+    artist_update_count integer DEFAULT 0 NOT NULL,
+    own_post_replaced_count integer DEFAULT 0 NOT NULL,
+    own_post_replaced_penalize_count integer DEFAULT 0 NOT NULL,
+    post_replacement_rejected_count integer DEFAULT 0 NOT NULL,
+    ticket_count integer DEFAULT 0 NOT NULL
 );
 
 
@@ -2915,13 +2884,6 @@ ALTER TABLE ONLY public.user_password_reset_nonces ALTER COLUMN id SET DEFAULT n
 
 
 --
--- Name: user_statuses id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.user_statuses ALTER COLUMN id SET DEFAULT nextval('public.user_statuses_id_seq'::regclass);
-
-
---
 -- Name: user_text_versions id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -3429,14 +3391,6 @@ ALTER TABLE ONLY public.user_name_change_requests
 
 ALTER TABLE ONLY public.user_password_reset_nonces
     ADD CONSTRAINT user_password_reset_nonces_pkey PRIMARY KEY (id);
-
-
---
--- Name: user_statuses user_statuses_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.user_statuses
-    ADD CONSTRAINT user_statuses_pkey PRIMARY KEY (id);
 
 
 --
@@ -4488,13 +4442,6 @@ CREATE INDEX index_user_name_change_requests_on_user_id ON public.user_name_chan
 
 
 --
--- Name: index_user_statuses_on_user_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX index_user_statuses_on_user_id ON public.user_statuses USING btree (user_id);
-
-
---
 -- Name: index_user_text_versions_on_updater_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -4770,6 +4717,8 @@ ALTER TABLE ONLY public.staff_notes
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20240306215111'),
+('20240306204814'),
 ('20240302152238'),
 ('20240302150135'),
 ('20240302142453'),

@@ -4,9 +4,8 @@ class ForumPost < ApplicationRecord
   include UserWarnable
   simple_versioning
   attr_readonly :topic_id
-  belongs_to_creator
+  belongs_to_creator counter_cache: "forum_post_count"
   belongs_to_updater
-  user_status_counter :forum_post_count
   belongs_to :topic, class_name: "ForumTopic"
   belongs_to :warning_user, class_name: "User", optional: true
   has_many :votes, class_name: "ForumPostVote"
