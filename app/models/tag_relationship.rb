@@ -75,12 +75,12 @@ class TagRelationship < ApplicationRecord
   end
 
   def approvable_by?(user)
-    return false if is_approved? || !user.can_manage_aibur?
+    return false unless is_pending? && user.can_manage_aibur?
     creator_id != user.id || user.is_admin?
   end
 
   def rejectable_by?(user)
-    user.can_manage_aibur? || (is_pending? && creator_id == user.id)
+    (user.can_manage_aibur? && !is_deleted?) || (is_pending? && creator_id == user.id)
   end
 
   def editable_by?(user)

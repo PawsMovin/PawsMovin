@@ -6,8 +6,8 @@ class TagAlias < TagRelationship
   attr_accessor :skip_forum
 
   after_save :create_mod_action
-  validates :antecedent_name, uniqueness: { conditions: -> { duplicate_relevant } }
-  validate :absence_of_transitive_relation
+  validates :antecedent_name, uniqueness: { conditions: -> { duplicate_relevant } }, unless: :is_deleted?
+  validate :absence_of_transitive_relation, unless: :is_deleted?
 
   module ApprovalMethods
     def approve!(update_topic: true, approver: CurrentUser.user)

@@ -165,7 +165,7 @@ class BulkUpdateRequest < ApplicationRecord
   end
 
   def approvable?(user)
-    return false if is_approved? || !user.can_manage_aibur?
+    return false unless is_pending? && user.can_manage_aibur?
     creator_id != user.id || user.is_admin?
   end
 

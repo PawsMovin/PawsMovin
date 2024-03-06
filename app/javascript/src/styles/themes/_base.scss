@@ -9,7 +9,7 @@ $base-color-section-border:    $base-color-background;
 
 body {
   // Theme-specific images
-  --image-background:             url("images/themes/base/background.png");
+  --image-background:             url("themes/base/background.png");
 
   // Layout Colors
   --color-background:             #{$base-color-background}; // Main background (dark blue, large hexagons)
