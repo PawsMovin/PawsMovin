@@ -40,6 +40,8 @@ class PostSet < ApplicationRecord
   before_destroy :send_maintainer_destroy_dmails
   before_save :update_post_count
   after_save :synchronize, if: :saved_change_to_post_ids?
+  after_update :log_update
+  after_destroy :log_delete
 
   attr_accessor :skip_sync
 
@@ -119,7 +121,7 @@ class PostSet < ApplicationRecord
     end
 
     def can_create_new_set_limit
-      if PostSet.where(creator_id: creator.id).count() >= 75
+      if PostSet.where(creator_id: creator.id).count >= 75
         errors.add(:base, "You can only create 75 sets.")
         return false
       end
@@ -298,6 +300,25 @@ class PostSet < ApplicationRecord
     end
   end
 
+  module LogMethods
+    def log_update
+      return if is_owner?(CurrentUser.user)
+
+      if saved_change_to_is_public?
+        ModAction.log!(:set_change_visibility, self, user_id: creator_id, is_public: is_public)
+      end
+
+      if saved_change_to_watched_attributes?
+        ModAction.log!(:set_update, self, user_id: creator_id)
+      end
+    end
+
+    def log_delete
+      return if is_owner?(CurrentUser.user)
+      ModAction.log!(:set_delete, self, user_id: creator_id)
+    end
+  end
+
   module SearchMethods
     def selected_first(current_set_id)
       return where("true") if current_set_id.blank?
@@ -347,8 +368,9 @@ class PostSet < ApplicationRecord
     end
   end
 
-  extend SearchMethods
   include ValidationMethods
   include AccessMethods
   include PostMethods
+  include LogMethods
+  extend SearchMethods
 end

@@ -42,28 +42,20 @@ class HelpController < ApplicationController
 
   def create
     @help = HelpPage.create(help_params)
-    if @help.valid?
-      flash[:notice] = "Help page created"
-      ModAction.log!(:help_create, @help, name: @help.name, wiki_page: @help.wiki_page)
-    end
+    notice(@help.errors.any? ? @help.errors.full_messages.join("; ") : "Help page created")
     respond_with(@help)
   end
 
   def update
     @help = HelpPage.find(params[:id])
     @help.update(help_params)
-    if @help.valid?
-      flash[:notice] = "Help entry updated"
-      # TODO: specifically updated attributes
-      ModAction.log!(:help_update, @help, name: @help.name, wiki_page: @help.wiki_page)
-    end
+    notice(@help.errors.any? ? @help.errors.full_messages.join("; ") : "Help page updated")
     respond_with(@help)
   end
 
   def destroy
     @help = HelpPage.find(params[:id])
     @help.destroy
-    ModAction.log!(:help_delete, @help, name: @help.name, wiki_page: @help.wiki_page)
     respond_with(@help)
   end
 

@@ -21,8 +21,9 @@ class WikiPage < ApplicationRecord
 
   before_validation :ensure_internal_locked
   before_destroy :validate_not_used_as_help_page
-  before_destroy :log_destroy
-  after_save :log_changes
+  after_destroy :log_delete
+  after_save :log_save
+  after_update :log_update
 
   attr_accessor :skip_secondary_validations, :edit_reason
 
@@ -39,16 +40,21 @@ class WikiPage < ApplicationRecord
     end
   end
 
-  def log_destroy
-    ModAction.log!(:wiki_page_delete, self, wiki_page_title: title, wiki_page_id: id)
-  end
-
-  def log_changes
-    if title_changed? && !new_record?
-      ModAction.log!(:wiki_page_rename, self, new_title: title, old_title: title_was)
+  module LogMethods
+    def log_save
+      if saved_change_to_is_locked?
+        ModAction.log!(is_locked? ? :wiki_page_lock : :wiki_page_unlock, self, wiki_page_title: title)
+      end
     end
-    if is_locked_changed?
-      ModAction.log!(is_locked ? :wiki_page_lock : :wiki_page_unlock, self, wiki_page_title: title)
+
+    def log_update
+      if saved_change_to_title?
+        ModAction.log!(:wiki_page_rename, self, old_title: title_before_last_save, wiki_page_title: title)
+      end
+    end
+
+    def log_delete
+      ModAction.log!(:wiki_page_delete, self, wiki_page_title: title)
     end
   end
 
@@ -101,8 +107,9 @@ class WikiPage < ApplicationRecord
     end
   end
 
-  extend SearchMethods
   include ApiMethods
+  include LogMethods
+  extend SearchMethods
 
   def user_not_limited
     allowed = CurrentUser.can_wiki_edit_with_reason

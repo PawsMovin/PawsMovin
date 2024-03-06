@@ -33,12 +33,6 @@ module Admin
       @user.validate_email_format = true
       @user.is_admin_edit = true
       @user.update!(user_params(CurrentUser.user))
-      if @user.saved_change_to_profile_about || @user.saved_change_to_profile_artinfo
-        ModAction.log!(:user_text_change, @user)
-      end
-      if @user.saved_change_to_base_upload_limit
-        ModAction.log!(:user_upload_limit_change, @user, old_upload_limit: @user.base_upload_limit_before_last_save, new_upload_limit: @user.base_upload_limit)
-      end
 
       if CurrentUser.is_owner?
         @user.mark_verified! if params[:user][:verified].to_s.truthy?
@@ -57,7 +51,7 @@ module Admin
           skip_limited_validation: true,
         )
         change_request.approve!
-        ModAction.log!(:user_name_change, @user)
+        @user.log_name_change
       end
       redirect_to(user_path(@user), notice: "User updated")
     end
@@ -68,8 +62,8 @@ module Admin
 
     def update_blacklist
       @user = User.find(params[:id])
+      @user.is_admin_edit = true
       @user.update!(params[:user].permit([:blacklisted_tags]))
-      ModAction.log!(:user_blacklist_change, @user)
       redirect_to(edit_blacklist_admin_user_path(@user), notice: "Blacklist updated")
     end
 

@@ -42,16 +42,16 @@ class ForumCategory < ApplicationRecord
 
     def log_update
       ModAction.log!(:forum_category_update, self,
-                     forum_category_name: name,
-                     old_category_name:   category_name_before_last_save,
-                     can_view:            can_view,
-                     old_can_view:        can_view_before_last_save,
-                     can_create:          can_create,
-                     old_can_create:      can_create_before_last_save)
+                     forum_category_name:     name,
+                     old_forum_category_name: name_before_last_save,
+                     can_view:                can_view,
+                     old_can_view:            can_view_before_last_save,
+                     can_create:              can_create,
+                     old_can_create:          can_create_before_last_save)
     end
 
     def log_delete
-      ModAction.log!(:forum_category_create, self,
+      ModAction.log!(:forum_category_delete, self,
                      forum_category_name: name,
                      can_view:            can_view,
                      can_create:          can_create)

@@ -19,6 +19,7 @@ class Takedown < ApplicationRecord
   validate :validate_post_ids
   after_validation :normalize_deleted_post_ids
   before_save :update_post_count
+  after_destroy :log_delete
 
   def initialize_fields
     self.status = "pending"
@@ -275,12 +276,19 @@ class Takedown < ApplicationRecord
     end
   end
 
+  module LogMethods
+    def log_delete
+      ModAction.log!(:takedown_delete, self)
+    end
+  end
+
   include PostMethods
   include APIMethods
   include ValidationMethods
   include StatusMethods
   include ModifyPostMethods
   include ProcessMethods
-  extend SearchMethods
   include AccessMethods
+  include LogMethods
+  extend SearchMethods
 end

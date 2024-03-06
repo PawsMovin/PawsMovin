@@ -37,6 +37,7 @@ class BulkUpdateRequestTest < ActiveSupport::TestCase
         @script = %q(
           create alias foo -> bar
           create implication bar -> baz
+          mass update aaa -> bbb
         )
 
         @bur = create(:bulk_update_request, script: @script)
@@ -44,6 +45,8 @@ class BulkUpdateRequestTest < ActiveSupport::TestCase
 
         @ta = TagAlias.where(antecedent_name: "foo", consequent_name: "bar").first
         @ti = TagImplication.where(antecedent_name: "bar", consequent_name: "baz").first
+        Rails.logger.debug(ModAction.count)
+        Rails.logger.debug(ModAction.all.map(&:action))
       end
 
       should "reference the approver in the automated message" do

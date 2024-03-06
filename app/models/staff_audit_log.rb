@@ -135,9 +135,7 @@ class StaffAuditLog < ApplicationRecord
       q = super
 
       q = q.where_user(:user_id, :user, params)
-      if params[:action].present?
-        q = q.where(action: params[:action].split(","))
-      end
+      q = q.where(action: params[:action].split(",")) if params[:action].present?
 
       q.apply_basic_order(params)
     end

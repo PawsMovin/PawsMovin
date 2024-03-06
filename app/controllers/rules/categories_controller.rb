@@ -40,10 +40,12 @@ module Rules
 
     def reorder
       return render_expected_error(422, "Error: No categories provided") unless params[:_json].is_a?(Array) && params[:_json].any?
+      changes = 0
       RuleCategory.transaction do
         params[:_json].each do |data|
-          rule = RuleCategory.find(data[:id])
-          rule.update_attribute(:order, data[:order])
+          category = RuleCategory.find(data[:id])
+          category.update_attribute(:order, data[:order])
+          changes += 1 if category.previous_changes.any?
         end
 
         categories = RuleCategory.all
@@ -55,6 +57,7 @@ module Rules
           render(json: { success: false, errors: errors }, status: 422)
           raise(ActiveRecord::Rollback)
         else
+          RuleCategory.log_reorder(changes) if changes != 0
           respond_to do |format|
             format.json { head(204) }
             format.js do

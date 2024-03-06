@@ -22,21 +22,28 @@ class PostDeletionReason < ApplicationRecord
 
   module LogMethods
     def log_create
-      ModAction.log!(:post_deletion_reason_create, self, reason: reason, title: title, prompt: prompt)
+      ModAction.log!(:post_deletion_reason_create, self,
+                     reason: reason,
+                     title:  title,
+                     prompt: prompt)
     end
 
     def log_update
-      options = {}
-
-      options.merge!({ reason: reason, reason_was: reason_before_last_save }) if saved_change_to_reason?
-      options.merge!({ title: title, title_was: title_before_last_save }) if saved_change_to_title?
-      options.merge!({ prompt: prompt, prompt_was: prompt_before_last_save }) if saved_change_to_prompt?
-
-      ModAction.log!(:post_deletion_reason_update, self, **options)
+      ModAction.log!(:post_deletion_reason_update, self,
+                     reason:     reason,
+                     old_reason: reason_before_last_save,
+                     title:      title,
+                     old_title:  title_before_last_save,
+                     prompt:     prompt,
+                     old_prompt: prompt_before_last_save)
     end
 
     def log_delete
-      ModAction.log!(:post_deletion_reason_delete, self, reason: reason, title: title, prompt: prompt, user_id: creator_id)
+      ModAction.log!(:post_deletion_reason_delete, self,
+                     reason:  reason,
+                     title:   title,
+                     prompt:  prompt,
+                     user_id: creator_id)
     end
   end
 
@@ -48,4 +55,8 @@ class PostDeletionReason < ApplicationRecord
 
   include LogMethods
   extend SearchMethods
+
+  def self.log_reorder(changes)
+    ModAction.log!(:post_deletion_reasons_reorder, nil, total: changes)
+  end
 end

@@ -9,7 +9,7 @@ class RuleCategory < ApplicationRecord
 
   before_validation(on: :create) do
     self.order = (RuleCategory.maximum(:order) || 0) + 1 if order.blank?
-    self.anchor = name.parameterize if anchor.blank?
+    self.anchor = name.parameterize if name && anchor.blank?
   end
 
   def format_rules(category)
@@ -38,4 +38,8 @@ class RuleCategory < ApplicationRecord
   end
 
   include LogMethods
+
+  def self.log_reorder(changes)
+    ModAction.log!(:rule_categories_reorder, nil, total: changes)
+  end
 end

@@ -112,6 +112,7 @@ class User < ApplicationRecord
   end
   #after_create :notify_sock_puppets
   after_create :create_user_status
+  after_update :log_update
 
   has_many :api_keys, dependent: :destroy
   has_one :dmail_filter
@@ -939,6 +940,28 @@ class User < ApplicationRecord
     end
   end
 
+  module LogChanges
+    def log_name_change
+      ModAction.log!(:user_name_change, self, user_id: id)
+    end
+
+    def log_update
+      if saved_change_to_base_upload_limit?
+        ModAction.log!(:user_upload_limit_change, self, old_upload_limit: base_upload_limit_before_last_save, upload_limit: base_upload_limit, user_id: id)
+      end
+
+      return unless is_admin_edit
+
+      if saved_change_to_profile_about? || saved_change_to_profile_artinfo?
+        ModAction.log!(:user_text_change, self, user_id: id)
+      end
+
+      if saved_change_to_blacklisted_tags
+        ModAction.log!(:user_blacklist_change, self, user_id: id)
+      end
+    end
+  end
+
   include BanMethods
   include NameMethods
   include PasswordMethods
@@ -951,6 +974,7 @@ class User < ApplicationRecord
   include ApiMethods
   include CountMethods
   include BlockMethods
+  include LogChanges
   extend SearchMethods
   extend ThrottleMethods
 

@@ -18,7 +18,7 @@ class UserTextVersion < ApplicationRecord
       create({
         user:            user,
         updater:         user,
-        updater_ip_addr: user.last_ip_addr,
+        updater_ip_addr: user.last_ip_addr || "0.0.0.0",
         about_text:      user.profile_about_before_last_save || user.profile_about,
         artinfo_text:    user.profile_artinfo_before_last_save || user.profile_artinfo,
         blacklist_text:  user.blacklisted_tags_before_last_save || user.blacklisted_tags,

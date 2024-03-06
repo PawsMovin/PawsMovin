@@ -16,15 +16,9 @@ class ForumTopic < ApplicationRecord
   validate :category_allows_creation, on: :create
   validate :validate_not_aibur, if: :will_save_change_to_is_hidden?
   accepts_nested_attributes_for :original_post
-  before_destroy :create_mod_action_for_delete
   after_update :update_original_post
-  after_save :log_changes
-  after_save(if: ->(rec) {rec.saved_change_to_is_locked?}) do |rec|
-    ModAction.log!(rec.is_locked ? :forum_topic_lock : :forum_topic_unlock, rec, forum_topic_title: rec.title, user_id: rec.creator_id)
-  end
-  after_save(if: ->(rec) {rec.saved_change_to_is_sticky?}) do |rec|
-    ModAction.log!(rec.is_sticky ? :forum_topic_stick : :forum_topic_unstick, rec, forum_topic_title: rec.title, user_id: rec.creator_id)
-  end
+  after_save :log_save
+  after_destroy :log_delete
 
   def validate_not_aibur
     return if CurrentUser.is_moderator? || !original_post&.is_aibur?
@@ -32,12 +26,6 @@ class ForumTopic < ApplicationRecord
     if is_hidden?
       errors.add(:topic, "is for an alias, implication, or bulk update request. It cannot be hidden")
       throw(:abort)
-    end
-  end
-
-  def log_changes
-    if saved_change_to_is_hidden?
-      ModAction.log!(is_hidden? ? :forum_topic_hide : :forum_topic_unhide, self, forum_topic_title: title, user_id: creator_id)
     end
   end
 
@@ -66,6 +54,34 @@ class ForumTopic < ApplicationRecord
         errors.add(:category, "does not allow new topics")
         return false
       end
+    end
+  end
+
+  module LogMethods
+    def log_save
+      specific = false
+      if saved_change_to_is_hidden?
+        specific = true
+        ModAction.log!(is_hidden? ? :forum_topic_hide : :forum_topic_unhide, self, forum_topic_title: title, user_id: creator_id)
+      end
+
+      if saved_change_to_is_locked?
+        specific = true
+        ModAction.log!(is_locked ? :forum_topic_lock : :forum_topic_unlock, self, forum_topic_title: title, user_id: creator_id)
+      end
+
+      if saved_change_to_is_sticky?
+        specific = true
+        ModAction.log!(is_sticky ? :forum_topic_stick : :forum_topic_unstick, self, forum_topic_title: title, user_id: creator_id)
+      end
+
+      unless specific && !new_record?
+        ModAction.log!(:forum_topic_update, self, forum_topic_title: title, user_id: creator_id)
+      end
+    end
+
+    def log_delete
+      ModAction.log!(:forum_topic_delete, self, forum_topic_title: title, user_id: creator_id)
     end
   end
 
@@ -153,10 +169,11 @@ class ForumTopic < ApplicationRecord
     end
   end
 
-  extend SearchMethods
+  include LogMethods
   include CategoryMethods
   include VisitMethods
   include SubscriptionMethods
+  extend SearchMethods
 
   def editable_by?(user)
     return true if user.is_moderator?
@@ -183,10 +200,6 @@ class ForumTopic < ApplicationRecord
 
   def can_delete?(user)
     user.is_admin?
-  end
-
-  def create_mod_action_for_delete
-    ModAction.log!(:forum_topic_delete, self, forum_topic_title: title, user_id: creator_id)
   end
 
   def initialize_is_hidden

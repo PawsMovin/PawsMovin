@@ -10,15 +10,9 @@ require_relative "seeds/post_deletion_reasons"
 
 module Seeds
   def self.run!
-    UploadWhitelist.find_or_create_by(note: "E621") do |whitelist|
-      whitelist.pattern = "https://static1.e621.net/*"
-    end
-    User.system.update_column(:level, User::Levels::ADMIN)
     CurrentUser.user = User.system
     Posts.run!
     Mascots.run!
-  ensure
-    User.system.update_column(:level, User::Levels::SYSTEM)
   end
 
   def self.create_aibur_category!
@@ -131,10 +125,6 @@ module Seeds
 
     def self.create_from_local
       resources = Seeds.read_resources
-      UploadWhitelist.find_or_create_by!(note: "yiff.rocks") do |wl|
-        wl.pattern = "https://*yiff.rocks/*"
-      end
-
       resources["mascots"].each do |mascot|
         puts(mascot["file"])
         Mascot.find_or_create_by!(display_name: mascot["name"]) do |masc|
@@ -150,10 +140,14 @@ module Seeds
     end
   end
 end
-CurrentUser.as_system do
-  Seeds.create_aibur_category!
 
-  unless Rails.env.test?
-    Seeds.run!
+CurrentUser.as_system do
+  ModAction.without_logging do
+    Seeds.create_aibur_category!
+    PostDeletionReasons.run!
+
+    unless Rails.env.test?
+      Seeds.run!
+    end
   end
 end

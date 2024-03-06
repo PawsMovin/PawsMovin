@@ -15,6 +15,9 @@ class Mascot < ApplicationRecord
     FileValidator.new(mascot, mascot_file.path).validate(max_file_sizes: PawsMovin.config.max_mascot_file_sizes, max_width: PawsMovin.config.max_mascot_width, max_height: PawsMovin.config.max_mascot_height)
   end
 
+  after_create :log_create
+  after_update :log_update
+  after_destroy :log_delete
   after_commit :invalidate_cache
   after_save_commit :write_storage_file
   after_destroy_commit :remove_storage_file
@@ -92,5 +95,20 @@ class Mascot < ApplicationRecord
     super + [:url_path]
   end
 
+  module LogMethods
+    def log_create
+      ModAction.log!(:mascot_create, self)
+    end
+
+    def log_update
+      ModAction.log!(:mascot_update, self)
+    end
+
+    def log_delete
+      ModAction.log!(:mascot_delete, self)
+    end
+  end
+
   include FileMethods
+  include LogMethods
 end

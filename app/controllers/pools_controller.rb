@@ -62,7 +62,6 @@ class PoolsController < ApplicationController
     if !@pool.deletable_by?(CurrentUser.user)
       raise(User::PrivilegeError)
     end
-    @pool.create_mod_action_for_delete
     @pool.destroy
     flash[:notice] = "Pool deleted"
     respond_with(@pool)

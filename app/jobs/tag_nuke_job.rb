@@ -20,7 +20,7 @@ class TagNukeJob < ApplicationJob
     CurrentUser.scoped(updater, updater_ip_addr) do
       create_undo_information(tag)
       migrate_posts(tag.name)
-      ModAction.log!(:nuke_tag, Tag.find_by(name: tag_name))
+      ModAction.log!(:nuke_tag, Tag.find_by(name: tag_name), tag_name: tag_name)
     end
   end
 

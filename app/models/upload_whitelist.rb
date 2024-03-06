@@ -2,20 +2,14 @@
 
 class UploadWhitelist < ApplicationRecord
   before_save :clean_pattern
+  after_create :log_create
+  after_update :log_update
+  after_destroy :log_delete
   after_save :clear_cache
 
   validates :pattern, presence: true
   validates :pattern, uniqueness: true
   validates :pattern, format: { with: %r{\A[a-zA-Z0-9.%:_\-*\/?&]+\z} }
-  after_create do |rec|
-    ModAction.log!(:upload_whitelist_create, self, pattern: rec.pattern, note: rec.note, hidden: rec.hidden)
-  end
-  after_save do |rec|
-    ModAction.log!(:upload_whitelist_update, self, pattern: rec.pattern, note: rec.note, old_pattern: rec.pattern_before_last_save, hidden: rec.hidden)
-  end
-  after_destroy do |rec|
-    ModAction.log!(:upload_whitelist_delete, self, pattern: rec.pattern, note: rec.note, hidden: rec.hidden)
-  end
 
   def clean_pattern
     self.pattern = self.pattern.downcase.tr("%", "*")
@@ -23,6 +17,20 @@ class UploadWhitelist < ApplicationRecord
 
   def clear_cache
     Cache.delete("upload_whitelist")
+  end
+
+  module LogMethods
+    def log_create
+      ModAction.log!(:upload_whitelist_create, self, pattern: pattern, note: note, hidden: hidden)
+    end
+
+    def log_update
+      ModAction.log!(:upload_whitelist_update, self, pattern: pattern, note: note, old_pattern: pattern_before_last_save, hidden: hidden)
+    end
+
+    def log_delete
+      ModAction.log!(:upload_whitelist_delete, self, pattern: pattern, note: note, hidden: hidden)
+    end
   end
 
   module SearchMethods
@@ -73,5 +81,6 @@ class UploadWhitelist < ApplicationRecord
     [false, "#{url.domain} not in whitelist"]
   end
 
+  include LogMethods
   extend SearchMethods
 end

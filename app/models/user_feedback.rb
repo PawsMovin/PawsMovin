@@ -10,21 +10,29 @@ class UserFeedback < ApplicationRecord
   validates :body, length: { minimum: 1, maximum: PawsMovin.config.user_feedback_max_size }
   validate :creator_is_moderator, on: :create
   validate :user_is_not_creator
+  after_create :log_create
+  after_update :log_update
+  after_destroy :log_delete
   after_save :create_dmail
-  after_create do |rec|
-    ModAction.log!(:user_feedback_create, self, user_id: rec.user_id, reason: rec.body, type: rec.category, record_id: rec.id)
-  end
-  after_update do |rec|
-    ModAction.log!(:user_feedback_update, self, user_id: rec.user_id, reason: rec.body, reason_was: rec.body_before_last_save, type: rec.category, type_was: rec.category_before_last_save, record_id: rec.id)
-  end
-  after_destroy do |rec|
-    ModAction.log!(:user_feedback_delete, self, user_id: rec.user_id, reason: rec.body, type: rec.category, record_id: rec.id)
-    deletion_user = "\"#{CurrentUser.name}\":/users/#{CurrentUser.id}"
-    creator_user = "\"#{creator.name}\":/users/#{creator.id}"
-    StaffNote.create(body: "#{deletion_user} deleted #{rec.category} feedback, created #{created_at.to_date} by #{creator_user}: #{rec.body}", user_id: rec.user_id, creator: User.system)
-  end
 
   attr_accessor :send_update_dmail
+
+  module LogMethods
+    def log_create
+      ModAction.log!(:user_feedback_create, self, user_id: user_id, reason: body, type: category)
+    end
+
+    def log_update
+      ModAction.log!(:user_feedback_update, self, user_id: user_id, reason: body, old_reason: body_before_last_save, type: category, old_type: category_before_last_save)
+    end
+
+    def log_delete
+      ModAction.log!(:user_feedback_delete, self, user_id: user_id, reason: body, type: category)
+      deletion_user = "\"#{CurrentUser.name}\":/users/#{CurrentUser.id}"
+      creator_user = "\"#{creator.name}\":/users/#{creator.id}"
+      StaffNote.create(body: "#{deletion_user} deleted #{category} feedback, created #{created_at.to_date} by #{creator_user}: #{body}", user_id: user_id, creator: User.system)
+    end
+  end
 
   module SearchMethods
     def positive
@@ -63,6 +71,7 @@ class UserFeedback < ApplicationRecord
     end
   end
 
+  include LogMethods
   extend SearchMethods
 
   def user_name

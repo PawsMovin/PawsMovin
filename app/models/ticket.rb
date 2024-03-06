@@ -254,7 +254,18 @@ class Ticket < ApplicationRecord
   end
 
   def bot_target_name
-    model&.creator&.name
+    case model
+    when Dmail
+      model&.from&.name
+    when WikiPage
+      model&.title
+    when Pool, User
+      model&.name
+    when Post
+      model&.uploader&.name
+    else
+      model&.creator&.name
+    end
   end
 
   def can_see_details?(user)

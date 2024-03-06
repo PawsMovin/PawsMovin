@@ -24,6 +24,7 @@ class Pool < ApplicationRecord
   after_save :synchronize, if: :saved_change_to_post_ids?
   after_create :synchronize!
   before_destroy :remove_all_posts
+  after_destroy :log_delete
 
   attr_accessor :skip_sync
 
@@ -184,10 +185,6 @@ class Pool < ApplicationRecord
 
   def deletable_by?(user)
     user.is_janitor?
-  end
-
-  def create_mod_action_for_delete
-    ModAction.log!(:pool_delete, self, pool_name: name, user_id: creator_id)
   end
 
   def validate_number_of_posts
@@ -351,4 +348,12 @@ class Pool < ApplicationRecord
       errors.add(:base, "You cannot removes posts from pools within the first week of sign up")
     end
   end
+
+  module LogMethods
+    def log_delete
+      ModAction.log!(:pool_delete, self, pool_name: name, user_id: creator_id)
+    end
+  end
+
+  include LogMethods
 end

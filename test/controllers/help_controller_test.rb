@@ -5,6 +5,7 @@ require "test_helper"
 class HelpControllerTest < ActionDispatch::IntegrationTest
   setup do
     @user = create(:user)
+    CurrentUser.user = @user
     as(@user) do
       @wiki = create(:wiki_page, title: "help")
     end

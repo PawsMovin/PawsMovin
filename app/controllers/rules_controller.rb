@@ -48,11 +48,13 @@ class RulesController < ApplicationController
 
   def reorder
     return render_expected_error(422, "Error: No rules provided") unless params[:_json].is_a?(Array) && params[:_json].any?
+    changes = 0
     Rule.transaction do
       params[:_json].each do |data|
         rule = Rule.find(data[:id])
-        rule.update_attribute(:order, data[:order])
-        rule.update_attribute(:category_id, data[:category_id]) if data[:category_id].present?
+        rule.update(order: data[:order])
+        rule.update(category: data[:category_id]) if data[:category_id].present?
+        changes += 1 if rule.previous_changes.any?
       end
 
       rules = Rule.all
@@ -64,6 +66,7 @@ class RulesController < ApplicationController
         render(json: { success: false, errors: errors }, status: 422)
         raise(ActiveRecord::Rollback)
       else
+        Rule.log_reorder(changes) if changes != 0
         respond_to do |format|
           format.json { head(204) }
           format.js do

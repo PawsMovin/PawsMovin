@@ -38,4 +38,8 @@ class Rule < ApplicationRecord
   end
 
   include LogMethods
+
+  def self.log_reorder(changes)
+    ModAction.log!(:rules_reorder, nil, total: changes)
+  end
 end

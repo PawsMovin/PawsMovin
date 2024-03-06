@@ -64,9 +64,7 @@ module Posts
         end
       end
 
-      if changes != 0
-        ModAction.log!(:post_deletion_reasons_reorder, nil, total: changes)
-      end
+      PostDeletionReason.log_reorder(changes) if changes != 0
 
       respond_to do |format|
         format.html { redirect_back(fallback_location: post_deletion_reasons_path) }

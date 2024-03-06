@@ -5,10 +5,10 @@ class Ban < ApplicationRecord
 
   after_create :create_feedback
   after_create :update_user_on_create
-  after_create :create_ban_mod_action
-  after_update :create_ban_update_mod_action
+  after_create :log_create
+  after_update :log_update
+  after_destroy :log_delete
   after_destroy :update_user_on_destroy
-  after_destroy :create_unban_mod_action
   belongs_to :user
   belongs_to :banner, class_name: "User"
   validate :user_is_inferior
@@ -137,15 +137,27 @@ class Ban < ApplicationRecord
     user.feedback.create(category: "negative", body: "Banned for #{humanized_duration}: #{reason}")
   end
 
-  def create_ban_mod_action
-    ModAction.log!(:ban_create, self, duration: duration, reason: reason, user_id: user_id)
+  module LogMethods
+    def log_create
+      ModAction.log!(:ban_create, self,
+                     duration: duration,
+                     reason:   reason,
+                     user_id:  user_id)
+    end
+
+    def log_update
+      ModAction.log!(:ban_update, self,
+                     user_id:        user_id,
+                     expires_at:     expires_at&.iso8601,
+                     old_expires_at: expires_at_before_last_save&.iso8601,
+                     reason:         reason,
+                     old_reason:     reason_before_last_save)
+    end
+
+    def log_delete
+      ModAction.log!(:ban_delete, self, user_id: user_id)
+    end
   end
 
-  def create_ban_update_mod_action
-    ModAction.log!(:ban_update, self, user_id: user_id, expires_at: expires_at, expires_at_was: expires_at_before_last_save, reason: reason, reason_was: reason_before_last_save)
-  end
-
-  def create_unban_mod_action
-    ModAction.log!(:ban_delete, self, user_id: user_id)
-  end
+  include LogMethods
 end
