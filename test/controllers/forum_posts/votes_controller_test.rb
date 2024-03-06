@@ -18,6 +18,30 @@ module ForumPosts
         CurrentUser.user = @user2
       end
 
+      context "show action" do
+        should "render" do
+          get_auth url_for(controller: "forum_posts/votes", action: "index", only_path: true), @admin
+          assert_response :success
+        end
+
+        context "members" do
+          should "render" do
+            get_auth url_for(controller: "forum_posts/votes", action: "index", only_path: true), @user2
+            assert_response :success
+          end
+
+          should "only list own votes" do
+            create(:forum_post_vote, forum_post: @forum_post, user: @user2, score: -1)
+            create(:forum_post_vote, forum_post: @forum_post, user: @admin, score: 1)
+
+            get_auth url_for(controller: "forum_posts/votes", action: "index", format: "json", only_path: true), @user2
+            assert_response :success
+            assert_equal(1, response.parsed_body.length)
+            assert_equal(@user2.id, response.parsed_body[0]["user_id"])
+          end
+        end
+      end
+
       context "delete action" do
         setup do
           @vote = create(:forum_post_vote, forum_post: @forum_post, user: @user2, score: -1)

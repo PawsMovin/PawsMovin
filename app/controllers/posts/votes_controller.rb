@@ -2,13 +2,16 @@
 
 module Posts
   class VotesController < ApplicationController
+    respond_to :html, only: %i[index]
+    respond_to :json
     before_action :member_only
-    before_action :moderator_only, only: %i[index lock]
-    before_action :admin_only, only: [:delete]
+    before_action :moderator_only, only: %i[lock]
+    before_action :admin_only, only: %i[delete]
     skip_before_action :api_check
 
     def index
-      @post_votes = PostVote.includes(:user).search(search_params).paginate(params[:page], limit: 100)
+      @post_votes = PostVote.visible(CurrentUser.user).includes(:user).search(search_params).paginate(params[:page], limit: 100)
+      respond_with(@post_votes)
     end
 
     def create

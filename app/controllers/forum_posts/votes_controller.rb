@@ -2,16 +2,17 @@
 
 module ForumPosts
   class VotesController < ApplicationController
+    respond_to :html, only: %i[index]
     respond_to :json
     before_action :member_only
-    before_action :moderator_only, only: %i[index]
     before_action :admin_only, only: %i[delete]
     before_action :load_forum_post, except: %i[index delete]
     before_action :validate_forum_post, except: %i[index delete]
     before_action :validate_no_vote_on_own_post, only: %i[create]
 
     def index
-      @forum_post_votes = ForumPostVote.includes(:user, forum_post: [:creator]).search(search_params).paginate(params[:page], limit: 100)
+      @forum_post_votes = ForumPostVote.visible(CurrentUser.user).includes(:user, forum_post: [:creator]).search(search_params).paginate(params[:page], limit: 100)
+      respond_with(@forum_post_votes)
     end
 
     def create

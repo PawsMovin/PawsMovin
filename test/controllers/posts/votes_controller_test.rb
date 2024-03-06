@@ -16,6 +16,31 @@ module Posts
         @admin = create(:admin_user)
       end
 
+      context "show action" do
+        should "render" do
+          get_auth url_for(controller: "posts/votes", action: "index", only_path: true), @admin
+          assert_response :success
+        end
+
+        context "members" do
+          should "render" do
+            get_auth url_for(controller: "posts/votes", action: "index", only_path: true), @user2
+            assert_response :success
+          end
+
+          should "only list own votes" do
+            PawsMovin.config.stubs(:disable_age_checks?).returns(true)
+            create(:post_vote, post: @post, user: @user2, score: -1)
+            create(:post_vote, post: @post, user: @admin, score: 1)
+
+            get_auth url_for(controller: "posts/votes", action: "index", format: "json", only_path: true), @user2
+            assert_response :success
+            assert_equal(1, response.parsed_body.length)
+            assert_equal(@user2.id, response.parsed_body[0]["user_id"])
+          end
+        end
+      end
+
       context "create action" do
         should "not allow anonymous users to vote" do
           post post_votes_path(post_id: @post.id), params: { score: 1, format: :json }

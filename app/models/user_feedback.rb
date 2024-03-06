@@ -87,7 +87,7 @@ class UserFeedback < ApplicationRecord
     return unless should_send
 
     action = saved_change_to_id? ? "created" : "updated"
-    body = %(#{updater_name} #{action} a "#{category} record":/user_feedbacks?search[user_id]=#{user_id} for your account:\n\n#{self.body})
+    body = %(#{updater_name} #{action} a "#{category} record":#{Rails.application.routes.url_helpers.user_feedbacks_path(search: { user_id: user_id })} for your account:\n\n#{self.body})
     Dmail.create_automated(to_id: user_id, title: "Your user record has been updated", body: body)
   end
 
