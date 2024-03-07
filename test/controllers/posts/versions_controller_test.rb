@@ -24,8 +24,7 @@ module Posts
           end
         end
 
-        # FIXME: for some reason nothings gets returned here when no search parameters are passed
-        should_eventually "list all versions" do
+        should "list all versions" do
           get_auth post_versions_path, @user
           assert_response :success
           assert_select "#post-version-#{@post2.versions[0].id}"

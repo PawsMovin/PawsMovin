@@ -110,7 +110,7 @@ class ElasticPostQueryBuilder < ElasticQueryBuilder
     add_array_relation(:delreason, :del_reason, action: :wildcard)
     add_array_relation(:description, :description, action: :match_phrase_prefix)
     add_array_relation(:note, :notes, action: :match_phrase_prefix)
-    add_array_relation(:sources, :source, any_none_key: :source, action: :wildcard)
+    add_array_relation(:sources, :source, any_none_key: :source, action: :wildcard, cast: :downcase)
     add_array_relation(:deleter, :deleter)
     add_array_relation(:upvote, :upvotes)
     add_array_relation(:downvote, :downvotes)

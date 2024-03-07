@@ -91,17 +91,17 @@ class ElasticQueryBuilder
     end
   end
 
-  def add_array_relation(key, index_field, any_none_key: nil, action: :term)
+  def add_array_relation(key, index_field, any_none_key: nil, action: :term, cast: :itself)
     if q[key]
-      must.concat(q[key].map { |x| { action => { index_field => x } } })
+      must.concat(q[key].map(&cast).map { |x| { action => { index_field => x } } })
     end
 
     if q[:"#{key}_must_not"]
-      must_not.concat(q[:"#{key}_must_not"].map { |x| { action => { index_field => x } } })
+      must_not.concat(q[:"#{key}_must_not"].map(&cast).map { |x| { action => { index_field => x } } })
     end
 
     if q[:"#{key}_should"]
-      should.concat(q[:"#{key}_should"].map { |x| { action => { index_field => x } } })
+      should.concat(q[:"#{key}_should"].map(&cast).map { |x| { action => { index_field => x } } })
     end
 
     if q[any_none_key] == "any"
