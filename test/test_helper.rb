@@ -11,8 +11,10 @@ require "shoulda-context"
 require "shoulda-matchers"
 require "webmock/minitest"
 require "simplecov"
-
 SimpleCov.start
+
+require "simplecov-cobertura"
+SimpleCov.formatter = SimpleCov::Formatter::CoberturaFormatter
 
 require "sidekiq/testing"
 Sidekiq::Testing.fake!

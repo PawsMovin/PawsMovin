@@ -26,7 +26,6 @@ class UserFeedbackTest < ActiveSupport::TestCase
     should "correctly credit the updater" do
       feedback = create(:user_feedback, user: @user, body: "good job!")
 
-      
       dmail = <<~DMAIL.chomp
         #{@admin.name} updated a "positive record":#{Rails.application.routes.url_helpers.user_feedbacks_path(search: { user_id: @user.id })} for your account:
 

@@ -65,6 +65,7 @@ group :test do
   gem "mocha", require: false
   gem "webmock", require: false
   gem "simplecov", require: false
+  gem "simplecov-cobertura", require: false
 end
 
 gem "faker", "~> 3.2"
