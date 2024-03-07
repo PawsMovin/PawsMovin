@@ -655,6 +655,21 @@ module PawsMovin
       nil
     end
 
+    def ticket_quick_response_buttons
+      [
+        { name: "Handled", text: "Handled, thank you." },
+        { name: "Reviewed", text: "Reviewed, thank you." },
+        { name: "NAT", text: "Reviewed, no action taken." },
+        { name: "Closed", text: "Ticket closed." },
+        { name: "Old", text: "That comment is from N years ago.\nWe do not punish people for comments older than 6 months." },
+        { name: "Reply", text: "I believe that you tried to reply to a comment, but reported it instead.\nPlease, be more careful in the future." },
+        { name: "Already", text: "User already received a record for that message." },
+        { name: "Banned", text: "This user is already banned." },
+        { name: "Blacklist", text: "If you find the contents of that post objectionable, [[help:blacklist|blacklist]] it." },
+        { name: "Takedown", text: "Artists and character owners may request a takedown here: https://pawsmov.in/static/takedown.\nWe do not accept third party takedowns." },
+      ]
+    end
+
     def reports_enabled?
       PawsMovin.config.reports_server.present?
     end
