@@ -64,6 +64,7 @@ group :test do
   gem "factory_bot_rails", require: false
   gem "mocha", require: false
   gem "webmock", require: false
+  gem "simplecov", require: false
 end
 
 gem "faker", "~> 3.2"

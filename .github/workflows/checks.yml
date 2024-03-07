@@ -60,3 +60,10 @@ jobs:
         with:
           name: test-results
           path: log/test.log
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4.0.1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: PawsMovin/PawsMovin
+

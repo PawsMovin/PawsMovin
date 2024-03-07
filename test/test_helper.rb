@@ -10,6 +10,9 @@ require "mocha/minitest"
 require "shoulda-context"
 require "shoulda-matchers"
 require "webmock/minitest"
+require "simplecov"
+
+SimpleCov.start
 
 require "sidekiq/testing"
 Sidekiq::Testing.fake!
