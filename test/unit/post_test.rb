@@ -255,26 +255,32 @@ class PostTest < ActiveSupport::TestCase
 
     context "Deleting a post with" do
       context "a parent" do
-        should "not reassign favorites to the parent by default" do
+        should "not reassign favorites and votes to the parent by default" do
           p1 = create(:post)
           c1 = create(:post, parent_id: p1.id)
           user = create(:trusted_user)
           FavoriteManager.add!(user: user, post: c1)
+          VoteManager.vote!(user: user, post: c1, score: 1)
           c1.delete!("test")
           p1.reload
-          assert(Favorite.exists?(post_id: c1.id, user_id: user.id))
-          assert(!Favorite.exists?(post_id: p1.id, user_id: user.id))
+          assert(Favorite.exists?(post_id: c1.id, user_id: user.id), "Child should still have favorites")
+          assert(PostVote.exists?(post_id: c1.id, user_id: user.id), "Child should still have votes")
+          assert_not(Favorite.exists?(post_id: p1.id, user_id: user.id), "Parent should not have favorites")
+          assert_not(PostVote.exists?(post_id: p1.id, user_id: user.id), "Parent should not have votes")
         end
 
-        should "reassign favorites to the parent if specified" do
+        should "reassign favorites and votes to the parent if specified" do
           p1 = create(:post)
           c1 = create(:post, parent_id: p1.id)
           user = create(:trusted_user)
           FavoriteManager.add!(user: user, post: c1)
+          VoteManager.vote!(user: user, post: c1, score: 1)
           with_inline_jobs { c1.delete!("test", move_favorites: true) }
           p1.reload
-          assert(!Favorite.exists?(post_id: c1.id, user_id: user.id), "Child should not still have favorites")
+          assert_not(Favorite.exists?(post_id: c1.id, user_id: user.id), "Child should not still have favorites")
+          assert_not(PostVote.exists?(post_id: c1.id, user_id: user.id), "Child should not still have votes")
           assert(Favorite.exists?(post_id: p1.id, user_id: user.id), "Parent should have favorites")
+          assert(PostVote.exists?(post_id: p1.id, user_id: user.id), "Parent should have votes")
         end
 
         should "not update the parent's has_children flag" do
@@ -1385,12 +1391,12 @@ class PostTest < ActiveSupport::TestCase
 
         @user1 = create(:user, enable_privacy_mode: true)
         @trusted1 = create(:trusted_user)
-        @supervoter1 = create(:user)
+        @user2 = create(:user)
 
         FavoriteManager.add!(user: @user1, post: @child)
         FavoriteManager.add!(user: @trusted1, post: @child)
-        FavoriteManager.add!(user: @supervoter1, post: @child)
-        FavoriteManager.add!(user: @supervoter1, post: @parent)
+        FavoriteManager.add!(user: @user2, post: @child)
+        FavoriteManager.add!(user: @user2, post: @parent)
 
         with_inline_jobs { @child.give_favorites_to_parent }
         @child.reload
@@ -2007,6 +2013,46 @@ class PostTest < ActiveSupport::TestCase
 
         post.reload
         assert_equal(1, post.score)
+      end
+    end
+
+    context "Moving votes to a parent post" do
+      setup do
+        PawsMovin.config.stubs(:disable_age_checks?).returns(true)
+        @parent = create(:post)
+        @child = create(:post, parent: @parent)
+
+        @user1 = create(:user, enable_privacy_mode: true)
+        @trusted1 = create(:trusted_user)
+        @user2 = create(:user)
+        @user3 = create(:user)
+
+        VoteManager.vote!(user: @user1, post: @child, score: 1)
+        VoteManager.vote!(user: @trusted1, post: @child, score: -1)
+        VoteManager.vote!(user: @user2, post: @child, score: -1)
+        VoteManager.vote!(user: @user2, post: @parent, score: -1)
+
+        with_inline_jobs { @child.give_votes_to_parent }
+        @child.reload
+        @parent.reload
+      end
+
+      should "move the votes" do
+        assert_equal(0, @child.votes.count)
+        assert_equal([], @child.votes.pluck(:user_id))
+
+        assert_equal(3, @parent.votes.count)
+      end
+
+      should "not move locked votes" do
+        vote = VoteManager.vote!(user: @user3, post: @child, score: 1)
+        as(create(:admin_user)) { VoteManager.lock!(vote.id) }
+        with_inline_jobs { @child.give_votes_to_parent }
+
+        assert_equal(1, @child.votes.count)
+        assert_equal([@user3.id], @child.votes.pluck(:user_id))
+
+        assert_equal(3, @parent.votes.count)
       end
     end
   end

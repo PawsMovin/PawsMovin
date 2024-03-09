@@ -25,8 +25,8 @@
       <% if CurrentUser.can_approve_posts? %>
         <% if post.is_deleted? %>
           <li><%= tag.a("Undelete", href: "#", class: "undelete-post-link", 'data-pid': post.id) %></li>
-          <% if post.fav_count > 0 && post.parent_id %>
-            <li><%= link_to "Move favorites", confirm_move_favorites_posts_path(post) %></li>
+          <% if (post.fav_count > 0 || post.votes.exists?) && post.parent_id %>
+            <li><%= link_to "Move favorites", confirm_move_favorites_post_path(post) %></li>
           <% end %>
         <% else %>
           <li><%= link_to "Delete", delete_post_path(post) %></li>

@@ -76,7 +76,7 @@ module ModActions
           text:    "Changed the order of 2 quick rules",
           subject: nil,
           total:   2,
-          )
+        )
       end
 
       context "quick_rule_update" do
@@ -88,12 +88,12 @@ module ModActions
           @quick.update!(reason: "aaa")
 
           assert_matches(
-            actions:  %w[quick_rule_update],
-            text:     <<~TEXT.strip,
+            actions:    %w[quick_rule_update],
+            text:       <<~TEXT.strip,
               Updated quick rule
               Changed reason from "#{@original.reason}" to "#{@quick.reason}"
             TEXT
-            subject:  @quick,
+            subject:    @quick,
             old_reason: @original.reason,
             reason:     @quick.reason,
             old_header: @original.header,
@@ -105,12 +105,12 @@ module ModActions
           @quick.update!(header: "aaa")
 
           assert_matches(
-            actions:  %w[quick_rule_update],
-            text:     <<~TEXT.strip,
+            actions:    %w[quick_rule_update],
+            text:       <<~TEXT.strip,
               Updated quick rule
               Changed header from "#{@original.header}" to "#{@quick.header}"
             TEXT
-            subject:  @quick,
+            subject:    @quick,
             old_reason: @original.reason,
             reason:     @quick.reason,
             old_header: @original.header,
@@ -122,13 +122,13 @@ module ModActions
           @quick.update!(reason: "aaa", header: "bbb")
 
           assert_matches(
-            actions:  %w[quick_rule_update],
-            text:     <<~TEXT.strip,
+            actions:    %w[quick_rule_update],
+            text:       <<~TEXT.strip,
               Updated quick rule
               Changed reason from "#{@original.reason}" to "#{@quick.reason}"
               Changed header from "#{@original.header}" to "#{@quick.header}"
             TEXT
-            subject:  @quick,
+            subject:    @quick,
             old_reason: @original.reason,
             reason:     @quick.reason,
             old_header: @original.header,

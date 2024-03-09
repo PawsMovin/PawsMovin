@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class QuickRule < ApplicationRecord
   validates :order, uniqueness: true, numericality: { only_integer: true, greater_than: 0 }
   belongs_to :rule
@@ -10,7 +12,6 @@ class QuickRule < ApplicationRecord
   after_update :log_update
   after_destroy :log_delete
 
-
   module LogMethods
     def log_create
       ModAction.log!(:quick_rule_create, self, reason: reason, header: header)
@@ -19,9 +20,9 @@ class QuickRule < ApplicationRecord
     def log_update
       return unless saved_change_to_reason? || saved_change_to_header?
       ModAction.log!(:quick_rule_update, self,
-                     reason: reason,
+                     reason:     reason,
                      old_reason: reason_before_last_save,
-                     header: header,
+                     header:     header,
                      old_header: header_before_last_save)
     end
 

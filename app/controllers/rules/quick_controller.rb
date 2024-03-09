@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Rules
   class QuickController < ApplicationController
     before_action :admin_only
@@ -23,7 +25,6 @@ module Rules
       notice(@quick.errors.any? ? @quick.errors.full_messages.join(", ") : "Quick rule created")
       respond_with(@quick, location: quick_rules_path)
     end
-
 
     def update
       @quick = QuickRule.find(params[:id])

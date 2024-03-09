@@ -142,6 +142,7 @@ class PostsController < ApplicationController
   def move_favorites
     @post = Post.find(params[:id])
     @post.give_favorites_to_parent
+    @post.give_votes_to_parent
     redirect_to(post_path(@post))
   end
 

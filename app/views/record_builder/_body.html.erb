@@ -24,7 +24,7 @@
     <textarea id="record-sources-<%= id %>" class="record-sources" placeholder="One source link per line"></textarea>
   </div>
   <div class="rule-wrapper">
-    <% RuleCategory.all.each do |category| %>
+    <% RuleCategory.find_each do |category| %>
       <div class="rule-container">
         <label for="rules-buttons"><%= category.name %></label>
         <% category.rules.each do |rule| %>

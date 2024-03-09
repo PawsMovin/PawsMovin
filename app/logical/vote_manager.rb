@@ -88,6 +88,23 @@ class VoteManager
     unvote!(post: vote.post, user: vote.user, force: true)
   end
 
+  def self.give_to_parent!(post)
+    parent = post.parent
+    return false unless parent
+    post.votes.each do |vote|
+      next if vote.is_locked?
+      tries = 5
+      begin
+        VoteManager.unvote!(user: vote.user, post: post, force: true)
+        VoteManager.vote!(user: vote.user, post: parent, score: vote.score)
+      rescue ActiveRecord::SerializationFailure
+        tries -= 1
+        retry if tries > 0
+      end
+    end
+    true
+  end
+
   def self.comment_vote!(user:, comment:, score:)
     retries = 5
     @vote = nil

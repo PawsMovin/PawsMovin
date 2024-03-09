@@ -1153,6 +1153,16 @@ class Post < ApplicationRecord
       PostEvent.add(parent_id, CurrentUser.user, :favorites_received, { child_id: id })
     end
 
+    def give_votes_to_parent
+      TransferVotesJob.perform_later(id, CurrentUser.id)
+    end
+
+    def give_votes_to_parent!
+      return if parent.nil?
+
+      VoteManager.give_to_parent!(self)
+    end
+
     def parent_exists?
       Post.exists?(parent_id)
     end
@@ -1277,8 +1287,11 @@ class Post < ApplicationRecord
       # XXX This must happen *after* the `is_deleted` flag is set to true (issue #3419).
       # We don't care if these fail per-se so they are outside the transaction.
       User.where(id: uploader_id).update_all("post_deleted_count = post_deleted_count + 1")
-      give_favorites_to_parent if options[:move_favorites]
-      give_post_sets_to_parent if options[:move_favorites]
+      if options[:move_favorites]
+        give_favorites_to_parent
+        give_votes_to_parent
+        give_post_sets_to_parent
+      end
       reject_pending_replacements
     end
 

@@ -494,22 +494,22 @@ class ModAction < ApplicationRecord
     },
 
     ### Quick Rules ###
-    quick_rule_create:          {
+    quick_rule_create:             {
       text: ->(mod, _user) { "Created quick rule #{mod.header.blank? ? '' : "\"#{mod.header}\" "}with reason: #{mod.reason}" },
       json: %i[reason header],
     },
-    quick_rule_delete:          {
+    quick_rule_delete:             {
       text: ->(mod, _user) do
         return "Deleted quick rule with reason: #{mod.reason}" if mod.header.blank?
         "Deleted quick rule \"#{mod.header}\""
       end,
       json: %i[reason header],
     },
-    quick_rules_reorder:       {
+    quick_rules_reorder:           {
       text: ->(mod, _user) { "Changed the order of #{mod.total} quick rules" },
       json: %i[total],
     },
-    quick_rule_update:          {
+    quick_rule_update:             {
       text: ->(mod, _user) do
         text = "Updated quick rule"
         text += "\nChanged reason from \"#{mod.old_reason}\" to \"#{mod.reason}\"" if mod.reason != mod.old_reason
