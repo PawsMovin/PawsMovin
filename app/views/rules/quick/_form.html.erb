@@ -1,0 +1,6 @@
+<%= custom_form_for(@quick) do |f| %>
+  <%= f.input(:reason, as: :dtext, hint: "Use $S as a placeholder for sources. If not specified, sources will be appended at the end.") %>
+  <%= f.input(:header, as: :string, hint: "If specified, this will be a quick link at the top of the record box.") %>
+  <%= f.input(:rule_id, label: "Rule", collection: @rules.map { |c| [c.name, c.id] }) %>
+  <%= f.button(:submit, "Submit", name: nil) %>
+<% end %>

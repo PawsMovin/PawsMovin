@@ -9,3 +9,5 @@
   <%= f.input(:body, as: :dtext, limit: PawsMovin.config.user_feedback_max_size) %>
   <%= f.button(:submit, "Submit") %>
 <% end %>
+
+<%= render "record_builder/builder" %>

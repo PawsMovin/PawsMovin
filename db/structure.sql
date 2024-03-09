@@ -1636,6 +1636,40 @@ ALTER SEQUENCE public.posts_id_seq OWNED BY public.posts.id;
 
 
 --
+-- Name: quick_rules; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.quick_rules (
+    id bigint NOT NULL,
+    rule_id bigint,
+    reason character varying NOT NULL,
+    header character varying,
+    "order" integer NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: quick_rules_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.quick_rules_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: quick_rules_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.quick_rules_id_seq OWNED BY public.quick_rules.id;
+
+
+--
 -- Name: rule_categories; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -2765,6 +2799,13 @@ ALTER TABLE ONLY public.posts ALTER COLUMN change_seq SET DEFAULT nextval('publi
 
 
 --
+-- Name: quick_rules id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.quick_rules ALTER COLUMN id SET DEFAULT nextval('public.quick_rules_id_seq'::regclass);
+
+
+--
 -- Name: rule_categories id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -3247,6 +3288,14 @@ ALTER TABLE ONLY public.post_votes
 
 ALTER TABLE ONLY public.posts
     ADD CONSTRAINT posts_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: quick_rules quick_rules_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.quick_rules
+    ADD CONSTRAINT quick_rules_pkey PRIMARY KEY (id);
 
 
 --
@@ -4176,6 +4225,13 @@ CREATE INDEX index_posts_on_uploader_ip_addr ON public.posts USING btree (upload
 
 
 --
+-- Name: index_quick_rules_on_rule_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_quick_rules_on_rule_id ON public.quick_rules USING btree (rule_id);
+
+
+--
 -- Name: index_rule_categories_on_creator_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -4717,6 +4773,7 @@ ALTER TABLE ONLY public.staff_notes
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20240307133355'),
 ('20240306215111'),
 ('20240306204814'),
 ('20240302152238'),

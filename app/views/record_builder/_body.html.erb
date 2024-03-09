@@ -1,0 +1,36 @@
+<%# locals: (id: SecureRandom.hex(3)) -%>
+
+<form class="record-builder">
+  <div class="record-header">
+    <div class="quick-record">
+      <% QuickRule.order(:order).where.not(header: nil).and(QuickRule.where.not(header: "")).each do |quick| %>
+        <%= link_to quick.header, "#", class: "quick-record-link", data: { reason: quick.reason, rule: quick.rule.anchor } %>
+      <% end %>
+    </div>
+    <button type="button" class="remove-section-button">Remove Section</button>
+  </div>
+  <div>
+    <label for="record-reason-<%= id %>">Reason</label>
+    <select id="record-reason-<%= id %>" class="record-reason">
+      <option></option>
+      <% QuickRule.order(:order).each do |quick| %>
+        <option value="<%= quick.rule.anchor %>"><%= quick.reason.split("\n")[0] %></option>
+      <% end %>
+    </select>
+    <textarea id="record-custom-<%= id %>" class="custom-reason" placeholder="Custom Reason"></textarea>
+  </div>
+  <div>
+    <label for="record-sources-<%= id %>">Sources</label>
+    <textarea id="record-sources-<%= id %>" class="record-sources" placeholder="One source link per line"></textarea>
+  </div>
+  <div class="rule-wrapper">
+    <% RuleCategory.all.each do |category| %>
+      <div class="rule-container">
+        <label for="rules-buttons"><%= category.name %></label>
+        <% category.rules.each do |rule| %>
+          <button type="button" class="rules-button" data-name="<%= rule.anchor %>"><%= rule.name %></button>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</form>

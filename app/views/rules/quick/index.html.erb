@@ -1,0 +1,28 @@
+<table class="striped">
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Reason</th>
+      <th>Rule</th>
+      <th></th>
+  </thead>
+  <tbody>
+    <% @quick.each do |q| %>
+      <tr>
+        <td><%= q.header %></td>
+        <td><%= q.reason %></td>
+        <td><%= link_to q.rule.name, rules_path(anchor: q.rule.anchor) %></td>
+        <td>
+          <%= link_to "Edit", edit_quick_rule_path(q) %> |
+          <%= link_to "Delete", quick_rule_path(q), method: :delete %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<%= render partial: "rules/secondary_links" %>
+
+<% content_for(:page_title) do %>
+  Quick Rules
+<% end %>

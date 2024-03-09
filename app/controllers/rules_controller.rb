@@ -53,7 +53,7 @@ class RulesController < ApplicationController
       params[:_json].each do |data|
         rule = Rule.find(data[:id])
         rule.update(order: data[:order])
-        rule.update(category: data[:category_id]) if data[:category_id].present?
+        rule.update(category_id: data[:category_id]) if data[:category_id].present?
         changes += 1 if rule.previous_changes.any?
       end
 
@@ -79,6 +79,14 @@ class RulesController < ApplicationController
     render_expected_error(422, "Error: Invalid category")
   rescue ActiveRecord::RecordNotFound
     render_expected_error(422, "Error: Rule not found")
+  end
+
+  def builder
+    render(json: {
+      section:   render_to_string(partial: "record_builder/body", locals: { id: "{id}" }, formats: %i[html]),
+      quick_mod: QuickRule.order(:order).map { |q| q.slice(:reason, :header).merge(rule: q.rule.anchor) },
+      rules:     Rule.all.to_h { |r| [r.anchor, r.slice(:name, :description)] },
+    }.to_json)
   end
 
   private

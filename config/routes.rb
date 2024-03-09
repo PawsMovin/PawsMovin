@@ -257,7 +257,14 @@ Rails.application.routes.draw do
     collection do
       get :order
       post :reorder
+      get :builder
       resources :categories, controller: "rules/categories", as: "rule_categories", only: %i[new create edit update destroy] do
+        collection do
+          get :order
+          post :reorder
+        end
+      end
+      resources :quick, controller: "rules/quick", as: "quick_rules", only: %i[index new create edit update destroy] do
         collection do
           get :order
           post :reorder

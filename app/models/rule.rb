@@ -23,6 +23,7 @@ class Rule < ApplicationRecord
     end
 
     def log_update
+      return unless saved_change_to_name? || saved_change_to_description? || saved_change_to_category_id?
       ModAction.log!(:rule_update, self,
                      name:              name,
                      old_name:          name_before_last_save,

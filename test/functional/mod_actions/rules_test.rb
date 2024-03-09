@@ -59,22 +59,6 @@ module ModActions
           @original = @rule.dup
         end
 
-        should "format no changes correctly" do
-          @rule.save
-
-          assert_matches(
-            actions:           %w[rule_update],
-            text:              "Updated rule \"#{@rule.name}\" in category \"#{@rule.category.name}\"",
-            subject:           @rule,
-            old_name:          @original.name,
-            name:              @rule.name,
-            old_description:   @original.description,
-            description:       @rule.description,
-            old_category_name: @original.category.name,
-            category_name:     @rule.category.name,
-          )
-        end
-
         should "format name changes correctly" do
           @rule.update!(name: "aaa")
 

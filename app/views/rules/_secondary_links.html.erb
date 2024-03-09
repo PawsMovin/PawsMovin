@@ -8,12 +8,17 @@
       <% if params[:controller] == "rules" %>
         <%= subnav_link_to "Edit Rule Order", "#", class: "edit-order-link" %>
       <% else %>
-        <%= subnav_link_to "Edit Rule Order", order_rules_path %>
+        <%= subnav_link_to "Edit Rule Order", order_rules_path, class: "edit-order-external-link" %>
       <% end %>
       <% if params[:controller] == "rules/categories" %>
         <%= subnav_link_to "Edit Category Order", "#", class: "edit-category-order-link" %>
       <% else %>
-        <%= subnav_link_to "Edit Category Order", order_rule_categories_path %>
+        <%= subnav_link_to "Edit Category Order", order_rule_categories_path, class: "edit-category-order-external-link" %>
+      <% end %>
+      <% if params[:controller] == "rules/quick" %>
+        <%= subnav_link_to "Edit Quick Order", "#", class: "edit-quick-order-link" %>
+      <% else %>
+        <%= subnav_link_to "Edit Quick Order", order_quick_rules_path, class: "edit-quick-order-external-link" %>
       <% end %>
       <%= subnav_link_to "Save", "#", class: "save-order-link", li_options: { style: "display: none;" } %>
       <% else %>

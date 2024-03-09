@@ -29,3 +29,81 @@ div#c-users-feedbacks, div#c-moderator-dashboards .activity-container {
     padding: 0.5em;
   }
 }
+
+#c-users-feedbacks #a-new,
+#c-users-feedbacks #a-edit,
+#c-bans #a-new,
+#c-bans #a-edit {
+  .record-wrapper {
+    display: flex;
+    flex-flow: column;
+    max-width: 900px;
+
+    & > button {
+      display: flex;
+      width: max-content;
+      padding: 0.25rem 1rem;
+      order: 9000;
+    }
+  }
+
+  .record-builder {
+    background: #ffffff10;
+    padding: 0.5rem;
+    margin: 0.5rem 0;
+
+    div {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.25rem;
+      margin-bottom: 0.25rem;
+
+      &.record-header {
+        display: grid;
+        grid-template-columns: auto max-content;
+
+        .quick-record {
+          justify-content: space-evenly;
+        }
+
+        & > button {
+          margin-bottom: 0.25rem;
+        }
+      }
+    }
+
+    label {
+      display: block;
+      width: 100%;
+    }
+
+    select,
+    input {
+      width: 100%;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 4rem;
+      &.custom-reason {
+        min-height: 2rem;
+      }
+    }
+
+    button {
+      padding: 0.5rem 0.4rem;
+      &.active {
+        background: #e8c446;
+      }
+    }
+
+    .rule-wrapper {
+      display: flex;
+      flex-flow: column;
+
+      .rule-container label:only-child {
+        display: none;
+      }
+    }
+  }
+}

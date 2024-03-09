@@ -1,0 +1,25 @@
+<%# locals: (list:) -%>
+
+<table class="striped rules-order-table" id="sortable-rules">
+  <thead>
+  <tr>
+    <th>Header</th>
+    <th>Reason</th>
+    <th>Rule</th>
+    <th></th>
+  </tr>
+  </thead>
+  <tbody>
+  <% list.each do |q| %>
+    <tr data-id="<%= q.id %>">
+      <td><%= q.header %></td>
+      <td><%= q.reason %></td>
+      <td><%= link_to q.rule.name, rules_path(anchor: q.rule.anchor) %></td>
+      <td>
+        <%= link_to "Edit", edit_quick_rule_path(q) %> |
+        <%= link_to "Delete", quick_rule_path(q), method: :delete %>
+      </td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
