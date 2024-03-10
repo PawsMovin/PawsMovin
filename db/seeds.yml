@@ -1,11 +1,14 @@
 base_url: https://e621.net
 post_ids: []
+# fetch and restore parent/child chains
+fetch_related_posts: true
 tags:
   - fav:Donovan_DMC
   - order:random
   - -female
   - -comic
   - score:>=50
+
 
 mascots:
   - name: Donovan Shy

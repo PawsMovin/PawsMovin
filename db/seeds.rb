@@ -40,15 +40,110 @@ module Seeds
     @resources
   end
 
+  def self.fetch_related_posts?
+    read_resources do |r|
+      val = r["fetch_related_posts"]
+      return val unless val.nil?
+      false
+    end
+  end
+
   module Posts
-    def self.get_posts(tags, limit = ENV.fetch("SEED_POST_COUNT", 100), page = 1)
-      posts = Seeds.api_request("/posts.json?limit=#{[320, limit].min}&tags=#{tags.join('%20')}&page=#{page}")["posts"]
-      puts("Get Page #{page}")
+    MAX_PER_PAGE = 320
+
+    def self.get_posts(tags, limit = ENV.fetch("SEED_POST_COUNT", 100), page = 1, logpage: true)
+      posts = Seeds.api_request("/posts.json?limit=#{[MAX_PER_PAGE, limit].min}&tags=#{tags.join('%20')}&page=#{page}")["posts"]
+      puts("Get Page #{page}") if logpage
       limit -= posts.length
-      if posts.length == 320 && limit > 0
-        posts += get_posts(tags, limit, page + 1)
+      if posts.length == MAX_PER_PAGE && limit > 0
+        posts += get_posts(tags, limit, page + 1, logpage: logpage)
       end
       posts
+    end
+
+    def self.get_related_posts(post, from = [post["id"]])
+      posts = []
+      ids = Set.new
+
+      if !post["relationships"]["parent_id"].nil? && from.exclude?(post["relationships"]["parent_id"])
+        ids << post["relationships"]["parent_id"]
+      end
+
+      unless post["relationships"]["children"].empty?
+        ids.merge(post["relationships"]["children"].reject { |id| from.include?(id) })
+      end
+
+      return posts if ids.empty?
+
+      related = get_posts(%W[id:#{ids.to_a.join(',')}], MAX_PER_PAGE, logpage: false)
+      posts.concat(related)
+
+      related.each do |p|
+        posts.concat(get_related_posts(p, from + ids.to_a + posts.pluck("id")))
+      end
+
+      posts.reject { |p| p["flags"]["deleted"] }
+    end
+
+    def self.create_with_relationships(ogpost)
+      return create_post(ogpost) unless Seeds.fetch_related_posts?
+      related = get_related_posts(ogpost)
+      original = [ogpost, *related]
+
+      puts("Got #{related.length} related posts for ##{ogpost['id']}") unless related.empty?
+
+      local = {}
+      remote = {}
+      posts = []
+      original.each do |p|
+        post = create_post(p)
+        next if post.nil?
+        posts << post
+        remote[p["id"]] = post.id
+        local[post.id] = p["id"]
+      end
+
+      local.each_key do |p|
+        rp = original.find { |ps| ps["id"] == local[p] }
+        post = posts.find { |ps| ps.id == p }
+        parent = remote[rp["relationships"]["parent_id"]]
+        next if post.parent_id == parent || parent.nil?
+        post.update!(parent_id: parent)
+      end
+    end
+
+    def self.create_post(post)
+      resources = Seeds.read_resources
+      existing = Post.find_by(md5: post["file"]["md5"])
+      return existing if existing.present?
+      url = get_url(post, resources["base_url"])
+      puts(url)
+      post["sources"] << "#{resources['base_url']}/posts/#{post['id']}"
+      post["tags"].each do |category, tags|
+        Tag.find_or_create_by_name_list(tags.map { |tag| "#{category}:#{tag}" })
+      end
+
+      service = UploadService.new({
+        uploader:         CurrentUser.user,
+        uploader_ip_addr: CurrentUser.ip_addr,
+        direct_url:       url,
+        tag_string:       post["tags"].values.flatten.join(" "),
+        source:           post["sources"].join("\n"),
+        description:      post["description"],
+        rating:           post["rating"],
+      })
+
+      upload = service.start!
+
+      if upload.errors.any?
+        throw(StandardError, "Failed to create upload: #{upload.errors.full_messages}")
+      end
+
+      if upload.post&.errors&.any?
+        throw(StandardError, "Failed to create post: #{upload.post.errors.full_messages}")
+      end
+
+      upload.post
     end
 
     def self.run!(limit = ENV.fetch("SEED_POST_COUNT", 100).to_i)
@@ -59,35 +154,10 @@ module Seeds
       end
       posts = get_posts(search_tags, limit)
 
-      posts.each do |post|
-        next if Post.find_by(md5: post["file"]["md5"]).present?
-        url = get_url(post, resources["base_url"])
-        puts(url)
-        post["sources"] << "#{resources['base_url']}/posts/#{post['id']}"
-        post["tags"].each do |category, tags|
-          Tag.find_or_create_by_name_list(tags.map { |tag| "#{category}:#{tag}" })
-        end
-
-        service = UploadService.new({
-          uploader:         CurrentUser.user,
-          uploader_ip_addr: CurrentUser.ip_addr,
-          direct_url:       url,
-          tag_string:       post["tags"].values.flatten.join(" "),
-          source:           post["sources"].join("\n"),
-          description:      post["description"],
-          rating:           post["rating"],
-        })
-
-        upload = service.start!
-
-        if upload.errors.any?
-          puts("Failed to create upload: #{upload.errors.full_messages}")
-        end
-
-        if upload.post&.errors&.any?
-          puts("Failed to create post: #{upload.post.errors.full_messages}")
-        end
-      end
+      before = Post.count
+      posts.map { |p| create_with_relationships(p) }
+      after = Post.count
+      puts("Created #{after - before} posts from #{posts.length} requested posts.")
     end
 
     def self.get_url(post, base_url)
