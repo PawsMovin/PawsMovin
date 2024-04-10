@@ -62,7 +62,7 @@ class ApplicationControllerTest < ActionDispatch::IntegrationTest
         should "succeed for non-GET requests without a CSRF token" do
           assert_changes -> { @user.reload.enable_safe_mode }, from: false, to: true do
             basic_auth_string = "Basic #{::Base64.encode64("#{@user.name}:#{@api_key.key}")}"
-            put update_users_path, headers: { HTTP_AUTHORIZATION: basic_auth_string }, params: { user: { enable_safe_mode: "true" } }, as: :json
+            post update_users_path, headers: { HTTP_AUTHORIZATION: basic_auth_string }, params: { user: { enable_safe_mode: "true" } }, as: :json
             assert_response :success
           end
         end
@@ -87,7 +87,7 @@ class ApplicationControllerTest < ActionDispatch::IntegrationTest
 
         should "succeed for non-GET requests without a CSRF token" do
           assert_changes -> { @user.reload.enable_safe_mode }, from: false, to: true do
-            put update_users_path, params: { login: @user.name, api_key: @api_key.key, user: { enable_safe_mode: "true" } }, as: :json
+            post update_users_path, params: { login: @user.name, api_key: @api_key.key, user: { enable_safe_mode: "true" } }, as: :json
             assert_response :success
           end
         end
@@ -112,7 +112,7 @@ class ApplicationControllerTest < ActionDispatch::IntegrationTest
           assert_redirected_to posts_path
 
           # try to submit a form with cookies but without the csrf token
-          put update_users_path, headers: { HTTP_COOKIE: headers["Set-Cookie"] }, params: { user: { enable_safe_mode: "true" } }
+          post update_users_path, headers: { HTTP_COOKIE: headers["Set-Cookie"] }, params: { user: { enable_safe_mode: "true" } }
           assert_response 403
           assert_match(/ActionController::InvalidAuthenticityToken/, css_select("p").first.content)
           assert_equal(false, @user.reload.enable_safe_mode)
@@ -141,6 +141,23 @@ class ApplicationControllerTest < ActionDispatch::IntegrationTest
 
         assert_response 429
         assert_equal("s", post.reload.rating)
+      end
+    end
+
+    context "when the user has an invalid username" do
+      setup do
+        @user = build(:user, name: "12345")
+        @user.save(validate: false)
+      end
+
+      should "redirect for html requests" do
+        get_auth posts_path, @user, params: { format: :html }
+        assert_redirected_to new_user_name_change_request_path
+      end
+
+      should "not redirect for json requests" do
+        get_auth posts_path, @user, params: { format: :json }
+        assert_response :success
       end
     end
   end

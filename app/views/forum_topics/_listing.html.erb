@@ -21,8 +21,8 @@
 
           <%= link_to topic.title, forum_topic_path(topic), class: "forum-post-link" %>
 
-          <% if topic.response_count > PawsMovin.config.posts_per_page %>
-            <%= link_to "page #{topic.last_page}", forum_topic_path(topic, page: topic.last_page), class: "last-page" %>
+          <% if topic.last_page > 1 %>
+            <%= link_to "page #{topic.last_page}", forum_topic_path(topic, :page => topic.last_page), :class => "last-page" %>
           <% end %>
 
           <% if topic.is_locked? %>

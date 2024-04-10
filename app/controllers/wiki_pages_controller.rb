@@ -59,7 +59,7 @@ class WikiPagesController < ApplicationController
     if params[:id] =~ /\A\d+\z/
       @wiki_page = authorize(WikiPage.find(params[:id]))
     else
-      @wiki_page = WikiPage.titled(params[:id]).first
+      @wiki_page = WikiPage.titled(params[:id])
     end
     authorize(@wiki_page, policy_class: WikiPagePolicy)
     if @wiki_page.present?
@@ -104,7 +104,7 @@ class WikiPagesController < ApplicationController
   end
 
   def show_or_new
-    @wiki_page = authorize(WikiPage.find_by(title: params[:title]), policy_class: WikiPagePolicy)
+    @wiki_page = authorize(WikiPage.titled(params[:title]), policy_class: WikiPagePolicy)
     if @wiki_page
       redirect_to(wiki_page_path(@wiki_page))
     else

@@ -217,7 +217,7 @@ class ForumTopic < ApplicationRecord
   end
 
   def last_page
-    (response_count / PawsMovin.config.posts_per_page.to_f).ceil
+    (response_count / PawsMovin.config.records_per_page.to_f).ceil
   end
 
   def hide!

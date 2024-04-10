@@ -109,7 +109,14 @@ GEM
       rexml
     crass (1.0.6)
     dalli (3.2.8)
+    datadog (2.0.0.beta1)
+      base64
+      debase-ruby_core_source (= 3.3.1)
+      libdatadog (~> 6.0.0.2.0)
+      libddwaf (~> 1.14.0.0.0)
+      msgpack
     date (3.3.4)
+    debase-ruby_core_source (3.3.1)
     debug (1.9.1)
       irb (~> 1.10)
       reline (>= 0.3.8)
@@ -158,6 +165,9 @@ GEM
     json (2.7.1)
     kgio (2.11.4)
     language_server-protocol (3.17.0.3)
+    libdatadog (6.0.0.2.0)
+    libddwaf (1.14.0.0.0)
+      ffi (~> 1.0)
     listen (3.9.0)
       rb-fsevent (~> 0.10, >= 0.10.3)
       rb-inotify (~> 0.9, >= 0.9.10)
@@ -196,7 +206,6 @@ GEM
     net-smtp (0.4.0.1)
       net-protocol
     netrc (0.11.0)
-    newrelic_rpm (9.7.1)
     nio4r (2.7.0)
     nokogiri (1.16.2)
       mini_portile2 (~> 2.8.2)
@@ -386,6 +395,7 @@ DEPENDENCIES
   bcrypt
   bootsnap
   dalli
+  datadog
   debug
   diffy
   dotenv
@@ -398,7 +408,6 @@ DEPENDENCIES
   mailgun-ruby
   marcel
   mocha
-  newrelic_rpm
   opensearch-ruby
   pg
   puma

@@ -2,8 +2,10 @@
 
 FactoryBot.define do
   factory(:takedown) do
+    creator_ip_addr { "127.0.0.1" }
     email { "takedown@example.com" }
-    reason { "test" }
-    instructions { "test" }
+    source { "example.com" }
+    reason { "foo" }
+    instructions { "bar" }
   end
 end

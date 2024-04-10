@@ -22,11 +22,11 @@ class TagSetPresenter < Presenter
   def post_index_sidebar_tag_list_html(current_query: "")
     html = +""
     if ordered_tags.present?
-      html << "<ul>"
+      html += "<ul>"
       ordered_tags.each do |tag|
         html << build_list_item(tag, current_query: current_query)
       end
-      html << "</ul>"
+      html += "</ul>"
     end
 
     html.html_safe
@@ -39,10 +39,10 @@ class TagSetPresenter < Presenter
       typetags = tags_for_category(category)
 
       if typetags.any?
-        html << %{<h2 class="#{category}-tag-list-header tag-list-header" data-category="#{category}">#{TagCategory.get(category).header}</h2>}
-        html << %{<ul class="#{category}-tag-list">}
+        html += %{<h2 class="#{category}-tag-list-header tag-list-header" data-category="#{category}">#{TagCategory.get(category).header}</h2>}
+        html += %{<ul class="#{category}-tag-list">}
         typetags.each do |tag|
-          html << build_list_item(tag, current_query: current_query, highlight: highlighted_tags.include?(tag.name))
+          html += build_list_item(tag, current_query: current_query, highlight: highlighted_tags.include?(tag.name))
         end
         html << "</ul>"
       end
@@ -171,6 +171,6 @@ class TagSetPresenter < Presenter
   def tag_link(tag, link_text = tag.name, link_type = :tag)
     link = link_type == :wiki_page ? show_or_new_wiki_pages_path(title: tag.name) : posts_path(tags: tag.name)
     itemprop = 'itemprop="author"' if tag.category == TagCategory.artist
-    %(<a rel="nofollow" class="search-tag" #{itemprop} href="#{link}">#{h(link_text)}</a>)
+    %(<a rel="nofollow" class="search-tag" #{itemprop} href="#{link}">#{h(link_text)}</a> )
   end
 end

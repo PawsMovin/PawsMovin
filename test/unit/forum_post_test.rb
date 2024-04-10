@@ -39,7 +39,7 @@ class ForumPostTest < ActiveSupport::TestCase
 
     context "that belongs to a topic with several pages of posts" do
       setup do
-        PawsMovin.config.stubs(:posts_per_page).returns(3)
+        PawsMovin.config.stubs(:records_per_page).returns(3)
         @posts = []
         9.times do
           @posts << create(:forum_post, topic_id: @topic.id)

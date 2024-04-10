@@ -511,7 +511,8 @@ div#c-posts {
 div#c-posts-versions, div#c-artists-versions {
   div#a-index {
     a {
-      word-wrap: break-word
+      word-wrap: break-word;
+      word-break: keep-all;
     }
   }
 }

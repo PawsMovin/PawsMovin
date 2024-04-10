@@ -17,7 +17,7 @@ class PostTest < ActiveSupport::TestCase
     context "Expunging a post" do
       # That belonged in a museum!
       setup do
-        @upload = UploadService.new(**attributes_for(:jpg_upload).merge({ uploader: @user })).start!
+        @upload = UploadService.new(attributes_for(:jpg_upload).merge({ uploader: @user })).start!
         @post = @upload.post
         FavoriteManager.add!(user: @post.uploader, post: @post)
       end

@@ -2381,7 +2381,7 @@ scat
 furry -rating:s'::text,
     time_zone character varying DEFAULT 'Eastern Time (US & Canada)'::character varying NOT NULL,
     bcrypt_password_hash text,
-    per_page integer DEFAULT 75 NOT NULL,
+    per_page integer DEFAULT 100 NOT NULL,
     custom_style text,
     bit_prefs bigint DEFAULT 0 NOT NULL,
     last_ip_addr inet,
@@ -4773,6 +4773,7 @@ ALTER TABLE ONLY public.staff_notes
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20240410050656'),
 ('20240307133355'),
 ('20240306215111'),
 ('20240306204814'),

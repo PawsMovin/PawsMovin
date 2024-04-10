@@ -26,16 +26,14 @@ class PoolsController < ApplicationController
   end
 
   def gallery
-    params[:limit] ||= CurrentUser.user.per_page
-
-    @pools = authorize(Pool).search(search_params(Pool)).paginate(params[:page], limit: params[:limit], search_count: params[:search])
+    @pools = authorize(Pool).search(search_params(Pool)).paginate_posts(params[:page], limit: params[:limit], search_count: params[:search])
   end
 
   def show
     @pool = authorize(Pool.find(params[:id]))
     respond_with(@pool) do |format|
       format.html do
-        @posts = @pool.posts.paginate(params[:page], limit: params[:limit], total_count: @pool.post_ids.count)
+        @posts = @pool.posts.paginate_posts(params[:page], limit: params[:limit], total_count: @pool.post_ids.count)
       end
     end
   end

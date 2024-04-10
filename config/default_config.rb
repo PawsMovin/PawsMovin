@@ -94,7 +94,7 @@ module PawsMovin
         user.comment_threshold = -10
         user.enable_auto_complete = true
         user.enable_keyboard_navigation = true
-        user.per_page = 100
+        user.per_page = records_per_page
         user.show_post_statistics = true
         user.style_usernames = true
         user.move_related_thumbnails = true
@@ -526,7 +526,7 @@ module PawsMovin
     end
 
     # The number of posts displayed per page.
-    def posts_per_page
+    def records_per_page
       100
     end
 

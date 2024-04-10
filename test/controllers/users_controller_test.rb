@@ -85,6 +85,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
         end
         created_user = User.find(session[:user_id])
         assert_equal("xxx", created_user.name)
+        assert_equal(PawsMovin.config.records_per_page, created_user.per_page)
         assert_not_nil(created_user.last_ip_addr)
       end
 
@@ -156,7 +157,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
       end
 
       should "update a user" do
-        put_auth update_users_path, @user, params: { user: { favorite_tags: "xyz" } }
+        post_auth update_users_path, @user, params: { user: { favorite_tags: "xyz" } }
         @user.reload
         assert_equal("xyz", @user.favorite_tags)
       end
@@ -167,7 +168,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
         end
 
         should "not work" do
-          put_auth update_users_path, @cuser, params: { user: { level: User::Levels::MODERATOR } }
+          post_auth update_users_path, @cuser, params: { user: { level: User::Levels::MODERATOR } }
           @user.reload
           assert_equal(User::Levels::MEMBER, @user.level)
         end
@@ -180,7 +181,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
         end
 
         should "force them to update their email" do
-          put_auth update_users_path, @user, params: { user: { comment_threshold: "-100" } }
+          post_auth update_users_path, @user, params: { user: { comment_threshold: "-100" } }
           assert_match(/Email can't be blank/, flash[:notice])
         end
       end

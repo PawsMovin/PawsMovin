@@ -27,13 +27,14 @@ gem "marcel"
 gem "sidekiq-unique-jobs"
 gem "redis"
 gem "request_store"
-gem "newrelic_rpm"
 
 gem "diffy"
 gem "rugged"
 
 # Blocked by unicorn which lacks a release with Rack 3 support
 gem "rack", "~> 2.0"
+
+gem "datadog", require: "datadog/auto_instrument"
 
 gem "opensearch-ruby"
 
