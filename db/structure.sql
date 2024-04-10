@@ -1935,26 +1935,26 @@ ALTER SEQUENCE public.tag_rel_undos_id_seq OWNED BY public.tag_rel_undos.id;
 
 
 --
--- Name: tag_type_versions; Type: TABLE; Schema: public; Owner: -
+-- Name: tag_versions; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.tag_type_versions (
+CREATE TABLE public.tag_versions (
     id bigint NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    old_type integer NOT NULL,
-    new_type integer NOT NULL,
+    category integer NOT NULL,
     is_locked boolean NOT NULL,
     tag_id integer NOT NULL,
-    creator_id integer NOT NULL
+    updater_id integer NOT NULL,
+    reason character varying DEFAULT ''::character varying NOT NULL
 );
 
 
 --
--- Name: tag_type_versions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: tag_versions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.tag_type_versions_id_seq
+CREATE SEQUENCE public.tag_versions_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1963,10 +1963,10 @@ CREATE SEQUENCE public.tag_type_versions_id_seq
 
 
 --
--- Name: tag_type_versions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+-- Name: tag_versions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE public.tag_type_versions_id_seq OWNED BY public.tag_type_versions.id;
+ALTER SEQUENCE public.tag_versions_id_seq OWNED BY public.tag_versions.id;
 
 
 --
@@ -2855,10 +2855,10 @@ ALTER TABLE ONLY public.tag_rel_undos ALTER COLUMN id SET DEFAULT nextval('publi
 
 
 --
--- Name: tag_type_versions id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: tag_versions id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.tag_type_versions ALTER COLUMN id SET DEFAULT nextval('public.tag_type_versions_id_seq'::regclass);
+ALTER TABLE ONLY public.tag_versions ALTER COLUMN id SET DEFAULT nextval('public.tag_versions_id_seq'::regclass);
 
 
 --
@@ -3363,11 +3363,11 @@ ALTER TABLE ONLY public.tag_rel_undos
 
 
 --
--- Name: tag_type_versions tag_type_versions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: tag_versions tag_versions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.tag_type_versions
-    ADD CONSTRAINT tag_type_versions_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.tag_versions
+    ADD CONSTRAINT tag_versions_pkey PRIMARY KEY (id);
 
 
 --
@@ -4358,17 +4358,17 @@ CREATE INDEX index_tag_rel_undos_on_tag_rel_type_and_tag_rel_id ON public.tag_re
 
 
 --
--- Name: index_tag_type_versions_on_creator_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_tag_versions_on_tag_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_tag_type_versions_on_creator_id ON public.tag_type_versions USING btree (creator_id);
+CREATE INDEX index_tag_versions_on_tag_id ON public.tag_versions USING btree (tag_id);
 
 
 --
--- Name: index_tag_type_versions_on_tag_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_tag_versions_on_updater_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_tag_type_versions_on_tag_id ON public.tag_type_versions USING btree (tag_id);
+CREATE INDEX index_tag_versions_on_updater_id ON public.tag_versions USING btree (updater_id);
 
 
 --
@@ -4773,6 +4773,7 @@ ALTER TABLE ONLY public.staff_notes
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20240410100924'),
 ('20240410050656'),
 ('20240307133355'),
 ('20240306215111'),

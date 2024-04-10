@@ -7,6 +7,7 @@ class Tag < ApplicationRecord
   has_many :consequent_aliases, -> {active}, class_name: "TagAlias", foreign_key: "consequent_name", primary_key: "name"
   has_many :antecedent_implications, -> {active}, class_name: "TagImplication", foreign_key: "antecedent_name", primary_key: "name"
   has_many :consequent_implications, -> {active}, class_name: "TagImplication", foreign_key: "consequent_name", primary_key: "name"
+  has_many :versions, class_name: "TagVersion"
 
   validates :name, uniqueness: true, tag_name: true, on: :create
   validates :name, length: { in: 1..100 }
@@ -15,6 +16,10 @@ class Tag < ApplicationRecord
   validate :user_can_change_category?, if: :category_changed?
 
   before_save :update_category, if: :category_changed?
+  after_create :create_version
+  after_update :create_version, if: ->(rec) { rec.saved_change_to_category? || rec.saved_change_to_is_locked? }
+
+  attr_accessor :reason
 
   module CountMethods
     extend ActiveSupport::Concern
@@ -118,7 +123,7 @@ class Tag < ApplicationRecord
     def user_can_change_category?
       cat = TagCategory.get(category)
       return false unless cat
-      if !CurrentUser.is_admin? && cat.admin_only?
+      if !CurrentUser.user.is_admin? && cat.admin_only?
         errors.add(:category,  "can only used by admins")
         return false
       end
@@ -132,16 +137,14 @@ class Tag < ApplicationRecord
 
     def update_category
       update_category_cache
-      write_category_change_entry unless new_record?
       update_category_post_counts unless new_record?
     end
 
-    def write_category_change_entry
-      TagTypeVersion.create(creator_id: CurrentUser.id,
-                            tag_id:     id,
-                            old_type:   category_was.to_i,
-                            new_type:   category.to_i,
-                            is_locked:  is_locked?)
+    def create_version
+      TagVersion.create(tag_id:    id,
+                        category:  category.to_i,
+                        is_locked: is_locked?,
+                        reason:    reason || "")
     end
   end
 
@@ -151,7 +154,7 @@ class Tag < ApplicationRecord
     end
 
     def find_by_normalized_name(name)
-      find_by_name(normalize_name(name))
+      find_by(name: normalize_name(name))
     end
 
     def find_by_name_list(names)
@@ -163,7 +166,7 @@ class Tag < ApplicationRecord
       names
     end
 
-    def find_or_create_by_name_list(names, creator: CurrentUser.user)
+    def find_or_create_by_name_list(names, creator: CurrentUser.user, reason: nil)
       names = names.map {|x| normalize_name(x)}
       names = names.map do |x|
         if x =~ /\A(#{TagCategory.regexp}):(.+)\Z/
@@ -179,7 +182,7 @@ class Tag < ApplicationRecord
         category_id = TagCategory.value_for(cat)
         if cat && category_id != tag.category
           if tag.category_editable_by_implicit?(creator)
-            tag.update(category: category_id)
+            tag.update(category: category_id, reason: reason)
           else
             tag.errors.add(:category, "cannot be changed implicitly through a tag prefix")
           end
@@ -191,13 +194,14 @@ class Tag < ApplicationRecord
         existing << Tag.new.tap do |t|
           t.name = name
           t.category = TagCategory.value_for(cat)
+          t.reason = reason
           t.save
         end
       end
       existing
     end
 
-    def find_or_create_by_name(name, creator: CurrentUser.user)
+    def find_or_create_by_name(name, creator: CurrentUser.user, reason: nil)
       name = normalize_name(name)
       category = nil
 
@@ -218,7 +222,7 @@ class Tag < ApplicationRecord
 
           unless category_id == tag.category
             if tag.category_editable_by_implicit?(creator)
-              tag.update(category: category_id)
+              tag.update(category: category_id, reason: reason)
             else
               tag.errors.add(:category, "cannot be changed implicitly through a tag prefix")
             end
@@ -230,6 +234,7 @@ class Tag < ApplicationRecord
         Tag.new.tap do |t|
           t.name = name
           t.category = TagCategory.value_for(category)
+          t.reason = reason
           t.save
         end
       end

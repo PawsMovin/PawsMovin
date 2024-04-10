@@ -19,7 +19,7 @@ class TagPolicy < ApplicationPolicy
   end
 
   def permitted_attributes
-    attr = %i[category]
+    attr = %i[category reason]
     attr += %i[is_locked] if user.is_admin?
     attr
   end

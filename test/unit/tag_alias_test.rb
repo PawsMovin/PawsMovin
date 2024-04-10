@@ -119,37 +119,38 @@ class TagAliasTest < ActiveSupport::TestCase
 
     should "not push the antecedent's category to the consequent if the antecedent is general" do
       tag1 = create(:tag, name: "aaa")
-      tag2 = create(:tag, name: "bbb", category: 1)
+      tag2 = create(:artist_tag, name: "bbb")
       ta = create(:tag_alias, antecedent_name: "aaa", consequent_name: "bbb")
       tag2.reload
-      assert_equal(1, tag2.category)
+      assert_equal(TagCategory.artist, tag2.category)
     end
 
-    should "push the antecedent's category to the consequent if the consequent is non-general" do
-      tag1 = create(:tag, name: "aaa", category: 1)
-      tag2 = create(:tag, name: "bbb", category: 3)
+    should "not push the antecedent's category to the consequent if the consequent is non-general" do
+      tag1 = create(:artist_tag, name: "aaa")
+      tag2 = create(:copyright_tag, name: "bbb")
       ta = create(:tag_alias, antecedent_name: "aaa", consequent_name: "bbb")
       with_inline_jobs { ta.approve!(approver: @admin) }
 
-      assert_equal(3, tag2.reload.category)
+      assert_equal(TagCategory.copyright, tag2.reload.category)
     end
 
     should "push the antecedent's category to the consequent" do
-      tag1 = create(:tag, name: "aaa", category: 1)
-      tag2 = create(:tag, name: "bbb", category: 0)
+      tag1 = create(:artist_tag, name: "aaa")
+      tag2 = create(:tag, name: "bbb")
       ta = create(:tag_alias, antecedent_name: "aaa", consequent_name: "bbb")
       with_inline_jobs { ta.approve!(approver: @admin) }
 
-      assert_equal(1, tag2.reload.category)
+      assert_equal(TagCategory.artist, tag2.reload.category)
+      assert_equal("alias ##{ta.id} (aaa -> bbb)", TagVersion.last.reason)
     end
 
     should "not push the antecedent's category if the consequent is locked" do
-      tag1 = create(:tag, name: "aaa", category: 1)
-      tag2 = create(:tag, name: "bbb", category: 3, is_locked: true)
+      tag1 = create(:artist_tag, name: "aaa")
+      tag2 = create(:copyright_tag, name: "bbb", is_locked: true)
       ta = create(:tag_alias, antecedent_name: "aaa", consequent_name: "bbb")
       with_inline_jobs { ta.approve!(approver: @admin) }
 
-      assert_equal(3, tag2.reload.category)
+      assert_equal(TagCategory.copyright, tag2.reload.category)
     end
 
     should "not fail if an artist with the same name is locked" do

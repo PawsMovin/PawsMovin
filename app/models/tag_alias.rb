@@ -247,7 +247,7 @@ class TagAlias < TagRelationship
     return if consequent_tag.category != TagCategory.general # Don't change the already existing category of the target tag
     return if antecedent_tag.category == TagCategory.general # Don't set the target tag to general
 
-    consequent_tag.update_attribute(:category, antecedent_tag.category)
+    consequent_tag.update(category: antecedent_tag.category, reason: "alias ##{id} (#{antecedent_tag.name} -> #{consequent_tag.name})")
   end
 
   def update_blacklists

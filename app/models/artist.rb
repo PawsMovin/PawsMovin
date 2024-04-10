@@ -368,7 +368,7 @@ class Artist < ApplicationRecord
 
     def categorize_tag
       if new_record? || saved_change_to_name?
-        Tag.find_or_create_by_name("artist:#{name}")
+        Tag.find_or_create_by_name("artist:#{name}", reason: "artist creation")
       end
     end
   end

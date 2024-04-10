@@ -3,25 +3,37 @@
   <table class="striped">
     <thead>
     <tr>
-      <th style="width:70px;">Tag</th>
-      <th style="width:60px;">Date</th>
-      <th style="width:220px;">User</th>
-      <th style="width:55px;">Old Type</th>
-      <th style="width:70px;">New type</th>
-      <th style="width:200px;">Locked</th>
+      <th>Tag</th>
+      <th>Date</th>
+      <th>User</th>
+      <th>Category</th>
+      <th>Locked</th>
+      <th>Reason</th>
     </tr>
     </thead>
 
     <tbody>
     <% @tag_versions.each do |change| %>
-      <tr id="r<%= change.id %>">
+      <tr id="tag-version-<%= change.id %>">
         <td><%= link_to change.tag.name, edit_tag_path(change.tag) %></td>
         <td><%= compact_time change.created_at %></td>
-        <td><%= link_to_user change.creator %></td>
+        <td><%= link_to_user change.updater %></td>
 
-        <td><a class="<%= "tag-type-#{change.old_type}" %>"><%= Tag.category_for_value(change.old_type) %></a></td>
-        <td><a class="<%= "tag-type-#{change.new_type}" %>"><%= Tag.category_for_value(change.new_type) %></a></td>
-        <td><%= change.is_locked %></td>
+        <td>
+
+          <% if change.category_changed? %>
+            <a class="<%= "tag-type-#{change.previous.category}" %>"><%= Tag.category_for_value(change.previous.category) %></a> ->
+          <% end %>
+          <a class="<%= "tag-type-#{change.category}" %>"><%= Tag.category_for_value(change.category) %></a>
+        </td>
+        <td>
+          <% if change.is_locked_changed? %>
+            <b><%= change.is_locked %></b>
+          <% else %>
+            <%= change.is_locked %>
+          <% end %>
+        </td>
+        <td><%= change.reason %></td>
       </tr>
     <% end %>
     </tbody>

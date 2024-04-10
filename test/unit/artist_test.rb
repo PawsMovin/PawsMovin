@@ -244,6 +244,7 @@ class ArtistTest < ActiveSupport::TestCase
       artist = create(:artist, name: "abc")
       tag.reload
       assert_equal(TagCategory.artist, tag.category)
+      assert_equal("artist creation", TagVersion.last.reason)
     end
 
     context "when saving" do

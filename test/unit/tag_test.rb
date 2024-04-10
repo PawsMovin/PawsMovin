@@ -103,6 +103,26 @@ class TagTest < ActiveSupport::TestCase
     context "not be settable to an invalid category" do
       should validate_inclusion_of(:category).in_array(TagCategory.ids)
     end
+
+    should "create a version upon creation" do
+      assert_difference("TagVersion.count", 1) do
+        create(:tag)
+      end
+    end
+
+    should "create a version when category is changed" do
+      tag = create(:tag)
+      assert_difference("TagVersion.count", 1) do
+        tag.update(category: TagCategory.artist)
+      end
+    end
+
+    should "create a version when is_locked is changed" do
+      tag = create(:tag)
+      assert_difference("TagVersion.count", 1) do
+        tag.update(is_locked: true)
+      end
+    end
   end
 
   context "A tag" do
@@ -212,4 +232,5 @@ class TagTest < ActiveSupport::TestCase
       assert_equal(1, tag.reload.post_count)
     end
   end
+
 end
