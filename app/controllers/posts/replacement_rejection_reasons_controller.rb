@@ -1,47 +1,47 @@
 # frozen_string_literal: true
 
 module Posts
-  class DeletionReasonsController < ApplicationController
+  class ReplacementRejectionReasonsController < ApplicationController
     before_action :load_reason, only: %i[edit update destroy]
     respond_to :html, :json
 
     def index
-      @reasons = authorize(PostDeletionReason).order(order: :asc)
+      @reasons = authorize(PostReplacementRejectionReason).order(order: :asc)
       respond_with(@reasons)
     end
 
     def new
-      @reason = authorize(PostDeletionReason).new
+      @reason = authorize(PostReplacementRejectionReason).new
     end
 
     def edit
-      authorize(PostDeletionReason)
+      authorize(PostReplacementRejectionReason)
     end
 
     def create
-      @reason = authorize(PostDeletionReason.new(permitted_attributes(PostDeletionReason)))
+      @reason = authorize(PostReplacementRejectionReason.new(permitted_attributes(PostReplacementRejectionReason)))
       @reason.save
-      flash[:notice] = @reason.valid? ? "Post deletion reason created" : @reason.errors.full_messages.join("; ")
+      flash[:notice] = @reason.valid? ? "Post replacement rejection reason created" : @reason.errors.full_messages.join("; ")
       respond_with(@reason) do |fmt|
-        fmt.html { redirect_to(post_deletion_reasons_path) }
+        fmt.html { redirect_to(post_replacement_rejection_reasons_path) }
       end
     end
 
     def update
       authorize(@reason)
       @reason.update(permitted_attributes(@reason))
-      flash[:notice] = @reason.valid? ? "Post deletion reason updated" : @reason.errors.full_messages.join("; ")
+      flash[:notice] = @reason.valid? ? "Post replacement rejection reason updated" : @reason.errors.full_messages.join("; ")
       respond_with(@reason) do |fmt|
-        fmt.html { redirect_to(post_deletion_reasons_path) }
+        fmt.html { redirect_to(post_replacement_rejection_reasons_path) }
       end
     end
 
     def destroy
       authorize(@reason)
       @reason.destroy
-      flash[:notice] = "Post deletion reason deleted"
+      flash[:notice] = "Post replacement rejection reason deleted"
       respond_with(@reason) do |format|
-        format.html { redirect_to(post_deletion_reasons_path) }
+        format.html { redirect_to(post_replacement_rejection_reasons_path) }
       end
     end
 
@@ -49,7 +49,7 @@ module Posts
       authorize(PostDeletionReason)
       new_orders = params[:_json].reject { |o| o[:id].nil? }
       new_ids = new_orders.pluck(:id)
-      current_ids = PostDeletionReason.pluck(:id)
+      current_ids = PostReplacementRejectionReason.pluck(:id)
       missing = current_ids - new_ids
       extra = new_ids - current_ids
       duplicate = new_ids.select { |id| new_ids.count(id) > 1 }.uniq
@@ -59,7 +59,7 @@ module Posts
       return render_expected_error(400, "Duplicate ids provided: #{duplicate.join(', ')}") if duplicate.any?
 
       changes = 0
-      PostDeletionReason.find_each do |reason|
+      PostReplacementRejectionReason.find_each do |reason|
         order = new_orders.find { |o| o[:id] == reason.id }
         if reason.order != order[:order]
           reason.update_column(:order, order[:order])
@@ -67,10 +67,10 @@ module Posts
         end
       end
 
-      PostDeletionReason.log_reorder(changes) if changes != 0
+      PostReplacementRejectionReason.log_reorder(changes) if changes != 0
 
       respond_to do |format|
-        format.html { redirect_back(fallback_location: post_deletion_reasons_path) }
+        format.html { redirect_back(fallback_location: post_replacement_rejection_reasons_path) }
         format.json
       end
     end
@@ -78,7 +78,7 @@ module Posts
     private
 
     def load_reason
-      @reason = PostDeletionReason.find(params[:id])
+      @reason = PostReplacementRejectionReason.find(params[:id])
     end
   end
 end

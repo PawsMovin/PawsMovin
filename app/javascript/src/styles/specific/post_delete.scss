@@ -1,8 +1,8 @@
-div#c-posts div#a-delete {
+div#c-posts div#a-delete, div#c-posts-replacements div#a-reject-with-reason {
 
   // Raw text input and clear-all button
   #reason { width: 100%; }
-  #delreason-clear { width: 5rem; }
+  #delreason-clear, #rejection-reason-clear { width: 5rem; }
 
   // "Move to parent" checkboxes
   .post_delete_options {
@@ -10,8 +10,8 @@ div#c-posts div#a-delete {
   }
 
   // Prebuilt deletion reason buttons
-  #delreason-prebuilt {
-    a.delreason-button {
+  #delreason-prebuilt, #rejection-reason-prebuilt {
+    a.delreason-button, a.rejection-reason-button {
       display: block;
       cursor: pointer;
       width: fit-content;

@@ -4,6 +4,7 @@ class PostReplacement < ApplicationRecord
   belongs_to :post
   belongs_to :creator, class_name: "User"
   belongs_to :approver, class_name: "User", optional: true
+  belongs_to :rejector, class_name: "User", optional: true
   belongs_to :uploader_on_approve, class_name: "User", foreign_key: :uploader_id_on_approve, optional: true
   attr_accessor :replacement_file, :replacement_url, :tags, :is_backup
 
@@ -19,12 +20,13 @@ class PostReplacement < ApplicationRecord
   validate :no_pending_duplicates, on: :create
   validate :write_storage_file, on: :create
   validates :reason, length: { in: 5..150 }, presence: true, on: :create
+  validates :rejection_reason, length: { maximum: 150 }, if: ->(rec) { rec.status == "rejected" }
 
   after_create -> { post.update_index }
   before_destroy :remove_files
   after_destroy -> { post.update_index }
 
-  TAGS_TO_REMOVE_AFTER_ACCEPT = ["better_version_at_source"]
+  TAGS_TO_REMOVE_AFTER_ACCEPT = %w[better_version_at_source]
   HIGHLIGHTED_TAGS = %w[better_version_at_source avoid_posting conditional_dnp]
 
   def replacement_url_parsed
@@ -166,7 +168,7 @@ class PostReplacement < ApplicationRecord
 
   module ApiMethods
     def hidden_attributes
-      super + %i[storage_id protected uploader_id_on_approve penalize_uploader_on_approve]
+      super + %i[storage_id protected uploader_id_on_approve penalize_uploader_on_approve previous_details]
     end
   end
 
@@ -176,6 +178,14 @@ class PostReplacement < ApplicationRecord
         errors.add(:status, "must be pending or original to approve")
         return
       end
+
+      update(previous_details: {
+        width:  post.image_width,
+        height: post.image_height,
+        size:   post.file_size,
+        ext:    post.file_ext,
+        md5:    post.md5,
+      })
 
       processor = UploadService::Replacer.new(post: post, replacement: self)
       processor.process!(penalize_current_uploader: penalize_current_uploader)
@@ -216,14 +226,14 @@ class PostReplacement < ApplicationRecord
       upload
     end
 
-    def reject!
+    def reject!(user = CurrentUser.user, reason = "")
       if status != "pending"
         errors.add(:status, "must be pending to reject")
         return
       end
 
-      PostEvent.add(post.id, CurrentUser.user, :replacement_rejected, { replacement_id: id })
-      update_attribute(:status, "rejected")
+      PostEvent.add(post.id, user, :replacement_rejected, { replacement_id: id })
+      update(status: "rejected", rejector: user, rejection_reason: reason)
       User.where(id: creator_id).update_all("post_replacement_rejected_count = post_replacement_rejected_count + 1")
       post.update_index
     end
@@ -316,4 +326,39 @@ class PostReplacement < ApplicationRecord
   include ProcessingMethods
   include PromotionMethods
   include PostMethods
+
+  def post_details
+    {
+      width:  post.image_width,
+      height: post.image_height,
+      size:   post.file_size,
+      ext:    post.file_ext,
+      md5:    post.md5
+    }
+  end
+
+  def current_details
+    {
+      width:  image_width,
+      height: image_width,
+      size:   file_size,
+      ext:    file_ext,
+      md5:    md5,
+    }
+  end
+
+  def show_current?
+    post && (status == "pending" || previous_details.blank?)
+  end
+
+  def details
+    if status == "pending" && post
+      post_details
+    elsif previous_details.blank?
+      return post_details if post
+      nil
+    else
+      previous_details.transform_keys(&:to_sym)
+    end
+  end
 end

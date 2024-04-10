@@ -4,6 +4,7 @@ require "digest/md5"
 require "tempfile"
 require "net/http"
 require_relative "seeds/post_deletion_reasons"
+require_relative "seeds/post_replacement_rejection_reasons"
 
 # Uncomment to see detailed logs
 # ActiveRecord::Base.logger = ActiveSupport::Logger.new($stdout)
@@ -215,6 +216,7 @@ CurrentUser.as_system do
   ModAction.without_logging do
     Seeds.create_aibur_category!
     PostDeletionReasons.run!
+    PostReplacementRejectionReasons.run!
 
     unless Rails.env.test?
       Seeds.run!

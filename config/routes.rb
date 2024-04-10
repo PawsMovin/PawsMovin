@@ -210,6 +210,9 @@ Rails.application.routes.draw do
       resources :deletion_reasons, controller: "posts/deletion_reasons", as: "post_deletion_reasons", only: %i[index new create edit update destroy] do
         post :reorder, on: :collection
       end
+      resources :replacement_rejection_reasons, controller: "posts/replacement_rejection_reasons", as: "post_replacement_rejection_reasons", only: %i[index new create edit update destroy] do
+        post :reorder, on: :collection
+      end
       resources :disapprovals, controller: "posts/disapprovals", as: "post_disapprovals", only: %i[create index]
       resources :events, controller: "posts/events", as: "post_events", only: :index
       resources :flags, controller: "posts/flags", as: "post_flags", except: %i[edit update]
@@ -223,6 +226,7 @@ Rails.application.routes.draw do
         member do
           put :approve
           put :reject
+          get :reject_with_reason
           post :promote
           put :toggle_penalize
         end

@@ -1333,6 +1333,39 @@ ALTER SEQUENCE public.post_flags_id_seq OWNED BY public.post_flags.id;
 
 
 --
+-- Name: post_replacement_rejection_reasons; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.post_replacement_rejection_reasons (
+    id bigint NOT NULL,
+    creator_id bigint NOT NULL,
+    reason character varying NOT NULL,
+    "order" integer NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: post_replacement_rejection_reasons_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.post_replacement_rejection_reasons_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: post_replacement_rejection_reasons_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.post_replacement_rejection_reasons_id_seq OWNED BY public.post_replacement_rejection_reasons.id;
+
+
+--
 -- Name: post_replacements; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1356,7 +1389,10 @@ CREATE TABLE public.post_replacements (
     reason character varying NOT NULL,
     protected boolean DEFAULT false NOT NULL,
     uploader_id_on_approve integer,
-    penalize_uploader_on_approve boolean
+    penalize_uploader_on_approve boolean,
+    rejector_id bigint,
+    rejection_reason character varying DEFAULT ''::character varying NOT NULL,
+    previous_details jsonb
 );
 
 
@@ -2750,6 +2786,13 @@ ALTER TABLE ONLY public.post_flags ALTER COLUMN id SET DEFAULT nextval('public.p
 
 
 --
+-- Name: post_replacement_rejection_reasons id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.post_replacement_rejection_reasons ALTER COLUMN id SET DEFAULT nextval('public.post_replacement_rejection_reasons_id_seq'::regclass);
+
+
+--
 -- Name: post_replacements id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -3238,6 +3281,14 @@ ALTER TABLE ONLY public.post_events
 
 ALTER TABLE ONLY public.post_flags
     ADD CONSTRAINT post_flags_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: post_replacement_rejection_reasons post_replacement_rejection_reasons_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.post_replacement_rejection_reasons
+    ADD CONSTRAINT post_replacement_rejection_reasons_pkey PRIMARY KEY (id);
 
 
 --
@@ -4091,6 +4142,13 @@ CREATE INDEX index_post_flags_on_reason_tsvector ON public.post_flags USING gin 
 
 
 --
+-- Name: index_post_replacement_rejection_reasons_on_creator_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_post_replacement_rejection_reasons_on_creator_id ON public.post_replacement_rejection_reasons USING btree (creator_id);
+
+
+--
 -- Name: index_post_replacements_on_creator_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -4102,6 +4160,13 @@ CREATE INDEX index_post_replacements_on_creator_id ON public.post_replacements U
 --
 
 CREATE INDEX index_post_replacements_on_post_id ON public.post_replacements USING btree (post_id);
+
+
+--
+-- Name: index_post_replacements_on_rejector_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_post_replacements_on_rejector_id ON public.post_replacements USING btree (rejector_id);
 
 
 --
@@ -4703,6 +4768,14 @@ ALTER TABLE ONLY public.user_feedback
 
 
 --
+-- Name: post_replacement_rejection_reasons fk_rails_95ac45c762; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.post_replacement_rejection_reasons
+    ADD CONSTRAINT fk_rails_95ac45c762 FOREIGN KEY (creator_id) REFERENCES public.users(id);
+
+
+--
 -- Name: mascots fk_rails_9901e810fa; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4759,6 +4832,14 @@ ALTER TABLE ONLY public.user_blocks
 
 
 --
+-- Name: post_replacements fk_rails_e2177a7d4b; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.post_replacements
+    ADD CONSTRAINT fk_rails_e2177a7d4b FOREIGN KEY (rejector_id) REFERENCES public.users(id);
+
+
+--
 -- Name: staff_notes fk_rails_eaa7223eea; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4773,6 +4854,8 @@ ALTER TABLE ONLY public.staff_notes
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20240410140320'),
+('20240410120726'),
 ('20240410100924'),
 ('20240410050656'),
 ('20240307133355'),
@@ -4803,6 +4886,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20240113112949'),
 ('20240101042716'),
 ('20231213010430'),
+('20231201235926'),
 ('20231005213719'),
 ('20231002181447'),
 ('20230531081706'),

@@ -48,29 +48,29 @@ class ModAction < ApplicationRecord
 
   FORMATTERS = {
     ### Artist ###
-    artist_lock:                   {
+    artist_lock:                                {
       text: ->(mod, _user) { "Locked artist ##{mod.subject_id}" },
       json: %i[],
     },
-    artist_rename:                 {
+    artist_rename:                              {
       text: ->(mod, _user) { "Renamed artist ##{mod.subject_id} (\"#{mod.old_name}\":#{url.show_or_new_artists_path(name: mod.old_name)} -> \"#{mod.new_name}\":#{url.show_or_new_artists_path(name: mod.new_name)})" },
       json: %i[old_name new_name],
     },
-    artist_unlock:                 {
+    artist_unlock:                              {
       text: ->(mod, _user) { "Unlocked artist ##{mod.subject_id}" },
       json: %i[],
     },
-    artist_user_link:              {
+    artist_user_link:                           {
       text: ->(mod, user) { "Linked #{user} to artist ##{mod.subject_id}" },
       json: %i[user_id],
     },
-    artist_user_unlink:            {
+    artist_user_unlink:                         {
       text: ->(mod, user) { "Unlinked #{user} from artist ##{mod.subject_id}" },
       json: %i[user_id],
     },
 
     ### Ban ###
-    ban_create:                    {
+    ban_create:                                 {
       text: ->(mod, user) do
         if mod.duration.is_a?(Numeric) && mod.duration < 0
           "Banned #{user} permanently"
@@ -82,11 +82,11 @@ class ModAction < ApplicationRecord
       end,
       json: %i[duration user_id],
     },
-    ban_delete:                    {
+    ban_delete:                                 {
       text: ->(_mod, user) { "Unbanned #{user}" },
       json: %i[user_id],
     },
-    ban_update:                    {
+    ban_update:                                 {
       text: ->(mod, user) do
         text = "Updated ban ##{mod.subject_id} for #{user}"
         if mod.expires_at != mod.old_expires_at
@@ -102,37 +102,37 @@ class ModAction < ApplicationRecord
     },
 
     ### Comment ###
-    comment_delete:                {
+    comment_delete:                             {
       text: ->(mod, user) { "Deleted comment ##{mod.subject_id} by #{user}" },
       json: %i[user_id],
     },
-    comment_hide:                  {
+    comment_hide:                               {
       text: ->(mod, user) { "Hid comment ##{mod.subject_id} by #{user}" },
       json: %i[user_id],
     },
-    comment_unhide:                {
+    comment_unhide:                             {
       text: ->(mod, user) { "Unhid comment ##{mod.subject_id} by #{user}" },
       json: %i[user_id],
     },
-    comment_update:                {
+    comment_update:                             {
       text: ->(mod, user) { "Edited comment ##{mod.subject_id} by #{user}" },
       json: %i[user_id],
     },
 
     ### Post Deletion Reason ###
-    post_deletion_reason_create:   {
+    post_deletion_reason_create:                {
       text: ->(mod, _user) { "Created post deletion reason \"#{mod.reason}\"" },
       json: %i[reason],
     },
-    post_deletion_reason_delete:   {
+    post_deletion_reason_delete:                {
       text: ->(mod, user) { "Deleted post deletion reason \"#{mod.reason}\" by #{user}" },
       json: %i[reason user_id],
     },
-    post_deletion_reasons_reorder: {
+    post_deletion_reasons_reorder:              {
       text: ->(mod, _user) { "Changed the order of #{mod.total} post deletion reasons." },
       json: %i[total],
     },
-    post_deletion_reason_update:   {
+    post_deletion_reason_update:                {
       text: ->(mod, _user) do
         text = "Updated post deletion reason \"#{mod.reason}\""
         text += "\nChanged reason from \"#{mod.old_reason}\" to \"#{mod.reason}\"" if mod.reason != mod.old_reason
@@ -143,8 +143,30 @@ class ModAction < ApplicationRecord
       json: %i[reason old_reason prompt old_prompt title old_title],
     },
 
+    ### Post Replacement Rejection Reason ###
+    post_replacement_rejection_reason_create:   {
+      text: ->(mod, _user) { "Created post replacement rejection reason \"#{mod.reason}\"" },
+      json: %i[reason],
+    },
+    post_replacement_rejection_reason_delete:   {
+      text: ->(mod, user) { "Deleted post replacement rejection reason \"#{mod.reason}\" by #{user}" },
+      json: %i[reason user_id],
+    },
+    post_replacement_rejection_reasons_reorder: {
+      text: ->(mod, _user) { "Changed the order of #{mod.total} post replacement rejection reasons." },
+      json: %i[total],
+    },
+    post_replacement_rejection_reason_update:   {
+      text: ->(mod, _user) do
+        text = "Updated post replacement rejection reason \"#{mod.reason}\""
+        text += "\nChanged reason from \"#{mod.old_reason}\" to \"#{mod.reason}\"" if mod.reason != mod.old_reason
+        text
+      end,
+      json: %i[reason old_reason],
+    },
+
     ### Forum Category ###
-    forum_category_create:         {
+    forum_category_create:                      {
       text: ->(mod, _user) do
         text = "Created forum category ##{mod.subject_id}"
         return text unless CurrentUser.user.level >= mod.can_view
@@ -159,7 +181,7 @@ class ModAction < ApplicationRecord
         values + %i[forum_category_name can_view can_create]
       end,
     },
-    forum_category_delete:         {
+    forum_category_delete:                      {
       text: ->(mod, _user) do
         text = "Deleted forum category ##{mod.subject_id}"
         return text unless CurrentUser.user.level >= mod.can_view
@@ -171,7 +193,7 @@ class ModAction < ApplicationRecord
         values + %i[forum_category_name can_view can_create]
       end,
     },
-    forum_category_update:         {
+    forum_category_update:                      {
       text: ->(mod, _user) do
         text = "Updated forum category ##{mod.subject_id}"
         return text unless CurrentUser.user.level >= mod.can_view
@@ -189,165 +211,165 @@ class ModAction < ApplicationRecord
     },
 
     ### Forum Post ###
-    forum_post_delete:             {
+    forum_post_delete:                          {
       text: ->(mod, user) { "Deleted forum ##{mod.subject_id} in topic ##{mod.forum_topic_id} by #{user}" },
       json: %i[forum_topic_id user_id],
     },
-    forum_post_hide:               {
+    forum_post_hide:                            {
       text: ->(mod, user) { "Hid forum ##{mod.subject_id} in topic ##{mod.forum_topic_id} by #{user}" },
       json: %i[forum_topic_id user_id],
     },
-    forum_post_unhide:             {
+    forum_post_unhide:                          {
       text: ->(mod, user) { "Unhid forum ##{mod.subject_id} in topic ##{mod.forum_topic_id} by #{user}" },
       json: %i[forum_topic_id user_id],
     },
-    forum_post_update:             {
+    forum_post_update:                          {
       text: ->(mod, user) { "Edited forum ##{mod.subject_id} in topic ##{mod.forum_topic_id} by #{user}" },
       json: %i[forum_topic_id user_id],
     },
 
     ### Forum Topic ###
-    forum_topic_delete:            {
+    forum_topic_delete:                         {
       text: ->(mod, user) { "Deleted topic ##{mod.subject_id} (with title #{mod.forum_topic_title}) by #{user}" },
       json: %i[forum_topic_title user_id],
     },
-    forum_topic_hide:              {
+    forum_topic_hide:                           {
       text: ->(mod, user) { "Hid topic ##{mod.subject_id} (with title #{mod.forum_topic_title}) by #{user}" },
       json: %i[forum_topic_title user_id],
     },
-    forum_topic_lock:              {
+    forum_topic_lock:                           {
       text: ->(mod, user) { "Locked topic ##{mod.subject_id} (with title #{mod.forum_topic_title}) by #{user}" },
       json: %i[forum_topic_title user_id],
     },
-    forum_topic_move:              {
+    forum_topic_move:                           {
       text: ->(mod, user) { "Moved topic ##{mod.subject_id} (with title #{mod.forum_topic_title}) by #{user} from #{mod.old_forum_category_name} to #{mod.forum_category_name}" },
       json: %i[forum_topic_title user_id forum_category_id old_forum_category_id forum_category_name old_forum_category_name],
     },
-    forum_topic_stick:             {
+    forum_topic_stick:                          {
       text: ->(mod, user) { "Stickied topic ##{mod.subject_id} (with title #{mod.forum_topic_title}) by #{user}" },
       json: %i[forum_topic_title user_id],
     },
-    forum_topic_update:            {
+    forum_topic_update:                         {
       text: ->(mod, user) { "Edited topic ##{mod.subject_id} (with title #{mod.forum_topic_title}) by #{user}" },
       json: %i[forum_topic_title user_id],
     },
-    forum_topic_unhide:            {
+    forum_topic_unhide:                         {
       text: ->(mod, user) { "Unhid topic ##{mod.subject_id} (with title #{mod.forum_topic_title}) by #{user}" },
       json: %i[forum_topic_title user_id],
     },
-    forum_topic_unlock:            {
+    forum_topic_unlock:                         {
       text: ->(mod, user) { "Unlocked topic ##{mod.subject_id} (with title #{mod.forum_topic_title}) by #{user}" },
       json: %i[forum_topic_title user_id],
     },
-    forum_topic_unstick:           {
+    forum_topic_unstick:                        {
       text: ->(mod, user) { "Unstickied topic ##{mod.subject_id} (with title #{mod.forum_topic_title}) by #{user}" },
       json: %i[forum_topic_title user_id],
     },
 
     ### Help ###
-    help_create:                   {
+    help_create:                                {
       text: ->(mod, _user) { "Created help page \"#{mod.name}\":/help/#{mod.name} ([[#{mod.wiki_page}]])" },
       json: %i[name wiki_page],
     },
-    help_delete:                   {
+    help_delete:                                {
       text: ->(mod, _user) { "Deleted help page \"#{mod.name}\":/help/#{mod.name} ([[#{mod.wiki_page}]])" },
       json: %i[name wiki_page],
     },
-    help_update:                   {
+    help_update:                                {
       text: ->(mod, _user) { "Updated help page \"#{mod.name}\":/help/#{mod.name} ([[#{mod.wiki_page}]])" },
       json: %i[name wiki_page],
     },
 
     ### Mascot ###
-    mascot_create:                 {
+    mascot_create:                              {
       text: ->(mod, _user) { "Created mascot ##{mod.subject_id}" },
       json: %i[],
     },
-    mascot_delete:                 {
+    mascot_delete:                              {
       text: ->(mod, _user) { "Deleted mascot ##{mod.subject_id}" },
       json: %i[],
     },
-    mascot_update:                 {
+    mascot_update:                              {
       text: ->(mod, _user) { "Updated mascot ##{mod.subject_id}" },
       json: %i[],
     },
 
     ### Bulk Update Request ###
-    mass_update:                   {
+    mass_update:                                {
       text: ->(mod, _user) { "Mass updated [[#{mod.antecedent}]] -> [[#{mod.consequent}]]" },
       json: %i[antecedent consequent],
     },
-    nuke_tag:                      {
+    nuke_tag:                                   {
       text: ->(mod, _user) { "Nuked tag [[#{mod.tag_name}]]" },
       json: %i[tag_name],
     },
 
     ### Pools ###
-    pool_delete:                   {
+    pool_delete:                                {
       text: ->(mod, user) { "Deleted pool ##{mod.subject_id} (named #{mod.pool_name}) by #{user}" },
       json: %i[pool_name user_id],
     },
 
     ### Post Set ###
-    set_change_visibility:         {
+    set_change_visibility:                      {
       text: ->(mod, user) { "Made set ##{mod.subject_id} by #{user} #{mod.is_public ? 'public' : 'private'}" },
       json: %i[is_public user_id],
     },
-    set_delete:                    {
+    set_delete:                                 {
       text: ->(mod, user) { "Deleted set ##{mod.subject_id} by #{user}" },
       json: %i[user_id],
     },
-    set_update:                    {
+    set_update:                                 {
       text: ->(mod, user) { "Updated set ##{mod.subject_id} by #{user}" },
       json: %i[user_id],
     },
 
     ### Alias ###
-    tag_alias_create:              {
+    tag_alias_create:                           {
       text: ->(mod, _user) { "Created #{mod.alias_desc}" },
       json: %i[alias_desc],
     },
-    tag_alias_update:              {
+    tag_alias_update:                           {
       text: ->(mod, _user) { "Updated #{mod.alias_desc}\n#{mod.change_desc}" },
       json: %i[alias_desc change_desc],
     },
 
     ### Implication ###
-    tag_implication_create:        {
+    tag_implication_create:                     {
       text: ->(mod, _user) { "Created #{mod.implication_desc}" },
       json: %i[implication_desc],
     },
-    tag_implication_update:        {
+    tag_implication_update:                     {
       text: ->(mod, _user) { "Updated #{mod.implication_desc}\n#{mod.change_desc}" },
       json: %i[implication_desc change_desc],
     },
 
     ### Takedowns ###
-    takedown_process:              {
+    takedown_process:                           {
       text: ->(mod, _user) { "Completed takedown ##{mod.subject_id}" },
       json: %i[],
     },
-    takedown_delete:               {
+    takedown_delete:                            {
       text: ->(mod, _user) { "Deleted takedown ##{mod.subject_id}" },
       json: %i[],
     },
 
     ### Ticket ###
-    ticket_claim:                  {
+    ticket_claim:                               {
       text: ->(mod, _user) { "Claimed ticket ##{mod.subject_id}" },
       json: %i[],
     },
-    ticket_unclaim:                {
+    ticket_unclaim:                             {
       text: ->(mod, _user) { "Unclaimed ticket ##{mod.subject_id}" },
       json: %i[],
     },
-    ticket_update:                 {
+    ticket_update:                              {
       text: ->(mod, _user) { "Modified ticket ##{mod.subject_id}" },
       json: %i[],
     },
 
     ### Upload Whitelist ###
-    upload_whitelist_create:       {
+    upload_whitelist_create:                    {
       text: ->(mod, _user) do
         return "Created whitelist entry" if mod.hidden && !CurrentUser.is_admin?
         "Created whitelist entry '#{CurrentUser.is_admin? ? mod.pattern : mod.note}'"
@@ -358,7 +380,7 @@ class ModAction < ApplicationRecord
         values
       },
     },
-    upload_whitelist_delete:       {
+    upload_whitelist_delete:                    {
       text: ->(mod, _user) do
         return "Deleted whitelist entry" if mod.hidden && !CurrentUser.is_admin?
         "Deleted whitelist entry '#{CurrentUser.is_admin? ? mod.pattern : mod.note}'"
@@ -369,7 +391,7 @@ class ModAction < ApplicationRecord
         values
       },
     },
-    upload_whitelist_update:       {
+    upload_whitelist_update:                    {
       text: ->(mod, _user) do
         return "Updated whitelist entry" if mod.hidden && !CurrentUser.is_admin?
         return "Updated whitelist entry '#{mod.old_pattern}' -> '#{mod.pattern}'" if mod.old_pattern && mod.old_pattern != mod.pattern && CurrentUser.is_admin?
@@ -382,45 +404,45 @@ class ModAction < ApplicationRecord
       },
     },
 
-    user_blacklist_change:         {
+    user_blacklist_change:                      {
       text: ->(_mod, user) { "Edited blacklist of #{user}" },
       json: %i[],
     },
-    user_delete:                   {
+    user_delete:                                {
       text: ->(_mod, user) { "Deleted user #{user}" },
       json: %i[],
     },
-    user_flags_change:             {
+    user_flags_change:                          {
       text: ->(mod, user) { "Changed #{user} flags. Added: [#{mod.added.join(', ')}] Removed: [#{mod.removed.join(', ')}]" },
       json: %i[added removed],
     },
-    user_level_change:             {
+    user_level_change:                          {
       text: ->(mod, user) { "Changed #{user} level from #{mod.old_level} to #{mod.level}" },
       json: %i[level old_level],
     },
-    user_name_change:              {
+    user_name_change:                           {
       text: ->(_mod, user) { "Changed name of #{user}" },
       json: %i[],
     },
-    user_text_change:              {
+    user_text_change:                           {
       text: ->(_mod, user) { "Edited profile text of #{user}" },
       json: %i[],
     },
-    user_upload_limit_change:      {
+    user_upload_limit_change:                   {
       text: ->(mod, user) { "Changed upload limit of #{user} from #{mod.old_upload_limit} to #{mod.upload_limit}" },
       json: %i[old_upload_limit upload_limit],
     },
 
     ### User Feedback ###
-    user_feedback_create:          {
+    user_feedback_create:                       {
       text: ->(mod, user) { "Created #{mod.type} record ##{mod.subject_id} for #{user} with reason:\n[section=Reason]#{mod.reason}[/section]" },
       json: %i[type reason user_id],
     },
-    user_feedback_delete:          {
+    user_feedback_delete:                       {
       text: ->(mod, user) { "Deleted #{mod.type} record ##{mod.subject_id} for #{user} with reason:\n[section=Reason]#{mod.reason}[/section]" },
       json: %i[type reason user_id],
     },
-    user_feedback_update:          {
+    user_feedback_update:                       {
       text: ->(mod, user) do
         text = "Edited record ##{mod.subject_id} for #{user}"
         text += "\nChanged type from #{mod.old_type} to #{mod.type}" if mod.type != mod.old_type
@@ -431,37 +453,37 @@ class ModAction < ApplicationRecord
     },
 
     ### Wiki ###
-    wiki_page_delete:              {
+    wiki_page_delete:                           {
       text: ->(mod, _user) { "Deleted wiki page [[#{mod.wiki_page_title}]]" },
       json: %i[wiki_page_title],
     },
-    wiki_page_lock:                {
+    wiki_page_lock:                             {
       text: ->(mod, _user) { "Locked wiki page [[#{mod.wiki_page_title}]]" },
       json: %i[wiki_page_title],
     },
-    wiki_page_rename:              {
+    wiki_page_rename:                           {
       text: ->(mod, _user) { "Renamed wiki page ([[#{mod.old_title}]] -> [[#{mod.wiki_page_title}]])" },
       json: %i[wiki_page_title old_title],
     },
-    wiki_page_unlock:              {
+    wiki_page_unlock:                           {
       text: ->(mod, _user) { "Unlocked wiki page [[#{mod.wiki_page_title}]]" },
       json: %i[wiki_page_title],
     },
 
     ### Rule ###
-    rule_create:                   {
+    rule_create:                                {
       text: ->(mod, _user) { "Created rule \"#{mod.name}\" in category \"#{mod.category_name}\" with description:\n[section=Rule Description]#{mod.description}[/section]" },
       json: %i[name description category_name],
     },
-    rule_delete:                   {
+    rule_delete:                                {
       text: ->(mod, _user) { "Deleted rule \"#{mod.name}\" in category \"#{mod.category_name}\"" },
       json: %i[name category_name],
     },
-    rules_reorder:                 {
+    rules_reorder:                              {
       text: ->(mod, _user) { "Changed the order of #{mod.total} rules" },
       json: %i[total],
     },
-    rule_update:                   {
+    rule_update:                                {
       text: ->(mod, _user) do
         text = "Updated rule \"#{mod.name}\" in category \"#{mod.category_name}\""
         text += "\nChanged name from \"#{mod.old_name}\" to \"#{mod.name}\"" if mod.old_name != mod.name
@@ -473,19 +495,19 @@ class ModAction < ApplicationRecord
     },
 
     ### Rule Category ###
-    rule_category_create:          {
+    rule_category_create:                       {
       text: ->(mod, _user) { "Created rule category \"#{mod.name}\"" },
       json: %i[name],
     },
-    rule_category_delete:          {
+    rule_category_delete:                       {
       text: ->(mod, _user) { "Deleted rule category \"#{mod.name}\"" },
       json: %i[name],
     },
-    rule_categories_reorder:       {
+    rule_categories_reorder:                    {
       text: ->(mod, _user) { "Changed the order of #{mod.total} rule categories" },
       json: %i[total],
     },
-    rule_category_update:          {
+    rule_category_update:                       {
       text: ->(mod, _user) do
         text = "Updated rule category \"#{mod.name}\""
         text += "\nChanged name from \"#{mod.old_name}\" to \"#{mod.name}\"" if mod.old_name != mod.name
@@ -495,22 +517,22 @@ class ModAction < ApplicationRecord
     },
 
     ### Quick Rules ###
-    quick_rule_create:             {
+    quick_rule_create:                          {
       text: ->(mod, _user) { "Created quick rule #{mod.header.blank? ? '' : "\"#{mod.header}\" "}with reason: #{mod.reason}" },
       json: %i[reason header],
     },
-    quick_rule_delete:             {
+    quick_rule_delete:                          {
       text: ->(mod, _user) do
         return "Deleted quick rule with reason: #{mod.reason}" if mod.header.blank?
         "Deleted quick rule \"#{mod.header}\""
       end,
       json: %i[reason header],
     },
-    quick_rules_reorder:           {
+    quick_rules_reorder:                        {
       text: ->(mod, _user) { "Changed the order of #{mod.total} quick rules" },
       json: %i[total],
     },
-    quick_rule_update:             {
+    quick_rule_update:                          {
       text: ->(mod, _user) do
         text = "Updated quick rule"
         text += "\nChanged reason from \"#{mod.old_reason}\" to \"#{mod.reason}\"" if mod.reason != mod.old_reason

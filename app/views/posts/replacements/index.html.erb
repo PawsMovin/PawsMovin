@@ -34,18 +34,29 @@
             </dd>
             <dt>Filename</dt>
             <dd><%= truncate post_replacement.file_name, length: 64 %></dd>
-            <% if post_replacement.md5.present? %>
+          </dl>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; grid-auto-rows: auto;">
+            <dl>
+              <% if post_replacement.details %>
+                <dt><%= post_replacement.show_current? ? "Current" : "Previous" %> MD5</dt>
+                <dd><%= post_replacement.details[:md5] %></dd>
+              <% end %>
+            </dl>
+            <dl>
+              <% if post_replacement.md5.present? %>
                 <dt>Replacement MD5</dt>
                 <dd><%= post_replacement.md5 %></dd>
-            <% end %>
-          </dl>
-          <div style="display:grid;grid-template-columns: 1fr 1fr;grid-auto-rows: auto;">
+              <% end %>
+            </dl>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; grid-auto-rows: auto;">
             <dl>
-              <% if post_replacement.post %>
-                <dt>Current Size</dt>
+              <% if post_replacement.details %>
+                <dt><%= post_replacement.show_current? ? "Current" : "Previous" %> Size</dt>
                 <dd>
-                  <%= post_replacement.post.image_width %>x<%= post_replacement.post.image_height %>
-                  (<%= post_replacement.post.file_size.to_fs(:human_size, precision: 5) %>, <%= post_replacement.post.file_ext %>)
+                  <%= post_replacement.details[:width] %>x<%= post_replacement.details[:height] %>
+                  (<%= post_replacement.details[:size].to_fs(:human_size, precision: 5) %>, <%= post_replacement.details[:ext] %>)
                 </dd>
               <% end %>
             </dl>
@@ -70,8 +81,6 @@
                 <%= tag.i(class: "fa-solid fa-circle-exclamation", title: (post_replacement.post.tag_array & PostReplacement::HIGHLIGHTED_TAGS).join(", ")) %>
               <% end %>
             </div></dd>
-            <dt>Reason</dt>
-            <dd class="replacement-reason"><%= post_replacement.reason.presence || "None provided" %></dd>
             <% if post_replacement.status == "approved" %>
               <dt>Original Uploader</dt>
               <dd>
@@ -83,8 +92,12 @@
               </dd>
               <dt>Approver</dt>
               <dd><%= link_to_user post_replacement.approver %></dd>
-            <% end %>
-            <% if post_replacement.status == "pending" %>
+            <% elsif post_replacement.status == "rejected" %>
+              <dt>Rejector</dt>
+              <dd><%= link_to_user post_replacement.rejector %></dd>
+              <dt>Rejecton Reason</dt>
+              <dd><%= post_replacement.rejection_reason || "None Provided" %></dd>
+            <% elsif post_replacement.status == "pending" %>
               <dt>Current Uploader</dt>
               <dd>
                 <%= link_to_user post_replacement.post.uploader %>
@@ -96,16 +109,19 @@
               <br> by <%= link_to_user post_replacement.creator %>
               <%= link_to "»", post_replacements_path(search: params[:search].merge(creator_name: post_replacement.creator.name)) %>
             </dd>
+            <dt>Reason</dt>
+            <dd class="replacement-reason"><%= post_replacement.reason.presence || "None provided" %></dd>
           </dl>
         </td>
 
         <td>
-          <% if CurrentUser.can_approve_posts? %>
+          <% if CurrentUser.user.can_approve_posts? %>
             <div class="pending-links">
               <% if post_replacement.status == "pending"%>
                 <%= link_to "Approve", "#approve", class: "replacement-approve-action", data: { replacement_id: post_replacement.id, penalize: post_replacement.post.uploader != post_replacement.creator } %><br>
                 <br>
                 <%= link_to "Reject", "#reject", class: "replacement-reject-action", data: { replacement_id: post_replacement.id } %><br>
+                <%= link_to "Reject With Reason", reject_with_reason_post_replacement_path(post_replacement), class: "replacement-reject-with-reason-action" %><br>
                 <%= link_to "As New Post", "#promote", class: "replacement-promote-action", data: { replacement_id: post_replacement.id } %><br>
               <% end %>
             </div>

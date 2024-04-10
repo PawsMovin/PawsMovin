@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RenameTagTypeVersions < ActiveRecord::Migration[7.1]
   def change
     rename_table(:tag_type_versions, :tag_versions)

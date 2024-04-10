@@ -55,9 +55,16 @@ module Posts
 
     def reject
       @post_replacement = authorize(PostReplacement.find(params[:id]))
-      @post_replacement.reject!
+      if params[:commit] != "Cancel"
+        @post_replacement.reject!(CurrentUser.user, params.dig(:post_replacement, :reason) || "")
+      end
 
       respond_with(@post_replacement, location: post_path(@post_replacement.post))
+    end
+
+    def reject_with_reason
+      @post_replacement = authorize(PostReplacement.find(params[:id]))
+      respond_with(@post_replacement)
     end
 
     def destroy

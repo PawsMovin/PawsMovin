@@ -1,10 +1,10 @@
-const PostDeletion = {};
+const PostReplacementReject = {};
 
-PostDeletion.init = function() {
-  const input = $("#reason");
+PostReplacementReject.init = function() {
+  const input = $("#post_replacement_reason");
   let inputVal = input.val() + "";
 
-  const buttons = $("a.delreason-button")
+  const buttons = $("a.rejection-reason-button")
     .on("click", (event) => {
       event.stopPropagation();
       event.preventDefault();
@@ -18,17 +18,13 @@ PostDeletion.init = function() {
         if ($button.hasClass("enabled")) {
           return current
             .replace(text, "")
-            .replace(/ \/ $|^ \/ /g, "") // trim leading and trailing slashes
-            .replace(/( \/ ){2,}/g, " / "); // trim duplicate / leftover slashes
         } else return (current ? current + " / " : "") + text;
       });
       input.trigger("input");
     })
     .on("e621:refresh", (event) => {
       const $button = $(event.target);
-      let text = $button.data("text");
-      for (const buttonInput of $button.find("input[type=text]"))
-        text = text.replace("%ID%", $(buttonInput).val());
+      const text = $button.data("text");
 
       $button.data("processed", text);
       $button.toggleClass("enabled", inputVal.indexOf(text) >= 0);
@@ -46,14 +42,15 @@ PostDeletion.init = function() {
     buttons.trigger("e621:refresh");
   });
 
-  $("#delreason-clear").on("click", () => {
+  $("#rejection-reason-clear").on("click", () => {
     input.val("").trigger("input");
   });
 }
 
 $(function() {
-  if($("div#c-posts div#a-delete").length)
-    Danbooru.PostDeletion.init();
+  if($("div#c-posts-replacements div#a-reject-with-reason").length) {
+    Danbooru.PostReplacementRejection.init();
+  }
 });
 
-export default PostDeletion
+export default PostReplacementReject

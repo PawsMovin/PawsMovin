@@ -13,6 +13,10 @@ class PostReplacementPolicy < ApplicationPolicy
     approver?
   end
 
+  def reject_with_reason?
+    approver?
+  end
+
   def promote?
     approver?
   end

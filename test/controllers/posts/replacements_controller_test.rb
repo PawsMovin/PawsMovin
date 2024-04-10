@@ -38,11 +38,30 @@ module Posts
       context "reject action" do
         should "reject replacement" do
           put_auth reject_post_replacement_path(@replacement), @user
-          assert_redirected_to post_path(@post)
+          assert_redirected_to(post_path(@post))
           @replacement.reload
           @post.reload
-          assert_equal @replacement.status, "rejected"
-          assert_not_equal @post.md5, @replacement.md5
+          assert_equal(@replacement.status, "rejected")
+          assert_equal(@replacement.rejector_id, @user.id)
+          assert_not_equal(@post.md5, @replacement.md5)
+        end
+
+        should "reject replacement with a reason" do
+          put_auth reject_post_replacement_path(@replacement), @user, params: { post_replacement: { reason: "test" } }
+          assert_redirected_to(post_path(@post))
+          @replacement.reload
+          @post.reload
+          assert_equal(@replacement.status, "rejected")
+          assert_equal(@replacement.rejector_id, @user.id)
+          assert_equal(@replacement.rejection_reason, "test")
+          assert_not_equal(@post.md5, @replacement.md5)
+        end
+      end
+
+      context "reject_with_reason action" do
+        should "render" do
+          get_auth reject_with_reason_post_replacement_path(@replacement), @user
+          assert_response(:success)
         end
       end
 

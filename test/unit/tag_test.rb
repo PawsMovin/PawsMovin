@@ -232,5 +232,4 @@ class TagTest < ActiveSupport::TestCase
       assert_equal(1, tag.reload.post_count)
     end
   end
-
 end

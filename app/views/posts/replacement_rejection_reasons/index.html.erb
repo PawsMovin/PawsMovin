@@ -1,12 +1,12 @@
-<h1>Post Deletion Reasons</h1>
+<h1>Post Replacement Rejection Reasons</h1>
 
-<table class="striped" id="post-deletion-reasons-table">
+<table class="striped" id="post-replacement-rejection-reasons-table">
   <thead>
   <tr>
     <th>Creator</th>
     <th>Date</th>
     <th>Reason</th>
-    <% if policy(PostDeletionReason).all?(:update?, :destroy?, :reorder?) %>
+    <% if policy(PostReplacementRejectionReason).all?(:update?, :destroy?, :reorder?) %>
       <th></th>
     <% end %>
   </tr>
@@ -23,14 +23,14 @@
       <% end %>
     <% end %>
     <% last_order = reason.order %>
-    <tr id="post-deletion-reason-<%= reason.id %>" data-id="<%= reason.id %>">
+    <tr id="post-replacement-rejection-reason-<%= reason.id %>" data-id="<%= reason.id %>">
       <td><%= link_to_user reason.creator %></td>
       <td><%= compact_time reason.updated_at %></td>
       <td><%= reason.reason %></td>
       <% if policy(reason).all?(:update?, :destroy?, :reorder?) %>
         <td>
-          <%= link_to "Edit", edit_post_deletion_reason_path(reason) %> |
-          <%= link_to "Delete", post_deletion_reason_path(reason), method: :delete, data: { confirm: "Are you sure you want to delete this reason?" } %>
+          <%= link_to "Edit", edit_post_replacement_rejection_reason_path(reason) %> |
+          <%= link_to "Delete", post_replacement_rejection_reason_path(reason), method: :delete, data: { confirm: "Are you sure you want to delete this reason?" } %>
           <span class="add-spacing-link" style="display: none;">
             | Add Spacing: <%= link_to "Above", "#", class: "link-add-spacing-above" %>/<%= link_to "Below", "#", class: "link-add-spacing-below"  %>
           </span>
@@ -45,7 +45,7 @@
 <%= render partial: "secondary_links" %>
 
 <% content_for(:page_title) do %>
-  Post Report Reasons
+  Post Replacement Rejection Reasons
 <% end %>
 
 <%= javascript_tag nonce: true do -%>
@@ -60,7 +60,7 @@
   reinitRemoveListener();
 
   function reorderData() {
-    return JSON.stringify(Array.from($("#post-deletion-reasons-table tr")).slice(1).map((element, index) => ({ id: element.dataset.id ? Number(element.dataset.id) : null, order: index + 1 })));
+    return JSON.stringify(Array.from($("#post-replacement-rejection-reasons-table tr")).slice(1).map((element, index) => ({ id: element.dataset.id ? Number(element.dataset.id) : null, order: index + 1 })));
   }
 
   $(".link-add-spacing-below").on("click.pawsmovin.spacing", function(event) {
@@ -81,7 +81,7 @@
     $(".edit-order-link").hide();
     $(".add-spacing-link").show();
     $(".link-remove-spacing").show();
-    $("#post-deletion-reasons-table tbody").sortable();
+    $("#post-replacement-rejection-reasons-table tbody").sortable();
     Danbooru.notice("Drag and drop to reorder.");
   });
 
@@ -90,9 +90,9 @@
     $(".save-order-link").hide();
     $(".add-spacing-link").hide();
     $(".link-remove-spacing").hide();
-    $("#post-deletion-reasons-table tbody").sortable("disable");
+    $("#post-replacement-rejection-reasons-table tbody").sortable("disable");
     $.ajax({
-      url: "/posts/deletion_reasons/reorder.json",
+      url: "/posts/replacement_rejection_reasons/reorder.json",
       type: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -105,7 +105,7 @@
       error() {
         Danbooru.error("Failed to update order.");
         $(".save-order-link").show();
-        $("#post-deletion-reasons-table tbody").sortable();
+        $("#post-replacement-rejection-reasons-table tbody").sortable();
       }
     });
   });

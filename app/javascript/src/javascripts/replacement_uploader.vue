@@ -22,7 +22,7 @@
   <div class="sect_red error_message" v-if="showErrors && errorMessage !== undefined">
     {{ errorMessage }}
   </div>
-    
+
   <button @click="submit" :disabled="(showErrors && preventUpload) || submitting">
       {{ submitting ? "Uploading..." : "Upload" }}
   </button>
@@ -84,7 +84,7 @@ export default {
 
       const postId = new URLSearchParams(window.location.search).get("post_id");
       const self = this;
-      $.ajax("/post_replacements.json?post_id=" + postId, {
+      $.ajax("/posts/replacements.json?post_id=" + postId, {
         method: "POST",
         data: formData,
         processData: false,

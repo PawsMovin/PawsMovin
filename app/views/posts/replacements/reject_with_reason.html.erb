@@ -1,0 +1,39 @@
+<h1>Reject Replacement</h1>
+
+<div>
+  <%= replacement_thumbnail(@post_replacement) %>
+</div>
+
+<%= custom_form_for(@post_replacement, url: reject_post_replacement_path(@post_replacement), method: :put) do |f| %>
+  <%= f.input(:reason, as: :string, input_html: { value: "" }) %>
+
+    <div class="post_preview">
+      <%= PostPresenter.preview(@post_replacement.post, show_deleted: true, no_blacklist: true) %>
+    </div>
+
+  <%= f.submit("Reject") %>
+  <%= f.submit("Cancel") %>
+  <%= button_tag("Clear", type: "button", id: "rejection-reason-clear") %>
+<% end %>
+
+<div id="rejection-reason-prebuilt" class="simple_form">
+  <b>Reason</b>
+  <% last_order = 0 %>
+  <% PostReplacementRejectionReason.order(order: :desc).find_each do |reason| %>
+    <%# the latter should never happen, but if it did, this loop would tear down the site %>
+    <% if (last_order + 1) != reason.order && last_order != reason.order %>
+      <% while (last_order + 1) < reason.order %>
+        <br>
+        <% last_order += 1 %>
+      <% end %>
+    <% end %>
+    <% last_order = reason.order %>
+    <a class="button rejection-reason-button" data-text="<%= reason.reason %>">
+      <%= reason.reason.html_safe %>
+    </a>
+  <% end %>
+</div>
+
+<% content_for(:page_title) do %>
+  Reject Replacement on post #<%= @post_replacement.post_id %>
+<% end %>

@@ -45,6 +45,7 @@ export { default as Post } from '../src/javascripts/posts.js';
 export { default as PostDeletion } from "../src/javascripts/post_delete.js";
 export { default as PostModeMenu } from '../src/javascripts/post_mode_menu.js';
 export { default as PostReplacement } from '../src/javascripts/post_replacement.js';
+export { default as PostReplacementRejection } from "../src/javascripts/post_replacement_reject.js";
 export { default as PostVersions } from '../src/javascripts/post_versions.js';
 export { default as RecordBuilder } from '../src/javascripts/record_builder.js';
 export { default as Replacer } from '../src/javascripts/replacer.js';
