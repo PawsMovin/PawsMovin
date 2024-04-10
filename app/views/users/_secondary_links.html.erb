@@ -1,51 +1,43 @@
 <% content_for(:secondary_links) do %>
   <li><%= render "users/quick_search" %></li>
-  <%= subnav_link_to "Listing", users_path %>
-  <%= subnav_link_to "Search", search_users_path %>
+  <%= subnav_link_to("Listing", users_path) %>
+  <%= subnav_link_to("Search", search_users_path) %>
 
   <% if CurrentUser.user.is_anonymous? %>
-    <%= subnav_link_to "Sign up", new_user_path %>
+    <%= subnav_link_to("Sign up", new_user_path) %>
   <% end %>
 
   <% if @user && !@user.new_record? && !CurrentUser.user.is_anonymous? %>
     <li>|</li>
     <% if @user.id == CurrentUser.user.id %>
-      <%= subnav_link_to "Settings", edit_user_path(CurrentUser.user) %>
-      <%= subnav_link_to "Profile", user_path(CurrentUser.user) %>
-      <%= subnav_link_to "Messages #{unread_dmails(CurrentUser.user)}", all_dmails_path %>
-      <%= subnav_link_to "Blocked Users", user_blocks_path(CurrentUser.user) %>
+      <%= subnav_link_to("Settings", edit_users_path) %>
+      <%= subnav_link_to("Profile", user_path(CurrentUser.user)) %>
+      <%= subnav_link_to("Messages #{unread_dmails(CurrentUser.user)}", all_dmails_path) %>
+      <%= subnav_link_to("Blocked Users", user_blocks_path(CurrentUser.user)) %>
     <% else %>
-      <%= subnav_link_to "Send message", new_dmail_path(dmail: { to_id: @user.id }) %>
-      <%= subnav_link_to "Report", model_new_ticket_path(model: @user, report_type: "report") %>
-      <%= subnav_link_to "Commend", model_new_ticket_path(model: @user, report_type: "commendation") %>
-      <% unless CurrentUser.is_staff? %>
+      <%= subnav_link_to("Send message", new_dmail_path(dmail: { to_id: @user.id })) %>
+      <%= subnav_link_to("Report", model_new_ticket_path(model: @user, report_type: "report")) %>
+      <%= subnav_link_to("Commend", model_new_ticket_path(model: @user, report_type: "commendation")) %>
+      <% unless CurrentUser.user.is_staff? %>
         <% if CurrentUser.user.is_blocking?(@user) %>
-          <%= subnav_link_to "Edit Block", edit_user_block_path(CurrentUser.user, CurrentUser.user.block_for(@user)) %>
+          <%= subnav_link_to("Edit Block", edit_user_block_path(CurrentUser.user, CurrentUser.user.block_for(@user))) %>
         <% else %>
-          <%= subnav_link_to "Block", new_user_block_path(CurrentUser.user, user_block: { target_id: @user.id }) %>
+          <%= subnav_link_to("Block", new_user_block_path(CurrentUser.user, user_block: { target_id: @user.id })) %>
         <% end %>
       <% end %>
-      <% if CurrentUser.is_admin? %>
-        <%= subnav_link_to "Blocked Users", user_blocks_path(@user) %>
-      <% end %>
+      <%= subnav_link_to_if(CurrentUser.user.is_admin?, "Blocked Users", user_blocks_path(@user)) %>
     <% end %>
-    <% if CurrentUser.is_admin? %>
-      <% if CurrentUser.is_owner? %>
-        <%= subnav_link_to "Reset Password", request_password_reset_admin_user_path(@user) %>
-      <% end %>
-      <%= subnav_link_to "Edit Blacklist", edit_blacklist_admin_user_path(@user) %>
-      <%= subnav_link_to "Edit User", edit_admin_user_path(@user) %>
+    <%= subnav_link_to_if(policy([:admin, @user]).request_password_reset?, "Reset Password", request_password_reset_admin_user_path(@user)) %>
+    <%= subnav_link_to_if(policy([:admin, @user]).edit_blacklist?, "Edit Blacklist", edit_blacklist_admin_user_path(@user)) %>
+    <%= subnav_link_to_if(policy([:admin, @user]).edit?, "Edit User", edit_admin_user_path(@user)) %>
+    <% if @user.is_banned? %>
+      <%= subnav_link_to_if(policy(Ban).destroy?, "Unban", ban_path(@user.recent_ban)) %>
+    <% else %>
+      <%= subnav_link_to_if(policy(Ban).create?, "Ban", new_ban_path(ban: { user_id: @user.id })) %>
     <% end %>
-    <% if CurrentUser.is_moderator? %>
-      <% if @user.is_banned? %>
-        <%= subnav_link_to "Unban", ban_path(@user.recent_ban) %>
-      <% else %>
-        <%= subnav_link_to "Ban", new_ban_path(ban: { user_id: @user.id }) %>
-      <% end %>
-      <%= subnav_link_to "Text Versions", user_text_versions_path(@user) %>
-    <% end %>
+    <%= subnav_link_to_if(policy(UserTextVersion).index?, "Text Versions", user_text_versions_path(@user)) %>
 
     <li>|</li>
-    <%= subnav_link_to "Sign out", session_path, method: :delete %>
+    <%= subnav_link_to("Sign out", session_path, method: :delete) %>
   <% end %>
 <% end %>

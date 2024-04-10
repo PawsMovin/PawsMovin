@@ -21,7 +21,7 @@
           <%= link_to_wiki_or_new tag_relation.consequent_name %>
           <span class="count"><%= tag_relation.consequent_tag.post_count rescue 0 %></span>
           <% if tag_relation.is_a?(TagAlias) %>
-            <% if CurrentUser.is_member? && tag_relation.status == "pending" && tag_relation.has_transitives %>
+            <% if CurrentUser.user.is_member? && tag_relation.status == "pending" && tag_relation.has_transitives %>
               <span class="redtext"> HAS TRANSITIVES</span>
             <% end %>
           <% end %>

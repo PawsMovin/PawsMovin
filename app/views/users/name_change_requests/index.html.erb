@@ -21,7 +21,7 @@
         <td><%= change_request.original_name %></td>
         <td><%= change_request.desired_name %></td>
         <td>
-          <% if CurrentUser.is_admin? || CurrentUser.user == change_request.user %>
+          <% if CurrentUser.user.is_moderator? || CurrentUser.user == change_request.user %>
             <%= change_request.change_reason %>
           <% end %>
         </td>

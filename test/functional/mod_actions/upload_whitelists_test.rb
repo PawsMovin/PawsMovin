@@ -23,6 +23,7 @@ module ModActions
                 subject: @whitelist,
                 creator: @admin,
                 hidden:  false,
+                pattern: @whitelist.pattern,
                 note:    @whitelist.note,
               )
             end
@@ -88,12 +89,14 @@ module ModActions
           should "format correctly for users" do
             as(@user) do
               assert_matches(
-                actions: %w[upload_whitelist_update],
-                text:    "Updated whitelist entry '#{@whitelist.note}'",
-                subject: @whitelist,
-                creator: @admin,
-                hidden:  false,
-                note:    @whitelist.note,
+                actions:     %w[upload_whitelist_update],
+                text:        "Updated whitelist entry '#{@whitelist.note}'",
+                subject:     @whitelist,
+                creator:     @admin,
+                hidden:      false,
+                pattern:     @whitelist.pattern,
+                old_pattern: @original.pattern,
+                note:        @whitelist.note,
               )
             end
           end
@@ -167,6 +170,7 @@ module ModActions
                 subject: @whitelist,
                 creator: @admin,
                 hidden:  false,
+                pattern: @whitelist.pattern,
                 note:    @whitelist.note,
               )
             end

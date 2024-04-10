@@ -8,49 +8,44 @@ class ApiKeysController < ApplicationController
 
   def index
     params[:search][:user_id] ||= params[:user_id]
-    @api_keys = ApiKey.visible(CurrentUser.user).search(search_params).paginate(params[:page], limit: params[:limit], search_count: params[:search])
+    @api_keys = authorize(ApiKey).visible(CurrentUser.user).search(search_params(ApiKey)).paginate(params[:page], limit: params[:limit], search_count: params[:search])
     respond_with(@api_keys)
   end
 
   def new
-    @api_key = ApiKey.new(user: CurrentUser.user)
+    @api_key = authorize(ApiKey.new(user: CurrentUser.user))
     respond_with(@api_key)
   end
 
   def edit
+    authorize(@api_key)
     respond_with(@api_key)
   end
 
   def create
-    @api_key = ApiKey.create(user: CurrentUser.user, **api_key_params)
-    if @api_key.valid?
-      respond_with(@api_key, location: user_api_keys_path(CurrentUser.user), notice: "API key created")
-    else
-      respond_with(@api_key, location: user_api_keys_path(CurrentUser.user), notice: @api_key.errors.full_messages.join("; "))
-    end
+    @api_key = authorize(ApiKey.new(user: CurrentUser.user, **permitted_attributes(ApiKey)))
+    @api_key.save
+    notice(@api_key.valid? ? "API key created" : @api_key.errors.full_messages.join("; "))
+    respond_with(@api_key, location: user_api_keys_path(CurrentUser.user))
   end
 
   def update
-    @api_key.update(api_key_params)
-    respond_with(@api_key, location: user_api_keys_path(CurrentUser.user), notice: "API key updated")
+    authorize(@api_key)
+    @api_key.update(permitted_attributes(@api_key))
+    notice("API key updated")
+    respond_with(@api_key, location: user_api_keys_path(CurrentUser.user))
   end
 
   def destroy
+    authorize(@api_key)
     @api_key.destroy
-    respond_with(@api_key, location: user_api_keys_path(CurrentUser.user), notice: "API key deleted")
+    notice("API key deleted")
+    respond_with(@api_key, location: user_api_keys_path(CurrentUser.user))
   end
 
   private
 
   def load_api_key
     @api_key = ApiKey.visible(CurrentUser.user).find(params[:id])
-  end
-
-  def api_key_params
-    params.fetch(:api_key, {}).permit(:name, :permitted_ip_addresses, permissions: [])
-  end
-
-  def search_params
-    permit_search_params(%i[user_id user_name])
   end
 end

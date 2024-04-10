@@ -1,20 +1,17 @@
 # frozen_string_literal: true
 
 class PostsController < ApplicationController
-  before_action :member_only, except: %i[show show_seq index random]
-  before_action :admin_only, only: %i[update_iqdb expunge]
-  before_action :janitor_only, only: %i[regenerate_thumbnails regenerate_videos uploaders]
-  before_action :approver_only, only: %i[delete destroy undelete confirm_move_favorites move_favorites expunge approve unapprove]
   skip_before_action :api_check, only: %i[delete destroy undelete move_favorites expunge approve unapprove]
   respond_to :html, :json
 
   def index
     if params[:md5].present?
-      @post = Post.find_by!(md5: params[:md5])
+      @post = authorize(Post.find_by!(md5: params[:md5]))
       respond_with(@post) do |format|
         format.html { redirect_to(@post) }
       end
     else
+      authorize(Post)
       @post_set = PostSets::Post.new(tag_query, params[:page], params[:limit], random: params[:random])
       @posts = PostsDecorator.decorate_collection(@post_set.posts)
       respond_with(@posts) do |format|
@@ -27,7 +24,7 @@ class PostsController < ApplicationController
   end
 
   def show
-    @post = Post.find(params[:id])
+    @post = authorize(Post.find(params[:id]))
 
     include_deleted = @post.is_deleted? || (@post.parent_id.present? && @post.parent.is_deleted?) || CurrentUser.is_approver?
     @parent_post_set = PostSets::PostRelationship.new(@post.parent_id, include_deleted: include_deleted, want_parent: true)
@@ -39,6 +36,7 @@ class PostsController < ApplicationController
   end
 
   def show_seq
+    authorize(Post)
     @post = PostSearchContext.new(params).post
     include_deleted = @post.is_deleted? || (@post.parent_id.present? && @post.parent.is_deleted?) || CurrentUser.is_approver?
     @parent_post_set = PostSets::PostRelationship.new(@post.parent_id, include_deleted: include_deleted, want_parent: true)
@@ -53,10 +51,10 @@ class PostsController < ApplicationController
   end
 
   def update
-    @post = Post.find(params[:id])
+    @post = authorize(Post.find(params[:id]))
     ensure_can_edit(@post)
 
-    pparams = post_params
+    pparams = permitted_attributes(@post)
     pparams.delete(:tag_string) if pparams[:tag_string_diff].present?
     pparams.delete(:source) if pparams[:source_diff].present?
     @post.update(pparams)
@@ -64,7 +62,7 @@ class PostsController < ApplicationController
   end
 
   def revert
-    @post = Post.find(params[:id])
+    @post = authorize(Post.find(params[:id]))
     ensure_can_edit(@post)
     @version = @post.versions.find(params[:version_id])
 
@@ -76,7 +74,7 @@ class PostsController < ApplicationController
   end
 
   def copy_notes
-    @post = Post.find(params[:id])
+    @post = authorize(Post.find(params[:id]))
     ensure_can_edit(@post)
     @other_post = Post.find(params[:other_post_id].to_i)
     @post.copy_notes_to(@other_post)
@@ -90,6 +88,7 @@ class PostsController < ApplicationController
   end
 
   def random
+    authorize(Post)
     tags = params[:tags] || ""
     @post = Post.tag_match(tags + " order:random").limit(1).first
     raise(ActiveRecord::RecordNotFound) if @post.nil?
@@ -99,27 +98,27 @@ class PostsController < ApplicationController
   end
 
   def mark_as_translated
-    @post = Post.find(params[:id])
+    @post = authorize(Post.find(params[:id]))
     ensure_can_edit(@post)
     @post.mark_as_translated(params[:post])
     respond_with_post_after_update(@post)
   end
 
   def update_iqdb
-    @post = Post.find(params[:id])
+    @post = authorize(Post.find(params[:id]))
     @post.update_iqdb_async
     respond_with_post_after_update(@post)
   end
 
   def delete
-    @post = Post.find(params[:id])
+    @post = authorize(Post.find(params[:id]))
     @reason = @post.pending_flag&.reason || ""
     @reason = "Inferior version/duplicate of post ##{@post.parent_id}" if @post.parent_id && @reason == ""
     @reason = "" if @reason =~ /uploading_guidelines/
   end
 
   def destroy
-    @post = Post.find(params[:id])
+    @post = authorize(Post.find(params[:id]))
     @post.delete!(params[:reason], move_favorites: params[:move_favorites].present?)
     @post.copy_sources_to_parent if params[:copy_sources].present?
     @post.copy_tags_to_parent if params[:copy_tags].present?
@@ -130,44 +129,44 @@ class PostsController < ApplicationController
   end
 
   def undelete
-    @post = Post.find(params[:id])
+    @post = authorize(Post.find(params[:id]))
     @post.undelete!
     respond_with(@post)
   end
 
   def confirm_move_favorites
-    @post = Post.find(params[:id])
+    @post = authorize(Post.find(params[:id]))
   end
 
   def move_favorites
-    @post = Post.find(params[:id])
+    @post = authorize(Post.find(params[:id]))
     @post.give_favorites_to_parent
     @post.give_votes_to_parent
     redirect_to(post_path(@post))
   end
 
   def expunge
-    @post = Post.find(params[:id])
+    @post = authorize(Post.find(params[:id]))
     @post.expunge!
     respond_with(@post)
   end
 
   def regenerate_thumbnails
-    @post = Post.find(params[:id])
+    @post = authorize(Post.find(params[:id]))
     raise(User::PrivilegeError, "Cannot regenerate thumbnails on deleted images") if @post.is_deleted?
     @post.regenerate_image_samples!
     respond_with(@post)
   end
 
   def regenerate_videos
-    @post = Post.find(params[:id])
+    @post = authorize(Post.find(params[:id]))
     raise(User::PrivilegeError, "Cannot regenerate thumbnails on deleted images") if @post.is_deleted?
     @post.regenerate_video_samples!
     respond_with(@post)
   end
 
   def approve
-    @post = Post.find(params[:id])
+    @post = authorize(Post.find(params[:id]))
     if @post.is_approvable?
       @post.approve!
       respond_with do |format|
@@ -183,7 +182,7 @@ class PostsController < ApplicationController
   end
 
   def unapprove
-    @post = Post.find(params[:id])
+    @post = authorize(Post.find(params[:id]))
     if @post.is_unapprovable?(CurrentUser.user)
       @post.unapprove!
       respond_with(nil)
@@ -193,14 +192,13 @@ class PostsController < ApplicationController
   end
 
   def uploaders
-    @relation = Post.where(is_pending: true).search_uploaders(search_uploaders_params).group(:uploader_id).order("COUNT(uploader_id) DESC").paginate(params[:page], limit: params[:limit] || 20)
+    @relation = authorize(Post).where(is_pending: true).search_uploaders(search_params(Post)).group(:uploader_id).order("COUNT(uploader_id) DESC").paginate(params[:page], limit: params[:limit] || 20)
     @counts = @relation.count
     @users = User.where(id: @counts.keys)
   end
 
   def add_to_pool
-    @post = Post.find(params[:id])
-
+    @post = authorize(Post.find(params[:id]))
     if params[:pool_id].present?
       @pool = Pool.find(params[:pool_id])
     else
@@ -216,7 +214,7 @@ class PostsController < ApplicationController
   end
 
   def remove_from_pool
-    @post = Post.find(params[:id])
+    @post = authorize(Post.find(params[:id]))
     if params[:pool_id].present?
       @pool = Pool.find(params[:pool_id])
     else
@@ -231,7 +229,7 @@ class PostsController < ApplicationController
   end
 
   def favorites
-    @post = Post.find(params[:id])
+    @post = authorize(Post.find(params[:id]))
     query = User.joins(:favorites)
     unless CurrentUser.is_moderator?
       query = query.where("bit_prefs & :value != :value", { value: User.flag_value_for("enable_privacy_mode") }).or(query.where(favorites: { user_id: CurrentUser.id }))
@@ -290,29 +288,6 @@ class PostsController < ApplicationController
   def ensure_can_edit(post)
     can_edit = CurrentUser.can_post_edit_with_reason
     raise(User::PrivilegeError.new("Updater #{User.throttle_reason(can_edit)}")) unless can_edit == true
-  end
-
-  def post_params
-    permitted_params = %i[
-      tag_string old_tag_string
-      tag_string_diff source_diff
-      parent_id old_parent_id
-      source old_source
-      description old_description
-      rating old_rating
-      edit_reason
-    ]
-    permitted_params += %i[is_rating_locked] if CurrentUser.is_trusted?
-    permitted_params += %i[is_note_locked bg_color] if CurrentUser.is_janitor?
-    permitted_params += %i[is_comment_locked] if CurrentUser.is_moderator?
-    permitted_params += %i[is_status_locked is_comment_disabled locked_tags hide_from_anonymous hide_from_search_engines] if CurrentUser.is_admin?
-
-    params.require(:post).permit(permitted_params)
-  end
-
-  def search_uploaders_params
-    permitted_params = %i[user_id user_name]
-    permit_search_params(permitted_params)
   end
 
   def append_pool_to_session(pool)

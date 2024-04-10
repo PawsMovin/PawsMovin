@@ -7,12 +7,12 @@ module Posts
     respond_to :html, :json
 
     def index
-      @post_approvals = PostApproval.includes(:post, :user).search(search_params).paginate(params[:page], limit: params[:limit])
+      @post_approvals = authorize(PostApproval).includes(:post, :user).search(search_params).paginate(params[:page], limit: params[:limit])
       respond_with(@post_approvals)
     end
 
     def create
-      post = Post.find(params[:post_id])
+      post = authorize(Post.find(params[:post_id]), policy_class: PostApprovalPolicy)
       if post.is_approvable?
         post.approve!
         respond_with do |format|
@@ -28,7 +28,7 @@ module Posts
     end
 
     def destroy
-      post = Post.find(params[:id])
+      post = authorize(Post.find(params[:post_id]), policy: PostApprovalPolicy)
       if post.is_unapprovable?(CurrentUser.user)
         post.unapprove!
         respond_with(nil)

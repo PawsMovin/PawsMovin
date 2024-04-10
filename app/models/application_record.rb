@@ -372,6 +372,26 @@ class ApplicationRecord < ActiveRecord::Base
     end
   end
 
+  concerning :PrivilegeMethods do
+    class_methods do
+      def visible(_user)
+        all
+      end
+
+      def visible_for_search(attribute, current_user)
+        policy(current_user).visible_for_search(all, attribute)
+      end
+
+      def policy(current_user)
+        Pundit.policy(current_user, self)
+      end
+    end
+
+    def policy(current_user)
+      Pundit.policy(current_user, self)
+    end
+  end
+
   def warnings
     @warnings ||= ActiveModel::Errors.new(self)
   end

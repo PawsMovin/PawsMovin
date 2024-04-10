@@ -2,30 +2,29 @@
 
 module Tags
   class AliasesController < ApplicationController
-    before_action :member_only, except: %i[index show]
-    before_action :can_manage_aibur_only, only: %i[edit update]
     respond_to :html, :json
 
     def index
-      @tag_aliases = TagAlias.includes(:antecedent_tag, :consequent_tag, :approver).search(search_params).paginate(params[:page], limit: params[:limit])
+      @tag_aliases = authorize(TagAlias).includes(:antecedent_tag, :consequent_tag, :approver).search(search_params).paginate(params[:page], limit: params[:limit])
       respond_with(@tag_aliases)
     end
 
     def show
-      @tag_alias = TagAlias.find(params[:id])
+      @tag_alias = authorize(TagAlias.find(params[:id]))
       respond_with(@tag_alias)
     end
 
     def new
-      @tag_alias = TagAlias.new
+      @tag_alias = authorize(TagAlias.new)
     end
 
     def edit
-      @tag_alias = TagAlias.find(params[:id])
+      @tag_alias = authorize(TagAlias.find(params[:id]))
     end
 
     def create
-      @tag_alias_request = TagAliasRequest.create(tag_alias_params(:create))
+      @tag_alias_request = authorize(TagAliasRequest.new(permitted_attributes(TagAlias)), policy_class: TagAliasPolicy)
+      @tag_alias_request.create
 
       if @tag_alias_request.invalid?
         respond_with(@tag_alias_request) do |format|
@@ -39,21 +38,17 @@ module Tags
     end
 
     def update
-      @tag_alias = TagAlias.find(params[:id])
+      @tag_alias = authorize(TagAlias.find(params[:id]))
 
-      if @tag_alias.editable_by?(CurrentUser.user)
-        update_params = tag_alias_params
-        unless @tag_alias.is_pending?
-          update_params = update_params.except(:antecedent_name, :consequent_name)
-        end
-        @tag_alias.update(update_params)
+      if @tag_alias.is_pending? && @tag_alias.editable_by?(CurrentUser.user)
+        @tag_alias.update(permitted_attributes(TagAlias))
       end
 
       respond_with(@tag_alias)
     end
 
     def destroy
-      @tag_alias = TagAlias.find(params[:id])
+      @tag_alias = authorize(TagAlias.find(params[:id]))
       if @tag_alias.rejectable_by?(CurrentUser.user)
         @tag_alias.reject!
         respond_with(@tag_alias, location: tag_aliases_path)
@@ -63,18 +58,9 @@ module Tags
     end
 
     def approve
-      @tag_alias = TagAlias.find(params[:id])
+      @tag_alias = authorize(TagAlias.find(params[:id]))
       @tag_alias.approve!(approver: CurrentUser.user)
       respond_with(@tag_alias, location: tag_alias_path(@tag_alias))
-    end
-
-    private
-
-    def tag_alias_params(context = nil)
-      permitted_params = %i[antecedent_name consequent_name]
-      permitted_params += %i[reason forum_topic_id] if context == :create
-      permitted_params += %i[skip_forum] if context == :create && CurrentUser.is_admin?
-      params.require(:tag_alias).permit(permitted_params)
     end
   end
 end

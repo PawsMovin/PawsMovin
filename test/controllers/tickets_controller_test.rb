@@ -12,7 +12,7 @@ class TicketsControllerTest < ActionDispatch::IntegrationTest
         end
       else
         assert_no_difference(-> { Ticket.count }) do
-          post_auth(tickets_path, user, params: { ticket: { **params, model_id: @content.id, reason: "test" } })
+          post_auth(tickets_path, user, params: { ticket: { **params, model_id: @content.id, model_type: model.class.name, reason: "test" } })
           assert_response(:forbidden)
         end
       end

@@ -16,7 +16,7 @@
       <li>imply aaa -> bbb</li>
       <li>update aaa -> bbb</li>
       <li>category tag_name -> category_name</li>
-      <% if CurrentUser.is_admin? %>
+      <% if PawsMovin.config.can_bur_nuke?(CurrentUser.user) %>
         <li>nuke tag_name</li>
       <% end %>
     </ul>
@@ -26,7 +26,7 @@
     <%= f.input(:reason, as: :dtext, limit: PawsMovin.config.forum_post_max_size) %>
   <% end %>
 
-  <% if CurrentUser.is_admin? %>
+  <% if can_use_attribute?(@bulk_update_request, :skip_forums) %>
     <div class="input">
       <label class="checkbox optional" for="bulk_update_request_skip_forum">
         <%= check_box "bulk_update_request", "skip_forum" %>

@@ -2,51 +2,52 @@
 
 module Rules
   class QuickController < ApplicationController
-    before_action :admin_only
     respond_to :html
 
     def index
-      @quick = QuickRule.order(:order)
+      @quick = authorize(QuickRule).order(:order)
     end
 
     def new
-      @quick = QuickRule.new
+      @quick = authorize(QuickRule.new)
       @rules = Rule.joins(:category).order("rule_categories.order, rules.order")
     end
 
     def edit
-      @quick = QuickRule.find(params[:id])
+      @quick = authorize(QuickRule.find(params[:id]))
       @rules = Rule.joins(:category).order("rule_categories.order, rules.order")
     end
 
     def create
-      @quick = QuickRule.create(quick_params)
+      @quick = authorize(QuickRule.new(permitted_attributes(QuickRule)))
+      @quick.save
       @rules = Rule.joins(:category).order("rule_categories.order, rules.order")
       notice(@quick.errors.any? ? @quick.errors.full_messages.join(", ") : "Quick rule created")
       respond_with(@quick, location: quick_rules_path)
     end
 
     def update
-      @quick = QuickRule.find(params[:id])
+      @quick = authorize(QuickRule.find(params[:id]))
       @rules = Rule.joins(:category).order("rule_categories.order, rules.order")
-      @quick.update(quick_params)
+      @quick.update(permitted_attributes(QuickRule))
       notice(@quick.errors.any? ? @quick.errors.full_messages.join(", ") : "Quick rule updated")
       respond_with(@quick, location: quick_rules_path)
     end
 
     def destroy
-      @quick = QuickRule.find(params[:id])
+      @quick = authorize(QuickRule.find(params[:id]))
       @quick.destroy
       notice("Quick rule deleted")
       respond_with(@quick, location: quick_rules_path)
     end
 
     def order
-      @quick = QuickRule.order(:order)
+      @quick = authorize(QuickRule).order(:order)
       respond_with(@quick)
     end
 
     def reorder
+      authorize(QuickRule)
       return render_expected_error(422, "Error: No quick rules provided") unless params[:_json].is_a?(Array) && params[:_json].any?
       changes = 0
       QuickRule.transaction do
@@ -76,12 +77,6 @@ module Rules
       end
     rescue ActiveRecord::RecordNotFound
       render_expected_error(422, "Error: Category not found")
-    end
-
-    private
-
-    def quick_params
-      params.require(:quick_rule).permit(:header, :reason, :rule_id)
     end
   end
 end

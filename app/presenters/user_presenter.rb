@@ -15,9 +15,11 @@ class UserPresenter
     user.level_string
   end
 
-  def ban_reason
+  def ban_reason(template)
     if user.is_banned?
-      "#{user.recent_ban.reason}\n\n Expires #{user.recent_ban.expires_at || 'never'} (#{user.bans.count} bans total)"
+      reason = template.format_text(user.recent_ban.reason)
+      edit = template.link_to_enclosed("edit", template.edit_ban_path(user.recent_ban), if: template.policy(user.recent_ban).edit?)
+      %{#{reason}\n\n Expires #{user.recent_ban.expire_days_tagged} #{template.link_to_enclosed("#{user.bans.count} #{'ban'.pluralize(user.bans.count)} total", template.bans_path(search: { user_id: user.id }))} #{edit}}.html_safe
     end
   end
 
@@ -36,7 +38,24 @@ class UserPresenter
       permissions << "manage tag change requests"
     end
 
+    if CurrentUser.user.is_moderator?
+      if user.no_flagging?
+        permissions << "no flagging"
+      end
+
+      if user.no_replacements?
+        permissions << "no replacements"
+      end
+    end
+
     permissions.join(", ")
+  end
+
+  def permissions_compact
+    perms = permissions.split(", ")
+    return permissions if perms.length <= 2
+    visible = perms.slice!(0, 2)
+    %{#{visible.join(', ')} <a href="#" title="Expand" data-extra="#{perms.join(', ')}" class="expand-permissions-link">»</a><a title="Collapse" href="#" style="display: none;" class="collapse-permissions-link">«</a>}.html_safe
   end
 
   def upload_limit(template)
@@ -61,8 +80,12 @@ class UserPresenter
     Post.tag_match("user:#{user.name}").limit(10)
   end
 
-  def has_uploads?
-    user.post_upload_count > 0
+  def has_active_uploads?
+    (user.post_upload_count - user.post_deleted_count) > 0
+  end
+
+  def show_uploads?
+    has_active_uploads? || CurrentUser.user.is_moderator?
   end
 
   def favorites
@@ -103,8 +126,11 @@ class UserPresenter
   end
 
   def commented_posts_count(template)
-    count = Post.fast_count("commenter:#{user.name}", enable_safe_mode: false)
-    template.link_to(count, template.posts_path(tags: "commenter:#{user.name} order:comment_bumped"))
+    template.link_to(commented_on_posts_count, template.posts_path(tags: "commenter:#{user.name} order:comment_bumped"))
+  end
+
+  def commented_on_posts_count
+    Post.fast_count("commenter:#{user.name}", enable_safe_mode: false)
   end
 
   def post_version_count(template)
@@ -194,5 +220,9 @@ class UserPresenter
         category_id: tag.category,
       }
     end
+  end
+
+  def policy
+    UserPresenterPolicy.new(CurrentUser.user, self)
   end
 end

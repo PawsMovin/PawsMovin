@@ -2,43 +2,44 @@
 
 module Rules
   class CategoriesController < ApplicationController
-    before_action :admin_only
     respond_to :html, :json
     respond_to :js, only: %i[reorder]
 
     def new
-      @category = RuleCategory.new
+      @category = authorize(RuleCategory.new)
     end
 
     def edit
-      @category = RuleCategory.find(params[:id])
+      @category = authorize(RuleCategory.find(params[:id]))
     end
 
     def create
-      @category = RuleCategory.create(category_params)
+      @category = authorize(RuleCategory).new(permitted_attributes(RuleCategory))
+      @category.save
       notice(@category.errors.any? ? @category.errors.full_messages.join(";") : "Category created")
       respond_with(@category, location: rules_path)
     end
 
     def update
-      @category = RuleCategory.find(params[:id])
-      @category.update(category_params)
+      @category = authorize(RuleCategory.find(params[:id]))
+      @category.update(permitted_attributes(RuleCategory))
       notice(@category.errors.any? ? @category.errors.full_messages.join(";") : "Category updated")
       respond_with(@category, location: rules_path)
     end
 
     def destroy
-      @category = RuleCategory.find(params[:id])
+      @category = authorize(RuleCategory.find(params[:id]))
       @category.destroy
       notice("Category deleted")
       respond_with(@category, location: rules_path)
     end
 
     def order
-      @categories = RuleCategory.order(:order)
+      @categories = authorize(RuleCategory).order(:order)
     end
 
     def reorder
+      authorize(RuleCategory)
       return render_expected_error(422, "Error: No categories provided") unless params[:_json].is_a?(Array) && params[:_json].any?
       changes = 0
       RuleCategory.transaction do
@@ -68,12 +69,6 @@ module Rules
       end
     rescue ActiveRecord::RecordNotFound
       render_expected_error(422, "Error: Category not found")
-    end
-
-    private
-
-    def category_params
-      params.require(:rule_category).permit(%i[name anchor])
     end
   end
 end

@@ -132,8 +132,8 @@ class WikiPagesControllerTest < ActionDispatch::IntegrationTest
         assert_equal("foo", @wiki_page.reload.title)
       end
 
-      should "rename a wiki page with a non-empty tag if secondary validations are skipped" do
-        put_auth wiki_page_path(@wiki_page), @mod, params: { wiki_page: { title: "bar", skip_secondary_validations: "1" } }
+      should "rename a wiki page with a non-empty tag if the check is skipped" do
+        put_auth wiki_page_path(@wiki_page), @mod, params: { wiki_page: { title: "bar", skip_post_count_rename_check: "1" } }
         assert_equal("bar", @wiki_page.reload.title)
       end
     end

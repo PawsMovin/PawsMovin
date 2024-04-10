@@ -30,10 +30,7 @@ div#c-users-feedbacks, div#c-moderator-dashboards .activity-container {
   }
 }
 
-#c-users-feedbacks #a-new,
-#c-users-feedbacks #a-edit,
-#c-bans #a-new,
-#c-bans #a-edit {
+#c-users-feedbacks,  #c-bans {
   .record-wrapper {
     display: flex;
     flex-flow: column;

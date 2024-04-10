@@ -7,7 +7,7 @@
 
       <% if CurrentUser.can_view_flagger_on_post?(flag) %>
         - <%= link_to_user(flag.creator) %>
-        <% if CurrentUser.is_admin? %>
+        <% if policy(flag).can_see_ip_addr? %>
           (<%= link_to_ip(flag.creator_ip_addr) %>)
         <% end %>
       <% end %>

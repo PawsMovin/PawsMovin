@@ -34,7 +34,7 @@
           </td>
           <td class="no-wrap">
             <h6><%= link_to_user edit.user %></h6>
-            <% if CurrentUser.is_admin? %>
+            <% if policy(edit).can_see_ip_addr? %>
               <div><%= link_to_ip edit.ip_addr %></div>
             <% end %>
             <%= link_to time_ago_in_words_tagged(edit.created_at, compact: true), url_for(anchor: "edit-#{edit.id}") %>

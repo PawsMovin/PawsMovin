@@ -1,0 +1,48 @@
+# frozen_string_literal: true
+
+class CommentPolicy < ApplicationPolicy
+  def for_post?
+    index?
+  end
+
+  def show?
+    !record.is_a?(Comment) || record.visible_to?(user)
+  end
+
+  def update?
+    unbanned? && (!record.is_a?(Comment) || record.editable_by?(user))
+  end
+
+  def hide?
+    unbanned? && (!record.is_a?(Comment) || record.can_hide?(user))
+  end
+
+  def unhide?
+    user.is_moderator?
+  end
+
+  def warning?
+    user.is_moderator?
+  end
+
+  def destroy?
+    user.is_admin?
+  end
+
+  def permitted_attributes
+    attr = %i[body]
+    attr += %i[is_sticky is_hidden] if CurrentUser.is_moderator?
+    attr
+  end
+
+  def permitted_attributes_for_create
+    super + %i[post_id]
+  end
+
+  def permitted_search_params
+    params = super + %i[body_matches post_id post_tags_match creator_name creator_id post_note_updater_name post_note_updater_id poster_id poster_name is_sticky order]
+    params += %i[is_hidden] if user.is_moderator?
+    params += %i[ip_addr] if can_search_ip_addr?
+    params
+  end
+end

@@ -5,16 +5,8 @@ module Artists
     respond_to :html, :json
 
     def index
-      @artist_versions = ArtistVersion.search(search_params).paginate(params[:page], limit: params[:limit], search_count: params[:search])
+      @artist_versions = authorize(ArtistVersion).search(search_params(ArtistVersion)).paginate(params[:page], limit: params[:limit], search_count: params[:search])
       respond_with(@artist_versions)
-    end
-
-    private
-
-    def search_params
-      permitted_params = %i[name updater_name updater_id artist_id order]
-      permitted_params += %i[ip_addr] if CurrentUser.is_admin?
-      permit_search_params(permitted_params)
     end
   end
 end

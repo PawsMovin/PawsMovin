@@ -8,8 +8,10 @@
       <th>Name</th>
       <th>Posts</th>
       <th>Deleted</th>
-      <% if CurrentUser.is_admin? %>
+      <% if policy(User).can_see_email? %>
         <th>Email</th>
+      <% end %>
+      <% if policy(User).can_see_ip_addr? %>
         <th>Last IP</th>
       <% end %>
       <th>Notes</th>
@@ -22,24 +24,24 @@
     <% @users.each do |user| %>
       <tr>
         <td>
-          <% if CurrentUser.is_admin? %>
-            <%= link_to "Edit", edit_admin_user_path(user) %>
-          <% end %>
+          <%= link_to_if(CurrentUser.user.is_admin?, "Edit", edit_admin_user_path(user)) %>
         </td>
         <td>
           <%= link_to_user user %>
         </td>
         <td><%= link_to user.post_upload_count, posts_path(tags: "user:#{user.name}") %></td>
         <td><%= user.post_deleted_count %></td>
-        <% if CurrentUser.is_admin? %>
+        <% if policy(user).can_see_email? %>
           <td>
             <%= user.email %>
             <%= email_domain_search(user.email) %>
           </td>
+        <% end %>
+        <% if policy(user).can_see_ip_addr? %>
           <td><%= link_to_ip(user.last_ip_addr) %></td>
         <% end %>
-        <td><%= link_to user.note_version_count, note_versions_path(search: {updater_id: user.id}) %></td>
-        <td><%= link_to user.post_update_count, post_versions_path(search: {updater_id: user.id}) %></td>
+        <td><%= link_to user.note_version_count, note_versions_path(search: { updater_id: user.id }) %></td>
+        <td><%= link_to user.post_update_count, post_versions_path(search: { updater_id: user.id }) %></td>
         <td><%= "(Unactivated)" unless user.is_verified? %> <%= user.level_string %></td>
         <td><%= compact_time user.created_at %></td>
       </tr>

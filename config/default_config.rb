@@ -297,6 +297,11 @@ module PawsMovin
       40
     end
 
+    # If the user can request a bulk update request containing a nuke instruction
+    def can_bur_nuke?(user)
+      user.is_admin?
+    end
+
     # Return true if the given tag shouldn't count against the user's tag search limit.
     def is_unlimited_tag?(tag)
       !!(tag =~ /\A(-?status:deleted|rating:s.*|limit:.+)\z/i)
@@ -682,6 +687,23 @@ module PawsMovin
     end
 
     def report_key
+    end
+
+    def default_forum_category
+      alias_implication_forum_category
+    end
+
+    def upload_whitelists_topic
+      0
+    end
+
+    def show_tag_scripting?(user)
+      user.is_trusted?
+    end
+
+    def show_backtrace?(user, _backtrace)
+      return true if Rails.env.development?
+      user.is_janitor?
     end
 
     include Users

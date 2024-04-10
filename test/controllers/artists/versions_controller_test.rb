@@ -18,7 +18,7 @@ module Artists
       end
 
       should "get the index page when searching for something" do
-        get_auth artist_versions_path(search: { name: @artist.name }), @user
+        get_auth artist_versions_path(search: { artist_name: @artist.name }), @user
         assert_response :success
       end
     end

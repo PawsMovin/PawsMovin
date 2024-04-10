@@ -1,6 +1,10 @@
 <% content_for(:secondary_links) do %>
-  <%= subnav_link_to "Listing", user_blocks_path(@user) %>
+  <%= subnav_link_to("Listing", user_blocks_path(@user)) %>
   <% if CurrentUser.user == @user %>
-    <%= subnav_link_to "New", new_user_block_path(@user) %>
+    <%= subnav_link_to("New", new_user_block_path(@user)) %>
+  <% end %>
+  <% if params[:action] == "edit" && @block.present? %>
+    |
+    <%= subnav_link_to("Remove Block", user_block_path(@user, @block), method: :delete) %>
   <% end %>
 <% end %>

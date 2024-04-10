@@ -2,11 +2,10 @@
 
 module Admin
   class UsersController < ApplicationController
-    before_action :admin_only
-    before_action :owner_only, only: %i[request_password_reset password_reset]
     respond_to :html, :json
 
     def alt_list
+      authorize(%i[admin user])
       offset = params[:page].to_i || 1
       offset -= 1
       offset = offset.clamp(0, 9999)
@@ -25,11 +24,13 @@ module Admin
     end
 
     def edit
+      authorize([:admin, User.find(params[:id])])
       @user = User.find(params[:id])
     end
 
+    # TODO: redo this, remove the UserPromotion middleman and move strong parameters to pundit
     def update
-      @user = User.find(params[:id])
+      @user = authorize([:admin, User.find(params[:id])])
       @user.validate_email_format = true
       @user.is_admin_edit = true
       @user.update!(user_params(CurrentUser.user))
@@ -57,22 +58,22 @@ module Admin
     end
 
     def edit_blacklist
-      @user = User.find(params[:id])
+      @user = authorize([:admin, User.find(params[:id])])
     end
 
     def update_blacklist
-      @user = User.find(params[:id])
+      @user = authorize([:admin, User.find(params[:id])])
       @user.is_admin_edit = true
       @user.update!(params[:user].permit([:blacklisted_tags]))
       redirect_to(edit_blacklist_admin_user_path(@user), notice: "Blacklist updated")
     end
 
     def request_password_reset
-      @user = User.find(params[:id])
+      @user = authorize([:admin, User.find(params[:id])])
     end
 
     def password_reset
-      @user = User.find(params[:id])
+      @user = authorize([:admin, User.find(params[:id])])
 
       unless User.authenticate(CurrentUser.name, params[:admin][:password])
         return redirect_to(request_password_reset_admin_user_path(@user), notice: "Password wrong")
@@ -85,10 +86,9 @@ module Admin
 
     private
 
-    def user_params(user)
-      permitted_params = %i[profile_about profile_artinfo base_upload_limit enable_privacy_mode]
-      permitted_params << :email if user.is_owner?
-      params.require(:user).slice(*permitted_params).permit(permitted_params)
+    def user_params(_user)
+      pparams = policy([:admin, User]).permitted_attributes_for_update
+      params.require(:user).slice(*pparams).permit(pparams)
     end
   end
 end

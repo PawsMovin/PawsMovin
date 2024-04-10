@@ -34,9 +34,9 @@
     safeSite: <%= CurrentUser.safe_mode?.to_json %>,
     uploadTags: <%= CurrentUser.presenter.favorite_tags_with_types.to_json.html_safe %>,
     recentTags: <%= CurrentUser.presenter.recent_tags_with_types.to_json.html_safe %>,
-    allowLockedTags: <%= CurrentUser.is_admin?.to_json %>,
-    allowRatingLock: <%= CurrentUser.is_trusted?.to_json %>,
-    allowUploadAsPending: <%= CurrentUser.can_upload_free?.to_json %>,
+    allowLockedTags: <%= policy(Upload).can_use_attribute?(:locked_tags).to_json %>,
+    allowRatingLock: <%= policy(Upload).can_use_attribute?(:locked_rating).to_json %>,
+    allowUploadAsPending: <%= policy(Upload).can_use_attribute?(:as_pending).to_json %>,
     maxFileSize: <%= PawsMovin.config.max_file_size %>,
   };
   Danbooru.Uploader.init();

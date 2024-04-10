@@ -13,6 +13,6 @@ module TicketHelper
   end
 
   def model_new_ticket_path(model:, **)
-    new_ticket_path(model_id: model.id, model_type: model.class.name, **)
+    new_ticket_path(ticket: { model_id: model.id, model_type: model.class.name }, **)
   end
 end

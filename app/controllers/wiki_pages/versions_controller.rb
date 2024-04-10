@@ -5,12 +5,12 @@ module WikiPages
     respond_to :html, :json
 
     def index
-      @wiki_page_versions = WikiPageVersion.search(search_params).paginate(params[:page], limit: params[:limit], search_count: params[:search])
+      @wiki_page_versions = authorize(WikiPageVersion).search(search_params(WikiPageVersion)).paginate(params[:page], limit: params[:limit], search_count: params[:search])
       respond_with(@wiki_page_versions)
     end
 
     def show
-      @wiki_page_version = WikiPageVersion.find(params[:id])
+      @wiki_page_version = authorize(WikiPageVersion.find(params[:id]))
       respond_with(@wiki_page_version)
     end
 
@@ -20,16 +20,8 @@ module WikiPages
         return
       end
 
-      @thispage = WikiPageVersion.find(params[:thispage])
-      @otherpage = WikiPageVersion.find(params[:otherpage])
-    end
-
-    private
-
-    def search_params
-      permitted_params = %i[updater_id updater_name wiki_page_id title body is_locked]
-      permitted_params += %i[ip_addr] if CurrentUser.is_admin?
-      permit_search_params(permitted_params)
+      @thispage = authorize(WikiPageVersion.find(params[:thispage]))
+      @otherpage = authorize(WikiPageVersion.find(params[:otherpage]))
     end
   end
 end

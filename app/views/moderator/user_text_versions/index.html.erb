@@ -14,7 +14,7 @@
         <th></th>
         <th>User</th>
         <th>Editor</th>
-        <% if CurrentUser.is_admin? %>
+        <% if policy(UserTextVersion).can_see_ip_addr? %>
           <th>IP Address</th>
         <% end %>
         <th>Date</th>
@@ -26,9 +26,9 @@
       <% @text_versions.each_with_index do |text_version, i| %>
         <%# skip empty versions, unless we're viewing a user, then skip all empty versions except the first one %>
         <% if params[:action] == "for_user" %>
-          <% next if text_version.empty_for?(CurrentUser) && !text_version.is_original? && skipped += 1 %>
+          <% next if text_version.empty_for?(CurrentUser.user) && !text_version.is_original? && skipped += 1 %>
         <% else %>
-          <% next if text_version.empty_for?(CurrentUser) && skipped += 1 %>
+          <% next if text_version.empty_for?(CurrentUser.user) && skipped += 1 %>
         <% end %>
         <%# correct for skipped versions %>
         <% i -= skipped %>
@@ -49,7 +49,7 @@
           <td><%= link_to "Show", action: :show, id: text_version.id %></td>
           <td><%= link_to_user text_version.user %></td>
           <td><%= link_to_user text_version.updater %></td>
-          <% if CurrentUser.is_admin? %>
+          <% if policy(UserTextVersion).can_see_ip_addr? %>
             <td><%= link_to_ip text_version.updater_ip_addr %></td>
           <% end %>
           <td><%= compact_time text_version.created_at %></td>

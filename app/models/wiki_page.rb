@@ -25,16 +25,17 @@ class WikiPage < ApplicationRecord
   after_save :log_save
   after_update :log_update
 
-  attr_accessor :skip_secondary_validations, :edit_reason
+  attr_accessor :skip_post_count_rename_check, :edit_reason
 
   belongs_to_creator
   belongs_to_updater
   has_one :tag, foreign_key: "name", primary_key: "title"
   has_one :artist, foreign_key: "name", primary_key: "title"
+  has_one :help_page, foreign_key: "wiki_page", primary_key: "title"
   has_many :versions, -> {order("wiki_page_versions.id ASC")}, class_name: "WikiPageVersion", dependent: :destroy
 
   def validate_not_used_as_help_page
-    if HelpPage.find_by(wiki_page: title).present?
+    if help_page.present?
       errors.add(:wiki_page, "is used by a help page")
       throw(:abort)
     end
@@ -128,12 +129,16 @@ class WikiPage < ApplicationRecord
   end
 
   def validate_rename
-    return if !will_save_change_to_title? || skip_secondary_validations
+    return if !will_save_change_to_title? || skip_post_count_rename_check
 
     tag_was = Tag.find_by_name(Tag.normalize_name(title_was))
     if tag_was.present? && tag_was.post_count > 0
       errors.add(:title, "cannot be changed: '#{tag_was.name}' still has #{tag_was.post_count} posts. Move the posts and update any wikis linking to this page first.")
     end
+  end
+
+  def post_count_rename_error?
+    errors[:title].present? && errors[:title].any? { |e| e.include?("Move the posts and update any wikis linking to this page first.") }
   end
 
   def validate_name_not_restricted

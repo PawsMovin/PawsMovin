@@ -28,11 +28,11 @@ class PoolsController < ApplicationController
   def gallery
     params[:limit] ||= CurrentUser.user.per_page
 
-    @pools = Pool.search(search_params).paginate(params[:page], limit: params[:limit], search_count: params[:search])
+    @pools = authorize(Pool).search(search_params(Pool)).paginate(params[:page], limit: params[:limit], search_count: params[:search])
   end
 
   def show
-    @pool = Pool.find(params[:id])
+    @pool = authorize(Pool.find(params[:id]))
     respond_with(@pool) do |format|
       format.html do
         @posts = @pool.posts.paginate(params[:page], limit: params[:limit], total_count: @pool.post_ids.count)
@@ -41,46 +41,34 @@ class PoolsController < ApplicationController
   end
 
   def create
-    @pool = Pool.create(pool_params)
-    flash[:notice] = @pool.valid? ? "Pool created" : @pool.errors.full_messages.join("; ")
+    @pool = authorize(Pool.new(permitted_attributes(Pool)))
+    @pool.save
+    notice(@pool.valid? ? "Pool created" : @pool.errors.full_messages.join("; "))
     respond_with(@pool)
   end
 
   def update
-    # need to do this in order for synchronize! to work correctly
-    @pool = Pool.find(params[:id])
-    @pool.attributes = pool_params
-    @pool.save
-    unless @pool.errors.any?
-      flash[:notice] = "Pool updated"
-    end
+    @pool = authorize(Pool.find(params[:id]))
+    @pool.update(permitted_attributes(@pool)) # TODO: make sure this doesn't break anything
+    notice(@pool.valid? ? "Pool updated" : @pool.errors.full_messages.join("; "))
     respond_with(@pool)
   end
 
   def destroy
-    @pool = Pool.find(params[:id])
-    if !@pool.deletable_by?(CurrentUser.user)
-      raise(User::PrivilegeError)
-    end
+    @pool = authorize(Pool.find(params[:id]))
+    raise(User::PrivilegeError) unless @pool.deletable_by?(CurrentUser.user)
     @pool.destroy
-    flash[:notice] = "Pool deleted"
+    notice("Pool deleted")
     respond_with(@pool)
   end
 
   def revert
-    @pool = Pool.find(params[:id])
+    @pool = authorize(Pool.find(params[:id]))
     @version = @pool.versions.find(params[:version_id])
     @pool.revert_to!(@version)
     flash[:notice] = "Pool reverted"
     respond_with(@pool) do |format|
       format.js
     end
-  end
-
-  private
-
-  def pool_params
-    permitted_params = %i[name description category is_active post_ids post_ids_string]
-    params.require(:pool).permit(*permitted_params, post_ids: [])
   end
 end

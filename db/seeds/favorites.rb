@@ -5,12 +5,13 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "config",
 
 users = User.where(level: User::Levels::MEMBER)
 
-users.each do |user|
+users.each_with_index do |user, i|
   CurrentUser.scoped(user) do
-    count = rand(200..700)
-    Rails.logger.debug { "Creating #{count} favorites for #{user.name}" }
+    count = rand(200..1200)
+    puts "Creating #{count} favorites for #{user.name} (#{i + 1}/#{users.count})"
     Post.find(Post.pluck(:id).sample(count)).each do |post|
       FavoriteManager.add!(user: CurrentUser.user, post: post)
+      VoteManager.vote!(user: CurrentUser.user, post: post, score: rand(1..100) > 90 ? -1 : 1)
     rescue Favorite::Error, ActiveRecord::RecordInvalid
       # ignore
     end

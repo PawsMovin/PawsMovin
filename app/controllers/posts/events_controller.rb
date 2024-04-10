@@ -5,6 +5,7 @@ module Posts
     respond_to :html, :json
 
     def index
+      authorize(PostEvent)
       @events = PostEventDecorator.decorate_collection(
         PostEvent.includes(:creator).search(search_params).paginate(params[:page], limit: params[:limit]),
       )

@@ -1,13 +1,12 @@
 # frozen_string_literal: true
 
 class RulesController < ApplicationController
-  before_action :admin_only, except: %i[index]
   before_action :load_categories, only: %i[index new create edit update order]
   respond_to :html, :json
   respond_to :js, only: %i[reorder]
 
   def index
-    @rules = Rule.order(:order)
+    @rules = authorize(Rule).order(:order)
     @wiki = WikiPage.find_by(title: "internal:rules_body")
     respond_to do |format|
       format.html
@@ -16,37 +15,40 @@ class RulesController < ApplicationController
   end
 
   def new
-    @rule = Rule.new
+    @rule = authorize(Rule.new(permitted_attributes(Rule)))
   end
 
   def edit
-    @rule = Rule.find(params[:id])
+    @rule = authorize(Rule.find(params[:id]))
   end
 
   def create
-    @rule = Rule.create(rule_params)
+    @rule = authorize(Rule.new(permitted_attributes(Rule)))
+    @rule.save
     notice(@rule.errors.any? ? @rule.errors.full_messages.join(";") : "Rule created")
     respond_with(@rule, location: rules_path)
   end
 
   def update
-    @rule = Rule.find(params[:id])
-    @rule.update(rule_params)
+    @rule = authorize(Rule.find(params[:id]))
+    @rule.update(permitted_attributes(@rule))
     notice(@rule.errors.any? ? @rule.errors.full_messages.join(";") : "Rule updated")
     respond_with(@rule, location: rules_path)
   end
 
   def destroy
-    @rule = Rule.find(params[:id])
+    @rule = authorize(Rule.find(params[:id]))
     @rule.destroy
     notice("Rule deleted")
     respond_with(@rule, location: rules_path)
   end
 
   def order
+    authorize(Rule)
   end
 
   def reorder
+    authorize(Rule)
     return render_expected_error(422, "Error: No rules provided") unless params[:_json].is_a?(Array) && params[:_json].any?
     changes = 0
     Rule.transaction do
@@ -82,6 +84,7 @@ class RulesController < ApplicationController
   end
 
   def builder
+    authorize(Rule)
     render(json: {
       section:   render_to_string(partial: "record_builder/body", locals: { id: "{id}" }, formats: %i[html]),
       quick_mod: QuickRule.order(:order).map { |q| q.slice(:reason, :header).merge(rule: q.rule.anchor) },
@@ -90,10 +93,6 @@ class RulesController < ApplicationController
   end
 
   private
-
-  def rule_params
-    params.require(:rule).permit(%i[name description category_id anchor])
-  end
 
   def load_categories
     @categories = RuleCategory.order(:order)

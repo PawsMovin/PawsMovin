@@ -2,9 +2,8 @@
 
 module Posts
   class VersionsController < ApplicationController
-    before_action :member_only, except: [:index]
     respond_to :html, :json
-    respond_to :js, only: [:undo]
+    respond_to :js, only: %i[undo]
 
     def index
       @post_versions = PostVersion.document_store.search(PostVersion.build_query(search_params)).paginate(params[:page], limit: params[:limit], max_count: 10_000, search_count: params[:search], includes: [:updater, { post: [:versions] }])

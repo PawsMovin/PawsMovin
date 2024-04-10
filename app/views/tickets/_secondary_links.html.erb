@@ -1,10 +1,6 @@
 <% content_for(:secondary_links) do %>
-  <%= subnav_link_to "Listing", tickets_path %>
-  <% unless CurrentUser.is_anonymous? %>
-    <%= subnav_link_to "Mine", tickets_path(search: { creator_id: CurrentUser.id }) %>
-  <% end %>
-  <% if CurrentUser.is_moderator? %>
-  <%= subnav_link_to "Claimed", tickets_path(search: { claimant_id: CurrentUser.id }) %>
-  <% end %>
+  <%= subnav_link_to("Listing", tickets_path) %>
+  <%= subnav_link_to("Mine", tickets_path(search: { creator_id: CurrentUser.id })) %>
+  <%= subnav_link_to_if(policy(Ticket).can_search_attribute?(:claimant_id), "Claimed", tickets_path(search: { claimant_id: CurrentUser.id })) %>
 <% end %>
 <%= latest_link(@tickets) %>

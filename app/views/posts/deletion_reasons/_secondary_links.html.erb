@@ -1,6 +1,4 @@
 <% content_for(:secondary_links) do %>
   <%= subnav_link_to "Listing", post_deletion_reasons_path %>
-  <% if CurrentUser.is_admin? %>
-    <%= subnav_link_to "New", new_post_deletion_reason_path %>
-  <% end %>
+  <%= subnav_link_to_if(policy(PostDeletionReason).create?, "New", new_post_deletion_reason_path) %>
 <% end %>

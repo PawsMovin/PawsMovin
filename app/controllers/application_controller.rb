@@ -15,11 +15,10 @@ class ApplicationController < ActionController::Base
 
   include TitleHelper
   include DeferredPosts
-  helper_method :deferred_post_ids, :deferred_posts
+  include Pundit::Authorization
+  helper_method :deferred_post_ids, :deferred_posts, :search_params, :can_use_attribute?, :can_use_attributes?, :can_use_any_attribute?
 
   rescue_from Exception, with: :rescue_exception
-  rescue_from User::PrivilegeError, with: :access_denied
-  rescue_from ActionController::UnpermittedParameters, with: :access_denied
 
   # This is raised on requests to `/blah.js`. Rails has already rendered StaticController#not_found
   # here, so calling `rescue_exception` would cause a double render error.
@@ -69,6 +68,8 @@ class ApplicationController < ActionController::Base
       render_expected_error(403, "ActionController::InvalidAuthenticityToken. Did you properly authorize your request?")
     when ActiveRecord::RecordNotFound
       render_404
+    when User::PrivilegeError, ActiveSupport::MessageVerifier::InvalidSignature, Pundit::NotAuthorizedError
+      access_denied
     when ActionController::RoutingError
       render_error_page(405, exception)
     when ActionController::UnknownFormat, ActionView::MissingTemplate
@@ -81,7 +82,7 @@ class ApplicationController < ActionController::Base
       render_expected_error(501, "This feature isn't available")
     when PG::ConnectionBad
       render_error_page(503, exception, message: "The database is unavailable. Try again later.")
-    when ActionController::ParameterMissing
+    when ActionController::UnpermittedParameters, ActionController::ParameterMissing
       render_expected_error(400, exception.message)
     when BCrypt::Errors::InvalidHash
       render_expected_error(400, "You must reset your password.")
@@ -121,7 +122,7 @@ class ApplicationController < ActionController::Base
     @backtrace = Rails.backtrace_cleaner.clean(@exception.backtrace)
     format = :html unless format.in?(%i[html json atom])
 
-    if !CurrentUser.user.is_janitor? && message == exception.message
+    if !PawsMovin.config.show_backtrace?(CurrentUser.user, @exception.backtrace) && message == exception.message
       @message = "An unexpected error occurred."
     end
 
@@ -197,6 +198,26 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def pundit_user
+    CurrentUser.user
+  end
+
+  def pundit_params_for(record)
+    key = Pundit::PolicyFinder.new(record).param_key
+    key = record if key == "symbol" && record.is_a?(Symbol)
+    params.fetch(key, {})
+  end
+
+  def can_use_attribute?(object, attr)
+    policy(object).can_use_attribute?(attr, params[:action])
+  end
+
+  def can_use_any_attribute?(object, *attrs)
+    policy(object).can_use_any_attribute?(*attrs, action: params[:action])
+  end
+
+  alias can_use_attributes? can_use_attribute?
+
   # Remove blank `search` params from the url.
   #
   # /tags?search[name]=touhou&search[category]=&search[order]=
@@ -220,8 +241,14 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def search_params
-    params.fetch(:search, {}).permit!
+  def search_params(relation = nil)
+    p = params.fetch(:search, {})
+    return p.permit! if relation.nil? || p.empty?
+    po = policy(relation)
+    if po.respond_to?("permitted_search_params_for_#{action_name}")
+      return p.permit(po.send("permitted_search_params_for_#{action_name}"))
+    end
+    p.permit(po.permitted_search_params)
   end
 
   def permit_search_params(permitted_params)

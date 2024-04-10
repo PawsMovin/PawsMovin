@@ -1,48 +1,46 @@
 # frozen_string_literal: true
 
 class ForumCategoriesController < ApplicationController
-  before_action :admin_only, except: %i[index]
   before_action :load_forum_category, only: %i[edit update destroy]
   respond_to :html, :json
 
   def index
-    @forum_categories = ForumCategory.visible.ordered_categories.paginate(params[:page], limit: 50)
+    @forum_categories = authorize(ForumCategory).visible.ordered_categories.paginate(params[:page], limit: 50)
     respond_with(@forum_categories)
   end
 
   def new
-    @forum_category = ForumCategory.new
+    @forum_category = authorize(ForumCategory.new(permitted_attributes(ForumCategory)))
   end
 
   def create
-    @forum_category = ForumCategory.create(category_params)
-    flash[:notice] = @forum_category.valid? ? "Forum category created" : @forum_category.errors.full_messages.join("; ")
+    @forum_category = authorize(ForumCategory.new(permitted_attributes(ForumCategory)))
+    @forum_category.save
+    notice(@forum_category.valid? ? "Forum category created" : @forum_category.errors.full_messages.join("; "))
     respond_with(@forum_category) do |format|
       format.html { redirect_to(forum_categories_path) }
     end
   end
 
   def destroy
-    @forum_category.destroy
-    flash[:notice] = @forum_category.errors.any? ? @forum_category.errors.full_messages.join("; ") : "Forum category deleted"
-    respond_with(@forum_category) do |format|
-      format.html { redirect_to(forum_categories_path) }
-    end
+    authorize(@forum_category).destroy
+    notice(@forum_category.errors.any? ? @forum_category.errors.full_messages.join("; ") : "Forum category deleted")
+    respond_with(@forum_category, location: forum_categories_path)
   end
 
   def edit
+    authorize(@forum_category)
   end
 
   def update
-    @forum_category.update(category_params)
+    authorize(@forum_category).update(permitted_attributes(ForumCategory))
 
-    flash[:notice] = @forum_category.valid? ? "Category updated" : @forum_category.errors.full_messages.join("; ")
-    respond_with(@forum_category) do |format|
-      format.html { redirect_to(forum_categories_path) }
-    end
+    notice(@forum_category.valid? ? "Category updated" : @forum_category.errors.full_messages.join("; "))
+    respond_with(@forum_category, location: forum_categories_path)
   end
 
   def reorder
+    authorize(ForumCategory)
     new_orders = params[:_json].reject { |o| o[:id].nil? }
     new_ids = new_orders.pluck(:id)
     current_ids = ForumCategory..pluck(:id)
@@ -65,21 +63,15 @@ class ForumCategoriesController < ApplicationController
       end
     end
 
-    if changes != 0
-      ModAction.log!(:forum_categories_reorder, nil, total: changes)
-    end
+    ForumCategory.log_reorder(changes) if changes != 0
 
     respond_to do |format|
-      format.html { redirect_back(fallback_location: forum_categories_path) }
+      format.html { redirect_back(fallback_location: forum_categories_path, notice: "Order updated") }
       format.json
     end
   end
 
   private
-
-  def category_params
-    params.require(:forum_category).permit(%i[name can_create can_reply can_view order])
-  end
 
   def load_forum_category
     @forum_category = ForumCategory.find(params[:id])

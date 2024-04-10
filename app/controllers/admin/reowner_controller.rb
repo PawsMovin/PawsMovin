@@ -2,13 +2,13 @@
 
 module Admin
   class ReownerController < ApplicationController
-    before_action :owner_only
-
     def new
+      authorize(:reowner)
     end
 
     def create
-      @reowner_params = new_params
+      authorize(:reowner)
+      @reowner_params = permitted_attributes(:reowner)
       @old_user = User.find_by_name_or_id(@reowner_params[:old_owner])
       @new_user = User.find_by_name_or_id(@reowner_params[:new_owner])
       query = @reowner_params[:search]
@@ -32,12 +32,6 @@ module Admin
       StaffAuditLog.log(:post_owner_reassign, CurrentUser.user, new_user_id: @new_user.id, old_user_id: @old_user.id, query: query, post_ids: moved_post_ids)
       flash[:notice] = "Post ownership reassigned"
       redirect_back(fallback_location: new_admin_reowner_path)
-    end
-
-    private
-
-    def new_params
-      params.require(:reowner).permit(%i[old_owner search new_owner])
     end
   end
 end

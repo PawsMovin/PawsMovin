@@ -1,6 +1,4 @@
 <% content_for(:secondary_links) do %>
   <%= subnav_link_to "Listing", mascots_path %>
-  <% if CurrentUser.user.is_admin? %>
-    <%= subnav_link_to "New", new_mascot_path %>
-  <% end %>
+  <%= subnav_link_to_if(policy(Mascot).create?, "New", new_mascot_path) %>
 <% end %>

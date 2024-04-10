@@ -1,23 +1,16 @@
 # frozen_string_literal: true
 
 class TagsController < ApplicationController
-  before_action :member_only, only: %i[edit update preview]
-  before_action :janitor_only, only: %i[correct]
   respond_to :html, :json
 
-  def edit
-    @tag = Tag.find(params[:id])
-    check_privilege(@tag)
-    respond_with(@tag)
-  end
-
   def index
-    @tags = Tag.search(search_params).paginate(params[:page], limit: params[:limit], search_count: params[:search])
+    @tags = authorize(Tag).search(search_params(Tag)).paginate(params[:page], limit: params[:limit], search_count: params[:search])
 
     respond_with(@tags)
   end
 
   def preview
+    authorize(Tag)
     @preview = TagsPreview.new(tags: params[:tags])
     respond_to do |format|
       format.json do
@@ -32,17 +25,23 @@ class TagsController < ApplicationController
     else
       @tag = Tag.find_by!(name: params[:id])
     end
+    authorize(@tag)
+    respond_with(@tag)
+  end
+
+  def edit
+    @tag = authorize(Tag.find(params[:id]))
     respond_with(@tag)
   end
 
   def update
-    @tag = Tag.find(params[:id])
-    check_privilege(@tag)
-    @tag.update(tag_params)
+    @tag = authorize(Tag.find(params[:id]))
+    @tag.update(permitted_attributes(@tag))
     respond_with(@tag)
   end
 
   def correct
+    authorize(Tag)
     @correction = TagCorrection.new(params[:id])
     @correction.fix!
 
@@ -53,21 +52,9 @@ class TagsController < ApplicationController
   end
 
   def meta_search
+    authorize(Tag)
     @meta_search = MetaSearches::Tag.new(params)
     @meta_search.load_all
     respond_with(@meta_search)
-  end
-
-  private
-
-  def check_privilege(tag)
-    raise(User::PrivilegeError) unless tag.category_editable_by?(CurrentUser.user)
-  end
-
-  def tag_params
-    permitted_params = [:category]
-    permitted_params << :is_locked if CurrentUser.is_admin?
-
-    params.require(:tag).permit(permitted_params)
   end
 end

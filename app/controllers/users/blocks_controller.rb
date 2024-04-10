@@ -2,27 +2,28 @@
 
 module Users
   class BlocksController < ApplicationController
-    before_action :member_only
     before_action :load_user
-    before_action :check_privilege, except: %i[index]
     respond_to :html, :json
 
     def index
-      raise(User::PrivilegeError) if @user != CurrentUser.user && !CurrentUser.is_admin?
+      authorize(@user, policy_class: UserBlockPolicy)
       @blocks = UserBlock.where(user_id: params[:user_id]).paginate(params[:page], limit: params[:limit])
       respond_with(@blocks)
     end
 
     def new
-      @block = UserBlock.new(block_params(:create))
+      authorize(@user, policy_class: UserBlockPolicy)
+      @block = UserBlock.new(permitted_attributes(UserBlock))
     end
 
     def edit
+      authorize(@user, policy_class: UserBlockPolicy)
       @block = UserBlock.find(params[:id])
     end
 
     def create
-      @block = @user.blocks.create(block_params(:create))
+      authorize(@user, policy_class: UserBlockPolicy)
+      @block = @user.blocks.create(permitted_attributes(UserBlock))
       respond_with(@block, location: user_blocks_path(@user)) do |format|
         format.html do
           flash[:notice] = @block.errors.any? ? "Failed to block user: #{@block.errors.full_messages.join('; ')}" : "Successfully blocked @#{@block.target_name}"
@@ -32,8 +33,9 @@ module Users
     end
 
     def update
+      authorize(@user, policy_class: UserBlockPolicy)
       @block = UserBlock.find(params[:id])
-      @block.update(block_params)
+      @block.update(permitted_attributes(@block))
       respond_with(@block, location: user_blocks_path(@user)) do |format|
         format.html do
           flash[:notice] = @block.errors.any? ? "Failed to update block: #{@block.errors.full_messages.join('; ')}" : "Block for @#{@block.target_name} updated"
@@ -43,6 +45,7 @@ module Users
     end
 
     def destroy
+      authorize(@user, policy_class: UserBlockPolicy)
       @block = UserBlock.find(params[:id])
       @block.destroy
       respond_with(@block) do |format|
@@ -53,20 +56,8 @@ module Users
       end
     end
 
-    private
-
-    def block_params(context = nil)
-      permitted_params = %i[hide_uploads hide_comments hide_forum_topics hide_forum_posts disable_messages]
-      permitted_params += %i[target_id target_name] if context == :create
-      params.fetch(:user_block, {}).permit(permitted_params)
-    end
-
     def load_user
       @user = User.find(params[:user_id])
-    end
-
-    def check_privilege
-      raise(User::PrivilegeError) if @user != CurrentUser.user
     end
   end
 end

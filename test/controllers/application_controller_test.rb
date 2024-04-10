@@ -49,20 +49,20 @@ class ApplicationControllerTest < ActionDispatch::IntegrationTest
       context "using http basic auth" do
         should "succeed for api key matches" do
           basic_auth_string = "Basic #{::Base64.encode64("#{@user.name}:#{@api_key.key}")}"
-          get edit_user_path(@user), headers: { HTTP_AUTHORIZATION: basic_auth_string }
+          get edit_users_path, headers: { HTTP_AUTHORIZATION: basic_auth_string }
           assert_response :success
         end
 
         should "fail for api key mismatches" do
           basic_auth_string = "Basic #{::Base64.encode64("#{@user.name}:badpassword")}"
-          get edit_user_path(@user), headers: { HTTP_AUTHORIZATION: basic_auth_string }
+          get edit_users_path, headers: { HTTP_AUTHORIZATION: basic_auth_string }
           assert_response 401
         end
 
         should "succeed for non-GET requests without a CSRF token" do
           assert_changes -> { @user.reload.enable_safe_mode }, from: false, to: true do
             basic_auth_string = "Basic #{::Base64.encode64("#{@user.name}:#{@api_key.key}")}"
-            put user_path(@user), headers: { HTTP_AUTHORIZATION: basic_auth_string }, params: { user: { enable_safe_mode: "true" } }, as: :json
+            put update_users_path, headers: { HTTP_AUTHORIZATION: basic_auth_string }, params: { user: { enable_safe_mode: "true" } }, as: :json
             assert_response :success
           end
         end
@@ -70,24 +70,24 @@ class ApplicationControllerTest < ActionDispatch::IntegrationTest
 
       context "using the api_key parameter" do
         should "succeed for api key matches" do
-          get edit_user_path(@user), params: { login: @user.name, api_key: @api_key.key }
+          get edit_users_path, params: { login: @user.name, api_key: @api_key.key }
           assert_response :success
         end
 
         should "fail for api key mismatches" do
-          get edit_user_path(@user), params: { login: @user.name }
+          get edit_users_path, params: { login: @user.name }
           assert_response 401
 
-          get edit_user_path(@user), params: { api_key: @api_key.key }
+          get edit_users_path, params: { api_key: @api_key.key }
           assert_response 401
 
-          get edit_user_path(@user), params: { login: @user.name, api_key: "bad" }
+          get edit_users_path, params: { login: @user.name, api_key: "bad" }
           assert_response 401
         end
 
         should "succeed for non-GET requests without a CSRF token" do
           assert_changes -> { @user.reload.enable_safe_mode }, from: false, to: true do
-            put user_path(@user), params: { login: @user.name, api_key: @api_key.key, user: { enable_safe_mode: "true" } }, as: :json
+            put update_users_path, params: { login: @user.name, api_key: @api_key.key, user: { enable_safe_mode: "true" } }, as: :json
             assert_response :success
           end
         end
@@ -95,8 +95,8 @@ class ApplicationControllerTest < ActionDispatch::IntegrationTest
 
       context "without any authentication" do
         should "redirect to the login page" do
-          get edit_user_path(@user)
-          assert_redirected_to new_session_path(url: edit_user_path(@user))
+          get edit_users_path
+          assert_redirected_to new_session_path(url: edit_users_path)
         end
       end
 
@@ -112,7 +112,7 @@ class ApplicationControllerTest < ActionDispatch::IntegrationTest
           assert_redirected_to posts_path
 
           # try to submit a form with cookies but without the csrf token
-          put user_path(@user), headers: { HTTP_COOKIE: headers["Set-Cookie"] }, params: { user: { enable_safe_mode: "true" } }
+          put update_users_path, headers: { HTTP_COOKIE: headers["Set-Cookie"] }, params: { user: { enable_safe_mode: "true" } }
           assert_response 403
           assert_match(/ActionController::InvalidAuthenticityToken/, css_select("p").first.content)
           assert_equal(false, @user.reload.enable_safe_mode)
@@ -125,7 +125,7 @@ class ApplicationControllerTest < ActionDispatch::IntegrationTest
         user = create(:user, password: "password")
 
         post session_path, params: { session: { name: user.name, password: "password" } }
-        get edit_user_path(user)
+        get edit_users_path
 
         assert_response :success
       end

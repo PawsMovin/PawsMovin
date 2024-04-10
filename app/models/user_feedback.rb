@@ -102,4 +102,8 @@ class UserFeedback < ApplicationRecord
   def editable_by?(editor)
     editor.is_moderator? && editor != user
   end
+
+  def deletable_by?(deleter)
+    deleter.is_moderator? && deleter != user
+  end
 end

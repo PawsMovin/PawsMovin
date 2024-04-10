@@ -36,7 +36,7 @@ class StaticController < ApplicationController
   def theme
   end
 
-  def disable_mobile_mode
+  def toggle_mobile_mode
     if CurrentUser.is_member?
       user = CurrentUser.user
       user.disable_responsive_mode = !user.disable_responsive_mode
@@ -54,7 +54,6 @@ class StaticController < ApplicationController
   def discord
     unless CurrentUser.can_discord?
       raise(User::PrivilegeError.new("You must have an account for at least one week in order to join the Discord server."))
-      return
     end
     if request.post?
       time = (Time.now + 5.minute).to_i

@@ -20,17 +20,21 @@ module ApplicationHelper
       klass = "#{klass} current"
     end
 
-    li_link_to(text, url, id_prefix: "nav-", class: klass, **options)
+    li_link_to_id(text, url, id_prefix: "nav-", class: klass, **options)
   end
 
   def subnav_link_to(text, url, **)
-    li_link_to(text, url, id_prefix: "subnav-", **)
+    li_link_to_id(text, url, id_prefix: "subnav-", **)
   end
 
-  def li_link_to(text, url, id_prefix: "", li_options: {}, **options)
+  def li_link_to(text, url, li_options: {}, **options)
     klass = options.delete(:class)
+    tag.li(link_to(text, url, **options), class: klass, **li_options)
+  end
+
+  def li_link_to_id(text, url, id_prefix: "", li_options: {}, **)
     id = id_prefix + text.downcase.gsub(/[^a-z ]/, "").parameterize
-    tag.li(link_to(text, url, id: "#{id}-link", **options), id: id, class: klass, **li_options)
+    li_link_to(text, url, li_options: { **li_options, id: id }, **, id: "#{id}-link")
   end
 
   def dtext_ragel(text, **)

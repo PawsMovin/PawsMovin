@@ -1,7 +1,7 @@
 <%# locals: (record:) -%>
 
 <% advanced = %w[ForumPost].include?(record.model_name.name) %>
-<% always_show_edits = advanced && CurrentUser.is_moderator? %>
+<% always_show_edits = advanced && CurrentUser.user.is_moderator? %>
 <% timestamp = advanced ? record.edited_at : record.updated_at %>
 
 <% if (advanced && record.edited_at.present?) || !advanced %>

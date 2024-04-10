@@ -1,4 +1,4 @@
-<%= form_search path: path do |f| %>
+<%= form_search(path: path, policy: policy(Takedown)) do |f| %>
   <%= f.input(:status, label: "Status", collection: [
     %w[Pending pending],
     %w[Inactive inactive],
@@ -6,29 +6,26 @@
     ["Partially Approved", "partial"],
     %w[Approved approved]
   ], include_blank: true) %>
-  <% if CurrentUser.is_janitor? %>
-    <%= f.input(:source, label: "Source") %>
-    <%= f.input(:reason, label: "Reason") %>
-    <%= f.input(:notes, label: "Admin Response") %>
-    <%= f.input(:reason_hidden, label: "Reason hidden?", collection: [
-      %w[Yes true],
-      %w[No false],
-    ], include_blank: true) %>
-    <%= f.input(:instructions, label: "Instructions") %>
-    <%= f.input(:post_id, label: "Post ID") %>
-  <% end %>
-  <% if CurrentUser.can_handle_takedowns? %>
-    <%= f.input(:email, label: "Email") %>
-    <%= f.input(:ip_addr, label: "IP Address") %>
-    <%= f.input(:vericode, label: "Vericode") %>
+  <% tp = policy(Takedown) %>
+  <%= f.input(:source, label: "Source")%>
+  <%= f.input(:reason, label: "Reason")%>
+  <%= f.input(:notes, label: "Admin Response")%>
+  <%= f.input(:reason_hidden, label: "Reason hidden?", collection: [
+    %w[Yes true],
+    %w[No false],
+  ], include_blank: true)%>
+  <%= f.input(:instructions, label: "Instructions")%>
+  <%= f.input(:post_id, label: "Post ID") %>
+  <%= f.input(:email, label: "Email") %>
+  <%= f.input(:ip_addr, label: "IP Address") %>
+  <%= f.input(:vericode, label: "Vericode") %>
 
-    <%= f.input(:order, label: "Order", collection: [
-      %w[Date date],
-      %w[Source source],
-      %w[Email email],
-      ["IP Address", "ip_addr"],
-      %w[Status status],
-      ["Post count", "post_count"]
-    ]) %>
-  <% end %>
+  <%= f.input(:order, label: "Order", collection: [
+    %w[Date date],
+    %w[Source source],
+    %w[Email email],
+    ["IP Address", "ip_addr"],
+    %w[Status status],
+    ["Post count", "post_count"]
+  ]) %>
 <% end %>

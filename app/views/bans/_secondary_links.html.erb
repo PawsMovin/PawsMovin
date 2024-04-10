@@ -1,21 +1,21 @@
 <% if @ban %>
   <% user_id = @ban.user_id %>
-<% elsif params[:search] && params[:search][:user_id] %>
-  <% user_id = params[:search][:user_id] %>
+<% elsif params.dig(:search, :user_id) %>
+  <% user_id = params.dig(:search, :user_id) %>
 <% end %>
 <% content_for(:secondary_links) do %>
   <%= subnav_link_to "Listing", bans_path %>
-  <% if CurrentUser.is_moderator? %>
+  <% if policy(Ban).create? %>
     <% if user_id %>
-      <%= subnav_link_to "Ban", new_ban_path(ban: { user_id: user_id }) %>
+      <%= subnav_link_to "New", new_ban_path(ban: { user_id: user_id }) %>
     <% else %>
-      <%= subnav_link_to "Ban", new_ban_path %>
+      <%= subnav_link_to "New", new_ban_path %>
     <% end %>
   <% end %>
   <% if user_id %>
     <%= subnav_link_to "User", user_path(user_id) %>
   <% end %>
-  <% if @ban&.id %>
+  <% if @ban&.id && policy(@ban).update? %>
     |
     <%= subnav_link_to "Edit", edit_ban_path(@ban) %>
   <% end %>

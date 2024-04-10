@@ -24,7 +24,7 @@
       <td><%= compact_time edit.updated_at %></td>
       <td>
         <h6><%= link_to_user edit.user %></h6>
-        <% if CurrentUser.is_admin? %>
+        <% if policy(edit).can_see_ip_addr? %>
           <%= link_to_ip edit.ip_addr %>
         <% end %>
       </td>

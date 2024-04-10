@@ -129,12 +129,18 @@ class Ban < ApplicationRecord
     ApplicationController.helpers.time_ago_in_words(expires_at)
   end
 
+  def expire_days_tagged
+    return "never" if expires_at == nil
+    ApplicationController.helpers.time_ago_in_words_tagged(expires_at)
+  end
+
   def expired?
     expires_at != nil && expires_at < Time.now
   end
 
   def create_feedback
-    user.feedback.create(category: "negative", body: "Banned for #{humanized_duration}: #{reason}")
+    time = expires_at == nil ? "permanently" : "for #{humanized_duration}"
+    user.feedback.create(category: "negative", body: "Banned #{time}: #{reason}")
   end
 
   module LogMethods

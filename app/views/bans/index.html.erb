@@ -11,7 +11,9 @@
       <th>Duration</th>
       <th>Expiration</th>
       <th>Reason</th>
-      <th></th>
+      <% if policy(Ban).all?(:update, :destroy?) %>
+        <th></th>
+      <% end %>
     </tr>
   </thead>
   <tbody>
@@ -19,22 +21,22 @@
       <tr id="ban-<%= ban.id %>" data-expired="<%= ban.expired? %>">
         <td>
           <%= link_to_user(ban.user) %>
-          <%= link_to "»", bans_path(search: search_params.merge(user_name: ban.user.name)) %>
+          <%= link_to "»", bans_path(search: search_params(ban).merge(user_name: ban.user.name)) %>
         </td>
         <td>
           <%= link_to_user(ban.banner) %>
-          <%= link_to "»", bans_path(search: search_params.merge(banner_name: ban.banner.name)) %>
+          <%= link_to "»", bans_path(search: search_params(ban).merge(banner_name: ban.banner.name)) %>
         </td>
         <td><%= time_ago_in_words_tagged(ban.created_at) %></td>
         <td><%= ban.humanized_duration %></td>
-        <td><%= ban.humanized_expiration %></td>
+        <td><%= ban.expire_days_tagged %></td>
         <td class="col-expand dtext-container"><%= format_text ban.reason %></td>
-        <td>
-          <% if CurrentUser.is_moderator? %>
-            <%= link_to "Edit", edit_ban_path(ban) %>
-            | <%= link_to "Delete", ban_path(ban), method: :delete, data: { confirm: "Are you sure you want to delete this ban?" } %>
-          <% end %>
-        </td>
+        <% if policy(ban).all?(:update, :destroy?) %>
+          <td>
+              <%= link_to "Edit", edit_ban_path(ban) %>
+              | <%= link_to "Delete", ban_path(ban), method: :delete, data: { confirm: "Are you sure you want to delete this ban?" } %>
+          </td>
+        <% end %>
       </tr>
     <% end %>
   </tbody>

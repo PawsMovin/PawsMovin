@@ -1,10 +1,11 @@
-<%= form_search path: tickets_path do |f| %>
-  <% if CurrentUser.is_moderator? %>
-    <%= f.user(:creator, label: "Reporter") %>
-    <%= f.user(:accused) %>
-    <%= f.user(:claimant) %>
-    <%= f.input(:reason) %>
-  <% end %>
+<% allow_creator = CurrentUser.user.is_moderator? %>
+<% allow_creator ||= params.dig(:search, :creator_id).to_i == CurrentUser.user.id %>
+<% allow_creator ||= params.dig(:search, :creator_name)&.downcase == CurrentUser.user.name %>
+<%= form_search(path: tickets_path, policy: policy(Ticket)) do |f| %>
+  <%= f.user(:creator, label: "Reporter", policy: SearchOverwritePolicy.new(allow_creator)) %>
+  <%= f.user(:accused) %>
+  <%= f.user(:claimant) %>
+  <%= f.input(:reason) %>
   <%= f.input(:model_type, label: "Type", collection: Ticket::MODEL_TYPES.index_by { |k| k }.to_a, include_blank: true) %>
   <%= f.input(:status, collection: [
     ["Pending + Unclaimed", "pending_unclaimed"],

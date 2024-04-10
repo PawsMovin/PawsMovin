@@ -9,7 +9,7 @@
 
           <th>Title</th>
           <th>View</th>
-          <% if CurrentUser.is_admin? %>
+          <% if policy(WikiPageVersion).can_see_ip_addr? %>
             <th>IP Address</th>
           <% end %>
           <th>Last edited</th>
@@ -33,7 +33,7 @@
               <%= link_to wiki_page_version.title, wiki_page_version_path(wiki_page_version) %>
             </td>
             <td><%= link_to "view version", wiki_page_version_path(wiki_page_version) %></td>
-            <% if CurrentUser.is_admin? %>
+            <% if policy(wiki_page_version).can_see_ip_addr? %>
               <td>
                 <%= link_to_ip wiki_page_version.updater_ip_addr %>
               </td>

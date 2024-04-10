@@ -1,61 +1,50 @@
 # frozen_string_literal: true
 
 class BansController < ApplicationController
-  before_action :moderator_only, except: %i[show index]
   respond_to :html
-  helper_method :search_params
-
-  def new
-    @ban = Ban.new(ban_params(:create))
-  end
-
-  def edit
-    @ban = Ban.find(params[:id])
-  end
+  respond_to :json, except: %i[new create edit update destroy]
 
   def index
-    @bans = Ban.search(search_params).paginate(params[:page], limit: params[:limit])
+    @bans = authorize(Ban).search(search_params(Ban)).paginate(params[:page], limit: params[:limit])
     respond_with(@bans) do |fmt|
       fmt.html { @bans = @bans.includes(:user, :banner) }
     end
   end
 
+  def new
+    @ban = authorize(Ban.new(permitted_attributes(Ban)))
+  end
+
+  def edit
+    @ban = authorize(Ban.find(params[:id]))
+  end
+
   def show
-    @ban = Ban.find(params[:id])
+    @ban = authorize(Ban.find(params[:id]))
     respond_with(@ban)
   end
 
   def create
-    @ban = Ban.create(ban_params(:create))
+    @ban = authorize(Ban.new(permitted_attributes(Ban)))
+    @ban.save
 
-    if @ban.errors.any?
-      render(action: "new")
-    else
-      redirect_to(ban_path(@ban), notice: "Ban created")
-    end
+    notice("Ban created") if @ban.valid?
+    respond_with(@ban)
   end
 
   def update
-    @ban = Ban.find(params[:id])
-    if @ban.update(ban_params(:update))
-      redirect_to(ban_path(@ban), notice: "Ban updated")
-    else
-      render(action: "edit")
-    end
+    @ban = authorize(Ban.find(params[:id]))
+    @ban.update(permitted_attributes(@ban))
+
+    notice("Ban updated") if @ban.valid?
+    respond_with(@ban)
   end
 
   def destroy
-    @ban = Ban.find(params[:id])
+    @ban = authorize(Ban.find(params[:id]))
     @ban.destroy
-    redirect_to(bans_path, notice: "Ban destroyed")
-  end
 
-  private
-
-  def ban_params(context)
-    permitted_params = %i[reason duration expires_at is_permaban]
-    permitted_params += %i[user_id user_name] if context == :create
-
-    params.fetch(:ban, {}).permit(permitted_params)
+    notice("Ban destroyed")
+    respond_with(@ban)
   end
 end

@@ -1,29 +1,22 @@
 <div id="form-content">
   <%= error_messages_for("wiki_page") %>
 
-  <%= custom_form_for(@wiki_page) do |f| %>
+  <%= custom_form_for(@wiki_page, policy: policy(@wiki_page)) do |f| %>
     <% if @wiki_page.new_record? %>
       <%= f.input(:title, error: false, autocomplete: "tag") %>
-    <% elsif CurrentUser.is_janitor? %>
+    <% elsif f.policy.can_use_attribute?(:title, params[:action]) %>
       <%= f.input(:title, error: false, autocomplete: "tag", hint: "Change to rename this wiki page. Move the tag and update any wikis linking to this page first.") %>
     <% else %>
       <h1 id="wiki-page-title"><%= @wiki_page.pretty_title %></h1>
     <% end %>
 
     <%= f.input(:body, as: :dtext, limit: PawsMovin.config.wiki_page_max_size) %>
-
-    <% if CurrentUser.is_trusted? %>
-      <%= f.input(:parent, label: "Redirect to", autocomplete: "wiki-page") %>
-    <% end %>
-
-    <% if CurrentUser.is_janitor? %>
-      <%= f.input(:is_locked, label: "Locked") %>
-    <% end %>
-
+    <%= f.input(:parent, label: "Redirect to", autocomplete: "wiki-page") %>
+    <%= f.input(:is_locked, label: "Locked") %>
     <%= f.input(:edit_reason, label: "Edit Reason") %>
 
-    <% if @wiki_page.errors[:title].present?  %>
-      <%= f.input(:skip_secondary_validations, as: :boolean, label: "Force rename", hint: "Ignore the renaming requirements") %>
+    <% if @wiki_page.post_count_rename_error?  %>
+      <%= f.input(:skip_post_count_rename_check, as: :boolean, label: "Force Rename", hint: "Ignore the requirement to move posts before renaming") %>
     <% end %>
 
     <%= f.button(:submit, "Submit") %>

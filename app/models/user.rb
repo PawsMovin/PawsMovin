@@ -544,10 +544,6 @@ class User < ApplicationRecord
       is_owner?
     end
 
-    def can_undo_post_versions?
-      is_member?
-    end
-
     def can_revert_post_versions?
       is_member?
     end

@@ -21,18 +21,16 @@
     <%= render "posts/partials/show/options", post: @post %>
   </section>
 
-  <% if CurrentUser.is_member? %>
-    <section id="post-history">
-      <h1>History</h1>
-      <ul>
-        <li><%= link_to "Tags/Desc", post_versions_path(search: { post_id: @post.id }) %></li>
-        <li><%= link_to "Notes", note_versions_path(search: { post_id: @post.id }) %></li>
-        <li><%= link_to "Events", post_events_path(search: { post_id: @post.id }) %></li>
-        <li><%= link_to "Replacements", post_replacements_path(search: { post_id: @post.id }) %></li>
-      </ul>
-    </section>
+  <section id="post-history">
+    <h1>History</h1>
+    <ul>
+      <li><%= link_to "Tags/Desc", post_versions_path(search: { post_id: @post.id }) %></li>
+      <li><%= link_to "Notes", note_versions_path(search: { post_id: @post.id }) %></li>
+      <li><%= link_to "Events", post_events_path(search: { post_id: @post.id }) %></li>
+      <li><%= link_to "Replacements", post_replacements_path(search: { post_id: @post.id }) %></li>
+    </ul>
+  </section>
 
-  <% end %>
 
   <% if @post.visible? %>
     <section id="post-related-images">
@@ -66,7 +64,7 @@
     <% end %>
 
     <div id="post-notices-top">
-      <% if CurrentUser.is_janitor? %>
+      <% if CurrentUser.user.is_janitor? %>
         <%= render "posts/partials/show/notices", post: @post %>
       <% end %>
     </div>
@@ -93,7 +91,7 @@
 
   <section id="image-extra-controls">
 
-    <% if CurrentUser.is_member? %>
+    <% if CurrentUser.user.is_member? %>
       <div id="image-vote-buttons">
         <%= post_vote_block(@post, @post.own_vote, buttons: true) %>
       </div>
@@ -151,7 +149,7 @@
     <% unless CurrentUser.move_related_thumbnails? %>
       <%= render "posts/partials/show/parent_children", post: @post, parent_post_set: @parent_post_set, children_post_set: @children_post_set %>
     <% end %>
-    <% unless CurrentUser.is_janitor? %>
+    <% unless CurrentUser.user.is_janitor? %>
       <%= render "posts/partials/show/notices", post: @post %>
     <% end %>
   </div>
@@ -198,7 +196,7 @@
     <% unless CurrentUser.hide_comments? %>
       <li class="active"><a href="#comments">Comments</a></li>
     <% end %>
-    <% if CurrentUser.is_member? %>
+    <% if policy(@post).update? %>
       <li><a href="#edit" id="post-edit-link" data-shortcut="e">Edit</a></li>
     <% end %>
   </menu>
@@ -224,20 +222,24 @@
     <% end %>
   </section>
 
-  <% if CurrentUser.is_member? %>
+  <% if policy(@post).update? %>
     <section id="edit" style="display: none;">
       <%= render "posts/partials/show/edit", post: @post %>
     </section>
   <% end %>
 </section>
 
-<% if CurrentUser.is_member? %>
-  <div id="add-to-pool-dialog" title="Add to pool" style="display: none;">
-    <%= render "pools/add_dialogue" %>
-  </div>
-  <div id="add-to-set-dialog" title="Add to set" style="display: none;">
-    <%= render "post_sets/add_dialog" %>
-  </div>
+<% if policy(@post).add_to_pool? %>
+    <div id="add-to-pool-dialog" title="Add to pool" style="display: none;">
+      <%= render "pools/add_dialogue" %>
+    </div>
+  <% end %>
+  <% if PostSetPolicy.new(CurrentUser.user, nil).add_posts? %>
+    <div id="add-to-set-dialog" title="Add to set" style="display: none;">
+      <%= render "post_sets/add_dialog" %>
+    </div>
+  <% end %>
+  <% if CurrentUser.user.is_member? %>
   <%= javascript_tag nonce: true do -%>
     var uploaderSettings = {
       postTags: <%= (@post.presenter.split_tag_list_text + " ").to_json.html_safe %>,

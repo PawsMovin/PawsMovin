@@ -2,28 +2,26 @@
 
 module Users
   class NameChangeRequestsController < ApplicationController
-    before_action :member_only, only: %i[new create show]
-    before_action :moderator_only, only: :index
     respond_to :html, :json
 
     def index
-      @change_requests = UserNameChangeRequest.search(search_params).paginate(params[:page], limit: params[:limit])
+      @change_requests = authorize(UserNameChangeRequest).search(search_params).paginate(params[:page], limit: params[:limit])
       respond_with(@change_requests)
     end
 
     def show
-      @change_request = UserNameChangeRequest.find(params[:id])
-      check_privileges!(@change_request)
+      @change_request = authorize(UserNameChangeRequest.find(params[:id]))
       respond_with(@change_request)
     end
 
     def new
-      @change_request = UserNameChangeRequest.new(change_request_params)
+      @change_request = authorize(UserNameChangeRequest.new(permitted_attributes(UserNameChangeRequest)))
       respond_with(@change_request)
     end
 
     def create
-      @change_request = UserNameChangeRequest.create(change_request_params)
+      @change_request = authorize(UserNameChangeRequest.new(permitted_attributes(UserNameChangeRequest)))
+      @change_request.save
 
       if @change_request.errors.any?
         render(action: "new")
@@ -31,17 +29,6 @@ module Users
         @change_request.approve!
         redirect_to(user_name_change_request_path(@change_request), notice: "Your name has been changed")
       end
-    end
-
-    private
-
-    def check_privileges!(change_request)
-      return if CurrentUser.is_moderator?
-      raise(User::PrivilegeError) if change_request.user_id != CurrentUser.user.id
-    end
-
-    def change_request_params
-      params.fetch(:user_name_change_request, {}).permit(%i[desired_name change_reason])
     end
   end
 end

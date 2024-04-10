@@ -1,7 +1,7 @@
 <%= render "sidebar", help_pages: @help_pages %>
 <%= render partial: "secondary_links" %>
 
-<% if CurrentUser.is_admin? %>
+<% if policy(HelpPage).all?(:create?, :update?, :destroy?) %>
   <section id="content">
     <h2>Help Entries</h2>
     <div>

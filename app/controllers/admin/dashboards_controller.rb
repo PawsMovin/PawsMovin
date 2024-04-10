@@ -2,10 +2,8 @@
 
 module Admin
   class DashboardsController < ApplicationController
-    before_action :admin_only
-
     def show
-      @dashboard = AdminDashboard.new
+      @dashboard = authorize(AdminDashboard.new)
     end
   end
 end

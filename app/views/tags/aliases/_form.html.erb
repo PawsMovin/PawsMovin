@@ -9,7 +9,7 @@
     <%= f.input(:forum_topic_id, as: :string, hint: " (optional)") %>
   <% end %>
 
-  <% if tag_alias.new_record? && CurrentUser.is_admin? %>
+  <% if tag_alias.new_record? && can_use_attribute?(tag_alias, :skip_forum) %>
     <%= f.input(:skip_forum, as: :boolean, label: "Skip forum topic creation") %>
   <% end %>
   <%= f.button(:submit, "Submit") %>

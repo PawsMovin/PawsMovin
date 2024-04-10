@@ -49,8 +49,13 @@ class UserTextVersion < ApplicationRecord
   end
 
   def self.allowed_for?(user, type)
-    return true if type != :blacklist || user.is_admin?
-    false
+    return policy(user).blacklist? if type == :blacklist
+    true
+  end
+
+  def allowed_for?(user, type)
+    return policy(user).blacklist? if type == :blacklist
+    UserTextVersion.allowed_for?(user, type)
   end
 
   def has_previous?
@@ -80,14 +85,10 @@ class UserTextVersion < ApplicationRecord
 
   def changes_from(version, user)
     changes = []
-    changes << :about if about_text != version.about_text
-    changes << :artinfo if artinfo_text != version.artinfo_text
-    changes << :blacklist if blacklist_text != version.blacklist_text && can_see_blacklist?(user)
+    changes << :about if about_text != version.about_text && allowed_for?(user, :about)
+    changes << :artinfo if artinfo_text != version.artinfo_text && allowed_for?(user, :artinfo)
+    changes << :blacklist if blacklist_text != version.blacklist_text && allowed_for?(user, :blacklist)
     changes
-  end
-
-  def can_see_blacklist?(user)
-    user.is_admin? || self.user.id == user.id
   end
 
   def show_about?

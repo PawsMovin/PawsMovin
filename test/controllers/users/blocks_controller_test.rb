@@ -127,7 +127,7 @@ module Users
 
           should "not allow editing target" do
             put_auth user_block_path(@user, @block), @user, params: { user_block: { target_id: @admin.id, hide_comments: true }, format: :json }
-            assert_response :forbidden
+            assert_response :bad_request
 
             assert_equal(@user2, @block.reload.target)
           end
@@ -164,7 +164,7 @@ module Users
 
           should "not allow editing target" do
             put_auth user_block_path(@admin, @block), @admin, params: { user_block: { target_id: @user2.id, hide_comments: true }, format: :json }
-            assert_response :forbidden
+            assert_response :bad_request
 
             assert_equal(@user, @block.reload.target)
           end

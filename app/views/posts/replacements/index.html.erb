@@ -79,9 +79,7 @@
                 <% if CurrentUser.can_approve_posts? %>
                   | penalized: <span class="penalized-status"><%= post_replacement.penalize_uploader_on_approve ? "yes" : "no" %></span>
                 <% end %>
-                <% if CurrentUser.can_approve_posts? %>
-                  <%= link_to "toggle", "#toggle", class: "replacement-toggle-penalize-action", data: { replacement_id: post_replacement.id } %><br>
-                <% end %>
+                <%= link_to_if(policy(post_replacement).toggle_penalize?, "toggle", "#toggle", class: "replacement-toggle-penalize-action", data: { replacement_id: post_replacement.id }) { "" } %><br>
               </dd>
               <dt>Approver</dt>
               <dd><%= link_to_user post_replacement.approver %></dd>
@@ -115,9 +113,7 @@
               <%= link_to "Reset To", "#approve", class: "replacement-approve-action", data: { replacement_id: post_replacement.id, penalize: false } %><br>
             <% end %>
           <% end %>
-          <% if CurrentUser.is_admin? %>
-            <%= link_to "Destroy", post_replacement_path(post_replacement), "method": :DELETE, 'data-confirm': "Are you sure you want to destroy this replacement?" %>
-          <% end %>
+          <%= link_to_if(policy(post_replacement).destroy?, "Destroy", post_replacement_path(post_replacement), "method": :delete, 'data-confirm': "Are you sure you want to destroy this replacement?") { "" } %>
         </td>
       </tr>
     <% end %>

@@ -1,4 +1,4 @@
-<% if CurrentUser.is_admin? %>
+<% if ModeratorDashboardPolicy.new(CurrentUser.user, nil).can_search_ip_addr? %>
   <div id="ip-addr-search">
     <%= render "search_ip_addr" %>
   </div>

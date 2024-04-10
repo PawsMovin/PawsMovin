@@ -48,6 +48,14 @@ class ForumPost < ApplicationRecord
       where("forum_posts.creator_id = ?", user_id)
     end
 
+    def visible(user)
+      if user.is_moderator?
+        permitted
+      else
+        permitted.active
+      end
+    end
+
     def active
       where("(forum_posts.is_hidden = false or forum_posts.creator_id = ?)", CurrentUser.id)
     end

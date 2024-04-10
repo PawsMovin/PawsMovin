@@ -1,16 +1,15 @@
 <% content_for(:secondary_links) do %>
   <%= subnav_link_to "Listing", posts_path %>
-  <%= subnav_link_to "Upload", new_upload_path %>
+  <%= subnav_link_to_if(policy(Upload).create?, "Upload", new_upload_path) %>
   <%= subnav_link_to "Changes", post_versions_path %>
   <%= subnav_link_to "Help", help_page_path(id: "posts") %>
-  <% if params[:action] == "index" %>
-    | <%= subnav_link_to "Undo selected", "" %>
+  <% if params[:action] == "index" && CurrentUser.user.is_member? %>
+    |
+    <%= subnav_link_to_if(policy(PostVersion).undo?, "Undo selected", "") %>
     <%= subnav_link_to "Select All", "" %>
-    <% if CurrentUser.is_moderator? %>
+    <% if PawsMovin.config.show_tag_scripting?(CurrentUser.user) %>
       |
-      <% if CurrentUser.is_admin? %>
-        <%= subnav_link_to "Apply Tag Script To Selected", "" %>
-      <% end %>
+      <%= subnav_link_to "Apply Tag Script To Selected", "" %>
       <%= latest_link(@post_versions, raw: true) %>
     <% end %>
   <% end %>

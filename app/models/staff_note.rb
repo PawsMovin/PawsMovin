@@ -58,15 +58,4 @@ class StaffNote < ApplicationRecord
 
   include LogMethods
   extend SearchMethods
-
-  def can_delete?(user)
-    return false unless user.is_staff?
-    return true if user.is_owner? || creator_id == user.id
-    user_id != user.id
-  end
-
-  def can_edit?(user)
-    return false unless user.is_staff?
-    user.id == creator_id || user.is_owner?
-  end
 end

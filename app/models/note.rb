@@ -56,7 +56,7 @@ class Note < ApplicationRecord
 
   module ApiMethods
     def method_attributes
-      super + [:creator_name]
+      super + %i[creator_name]
     end
   end
 
@@ -73,7 +73,7 @@ class Note < ApplicationRecord
   end
 
   def post_must_exist
-    if !Post.exists?(post_id)
+    unless Post.exists?(post_id)
       errors.add(:post, "must exist")
       return false
     end

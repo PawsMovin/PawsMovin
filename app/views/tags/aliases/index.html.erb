@@ -1,6 +1,6 @@
 <%= render "tag_relationships/search", url: tag_aliases_path %>
 <%= render "tag_relationships/listing", tag_relations: @tag_aliases %>
-<% if CurrentUser.is_admin? %>
+<% if can_use_attribute?(TagAlias, :skip_forum) %>
   <%= render "tag_relationships/add_form", type: :tag_alias, path: tag_aliases_path %>
 <% end %>
 

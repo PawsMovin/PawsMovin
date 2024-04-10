@@ -26,7 +26,7 @@
 
     <div id="tag-string-editor"></div>
 
-    <%= f.input(:locked_tags, label: "Locked Tags", autocomplete: "tag-edit", input_html: { value: post.locked_tags || "", spellcheck: false, size: "60x2", disabled: !CurrentUser.is_admin? }) %>
+    <%= f.input(:locked_tags, label: "Locked Tags", autocomplete: "tag-edit", input_html: { value: post.locked_tags || "", spellcheck: false, size: "60x2", disabled: policy(post).change_locked_tags? }) %>
   </div>
 
   <% if post.is_rating_locked? %>
@@ -45,36 +45,44 @@
     <%= f.input(:description, as: :dtext, limit: PawsMovin.config.post_descr_max_size) %>
   </div>
 
-  <% if CurrentUser.is_trusted? %>
+  <% if can_use_any_attribute?(post, :is_note_locked, :is_rating_locked, :is_comment_locked, :is_status_locked) %>
     <div class="input">
       <%= f.label(:blank, "Lock") %>
 
       <fieldset class="locks">
-        <% if CurrentUser.is_janitor? %>
+        <% if can_use_attribute?(post, :is_note_locked) %>
           <%= f.input(:is_note_locked, label: "Notes") %>
         <% end %>
-        <%= f.input(:is_rating_locked, label: "Rating") %>
-        <% if CurrentUser.is_moderator? %>
+        <% if can_use_attribute?(post, :is_rating_locked) %>
+          <%= f.input(:is_rating_locked, label: "Rating") %>
+        <% end %>
+        <% if can_use_attribute?(post, :is_comment_locked) %>
           <%= f.input(:is_comment_locked, label: "Comments") %>
         <% end %>
-        <% if CurrentUser.is_admin? %>
+        <% if can_use_attribute?(post, :is_status_locked) %>
           <%= f.input(:is_status_locked, label: "Status") %>
         <% end %>
       </fieldset>
     </div>
   <% end %>
 
-  <% if CurrentUser.is_janitor? %>
+  <% if can_use_attribute?(post, :bg_color) %>
     <%= f.input(:bg_color, label: "Background Color", input_html: { size: 6 }) %>
   <% end %>
 
-  <% if CurrentUser.is_admin? %>
+  <% if can_use_any_attribute?(post, :hide_from_anonymous, :hide_from_search_engines, :is_comment_disabled) %>
     <div class="input">
       <%= f.label(:blank, "Limits") %>
       <fieldset class="limits">
-        <%= f.input(:hide_from_anonymous, as: :boolean, label: "Hide from Anon") %>
-        <%= f.input(:hide_from_search_engines, as: :boolean, label: "Hide from search engines") %>
-        <%= f.input(:is_comment_disabled, label: "Disable comments") %>
+        <% if can_use_attribute?(post, :hide_from_anonymous) %>
+          <%= f.input(:hide_from_anonymous, as: :boolean, label: "Hide from Anon") %>
+        <% end %>
+        <% if can_use_attribute?(post, :hide_from_search_engines) %>
+          <%= f.input(:hide_from_search_engines, as: :boolean, label: "Hide from search engines") %>
+        <% end %>
+        <% if can_use_attribute?(post, :is_comment_disabled) %>
+          <%= f.input(:is_comment_disabled, label: "Disable comments") %>
+        <% end %>
       </fieldset>
     </div>
   <% end %>

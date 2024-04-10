@@ -6,7 +6,7 @@
       <th>Creator</th>
       <th>Date</th>
       <th>Message</th>
-      <% if CurrentUser.is_admin? %>
+      <% if policy(NewsUpdate).all?(:update?, :destroy?) %>
         <th></th>
       <% end %>
     </tr>
@@ -17,8 +17,11 @@
         <td><%= link_to_user news_update.creator %></td>
         <td><%= compact_time news_update.updated_at %></td>
         <td><div class="dtext-container"><%= format_text news_update.message %></div></td>
-        <% if CurrentUser.is_admin? %>
-          <td><%= link_to "Edit", edit_news_update_path(news_update) %> | <%= link_to "Delete", news_update_path(news_update), method: :delete %></td>
+        <% if policy(news_update).all?(:update?, :destroy?) %>
+          <td>
+            <%= link_to "Edit", edit_news_update_path(news_update) %> |
+            <%= link_to "Delete", news_update_path(news_update), method: :delete %>
+          </td>
         <% end %>
       </tr>
     <% end %>

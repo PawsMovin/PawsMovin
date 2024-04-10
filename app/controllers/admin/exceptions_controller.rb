@@ -2,10 +2,8 @@
 
 module Admin
   class ExceptionsController < ApplicationController
-    before_action :admin_only
-
     def index
-      @exception_logs = ExceptionLog.search(search_params).paginate(params[:page], limit: 100)
+      @exception_logs = authorize(ExceptionLog).search(search_params(ExceptionLog)).paginate(params[:page], limit: 100)
     end
 
     def show
@@ -14,6 +12,7 @@ module Admin
       else
         @exception_log = ExceptionLog.find_by!(code: params[:id])
       end
+      authorize(@exception_log)
     end
   end
 end

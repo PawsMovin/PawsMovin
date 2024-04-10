@@ -3,46 +3,45 @@
 class DmailsController < ApplicationController
   respond_to :html
   respond_to :json, except: %i[new create]
-  before_action :member_only
+
+  def index
+    @query = Dmail.active.visible.for_folder(params[:folder]).search(search_params(Dmail))
+    @dmails = @query.paginate(params[:page], limit: params[:limit])
+    respond_with(@dmails)
+  end
 
   def new
-    if params[:respond_to_id]
-      parent = Dmail.find(params[:respond_to_id])
-      check_privilege(parent)
+    if params[:respond_to_id].present?
+      parent = authorize(Dmail.find(params[:respond_to_id]), :respond?)
       @dmail = parent.build_response(forward: params[:forward])
     else
-      @dmail = Dmail.new(create_params)
+      @dmail = authorize(Dmail.new(permitted_attributes(Dmail)))
     end
 
     respond_with(@dmail)
   end
 
-  def index
-    @query = Dmail.active.visible.for_folder(params[:folder]).search(search_params)
-    @dmails = @query.paginate(params[:page], limit: params[:limit])
-    respond_with(@dmails)
-  end
-
   def show
     if params[:key].present?
       @dmail = Dmail.find_by!(id: params[:id], key: params[:key])
+      authorize(Dmail) # We can't check visible with Pundit due to the key
+      raise(User::PrivilegeError) unless @dmail.visible_to?(CurrentUser.user, params[:key])
     else
-      @dmail = Dmail.find(params[:id])
+      @dmail = authorize(Dmail.find(params[:id]))
     end
-    check_privilege(@dmail, :show)
     respond_with(@dmail) do |format|
       format.html { @dmail.mark_as_read! if CurrentUser.user == @dmail.owner }
     end
   end
 
   def create
-    @dmail = Dmail.create_split(create_params)
+    authorize(Dmail.new(permitted_attributes(Dmail)))
+    @dmail = Dmail.create_split(permitted_attributes(Dmail))
     respond_with(@dmail)
   end
 
   def destroy
-    @dmail = Dmail.find(params[:id])
-    check_privilege(@dmail)
+    @dmail = authorize(Dmail.find(params[:id]))
     @dmail.mark_as_read!
     @dmail.update_column(:is_deleted, true)
     respond_to do |format|
@@ -52,14 +51,12 @@ class DmailsController < ApplicationController
   end
 
   def mark_as_read
-    @dmail = Dmail.find(params[:id])
-    check_privilege(@dmail)
+    @dmail = authorize(Dmail.find(params[:id]))
     @dmail.mark_as_read!
   end
 
   def mark_as_unread
-    @dmail = Dmail.find(params[:id])
-    check_privilege(@dmail)
+    @dmail = authorize(Dmail.find(params[:id]))
     @dmail.mark_as_unread!
     respond_to do |format|
       format.html { redirect_to(dmails_path, notice: "Message marked as unread") }
@@ -68,6 +65,7 @@ class DmailsController < ApplicationController
   end
 
   def mark_all_as_read
+    authorize(Dmail)
     Dmail.visible.unread.each do |x|
       x.update_column(:is_read, true)
     end
@@ -76,20 +74,5 @@ class DmailsController < ApplicationController
       format.html { redirect_to(dmails_path, notice: "All messages marked as read") }
       format.json
     end
-  end
-
-  private
-
-  def check_privilege(dmail, action = nil)
-    raise(User::PrivilegeError) unless dmail.visible_to?(CurrentUser.user, params[:key])
-    raise(User::PrivilegeError) if CurrentUser.user != dmail.owner && action != :show
-  end
-
-  def search_params
-    permit_search_params(%i[title_matches message_matches to_name to_id from_name from_id is_read is_deleted read owner_id owner_name])
-  end
-
-  def create_params
-    params.fetch(:dmail, {}).permit(%i[title body to_name to_id])
   end
 end

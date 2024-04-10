@@ -2,7 +2,7 @@
   <% @post_versions.each do |post_version| %>
     <div id="post-version-<%= post_version.id %>" data-post-version-id="<%= post_version.id %>" data-post-id="<%= post_version.post_id %>" class="post-version">
       <div class="post-version-row-select pv-check pv-label<% if post_version.original_tags.blank? %> without-original<% end %>">
-        <input type="checkbox" class="post-version-select" <%= "disabled" if !CurrentUser.can_undo_post_versions? || !post_version.undoable? %> >
+        <input type="checkbox" class="post-version-select" <%= "disabled" unless policy(post_version).undo? && post_version.undoable? %> >
       </div>
       <div class="pv-post-label pv-label">
         Post #:Version
@@ -27,7 +27,7 @@
         <% if post_version.updater %>
           <%= link_to_user(post_version.updater) %>
         <% end %>
-        <% if CurrentUser.is_admin? %>
+        <% if policy(post_version).can_see_ip_addr? %>
           (<%= link_to_ip(post_version.updater_ip_addr) %>)
         <% end %>
         <%= time_ago_in_words_tagged(post_version.updated_at, compact: true) %>
@@ -54,10 +54,10 @@
         <%= post_version_locked_diff(post_version) %>
       </div>
       <div class="pv-actions pv-content">
-        <% if CurrentUser.can_undo_post_versions? && post_version.undoable? %>
+        <% if policy(post_version).undo? && post_version.undoable? %>
           <%= link_to "Undo", undo_post_version_path(post_version), method: :put %>
         <% end %>
-        <% if params.dig(:search, :post_id).present? && CurrentUser.can_revert_post_versions? %>
+        <% if params.dig(:search, :post_id).present? && policy(post_version.post).revert? %>
           | <%= link_to "Revert to", revert_post_path(post_version.post_id, version_id: post_version.id, format: :json), class: "revert-item-link", data: { noun: "post" } %>
         <% end %>
       </div>

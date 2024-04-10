@@ -350,8 +350,7 @@ class ModAction < ApplicationRecord
       end,
       json: ->(mod, _user) {
         values = %i[hidden]
-        values << :pattern if CurrentUser.is_admin?
-        values << :note if CurrentUser.is_admin? || !mod.hidden
+        values += %i[pattern note] if CurrentUser.is_admin? || !mod.hidden
         values
       },
     },
@@ -362,8 +361,7 @@ class ModAction < ApplicationRecord
       end,
       json: ->(mod, _user) {
         values = %i[hidden]
-        values << :pattern if CurrentUser.is_admin?
-        values << :note if CurrentUser.is_admin? || !mod.hidden
+        values += %i[pattern note] if CurrentUser.is_admin? || !mod.hidden
         values
       },
     },
@@ -375,8 +373,7 @@ class ModAction < ApplicationRecord
       end,
       json: ->(mod, _user) {
         values = %i[hidden]
-        values += %i[pattern old_pattern] if CurrentUser.is_admin?
-        values << :note if CurrentUser.is_admin? || !mod.hidden
+        values += %i[pattern old_pattern note] if CurrentUser.is_admin? || !mod.hidden
         values
       },
     },

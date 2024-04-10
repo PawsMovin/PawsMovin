@@ -2,39 +2,43 @@
 
 class UploadWhitelistsController < ApplicationController
   respond_to :html, :json, :js
-  before_action :admin_only, only: %i[new create edit update destroy]
   before_action :load_whitelist, only: %i[edit update destroy]
 
   def index
-    @whitelists = UploadWhitelist.search(search_params).paginate(params[:page], limit: params[:limit])
+    @whitelists = authorize(UploadWhitelist).search(search_params(UploadWhitelist)).paginate(params[:page], limit: params[:limit])
     respond_with(@whitelists)
   end
 
   def new
-    @whitelist = UploadWhitelist.new
+    @whitelist = authorize(UploadWhitelist.new)
   end
 
   def edit
+    authorize(@whitelist)
     respond_with(@whitelist)
   end
 
   def create
-    @whitelist = UploadWhitelist.create(whitelist_params)
+    @whitelist = authorize(UploadWhitelist.new(permitted_attributes(UploadWhitelist)))
+    @whitelist.save
     respond_with(@whitelist, location: upload_whitelists_path)
   end
 
   def update
-    @whitelist.update(whitelist_params)
-    flash[:notice] = @whitelist.valid? ? "Entry updated" : @whitelist.errors.full_messages.join("; ")
+    authorize(@whitelist)
+    @whitelist.update(permitted_attributes(@whitelist))
+    notice(@whitelist.valid? ? "Entry updated" : @whitelist.errors.full_messages.join("; "))
     redirect_to(upload_whitelists_path)
   end
 
   def destroy
+    authorize(@whitelist)
     @whitelist.destroy
     respond_with(@whitelist)
   end
 
   def is_allowed
+    authorize(UploadWhitelist)
     begin
       url_parsed = Addressable::URI.heuristic_parse(params[:url])
       allowed, reason = UploadWhitelist.is_whitelisted?(url_parsed)
@@ -61,13 +65,5 @@ class UploadWhitelistsController < ApplicationController
 
   def load_whitelist
     @whitelist = UploadWhitelist.find(params[:id])
-  end
-
-  def search_params
-    permit_search_params(%i[allowed order pattern note reason])
-  end
-
-  def whitelist_params
-    params.require(:upload_whitelist).permit(%i[allowed pattern reason note hidden])
   end
 end

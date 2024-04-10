@@ -18,7 +18,7 @@ class UserRevert
 
   def validate!
     if PostVersion.where(updater_id: user_id).count > THRESHOLD
-      raise(TooManyChangesError.new("This user has too many changes to be reverted"))
+      raise(TooManyChangesError, "This user has too many changes to be reverted")
     end
   end
 

@@ -8,6 +8,7 @@ module Posts
     before_action :validate_enabled
 
     def show
+      authorize(:iqdb)
       # Allow legacy ?post_id=123 parameters
       search_params = params[:search].presence || params
       throttle(search_params)

@@ -14,15 +14,15 @@
 
         <% if user.is_banned? && user.recent_ban %>
           <span>Ban reason</span>
-          <span class="dtext-container"><%= format_text presenter.ban_reason %></span>
+          <span>
+            <%= presenter.ban_reason(self) %>
+          </span>
         <% end %>
 
         <span>Post Changes</span>
         <span>
           <%= presenter.post_version_count(self) %>
-          <% if CurrentUser.is_moderator? && UserRevert.can_revert?(user) %>
-            [<%= link_to "revert all", new_user_revert_path(user_id: user.id) %>]
-          <% end %>
+          <%= link_to_enclosed_if(policy(UserRevert).create? && UserRevert.can_revert?(user), "revert all", new_user_revert_path(user_id: user.id), char: "[]") %>
         </span>
 
         <span>Wiki Page Changes</span>
@@ -31,11 +31,9 @@
         <span>Forum Posts</span>
         <span>
           <%= presenter.forum_post_count(self) %>
-          (<%= link_to "mentions", forum_posts_path(search: { body_matches: user.name }) %>)
-          <% if CurrentUser.is_moderator? %>
-            (<%= link_to "votes", action: "index", controller: "forum_posts/votes", search: { user_name: user.name } %>)
-            (<%= link_to "edits", edit_histories_path(search: { versionable_type: "ForumPost", user_id: user.id }) %>)
-          <% end %>
+          <%= link_to_enclosed("mentions", forum_posts_path(search: { body_matches: user.name })) %>
+          <%= link_to_enclosed_if(ForumPostVotePolicy.new(CurrentUser.user, user).index?, "votes", action: "index", controller: "forum_posts/votes", search: { user_name: user.name }) %>
+          <%= link_to_enclosed_if(policy(EditHistory).index?, "edits", edit_histories_path(search: { versionable_type: "ForumPost", user_id: user.id })) %>
         </span>
 
         <span>Note Changes</span>
@@ -49,15 +47,13 @@
 
         <span>Comments</span>
         <span>
-          <%= presenter.comment_count(self) %> on <%= presenter.commented_posts_count(self) %> posts
-          (<%= link_to "mentions", comments_path(group_by: :comment, search:{ body_matches: user.name }) %>)
-          <% if CurrentUser.is_moderator? %>
-            (<%= link_to "votes", action: "index", controller: "comments/votes", search: { user_name: user.name } %>)
-            (<%= link_to "edits", edit_histories_path(search: { versionable_type: "Comment", user_id: user.id }) %>)
-          <% end %>
+          <%= presenter.comment_count(self) %> on <%= presenter.commented_posts_count(self) %> <%= "post".pluralize(presenter.commented_on_posts_count) %>
+          <%= link_to_enclosed("mentions", comments_path(group_by: :comment, search: { body_matches: user.name })) %>
+          <%= link_to_enclosed_if(CommentVotePolicy.new(CurrentUser.user, user).index?, "votes", action: "index", controller: "comments/votes", search: { user_name: user.name }) %>
+          <%= link_to_enclosed_if(policy(EditHistory).index?, "edits", edit_histories_path(search: { versionable_type: "Comment", user_id: user.id })) %>
         </span>
 
-        <% if CurrentUser.user.id == user.id || CurrentUser.is_janitor? %>
+        <% if CurrentUser.user.id == user.id || CurrentUser.user.is_janitor? %>
           <% if presenter.previous_names(self).present? %>
             <span>Previous Names</span>
             <span><%= presenter.previous_names(self) %> -> <%= user.name %></span>
@@ -70,61 +66,92 @@
         <span>
           <%= presenter.feedbacks %>
           <%= link_to("List", user_feedbacks_path(search: { user_id: @user.id })) %>
-          <% if CurrentUser.is_moderator? && @user.feedback.count.zero? %>
+          <% if policy(UserFeedback).create? && @user.feedback.count.zero? %>
             | <%= link_to("Create", new_user_feedback_path(user_feedback: { user_id: @user.id, category: "neutral" })) %>
           <% end %>
         </span>
 
         <span>Permissions</span>
-        <span><%= presenter.permissions %></span>
+        <span class="permissions-list"><%= presenter.permissions_compact %></span>
 
         <span>Upload Limit</span>
         <span>
           <%= presenter.upload_limit(self) %>
           <% if CurrentUser.user.id == user.id  %>
-            (<%= link_to "help", upload_limit_users_path %>)
+            <%= link_to_enclosed("help", upload_limit_users_path) %>
           <% else %>
-            (<%= link_to "help", wiki_page_path(id: "upload_limit") %>)
+            <%= link_to_enclosed("help", wiki_page_path(id: "upload_limit")) %>
           <% end %>
         </span>
 
-        <% if user.can_approve_posts? || Post.exists?(approver: user) %>
+        <% if presenter.policy.show_approvals? %>
           <span>Approvals</span>
           <span><%= presenter.approval_count(self) %></span>
         <% end %>
 
-        <% if CurrentUser.user.id == user.id || CurrentUser.is_janitor? %>
+        <% if presenter.policy.show_flags? %>
           <span>Flags</span>
           <span><%= presenter.flag_count(self) %></span>
         <% end %>
 
-        <% if CurrentUser.user.id == user.id || CurrentUser.is_moderator? %>
+        <% if presenter.policy.show_tickets? %>
             <span>Tickets</span>
             <span>
               <%= presenter.ticket_count(self) %>
-              <% if CurrentUser.is_moderator? %>
-                [<%= link_to "pending", tickets_path(search: { creator_id: user.id, status: "pending" }) %>]
-                [<%= link_to "accused", tickets_path(search: { accused_id: user.id }) %>]
-              <% end %>
+              <%= link_to_enclosed("pending", tickets_path(search: { creator_id: user.id, status: "pending" }), char: "[]") %>
+              <%= link_to_enclosed_if(policy(Ticket).can_search_attribute?(:accused_id), "accused", tickets_path(search: { accused_id: user.id }), char: "[]") %>
             </span>
           <% end %>
 
-        <% if CurrentUser.id == user.id %>
+        <% if presenter.policy.show_api_keys? %>
           <span>API Keys</span>
           <span>
-            <%= link_to "Manage", user_api_keys_path(CurrentUser.user) %>
-            (<%= link_to "help", help_page_path(id: "api") %>)
+            <% if CurrentUser.user == user %>
+              <%= link_to("Manage", user_api_keys_path(user)) %>
+              <%= link_to_enclosed("help", help_page_path(id: "api")) %>
+            <% else %>
+              <%= link_to("Manage", api_keys_path(search: { user_id: user.id })) %>
+            <% end %>
           </span>
         <% end %>
 
-        <% if CurrentUser.is_admin? %>
+        <% if presenter.policy.show_email? %>
           <span>Email</span>
           <span>
             <%= user.email %>
             <%= email_domain_search(user.email) %>
           </span>
+        <% end %>
+        <% if presenter.policy.can_see_ip_addr? %>
           <span>Last IP</span>
           <span><%= link_to_ip(user.last_ip_addr) %></span>
+        <% end %>
+
+        <% unless presenter.show_uploads? %>
+          <% votes = PostVotePolicy.new(CurrentUser.user, presenter).index? %>
+          <% if ((user.post_upload_count - user.post_deleted_count) > 0) || votes %>
+            <span>Uploads</span>
+            <span>
+              <%= link_to(user.post_upload_count - user.post_deleted_count, posts_path(tags: "user:#{user.name}")) %>
+              <%= link_to_enclosed("comments", comments_path(group_by: "comment", search: { poster_id: user.id })) %>
+              <%= link_to_enclosed_if(votes, "votes", action: "index", controller: "posts/votes", search: { user_name: user.name }) %>
+            </span>
+          <% end %>
+
+          <% if user.post_deleted_count > 0 %>
+            <span>Deleted</span>
+            <span><%= link_to(user.post_deleted_count, deleted_posts_path(user_id: user.id)) %></span>
+          <% end %>
+
+          <% if user.own_post_replaced_count > 0 %>
+            <span>Replaced</span>
+            <span><%= link_to(user.own_post_replaced_count, post_replacements_path(search: { uploader_id_on_approve: user.id })) %></span>
+          <% end %>
+
+          <% if user.post_replacement_rejected_count > 0 %>
+            <span>Rejected</span>
+            <span><%= link_to(user.post_replacement_rejected_count, post_replacements_path(search: { creator_id: user.id, status: "rejected" })) %></span>
+          <% end %>
         <% end %>
       </div>
     </div>

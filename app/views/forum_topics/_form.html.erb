@@ -13,8 +13,11 @@
       <%= pf.input(:body, as: :dtext, limit: PawsMovin.config.forum_post_max_size) %>
     <% end %>
 
-    <% if CurrentUser.is_moderator? %>
+    <% if can_use_attribute?(forum_topic, :is_sticky) %>
       <%= f.input(:is_sticky, label: "Sticky") %>
+    <% end %>
+
+    <% if can_use_attribute?(forum_topic, :is_locked) %>
       <%= f.input(:is_locked, label: "Locked") %>
     <% end %>
 

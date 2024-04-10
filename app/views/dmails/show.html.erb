@@ -6,7 +6,7 @@
     <li><strong>Sender</strong>: <%= link_to_user @dmail.from %></li>
     <li><strong>Recipient</strong>: <%= link_to_user @dmail.to %></li>
     <li><strong>Date</strong>: <%= compact_time(@dmail.created_at) %></li>
-    <% if CurrentUser.is_admin? %>
+    <% if policy(@dmail).can_see_ip_addr? %>
       <li><strong>Sender IP</strong>: <%= link_to_ip @dmail.creator_ip_addr %></li>
     <% end %>
   </ul>
@@ -33,7 +33,7 @@
     <% if @dmail.to_id == CurrentUser.id %>
       | <%= link_to "Mark as unread", mark_as_unread_dmail_path(@dmail), method: :put, data: { confirm: "Are you sure you want to mark this DMail as unread?" } %>
       | <%= link_to "Block sender", new_user_block_path(@dmail.to, user_block: { target_id: @dmail.from_id }) %>
-      | <%= link_to "Report", model_new_ticket_path(model: @dmail) %>
+      | <%= link_to_if(TicketPolicy.new(CurrentUser.user, @dmail).create?, "Report", model_new_ticket_path(model: @dmail)) %>
     <% end %>
   </p>
 </div>

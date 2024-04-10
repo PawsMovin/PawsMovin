@@ -12,13 +12,17 @@ class PostSetMaintainer < ApplicationRecord
   after_create :notify_maintainer
 
   def notify_maintainer
-    body = "\"#{post_set.creator.name}\":/users/#{post_set.creator_id} invited you to be a maintainer of the \"#{post_set.name}\":/post_sets/#{post_set_id} set. This would allow you to add and remove posts from it.
+    r = Rails.application.routes.url_helpers
+    body = <<~BODY.chomp
+      "#{post_set.creator.name}":#{r.users_path(post_set.creator_id)} invited you to be a maintainer of the "#{post_set.name}":#{r.post_set_path(post_set_id)} set. This would allow you to add and remove posts from it.
 
-\"Click here\":/post_set_maintainers/#{id}/approve to approve the request and become a maintainer.
+      "Click here":#{r.approve_post_set_maintainer_path(self)} to approve the request and become a maintainer.
 
-\"Click here\":/post_set_maintainers/#{id}/deny to deny the request.
+      "Click here":#{r.deny_post_set_maintainer_path(self)} to deny the request.
 
-\"Click here\":/post_set_maintainers/#{id}/block to deny the request and prevent yourself from being invited to this set again in the future."
+      "Click here":#{r.block_post_set_maintainer_path(self)} to deny the request and prevent yourself from being invited to this set again in the future.
+    BODY
+
     Dmail.create_automated(
       to_id: user_id,
       title: "You were invite to be a maintainer of #{post_set.name}",

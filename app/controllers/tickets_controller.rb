@@ -1,27 +1,23 @@
 # frozen_string_literal: true
 
 class TicketsController < ApplicationController
-  respond_to :html
-  before_action :member_only, except: [:index]
-  before_action :moderator_only, only: %i[update edit claim unclaim]
+  respond_to :html # TODO: json
 
   def index
-    @tickets = Ticket.search(search_params).paginate(params[:page], limit: params[:limit])
+    @tickets = authorize(Ticket).search(search_params(Ticket)).paginate(params[:page], limit: params[:limit])
     respond_with(@tickets)
   end
 
   def new
-    @ticket = Ticket.new(ticket_params(:new))
-    check_new_permission(@ticket)
+    @ticket = authorize(Ticket.new(permitted_attributes(Ticket)))
   end
 
   def create
-    @ticket = Ticket.new(ticket_params)
-    check_new_permission(@ticket)
+    @ticket = authorize(Ticket.new(permitted_attributes(Ticket)))
     if @ticket.valid?
       @ticket.save
       @ticket.push_pubsub("create")
-      flash[:notice] = "Ticket created"
+      notice("Ticket created")
       redirect_to(ticket_path(@ticket))
     else
       respond_with(@ticket)
@@ -29,20 +25,19 @@ class TicketsController < ApplicationController
   end
 
   def show
-    @ticket = Ticket.find(params[:id])
-    check_permission(@ticket)
+    @ticket = authorize(Ticket.find(params[:id]))
     respond_with(@ticket)
   end
 
   def update
-    @ticket = Ticket.find(params[:id])
+    @ticket = authorize(Ticket.find(params[:id]))
     if @ticket.claimant_id.present? && @ticket.claimant_id != CurrentUser.id && !params[:force_claim].to_s.truthy?
-      flash[:notice] = "Ticket has already been claimed by somebody else, submit again to force"
+      notice("Ticket has already been claimed by somebody else, submit again to force")
       redirect_to(ticket_path(@ticket, force_claim: "true"))
       return
     end
 
-    ticket_params = update_ticket_params
+    ticket_params = permitted_attributes(@ticket)
     @ticket.transaction do
       if @ticket.warnable? && ticket_params[:record_type].present?
         @ticket.content.user_warned!(ticket_params[:record_type].to_i, CurrentUser.user)
@@ -55,7 +50,7 @@ class TicketsController < ApplicationController
 
     if @ticket.valid?
       not_changed = ticket_params[:send_update_dmail].to_s.truthy? && (!@ticket.saved_change_to_response? && !@ticket.saved_change_to_status?)
-      flash[:notice] = "Not sending update, no changes" if not_changed
+      notice("Not sending update, no changes") if not_changed
       @ticket.push_pubsub("update")
     end
 
@@ -63,66 +58,35 @@ class TicketsController < ApplicationController
   end
 
   def claim
-    @ticket = Ticket.find(params[:id])
+    @ticket = authorize(Ticket.find(params[:id]))
 
     if @ticket.claimant.nil?
       @ticket.claim!
       redirect_to(ticket_path(@ticket))
       return
     end
-    flash[:notice] = "Ticket already claimed"
+    notice("Ticket already claimed")
     redirect_to(ticket_path(@ticket))
   end
 
   def unclaim
-    @ticket = Ticket.find(params[:id])
+    @ticket = authorize(Ticket.find(params[:id]))
 
     if @ticket.claimant.nil?
-      flash[:notice] = "Ticket not claimed"
+      notice("Ticket not claimed")
       redirect_to(ticket_path(@ticket))
       return
     elsif @ticket.claimant.id != CurrentUser.id
-      flash[:notice] = "Ticket not claimed by you"
+      notice("Ticket not claimed by you")
       redirect_to(ticket_path(@ticket))
       return
-    elsif @ticket.approved?
-      flash[:notice] = "Cannot unclaim approved ticket"
+    elsif @ticket.approved? || @ticket.rejected?
+      notice("Cannot unclaim approved/rejected ticket")
       redirect_to(ticket_path(@ticket))
       return
     end
     @ticket.unclaim!
-    flash[:notice] = "Claim removed"
+    notrice("Claim removed")
     redirect_to(ticket_path(@ticket))
-  end
-
-  private
-
-  def ticket_params(context = nil)
-    return params.slice(:model_id, :model_type, :report_type).permit! if context == :new
-    params.require(:ticket).permit(%i[model_id model_type reason report_type])
-  end
-
-  def update_ticket_params
-    params.require(:ticket).permit(%i[response status record_type send_update_dmail])
-  end
-
-  def search_params
-    current_search_params = params.fetch(:search, {})
-    permitted_params = %i[model_type status order]
-    permitted_params += %i[model_id creator_id] if CurrentUser.is_moderator? || (current_search_params[:creator_id].present? && current_search_params[:creator_id].to_i == CurrentUser.id)
-    permitted_params += %i[creator_name accused_name accused_id claimant_id claimant_name reason] if CurrentUser.is_moderator?
-    permit_search_params(permitted_params)
-  end
-
-  def check_new_permission(ticket)
-    unless ticket.can_create_for?(CurrentUser.user)
-      raise(User::PrivilegeError)
-    end
-  end
-
-  def check_permission(ticket)
-    unless ticket.can_see_details?(CurrentUser.user)
-      raise(User::PrivilegeError)
-    end
   end
 end

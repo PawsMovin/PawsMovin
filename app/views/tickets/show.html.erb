@@ -11,7 +11,7 @@
         </td>
       </tr>
     <% end %>
-    <% if @ticket.accused.present? && CurrentUser.is_moderator? %>
+    <% if @ticket.accused.present? && CurrentUser.user.is_moderator? %>
       <tr>
         <td><span class="title">Accused</span></td>
         <td>
@@ -30,7 +30,7 @@
       <td><span class="title">Updated</span></td>
       <td style="cursor:help;"><%= time_ago_in_words_tagged(@ticket.updated_at) %></td>
     </tr>
-    <% if CurrentUser.is_moderator? %>
+    <% if CurrentUser.user.is_moderator? %>
       <tr>
         <td><span class="title">Claimed By</span></td>
         <% if @ticket.claimant.nil? %>
@@ -38,7 +38,7 @@
         <% else %>
           <td id="claimed_by">
             <%= link_to_user @ticket.claimant %>
-            <% if @ticket.claimant.id == CurrentUser.id %>
+            <% if @ticket.claimant.id == CurrentUser.user.id %>
               | <%= link_to "Unclaim", unclaim_ticket_path(@ticket), method: :post %>
             <% end %>
           </td>
@@ -50,14 +50,14 @@
       <td class="<%= @ticket.status %>-ticket"><%= @ticket.pretty_status %></td>
     </tr>
 
-    <% if CurrentUser.is_admin? %>
+    <% if policy(@ticket).can_see_ip_addr? %>
       <tr>
         <td><span class='title'>IP</span></td>
         <td><%= link_to_ip(@ticket.creator_ip_addr) %></td>
       </tr>
     <% end %>
 
-    <% if CurrentUser.is_moderator? %>
+    <% if CurrentUser.user.is_moderator? %>
       <tr>
         <td><span class="title">Open Duplicates</span></td>
         <td><ul>
@@ -95,7 +95,7 @@
   </table>
 </div>
 
-<% if CurrentUser.is_moderator? %>
+<% if CurrentUser.user.is_moderator? %>
   <div class="section">
     <%= custom_form_for(@ticket) do |f| %>
       <%= f.input(:status, collection: [%w[Approved approved], ["Under Investigation", "partial"], %w[Rejected rejected]], selected: @ticket.status || "approved") %>

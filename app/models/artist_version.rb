@@ -16,8 +16,8 @@ class ArtistVersion < ApplicationRecord
     def search(params)
       q = super
 
-      if params[:name].present?
-        q = q.where("name like ? escape E'\\\\'", params[:name].to_escaped_for_sql_like)
+      if params[:artist_name].present?
+        q = q.where("name like ? escape E'\\\\'", params[:artist_name].to_escaped_for_sql_like)
       end
 
       q = q.where_user(:updater_id, :updater, params)

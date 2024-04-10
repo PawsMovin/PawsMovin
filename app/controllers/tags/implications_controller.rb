@@ -2,30 +2,29 @@
 
 module Tags
   class ImplicationsController < ApplicationController
-    before_action :member_only, except: %i[index show]
-    before_action :can_manage_aibur_only, only: %i[edit update]
     respond_to :html, :json
 
     def index
-      @tag_implications = TagImplication.includes(:antecedent_tag, :consequent_tag, :approver).search(search_params).paginate(params[:page], limit: params[:limit])
+      @tag_implications = authorize(TagImplication).includes(:antecedent_tag, :consequent_tag, :approver).search(search_params).paginate(params[:page], limit: params[:limit])
       respond_with(@tag_implications)
     end
 
     def show
-      @tag_implication = TagImplication.find(params[:id])
+      @tag_implication = authorize(TagImplication.find(params[:id]))
       respond_with(@tag_implication)
     end
 
     def new
-      @tag_implication = TagImplication.new
+      @tag_implication = authorize(TagImplication.new)
     end
 
     def edit
-      @tag_implication = TagImplication.find(params[:id])
+      @tag_implication = authorize(TagImplication.find(params[:id]))
     end
 
     def create
-      @tag_implication_request = TagImplicationRequest.create(tag_implication_params(:create))
+      @tag_implication_request = authorize(TagImplicationRequest.new(permitted_attributes(TagImplication)), policy_class: TagImplicationPolicy)
+      @tag_implication_request.create
 
       if @tag_implication_request.invalid?
         respond_with(@tag_implication_request) do |format|
@@ -39,17 +38,17 @@ module Tags
     end
 
     def update
-      @tag_implication = TagImplication.find(params[:id])
+      @tag_implication = authorize(TagImplication.find(params[:id]))
 
       if @tag_implication.is_pending? && @tag_implication.editable_by?(CurrentUser.user)
-        @tag_implication.update(tag_implication_params)
+        @tag_implication.update(permitted_attributes(TagImplication))
       end
 
       respond_with(@tag_implication)
     end
 
     def destroy
-      @tag_implication = TagImplication.find(params[:id])
+      @tag_implication = authorize(TagImplication.find(params[:id]))
       if @tag_implication.rejectable_by?(CurrentUser.user)
         @tag_implication.reject!
         if @tag_implication.errors.any?
@@ -69,18 +68,9 @@ module Tags
     end
 
     def approve
-      @tag_implication = TagImplication.find(params[:id])
+      @tag_implication = authorize(TagImplication.find(params[:id]))
       @tag_implication.approve!(approver: CurrentUser.user)
       respond_with(@tag_implication, location: tag_implication_path(@tag_implication))
-    end
-
-    private
-
-    def tag_implication_params(context = nil)
-      permitted_params = %i[antecedent_name consequent_name]
-      permitted_params += %i[reason forum_topic_id] if context == :create
-      permitted_params += %i[skip_forum] if context == :create && CurrentUser.is_admin?
-      params.require(:tag_implication).permit(permitted_params)
     end
   end
 end

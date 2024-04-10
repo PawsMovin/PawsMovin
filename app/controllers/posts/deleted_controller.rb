@@ -5,6 +5,7 @@ module Posts
     respond_to :html
 
     def index
+      authorize(Post, :deleted?)
       if params[:user_id].present?
         @user = User.find(params[:user_id])
         @posts = Post.where(is_deleted: true)

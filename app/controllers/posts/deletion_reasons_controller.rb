@@ -8,19 +8,21 @@ module Posts
     respond_to :html, :json
 
     def index
-      @reasons = PostDeletionReason.order(order: :asc)
+      @reasons = authorize(PostDeletionReason).order(order: :asc)
       respond_with(@reasons)
     end
 
     def new
-      @reason = PostDeletionReason.new
+      @reason = authorize(PostDeletionReason).new
     end
 
     def edit
+      authorize(PostDeletionReason)
     end
 
     def create
-      @reason = PostDeletionReason.create(reason_params)
+      @reason = authorize(PostDeletionReason.new(permitted_attributes(PostDeletionReason)))
+      @reason.save
       flash[:notice] = @reason.valid? ? "Post deletion reason created" : @reason.errors.full_messages.join("; ")
       respond_with(@reason) do |fmt|
         fmt.html { redirect_to(post_deletion_reasons_path) }
@@ -28,7 +30,8 @@ module Posts
     end
 
     def update
-      @reason.update(reason_params)
+      authorize(@reason)
+      @reason.update(permitted_attributes(@reason))
       flash[:notice] = @reason.valid? ? "Post deletion reason updated" : @reason.errors.full_messages.join("; ")
       respond_with(@reason) do |fmt|
         fmt.html { redirect_to(post_deletion_reasons_path) }
@@ -36,6 +39,7 @@ module Posts
     end
 
     def destroy
+      authorize(@reason)
       @reason.destroy
       flash[:notice] = "Post deletion reason deleted"
       respond_with(@reason) do |format|
@@ -44,6 +48,7 @@ module Posts
     end
 
     def reorder
+      authorize(PostDeletionReason)
       new_orders = params[:_json].reject { |o| o[:id].nil? }
       new_ids = new_orders.pluck(:id)
       current_ids = PostDeletionReason.pluck(:id)
@@ -73,10 +78,6 @@ module Posts
     end
 
     private
-
-    def reason_params
-      params.require(:post_deletion_reason).permit(%i[reason title prompt order move_up])
-    end
 
     def load_reason
       @reason = PostDeletionReason.find(params[:id])

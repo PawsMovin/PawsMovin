@@ -175,7 +175,7 @@ RecordBuilder.random_id = function(length = 6) {
 export default RecordBuilder;
 
 $(function() {
-  if ($("#c-users-feedbacks #a-new, #c-users-feedbacks #a-edit, #c-bans #a-new, #c-bans #a-edit").length) {
+  if ($("#c-users-feedbacks, #c-bans").length) {
     RecordBuilder.initialize();
   }
 });

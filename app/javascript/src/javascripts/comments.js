@@ -45,7 +45,7 @@ Comment.vote_handler = function (event) {
 }
 
 /**
- * Applies a vote to the specified comment.  
+ * Applies a vote to the specified comment.
  * Note that if the comment had already been voted on,
  * the vote will be removed instead.
  * @param {number} commentID Comment to vote on.
@@ -56,7 +56,7 @@ Comment.vote = function (commentID, action) {
     method: "POST",
     url: `/comments/${commentID}/votes.json`,
     data: {
-      score: action
+      "comment_vote[score]": action
     },
     dataType: "json"
   }).done((data) => {
@@ -80,7 +80,7 @@ Comment.vote = function (commentID, action) {
 }
 
 /**
- * Handles the click on the "Reply" button.  
+ * Handles the click on the "Reply" button.
  * Adds a quote section to the new comment form.
  * @param {Event} event Click event
  */
@@ -118,7 +118,7 @@ ${stripped_body}
 };
 
 /**
- * Handles the click on the "Edit" button.  
+ * Handles the click on the "Edit" button.
  * Just switches the attribute around, the actual
  * edit form is added through HTML.
  * @param {Event} event Click event
@@ -176,7 +176,7 @@ Comment.undelete = function (event) {
 };
 
 /**
- * Handles the click on the "Mark" button.  
+ * Handles the click on the "Mark" button.
  * Just toggles the attribute to show the menu.
  * Actual marking is handled elsewhere.
  * @param {Event} event Click event
@@ -188,7 +188,7 @@ Comment.toggle_mark = function (event) {
 };
 
 /**
- * Handles the click on the "Destroy" button.  
+ * Handles the click on the "Destroy" button.
  * Note that this action is permanent and irreversible.
  * @param {Event} event Click event
  */
@@ -211,7 +211,7 @@ Comment.destroy = function (event) {
 };
 
 /**
- * Handles the click on the "Show all comments" button.  
+ * Handles the click on the "Show all comments" button.
  * Due to the way comments get loaded, all handlers will be
  * reinitializes as a result, otherwise buttons won't work.
  * @param {Event} event Click event

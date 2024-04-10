@@ -1,6 +1,6 @@
 <h1>Settings</h1>
 
-<%= custom_form_for @user do |f| %>
+<%= custom_form_for(@user, url: update_users_path, method: :post) do |f| %>
   <h2 id="edit-options">
     <%= link_to "Basic", "#basic-settings", class: "active" %>
     | <%= link_to "Advanced", "#advanced-settings" %>
@@ -75,7 +75,7 @@
     <%= f.input(:hide_comments, as: :select, collection: [%w[No false], %w[Yes true]], include_blank: false,
     hint: "Do not show the comments section on post pages.") %>
 
-    <% unless CurrentUser.is_janitor? %>
+    <% unless CurrentUser.user.is_janitor? %>
       <%= f.input(:disable_user_dmails, label: "Disable DMails", hint: "Prevent other users from sending you DMails. You will be prevented from sending DMails to non-staff members while this option is enabled. Staff are always allowed to send you DMails.",
                   as: :select, collection: [%w[No false], %w[Yes true]], include_blank: false) %>
     <% end %>

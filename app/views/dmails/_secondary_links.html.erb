@@ -1,6 +1,6 @@
 <% content_for(:secondary_links) do %>
   <li><%= render "quick_search" %></li>
-  <% if CurrentUser.is_owner? %>
+  <% if CurrentUser.user.is_owner? %>
     <%= subnav_link_to "Index", dmails_path %>
   <% end %>
   <%= subnav_link_to "All", all_dmails_path %>

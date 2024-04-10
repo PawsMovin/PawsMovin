@@ -2,8 +2,6 @@
 
 module Users
   class EmailChangesController < ApplicationController
-    before_action :logged_in_only
-
     def new
     end
 

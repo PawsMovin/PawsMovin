@@ -143,7 +143,7 @@ class BulkUpdateRequestImporter
         token
 
       when :nuke_tag
-        errors << "Only admins can nuke tags" unless user.is_admin?
+        errors << "You cannot use nuke" unless PawsMovin.config.can_bur_nuke?(user)
         existing = Tag.find_by(name: token[1]).present?
         token[3] = existing
         token

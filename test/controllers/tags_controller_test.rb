@@ -70,7 +70,7 @@ class TagsControllerTest < ActionDispatch::IntegrationTest
         assert_equal(false, @tag.reload.is_locked)
       end
 
-      context "for a tag with >50 posts" do
+      context "for a tag with >100 posts" do
         setup do
           as(@user) do
             @tag.update(post_count: 100)

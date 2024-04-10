@@ -62,7 +62,7 @@ Rails.application.routes.draw do
     resource :login_reminder, only: %i[new create]
     resource :deletion, only: %i[show destroy]
     resource :email_change, only: %i[new create]
-    resource :dmail_filter, only: %i[edit update]
+    resource :dmail_filter, only: %i[show edit update]
   end
 
   resources :tickets, except: %i[destroy] do
@@ -297,7 +297,7 @@ Rails.application.routes.draw do
     post :correct, on: :member
   end
   resources :uploads, only: %i[index show new create]
-  resources :users do
+  resources :users, except: %i[edit update] do
     resource :password, only: %i[edit], controller: "users/passwords"
     resources :api_keys, controller: "api_keys"
     resources :staff_notes, only: %i[index new create destroy undelete update], controller: "admin/staff_notes" do
@@ -311,6 +311,8 @@ Rails.application.routes.draw do
       get :search
       get :upload_limit
       get :custom_style
+      get :edit
+      post "/update", to: "users#update", as: "update"
       resources :feedbacks, controller: "users/feedbacks", as: "user_feedbacks" do
         collection do
           get :search
@@ -337,7 +339,7 @@ Rails.application.routes.draw do
   resources :post_sets do
     collection do
       get :for_select
-      resources :maintainers, controller: "post_sets/maintainers", as: "post_set_maintainers", only: %i[index create] do
+      resources :maintainers, controller: "post_sets/maintainers", as: "post_set_maintainers", only: %i[index create destroy] do
         member do
           get :approve
           get :block
@@ -371,7 +373,7 @@ Rails.application.routes.draw do
   get "/static/contact" => "static#contact", :as => "contact"
   get "/static/discord" => "static#discord", :as => "discord_get"
   post "/static/discord" => "static#discord", :as => "discord_post"
-  get "/static/toggle_mobile_mode" => "static#disable_mobile_mode", :as => "disable_mobile_mode"
+  get "/static/toggle_mobile_mode" => "static#toggle_mobile_mode", :as => "toggle_mobile_mode"
   get "/static/theme" => "static#theme", :as => "theme"
   get "/robots", to: "static#robots", as: "robots"
   root to: "static#home"

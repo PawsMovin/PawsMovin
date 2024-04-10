@@ -6,13 +6,13 @@ module Moderator
     respond_to :html, :json
 
     def index
-      search = IpAddrSearch.new(params[:search])
+      search = authorize(IpAddrSearch).new(search_params(IpAddrSearch))
       @results = search.execute
       respond_with(@results)
     end
 
     def export
-      search = IpAddrSearch.new(params[:search].merge({with_history: true}))
+      search = authorize(IpAddrSearch).new(search_params(IpAddrSearch).merge({ with_history: true }))
       @results = search.execute
       respond_with(@results) do |format|
         format.json do

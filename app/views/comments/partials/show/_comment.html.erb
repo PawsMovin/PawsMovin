@@ -21,7 +21,7 @@
         <%= link_to_user comment.creator %> said <%= link_to time_ago_in_words_tagged(comment.created_at), post_path(id: comment.post_id, anchor: "comment-#{comment.id}") %>
       </span>
       <%= comment_edited_notice(comment) %>
-      <% if CurrentUser.is_admin? %>
+      <% if policy(comment).can_see_ip_addr? %>
         <span class="comment-ip"><%= link_to_ip comment.creator_ip_addr %></span>
       <% end %>
     </div>
@@ -31,7 +31,7 @@
       <%= render "application/warned_notice", record: comment %>
     </div>
 
-    <% if comment.editable_by?(CurrentUser.user) %>
+    <% if policy(comment).update? %>
     <div class="comment-edit">
       <%= render "comments/partials/form", comment: comment %>
     </div>
@@ -42,37 +42,31 @@
 
       <% if defined?(post) && comment.can_reply?(CurrentUser.user) %>
         <li>
-          <%= tag.a(href: (CurrentUser.is_member? ? nil : new_session_path), class: "comment-reply-link") do %>
+          <%= tag.a(href: (CurrentUser.user.is_member? ? nil : new_session_path), class: "comment-reply-link") do %>
             <%= tag.i(class: "fa-solid fa-reply") %> Reply
           <% end %>
         </li>
       <% end %>
 
-      <% if comment.editable_by?(CurrentUser.user) %>
+      <% if policy(comment).any?(:edit?, :hide?, :unhide?) %>
         <li class="dot"></li>
-        <li><%= link_to "Edit", edit_comment_path(comment.id), class: "comment-edit-link" %></li>
       <% end %>
 
-      <% if comment.can_hide?(CurrentUser.user) %>
-        <li><%= tag.a("Delete", class: "comment-delete-link") %></li>
-      <% end %>
-      <% if CurrentUser.is_moderator? %>
-        <li><%= tag.a("Undelete", class: "comment-undelete-link") %></li>
-      <% end %>
+      <%= li_link_to_if(policy(comment).edit?, "Edit", edit_comment_path(comment.id), class: "comment-edit-link") %>
+      <%= li_link_to_if(policy(comment).hide?, "Delete", "", class: "comment-delete-link") %>
+      <%= li_link_to_if(policy(comment).unhide?, "Undelete", "", class: "comment-undelete-link") %>
 
       <li class="spacer"></li>
 
-      <% if CurrentUser.is_moderator? %>
-        <li><%= tag.a("Mark", class: "comment-mark-link") %></li>
-        <li><%= link_to "History", edit_history_path(id: comment.id, type: "Comment"), class: "comment-edit-history-link" %></li>
-        <li><%= link_to "Votes", controller: "comments/votes", search: { comment_id: comment.id }, class: "comment-vote-history-link" %></li>
-      <% end %>
-      <% if CurrentUser.is_admin? %>
+      <%= li_link_to_if(mark = policy(comment).warning?, "Mark", "", class: "comment-mark-link") %>
+      <%= li_link_to_if(history = policy(EditHistory).index?, "History", edit_history_path(id: comment.id, type: "Comment"), class: "comment-edit-history-link") %>
+      <%= li_link_to_if(vote = CommentVotePolicy.new(CurrentUser.user, comment).index?, "Votes", { controller: "comments/votes", search: { comment_id: comment.id } }, class: "comment-vote-history-link") %>
+      <% if mark || history || vote %>
         <li class="dot"></li>
-        <li><%= tag.a("Destroy", class: "comment-destroy-link") %></li>
       <% end %>
+      <%= li_link_to_if(policy(comment).destroy?, "Destroy", "", class: "comment-destroy-link") %>
 
-      <% if !comment.is_sticky %>
+      <% unless comment.is_sticky %>
         <li>
           <%= link_to new_ticket_path(disp_id: comment.id, qtype: "comment"), class: "comment-report-link" do %>
             <%= tag.i(class: "far fa-flag fa-flip-horizontal") %> Report
@@ -81,7 +75,7 @@
       <% end %>
     </div>
 
-    <% if CurrentUser.is_moderator? %>
+    <% if policy(comment).warning? %>
       <div class="comment-mark">
         <%= render "user_warnable/buttons", model: comment %>
       </div>

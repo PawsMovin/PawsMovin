@@ -23,6 +23,10 @@ class UserVote < ApplicationRecord
     model_name.singular.delete_suffix("_vote").to_sym
   end
 
+  def self.model
+    name.delete_suffix("Vote").constantize
+  end
+
   def self.vote_types
     [%w[Downvote redtext -1], %w[Upvote greentext 1]]
   end

@@ -58,6 +58,10 @@ class ForumCategory < ApplicationRecord
     end
   end
 
+  def self.log_reorder(total)
+    ModAction.log!(:forum_categories_reorder, nil, total: total)
+  end
+
   module SearchMethods
     def visible
       where(can_view: ..CurrentUser.user.level)

@@ -2,20 +2,16 @@
 
 class PostSetsController < ApplicationController
   respond_to :html, :json
-  before_action :member_only, except: %i[index show]
 
   def index
+    authorize(PostSet)
     if params[:post_id].present?
-      if CurrentUser.is_moderator?
-        @post_sets = PostSet.where_has_post(params[:post_id].to_i).paginate(params[:page], limit: 50)
-      else
-        @post_sets = PostSet.visible(CurrentUser.user).where_has_post(params[:post_id].to_i).paginate(params[:page], limit: 50)
-      end
+      @post_sets = PostSet.visible(CurrentUser.user).where_has_post(params[:post_id].to_i).paginate(params[:page], limit: params[:limit] || 50)
     elsif params[:maintainer_id].present?
       if CurrentUser.is_moderator?
-        @post_sets = PostSet.where_has_maintainer(params[:maintainer_id].to_i).paginate(params[:page], limit: 50)
+        @post_sets = PostSet.where_has_maintainer(params[:maintainer_id].to_i).paginate(params[:page], limit: params[:limit] || 50)
       else
-        @post_sets = PostSet.visible(CurrentUser.user).where_has_maintainer(CurrentUser.id).paginate(params[:page], limit: 50)
+        @post_sets = PostSet.visible(CurrentUser.user).where_has_maintainer(CurrentUser.id).paginate(params[:page], limit: params[:limit] || 50)
       end
     else
       @post_sets = PostSet.visible(CurrentUser.user).search(search_params).paginate(params[:page], limit: params[:limit])
@@ -25,63 +21,59 @@ class PostSetsController < ApplicationController
   end
 
   def new
-    @post_set = PostSet.new
+    @post_set = authorize(PostSet.new(permitted_attributes(@post_set)))
   end
 
   def create
-    @post_set = PostSet.create(set_params)
+    @post_set = authorize(PostSet.new(permitted_attributes(@post_set)))
+    @post_set.save
     notice(@post_set.valid? ? "Set created" : @post_set.errors.full_messages.join("; "))
     respond_with(@post_set)
   end
 
   def show
-    @post_set = PostSet.find(params[:id])
-    check_view_access(@post_set)
+    @post_set = authorize(PostSet.find(params[:id]))
 
     respond_with(@post_set)
   end
 
   def edit
-    @post_set = PostSet.find(params[:id])
+    @post_set = authorize(PostSet.find(params[:id]))
     check_post_edit_access(@post_set)
     respond_with(@post_set)
   end
 
   def update
-    @post_set = PostSet.find(params[:id])
-    check_settings_edit_access(@post_set)
-    @post_set.update(set_params)
+    @post_set = authorize(PostSet.find(params[:id]))
+    @post_set.update(permitted_attributes(@post_set))
     notice(@post_set.valid? ? "Set updated" : @post_set.errors.full_messages.join("; "))
     respond_with(@post_set)
   end
 
   def maintainers
-    @post_set = PostSet.find(params[:id])
+    @post_set = authorize(PostSet.find(params[:id]))
   end
 
   def post_list
-    @post_set = PostSet.find(params[:id])
-    check_post_edit_access(@post_set)
+    @post_set = authorize(PostSet.find(params[:id]))
     respond_with(@post_set)
   end
 
   def update_posts
-    @post_set = PostSet.find(params[:id])
-    check_post_edit_access(@post_set)
-    @post_set.update(update_posts_params)
+    @post_set = authorize(PostSet.find(params[:id]))
+    @post_set.update(permitted_attributes(@post_set))
     notice(@post_set.valid? ? "Set posts updated." : @post_set.errors.full_messages.join("; "))
     redirect_back(fallback_location: post_list_post_set_path(@post_set))
   end
 
   def destroy
-    @post_set = PostSet.find(params[:id])
-    check_settings_edit_access(@post_set)
+    @post_set = authorize(PostSet.find(params[:id]))
     @post_set.destroy
     respond_with(@post_set)
   end
 
   def for_select
-    owned = PostSet.owned(CurrentUser.user).order(:name)
+    owned = authorize(PostSet).owned(CurrentUser.user).order(:name)
     maintained = PostSet.active_maintainer(CurrentUser.user).order(:name)
 
     @for_select = {
@@ -93,16 +85,14 @@ class PostSetsController < ApplicationController
   end
 
   def add_posts
-    @post_set = PostSet.find(params[:id])
-    check_post_edit_access(@post_set)
+    @post_set = authorize(PostSet.find(params[:id]))
     @post_set.add(add_remove_posts_params.map(&:to_i))
     @post_set.save
     respond_with(@post_set)
   end
 
   def remove_posts
-    @post_set = PostSet.find(params[:id])
-    check_post_edit_access(@post_set)
+    @post_set = authorize(PostSet.find(params[:id]))
     @post_set.remove(add_remove_posts_params.map(&:to_i))
     @post_set.save
     respond_with(@post_set)
@@ -110,39 +100,7 @@ class PostSetsController < ApplicationController
 
   private
 
-  def check_settings_edit_access(set)
-    unless set.can_edit_settings?(CurrentUser.user)
-      raise(User::PrivilegeError)
-    end
-  end
-
-  def check_post_edit_access(set)
-    unless set.can_edit_posts?(CurrentUser.user)
-      raise(User::PrivilegeError)
-    end
-  end
-
-  def check_view_access(set)
-    unless set.can_view?(CurrentUser.user)
-      raise(User::PrivilegeError)
-    end
-  end
-
-  def set_params
-    params.require(:post_set).permit(%i[name shortname description is_public transfer_on_delete])
-  end
-
-  def update_posts_params
-    params.require(:post_set).permit([:post_ids_string])
-  end
-
   def add_remove_posts_params
     params.extract!(:post_ids).permit(post_ids: []).require(:post_ids)
-  end
-
-  def search_params
-    permitted_params = %i[name shortname creator_id creator_name order]
-    permitted_params += %i[is_public] if CurrentUser.is_moderator?
-    permit_search_params(permitted_params)
   end
 end

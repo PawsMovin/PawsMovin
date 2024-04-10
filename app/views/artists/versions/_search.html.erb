@@ -1,4 +1,7 @@
-<%= form_search(path: artist_versions_path) do |f| %>
+<%= form_search(path: artist_versions_path, policy: policy(ArtistVersion)) do |f| %>
   <%= f.user(:updater) %>
-  <%= f.input(:name, autocomplete: "artist") %>
+  <%= f.input(:artist_name, label: "Artist Name", autocomplete: "artist") %>
+  <%= f.input(:artist_id, label: "Artist ID", hide_unless_value: true) %>
+  <%= f.input(:ip_addr, label: "IP Address") %>
+  <%= f.input(:order, collection: [%w[Name name], %w[Updated id_desc]]) %>
 <% end %>

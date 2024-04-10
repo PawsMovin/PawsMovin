@@ -3,7 +3,8 @@
 <p>Maintainers are users who are assigned to a set and have the ability to add or remove posts from it. They cannot
   edit any other details of the set.</p>
 
-<% if @post_set.can_edit_settings?(CurrentUser) && @post_set.is_public %>
+<% if @post_set.can_edit_settings?(CurrentUser) %>
+  <% if @post_set.is_public %>
   <h3 style="margin-top:15px;">Add new Maintainer</h3>
   <div class='section' style="width:380px;">
     <%= form_tag(post_set_maintainers_path) do %>
@@ -13,6 +14,9 @@
       <%= submit_tag "Invite" %>
     <% end %>
   </div>
+  <% else %>
+    <p>Post set must be public to add maintainers.</p>
+  <% end %>
 <% end %>
 
 <table class="striped">

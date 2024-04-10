@@ -7,7 +7,7 @@
     <%= f.input(:category, collection: TagCategory.for_select, include_blank: false) %>
   <% end %>
 
-  <% if CurrentUser.is_admin? %>
+  <% if can_use_attribute?(@tag, :is_locked) %>
     <%= f.input(:is_locked, collection: [%w[No false], %w[Yes true]], include_blank: false) %>
   <% end %>
 

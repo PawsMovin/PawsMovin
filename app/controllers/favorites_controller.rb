@@ -1,16 +1,17 @@
 # frozen_string_literal: true
 
 class FavoritesController < ApplicationController
-  before_action :member_only, except: [:index]
   respond_to :html, :json
   skip_before_action :api_check
 
   def index
     if params[:tags]
+      authorize(Favorite)
       redirect_to(posts_path(tags: params[:tags]))
     else
       user_id = params[:user_id] || CurrentUser.user.id
       @user = User.find(user_id)
+      authorize(@user, policy_class: FavoritePolicy)
 
       if @user.hide_favorites?
         raise(Favorite::HiddenError)
@@ -26,7 +27,7 @@ class FavoritesController < ApplicationController
   end
 
   def create
-    @post = Post.find(params[:post_id])
+    @post = authorize(Post.find(params[:post_id]), policy_class: FavoritePolicy)
     FavoriteManager.add!(user: CurrentUser.user, post: @post)
     flash.now[:notice] = "You have favorited this post"
 
@@ -36,7 +37,7 @@ class FavoritesController < ApplicationController
   end
 
   def destroy
-    @post = Post.find(params[:id])
+    @post = authorize(Post.find(params[:id]), policy_class: FavoritePolicy)
     FavoriteManager.remove!(user: CurrentUser.user, post: @post)
 
     flash.now[:notice] = "You have unfavorited this post"

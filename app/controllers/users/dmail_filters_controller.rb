@@ -2,32 +2,41 @@
 
 module Users
   class DmailFiltersController < ApplicationController
-    before_action :ensure_ownership
+    before_action :load_dmail, except: %i[show]
+    before_action :load_dmail_filter
     respond_to :html, :json
 
+    def show
+      authorize(@dmail_filter)
+      respond_with(@dmail_filter) do |format|
+        format.html { redirect_to(edit_users_dmail_filter_path(dmail_id: params[:dmail_id])) }
+      end
+    end
+
     def edit
-      @dmail_filter = CurrentUser.dmail_filter || DmailFilter.new
+      authorize(@dmail, policy_class: DmailFilterPolicy)
     end
 
     def update
-      @dmail_filter = CurrentUser.dmail_filter || DmailFilter.new
-      @dmail_filter.update(dmail_filter_params)
-      flash[:notice] = "Filter updated"
-      respond_with(@dmail)
+      authorize(@dmail, policy_class: DmailFilterPolicy)
+      @dmail_filter.update(permitted_attributes(DmailFilter))
+      respond_with(@dmail_filter) do |format|
+        format.html do
+          notice("Filter updated")
+          return redirect_to(dmail_path(@dmail)) if @dmail
+          redirect_to(dmails_path)
+        end
+      end
     end
 
     private
 
-    def ensure_ownership
-      @dmail = Dmail.find(params[:dmail_id])
-
-      if @dmail.owner_id != CurrentUser.user.id
-        raise(::User::PrivilegeError)
-      end
+    def load_dmail
+      @dmail = Dmail.find_by(id: params[:dmail_id])
     end
 
-    def dmail_filter_params
-      params.require(:dmail_filter).permit(:words)
+    def load_dmail_filter
+      @dmail_filter = CurrentUser.dmail_filter || DmailFilter.new
     end
   end
 end

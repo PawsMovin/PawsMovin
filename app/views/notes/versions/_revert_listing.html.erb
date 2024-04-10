@@ -7,12 +7,12 @@
         <th width="5%">Note</th>
         <th>Body</th>
         <th width="5%">Position</th>
-        <% if CurrentUser.is_admin? %>
+        <% if policy(NoteVersion).can_see_ip_addr? %>
           <th width="10%">IP Address</th>
         <% end %>
         <th width="10%">Edited By</th>
         <th width="10%">Date</th>
-        <% if CurrentUser.is_member? %>
+        <% if policy(Note).revert? %>
           <th width="7%"></th>
         <% end %>
       </tr>
@@ -43,14 +43,14 @@
           <td>
             <%= note_version_position_diff(note_version) %>
           </td>
-          <% if CurrentUser.is_admin? %>
+          <% if policy(note_version).can_see_ip_addr? %>
             <td>
               <%= link_to_ip note_version.updater_ip_addr %>
             </td>
           <% end %>
           <td><%= link_to_user note_version.updater %></td>
           <td><%= compact_time note_version.updated_at %></td>
-          <% if CurrentUser.is_member? %>
+          <% if NotePolicy.new(CurrentUser.user, note_version).revert? %>
             <td>
               <%= link_to "Revert to", revert_note_path(note_version.note_id, version_id: note_version.id, format: :json), "class": "revert-item-link", 'data-noun': "note" %>
             </td>

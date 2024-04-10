@@ -2,33 +2,36 @@
 
 class TakedownsController < ApplicationController
   respond_to :html, :json
-  before_action :can_handle_takedowns_only, except: %i[index new create]
-  before_action :load_takedown, except: %i[index new count_matching_posts]
+  before_action :load_takedown, except: %i[index new create count_matching_posts]
 
   def index
-    @takedowns = Takedown.search(search_params).paginate(params[:page], limit: params[:limit])
+    @takedowns = authorize(Takedown).search(search_params(Takedown)).paginate(params[:page], limit: params[:limit])
     respond_with(@takedowns)
   end
 
   def destroy
-    @takedown.destroy
+    authorize(@takedown).destroy
     respond_with(@takedown)
   end
 
   def show
+    authorize(@takedown)
     @show_instructions = (CurrentUser.ip_addr == @takedown.creator_ip_addr) || (@takedown.vericode == params[:code])
     respond_with(@takedown, @show_instructions)
   end
 
   def new
-    @takedown = Takedown.new
+    @takedown = authorize(Takedown.new(permitted_attributes(Takedown)))
     respond_with(@takedown)
   end
 
   def edit
+    authorize(@takedown)
   end
 
   def create
+    @takedown = authorize(Takedown.new(permitted_attributes(Takedown)))
+    @takedown.save
     flash[:notice] = @takedown.errors.count > 0 ? @takedown.errors.full_messages.join(". ") : "Takedown created"
     if @takedown.errors.count > 0
       respond_with(@takedown)
@@ -38,6 +41,8 @@ class TakedownsController < ApplicationController
   end
 
   def update
+    authorize(@takedown)
+    # TODO: this *should* be changed eventually to use the update method & be strictly validated
     @takedown.notes = params[:takedown][:notes]
     @takedown.reason_hidden = params[:takedown][:reason_hidden]
     @takedown.apply_posts(params[:takedown_posts])
@@ -52,7 +57,7 @@ class TakedownsController < ApplicationController
   end
 
   def add_by_ids
-    added = @takedown.add_posts_by_ids!(params[:post_ids])
+    added = authorize(@takedown).add_posts_by_ids!(params[:post_ids])
     respond_with(@takedown) do |fmt|
       fmt.json do
         render(json: {added_count: added.size, added_post_ids: added})
@@ -61,7 +66,7 @@ class TakedownsController < ApplicationController
   end
 
   def add_by_tags
-    added = @takedown.add_posts_by_tags!(params[:post_tags])
+    added = authorize(@takedown).add_posts_by_tags!(params[:post_tags])
     respond_with(@takedown) do |fmt|
       fmt.json do
         render(json: {added_count: added.size, added_post_ids: added})
@@ -70,30 +75,16 @@ class TakedownsController < ApplicationController
   end
 
   def count_matching_posts
+    authorize(Takedown)
     post_count = Post.tag_match_system(params[:post_tags]).count_only
     render(json: {matched_post_count: post_count})
   end
 
   def remove_by_ids
-    @takedown.remove_posts_by_ids!(params[:post_ids])
+    authorize(@takedown).remove_posts_by_ids!(params[:post_ids])
   end
 
   private
-
-  def search_params
-    permitted_params = %i[status]
-    permitted_params += %i[source reason creator_id creator_name reason_hidden instructions post_id notes] if CurrentUser.is_janitor?
-    permitted_params += %i[ip_addr email vericode order] if CurrentUser.is_owner?
-    permit_search_params(permitted_params)
-  end
-
-  def takedown_params
-    permitted_params = %i[email source instructions reason post_ids reason_hidden]
-    if CurrentUser.can_handle_takedowns?
-      permitted_params += %i[notes del_post_ids status]
-    end
-    params.require(:takedown).permit(*permitted_params, post_ids: [])
-  end
 
   def load_takedown
     @takedown = Takedown.find(params[:id])

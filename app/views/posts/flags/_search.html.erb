@@ -1,4 +1,4 @@
-<%= form_search(path: post_flags_path) do |f| %>
+<%= form_search(path: post_flags_path, policy: policy(PostFlag)) do |f| %>
   <%= f.input(:reason_matches, label: "Reason", hint: "Use * for wildcard searches") %>
   <%= f.input(:post_tags_match, label: "Tags", autocomplete: "tag-query") %>
   <%= f.input(:post_id, label: "Post ID") %>
@@ -7,10 +7,6 @@
     %w[Deletion deletion],
   ], include_blank: true) %>
   <%= f.input(:is_resolved, label: "Resolved?", collection: [["Yes", true], ["No", false]], include_blank: true) %>
-  <% if CurrentUser.is_janitor? %>
-    <%= f.user(:creator) %>
-  <% end %>
-  <% if CurrentUser.is_admin? %>
-    <%= f.input(:ip_addr, label: "Ip Address") %>
-  <% end %>
+  <%= f.user(:creator) %>
+  <%= f.input(:ip_addr, label: "Ip Address") %>
 <% end %>

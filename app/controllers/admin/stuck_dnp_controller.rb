@@ -2,13 +2,13 @@
 
 module Admin
   class StuckDnpController < ApplicationController
-    before_action :admin_only
-
     def new
+      authorize(:stuck_dnp)
     end
 
     def create
-      query = create_params[:query]
+      authorize(:stuck_dnp)
+      query = permitted_attributes(:stuck_dnp)[:query]
 
       if query.blank?
         flash[:notice] = "No query specified"
@@ -35,15 +35,9 @@ module Admin
         end
       end
 
-      StaffAuditLog.log(:stuck_dnp, CurrentUser.user, { query: query, post_ids: post_ids })
+      StaffAuditLog.log(:stuck_dnp, CurrentUser.user, query: query, post_ids: post_ids)
       flash[:notice] = "DNP tags removed from #{post_ids.count} posts"
       redirect_to(new_admin_stuck_dnp_path)
-    end
-
-    private
-
-    def create_params
-      params.require(:stuck_dnp).permit(%i[query])
     end
   end
 end

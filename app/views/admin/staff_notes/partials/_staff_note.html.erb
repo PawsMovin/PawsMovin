@@ -19,20 +19,16 @@
     <%= render "application/update_notice", record: staff_note %>
     <div class="content-menu">
       <menu>
-        <% if staff_note.can_edit?(CurrentUser.user) %>
-          <li><%= link_to "Edit", user_staff_note_path(staff_note, user_id: staff_note.user_id), id: "edit_staff_note_link_#{staff_note.id}", class: "edit_staff_note_link" %></li>
-        <% end %>
-        <% if staff_note.can_delete?(CurrentUser.user) %>
-          <% if staff_note.is_deleted? %>
-            <li><%= link_to "Undelete", user_staff_note_undelete_path(staff_note, user_id: staff_note.user_id), method: :put %></li>
-          <% else %>
-            <li><%= link_to "Delete", user_staff_note_path(staff_note, user_id: staff_note.user_id), method: :delete %></li>
-          <% end %>
+        <%= li_link_to_if(policy(staff_note).update?, "Edit", user_staff_note_path(staff_note, user_id: staff_note.user_id), id: "edit_staff_note_link_#{staff_note.id}", class: "edit_staff_note_link") %>
+        <% if staff_note.is_deleted? %>
+          <%= li_link_to_if(policy(staff_note).undelete?, "Undelete", user_staff_note_undelete_path(staff_note, user_id: staff_note.user_id), method: :put) %>
+        <% else %>
+          <%= li_link_to_if(policy(staff_note).destroy?, "Delete", user_staff_note_path(staff_note, user_id: staff_note.user_id), method: :delete) %>
         <% end %>
       </menu>
     </div>
 
-    <% if staff_note.can_edit?(CurrentUser.user) %>
+    <% if policy(staff_note).update? %>
       <%= render "admin/staff_notes/partials/edit", staff_note: staff_note, hidden: true %>
     <% end %>
   </div>

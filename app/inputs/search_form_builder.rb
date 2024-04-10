@@ -1,7 +1,15 @@
 # frozen_string_literal: true
 
 class SearchFormBuilder < SimpleForm::FormBuilder
+  def policy
+    @policy ||= @options[:policy]
+  end
+
   def input(attribute_name, options = {}, &)
+    ipolicy = options.delete(:policy)
+    if ipolicy != false && (ipolicy || policy).present? && !(ipolicy || policy).can_search_attribute?(attribute_name)
+      return "".html_safe
+    end
     value = value_for_attribute(attribute_name, options)
     return "".html_safe if value.nil? && options[:hide_unless_value]
     options = insert_autocomplete(options)

@@ -34,9 +34,9 @@
 
     <%= render "news_updates/notice", news_update: NewsUpdate.recent %>
 
-    <% if CurrentUser.is_member? && (name_error = CurrentUser.name_error) %>
+    <% if CurrentUser.user.is_member? && (name_error = CurrentUser.name_error) %>
       <div class="ui-state-highlight site-notice">
-        <p>Your current username '<%= CurrentUser.pretty_name %>' is invalid. Please change it <%= link_to "here", new_user_name_change_request_path %>.<p>
+        <p>Your current username '<%= CurrentUser.user.pretty_name %>' is invalid. Please change it <%= link_to "here", new_user_name_change_request_path %>.<p>
         Error: <%= name_error %>
       </div>
     <% end %>
@@ -45,11 +45,11 @@
       <%= render "users/ban_notice" %>
     <% end %>
 
-    <% if CurrentUser.has_mail? && CurrentUser.dmails.unread.first.present? && (cookies[:hide_dmail_notice].blank? || cookies[:hide_dmail_notice].to_i < CurrentUser.dmails.unread.first.id) %>
+    <% if CurrentUser.user.has_mail? && CurrentUser.user.dmails.unread.first.present? && (cookies[:hide_dmail_notice].blank? || cookies[:hide_dmail_notice].to_i < CurrentUser.dmails.unread.first.id) %>
       <%= render "users/dmail_notice" %>
     <% end %>
 
-    <% if !CurrentUser.is_anonymous? && !CurrentUser.is_verified? %>
+    <% unless CurrentUser.user.is_anonymous? || CurrentUser.user.is_verified? %>
       <%= render "users/validation_notice" %>
     <% end %>
 
@@ -67,7 +67,7 @@
     </div>
   </div>
 
-  <% if CurrentUser.is_anonymous? %>
+  <% if CurrentUser.user.is_anonymous? %>
     <%= render "static/guest_warning" %>
   <% end %>
   <%= render "static/footer" %>

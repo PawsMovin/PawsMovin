@@ -40,7 +40,7 @@
             <%= link_to "»", artist_versions_path(search: { updater_name: artist_version.updater_name }) %>
             <p>
               <%= compact_time(artist_version.updated_at) %>
-              <% if CurrentUser.is_admin? %>
+              <% if policy(artist_version).can_see_ip_addr? %>
                 (<%= link_to_ip artist_version.updater_ip_addr %>)
               <% end %>
             </p>

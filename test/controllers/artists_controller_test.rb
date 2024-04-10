@@ -6,7 +6,7 @@ class ArtistsControllerTest < ActionDispatch::IntegrationTest
   context "An artists controller" do
     setup do
       @admin = create(:admin_user)
-      @user = create(:user)
+      @user = create(:janitor_user)
       as(@user) do
         @artist = create(:artist, notes: "message")
         @masao = create(:artist, name: "masao", url_string: "http://www.pixiv.net/member.php?id=32777")

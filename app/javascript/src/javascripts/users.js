@@ -6,7 +6,7 @@ User.initialize_tabs = function() {
     let selectedTab = "0";
     container.find("h2.tab").on("click", (event) => {
         event.preventDefault();
-        
+
         let element = $(event.target);
         if(element.is("a")) element = element.parents("h2.tab");
         const newTab = element.attr("tab");
@@ -23,8 +23,33 @@ User.initialize_tabs = function() {
     });
 }
 
-$(() => {
+User.initialize_permissions = function() {
+  const $list = $(".permissions-list");
+  const $expand = $(".expand-permissions-link");
+  const $collapse = $(".collapse-permissions-link");
+
+  $expand.on("click", function(event) {
+    event.preventDefault();
+    $expand.hide();
+    $collapse.show();
+    $list.data("original-text", $list.text());
+    $list.text(`${$list.text()}, ${$expand.attr("data-extra")}`);
+  });
+
+  $collapse.on("click", function(event) {
+    event.preventDefault();
+    $expand.show();
+    $collapse.hide();
+    $list.text($list.data("original-text"));
+    $list.removeData("original-text");
+  });
+}
+
+$(function() {
+  if($("#c-users #a-index")) {
     User.initialize_tabs();
+    User.initialize_permissions();
+  }
 });
 
 export default User;

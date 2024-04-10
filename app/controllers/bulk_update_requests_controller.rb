@@ -1,79 +1,56 @@
 # frozen_string_literal: true
 
 class BulkUpdateRequestsController < ApplicationController
-  respond_to :html, :json
-  before_action :member_only, except: %i[index show]
   before_action :load_bulk_update_request, except: %i[new create index]
+  respond_to :html, :json
+
+  def index
+    @bulk_update_requests = authorize(BulkUpdateRequest).search(search_params(BulkUpdateRequest)).includes(:forum_post, :creator, :approver).paginate(params[:page], limit: params[:limit])
+    respond_with(@bulk_update_requests)
+  end
 
   def new
-    @bulk_update_request = BulkUpdateRequest.new
+    @bulk_update_request = authorize(BulkUpdateRequest.new)
     respond_with(@bulk_update_request)
   end
 
   def create
-    @bulk_update_request = BulkUpdateRequest.create(bur_params(:create))
+    @bulk_update_request = authorize(BulkUpdateRequest.new(permitted_attributes(BulkUpdateRequest)))
+    @bulk_update_request.save
     respond_with(@bulk_update_request)
   end
 
   def show
-    @bulk_update_request = BulkUpdateRequest.find(params[:id])
+    @bulk_update_request = authorize(BulkUpdateRequest.find(params[:id]))
     respond_with(@bulk_update_request)
   end
 
   def edit
+    authorize(@bulk_update_request)
   end
 
   def update
-    if @bulk_update_request.editable?(CurrentUser.user)
-      @bulk_update_request.should_validate = true
-      @bulk_update_request.update(bur_params(:update))
-      flash[:notice] = "Bulk update request updated"
-      respond_with(@bulk_update_request)
-    else
-      access_denied
-    end
+    @bulk_update_request.should_validate = true
+    @bulk_update_request.update(permitted_attributes(BulkUpdateRequest))
+    notice("Bulk update request updated")
+    respond_with(@bulk_update_request)
   end
 
   def approve
-    if @bulk_update_request.approvable?(CurrentUser.user)
-      @bulk_update_request.approve!(CurrentUser.user)
-      if @bulk_update_request.errors.size > 0
-        flash[:notice] = @bulk_update_request.errors.full_messages.join(";")
-      else
-        flash[:notice] = "Bulk update approved"
-      end
-      respond_with(@bulk_update_request)
-    else
-      access_denied
-    end
+    authorize(@bulk_update_request).approve!(CurrentUser.user)
+    notice(@bulk_update_request.valid? ? "Bulk update approved" : @bulk_update_request.errors.full_messages.join("; "))
+    respond_with(@bulk_update_request)
   end
 
   def destroy
-    if @bulk_update_request.rejectable?(CurrentUser.user)
-      @bulk_update_request.reject!(CurrentUser.user)
-      flash[:notice] = "Bulk update request rejected"
-      respond_with(@bulk_update_request, location: bulk_update_requests_path)
-    else
-      access_denied
-    end
-  end
-
-  def index
-    @bulk_update_requests = BulkUpdateRequest.search(search_params).includes(:forum_post, :creator, :approver).paginate(params[:page], limit: params[:limit])
-    respond_with(@bulk_update_requests)
+    authorize(@bulk_update_request).reject!(CurrentUser.user)
+    notice("Bulk update request rejected")
+    respond_with(@bulk_update_request, location: bulk_update_requests_path)
   end
 
   private
 
   def load_bulk_update_request
     @bulk_update_request = BulkUpdateRequest.find(params[:id])
-  end
-
-  def bur_params(context)
-    permitted_params = %i[script]
-    permitted_params += %i[title reason forum_topic_id] if context == :create
-    permitted_params += %i[skip_forum] if context == :create && CurrentUser.is_admin?
-
-    params.require(:bulk_update_request).permit(permitted_params)
   end
 end

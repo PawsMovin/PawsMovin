@@ -7,11 +7,11 @@
         <th>Changes</th>
         <th>Desc Chg</th>
         <th>Updater</th>
-        <% if CurrentUser.is_admin? %>
+        <% if policy(PoolVersion).can_see_ip_addr? %>
           <th>IP Address</th>
         <% end %>
         <th>Date</th>
-        <% if CurrentUser.is_member? %>
+        <% if policy(Pool).revert? %>
           <th></th>
         <% end %>
       </tr>
@@ -28,13 +28,13 @@
               <%= link_to_user pool_version.updater %>
             <% end %>
           </td>
-          <% if CurrentUser.is_admin? %>
+          <% if policy(pool_version).can_see_ip_addr? %>
             <td>
               <%= link_to_ip pool_version.updater_ip_addr %>
             </td>
           <% end %>
           <td><%= compact_time pool_version.updated_at %></td>
-          <% if CurrentUser.is_member? %>
+          <% if PoolPolicy.new(CurrentUser.user, pool_version).revert? %>
             <td>
               <%= link_to "Revert to", revert_pool_path(pool_version.pool_id, version_id: pool_version.id, format: :json), "class": "revert-item-link", 'data-noun': "pool" %>
             </td>

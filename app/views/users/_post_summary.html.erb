@@ -1,7 +1,7 @@
 <% user.artists.each do |artist| %>
   <div class="box user-artwork">
     <h2 class="box-label">
-      <%= link_to("Artwork", posts_path(tags: artist.name)) %>
+      <%= link_to(user.artists.length == 1 ? "Artwork" : artist.name, posts_path(tags: artist.name)) %>
     </h2>
     <span class="box-extra">
       <%= link_to("Comments", comments_path(group_by: "comment", search: { post_tags_match: artist.name })) %>
@@ -14,7 +14,7 @@
   </div>
 <% end %>
 
-<% if presenter.has_uploads? %>
+<% if presenter.show_uploads? %>
   <div class="box user-uploads">
     <h2 class="box-label">
       <%= link_to "Uploads", posts_path(tags: "user:#{user.name}") %>
@@ -26,9 +26,7 @@
       <%= link_to("#{user.post_replacement_rejected_count} rejected", post_replacements_path(search: { creator_id: user.id, status: "rejected" })) %>
       <span class="spacer"></span>
       <%= link_to("Comments", comments_path(group_by: "comment", search: { poster_id: user.id })) %>
-      <% if CurrentUser.is_moderator? %>
-        <%= link_to("Votes", action: "index", controller: "posts/votes", search: { user_name: user.name }) %>
-      <% end %>
+      <%= link_to_if(PostVotePolicy.new(CurrentUser.user, presenter).index?, "Votes", { controller: "posts/votes", search: { user_name: user.name } }) { "" } %>
     </span>
     <div class="box-posts">
       <% presenter.uploads.each do |post| %>

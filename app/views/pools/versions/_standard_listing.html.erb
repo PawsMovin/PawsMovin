@@ -7,7 +7,7 @@
         <th>Changes</th>
         <th>Desc Chg</th>
         <th>Updater</th>
-        <% if CurrentUser.is_admin? %>
+        <% if policy(PoolVersion).can_see_ip_addr? %>
           <th>IP Address</th>
         <% end %>
         <th>Date</th>
@@ -25,7 +25,7 @@
               <%= link_to_user pool_version.updater %>
             <% end %>
           </td>
-          <% if CurrentUser.is_admin? %>
+          <% if policy(pool_version).can_see_ip_addr? %>
             <td>
               <%= link_to_ip pool_version.updater_ip_addr %>
             </td>

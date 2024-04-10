@@ -5,7 +5,7 @@
 </head>
 <%= tag.body(**body_attributes(CurrentUser.user)) do %>
   <%= render "layouts/theme_include" %>
-  <% if CurrentUser.is_anonymous? %>
+  <% if CurrentUser.user.is_anonymous? %>
     <%= render "static/guest_warning" %>
   <% end %>
   <div id="page">

@@ -2,13 +2,12 @@
 
 module Users
   class DeletionsController < ApplicationController
-    before_action :logged_in_only
-
     def show
+      authorize(UserDeletion.new(CurrentUser.user, nil))
     end
 
     def destroy
-      deletion = UserDeletion.new(CurrentUser.user, params[:password])
+      deletion = authorize(UserDeletion.new(CurrentUser.user, params[:password]))
       deletion.delete!
       cookies.delete(:remember)
       session.delete(:user_id)

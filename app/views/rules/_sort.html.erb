@@ -35,7 +35,7 @@
     <tbody class="rules">
     <% category.rules.order(:order).each do |rule| %>
       <tr id="rule-<%= rule.id %>" data-id="<%= rule.id %>">
-        <td><%= category.order %>.<%= rule.order %> (<%= rule.id %>)</td>
+        <td><%= category.order %>.<%= rule.order %></td>
         <td><%= link_to_user rule.creator %></td>
         <td><%= compact_time rule.updated_at %></td>
         <td><%= rule.name %></td>

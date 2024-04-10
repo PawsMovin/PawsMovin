@@ -20,6 +20,8 @@ class ForumTopic < ApplicationRecord
   after_save :log_save
   after_destroy :log_delete
 
+  attribute :category_id, :integer, default: -> { PawsMovin.config.default_forum_category }
+
   def validate_not_aibur
     return if CurrentUser.is_moderator? || !original_post&.is_aibur?
 
@@ -86,6 +88,14 @@ class ForumTopic < ApplicationRecord
   end
 
   module SearchMethods
+    def visible(user)
+      if user.is_moderator?
+        permitted
+      else
+        permitted.active
+      end
+    end
+
     def active
       where("(forum_topics.is_hidden = false or forum_topics.creator_id = ?)", CurrentUser.id)
     end

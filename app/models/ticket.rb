@@ -204,7 +204,14 @@ class Ticket < ApplicationRecord
     def search(params)
       q = super.includes(:creator).includes(:claimant)
 
-      q = q.where_user(:creator_id, :creator, params)
+      if params[:creator_id].present? || params[:creator_name].present?
+        # FIXME: This is more complicated than it needs to be
+        if CurrentUser.is_moderator? || params[:creator_id].to_i == CurrentUser.user.id || params[:creator_name]&.downcase == CurrentUser.user.name.downcase
+          q = q.where_user(:creator_id, :creator, params)
+        else
+          q = q.none
+        end
+      end
       q = q.where_user(:claimant_id, :claimant, params)
       q = q.where_user(:accused_id, :accused, params)
 

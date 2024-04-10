@@ -1,14 +1,12 @@
 # frozen_string_literal: true
 
 class CommentsController < ApplicationController
-  respond_to :html, :json
-  before_action :member_only, except: %i[index search show for_post]
-  before_action :moderator_only, only: %i[unhide warning]
-  before_action :admin_only, only: [:destroy]
   skip_before_action :api_check
+  respond_to :html, :json
 
   def index
-    if params[:group_by] == "comment" || (request.format == :json && params[:group_by].blank?)
+    authorize(Comment)
+    if params[:group_by] == "comment" || (request.format.json? && params[:group_by].blank?)
       index_by_comment
     else
       index_by_post
@@ -16,10 +14,11 @@ class CommentsController < ApplicationController
   end
 
   def search
+    authorize(Comment)
   end
 
   def for_post
-    @post = Post.find(params[:id])
+    @post = authorize(Post.find(params[:id]), policy_class: CommentPolicy)
     @comments = @post.comments
     @comment_votes = CommentVote.for_comments_and_user(@comments.map(&:id), CurrentUser.id)
     comment_html = render_to_string(partial: "comments/partials/show/comment", collection: @comments, locals: { post: @post }, formats: [:html])
@@ -31,20 +30,20 @@ class CommentsController < ApplicationController
   end
 
   def new
-    @comment = Comment.new(comment_params(:create))
+    @comment = authorize(Comment.new(permitted_attributes(Comment)))
     respond_with(@comment)
   end
 
   def update
-    @comment = Comment.find(params[:id])
-    check_editable(@comment)
-    @comment.update(comment_params(:update))
+    @comment = authorize(Comment.find(params[:id]))
+    @comment.update(permitted_attributes(@comment))
     respond_with(@comment, location: post_path(@comment.post_id))
   end
 
   def create
-    @comment = Comment.create(comment_params(:create))
-    flash[:notice] = @comment.valid? ? "Comment posted" : @comment.errors.full_messages.join("; ")
+    @comment = authorize(Comment.new(permitted_attributes(Comment)))
+    @comment.save
+    notice(@comment.valid? ? "Comment posted" : @comment.errors.full_messages.join("; "))
     respond_with(@comment) do |format|
       format.html do
         redirect_back(fallback_location: @comment.post || comments_path)
@@ -53,40 +52,36 @@ class CommentsController < ApplicationController
   end
 
   def edit
-    @comment = Comment.find(params[:id])
-    check_editable(@comment)
+    @comment = authorize(Comment.find(params[:id]))
     respond_with(@comment)
   end
 
   def show
-    @comment = Comment.find(params[:id])
-    check_visible(@comment)
+    @comment = authorize(Comment.find(params[:id]))
     @comment_votes = CommentVote.for_comments_and_user([@comment.id], CurrentUser.id)
     respond_with(@comment)
   end
 
   def destroy
-    @comment = Comment.find(params[:id])
+    @comment = authorize(Comment.find(params[:id]))
     @comment.destroy
     respond_with(@comment)
   end
 
   def hide
-    @comment = Comment.find(params[:id])
-    check_hidable(@comment)
+    @comment = authorize(Comment.find(params[:id]))
     @comment.hide!
     respond_with(@comment)
   end
 
   def unhide
-    @comment = Comment.find(params[:id])
-    check_hidable(@comment)
+    @comment = authorize(Comment.find(params[:id]))
     @comment.unhide!
     respond_with(@comment)
   end
 
   def warning
-    @comment = Comment.find(params[:id])
+    @comment = authorize(Comment.find(params[:id]))
     if params[:record_type] == "unmark"
       @comment.remove_user_warning!
     else
@@ -102,45 +97,18 @@ class CommentsController < ApplicationController
   def index_by_post
     tags = params[:tags] || ""
     @posts = Post.tag_match(tags + " order:comment_bumped").paginate(params[:page], limit: 5, search_count: params[:search])
-    comment_ids = @posts.select { |post| post.comments_visible_to?(CurrentUser) }.flat_map {|post| post.comments.visible(CurrentUser.user).recent.reverse.map(&:id)} if CurrentUser.id
+    comment_ids = @posts.select { |post| post.comments_visible_to?(CurrentUser.user) }.flat_map {|post| post.comments.visible(CurrentUser.user).recent.reverse.map(&:id)} if CurrentUser.id
     @comment_votes = CommentVote.for_comments_and_user(comment_ids || [], CurrentUser.id)
     respond_with(@posts)
   end
 
   def index_by_comment
     @comments = Comment.visible(CurrentUser.user)
-    @comments = @comments.search(search_params).paginate(params[:page], limit: params[:limit], search_count: params[:search])
+    @comments = @comments.search(search_params(Comment)).paginate(params[:page], limit: params[:limit], search_count: params[:search])
     respond_with(@comments) do |format|
       format.html do
         @comment_votes = CommentVote.for_comments_and_user(@comments.select { |comment| comment.visible_to?(CurrentUser) }.map(&:id), CurrentUser.id)
       end
     end
-  end
-
-  def check_editable(comment)
-    raise(User::PrivilegeError) unless comment.editable_by?(CurrentUser.user)
-  end
-
-  def check_visible(comment)
-    raise(User::PrivilegeError) unless comment.visible_to?(CurrentUser.user)
-  end
-
-  def check_hidable(comment)
-    raise(User::PrivilegeError) unless comment.can_hide?(CurrentUser.user)
-  end
-
-  def search_params
-    permitted_params = %i[body_matches post_id post_tags_match creator_name creator_id post_note_updater_name post_note_updater_id poster_id poster_name is_sticky order]
-    permitted_params += %i[is_hidden] if CurrentUser.is_moderator?
-    permitted_params += %i[ip_addr] if CurrentUser.is_admin?
-    permit_search_params(permitted_params)
-  end
-
-  def comment_params(context)
-    permitted_params = %i[body]
-    permitted_params += %i[post_id] if context == :create
-    permitted_params += %i[is_sticky is_hidden] if CurrentUser.is_moderator?
-
-    params.fetch(:comment, {}).permit(permitted_params)
   end
 end

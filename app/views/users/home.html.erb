@@ -1,4 +1,4 @@
-<% if CurrentUser.is_anonymous? %>
+<% if CurrentUser.user.is_anonymous? %>
   <h2>You are not logged in.</h2>
 
   <div class="section" style="width:450px;">
@@ -131,11 +131,11 @@
   <div class="section" style="width:450px;">
     <ul class="link-page">
       <li>» <%= link_to "Sign out", session_path, method: :delete %></li>
-      <li>» <%= link_to "Settings", edit_user_path(CurrentUser.user) %></li>
+      <li>» <%= link_to "Settings", edit_users_path %></li>
       <li>» <%= link_to "Change password", edit_user_password_path(CurrentUser.user) %></li>
       <li>» <%= link_to "Manage API Access", user_api_keys_path(CurrentUser.user) %></li>
       <li>» <%= link_to "Change username", new_user_name_change_request_path %></li>
-      <% if PawsMovin.config.enable_email_verification? && !CurrentUser.is_verified? %>
+      <% if PawsMovin.config.enable_email_verification? && !CurrentUser.user.is_verified? %>
         <li>» <%= link_to "Resend activation email", resend_confirmation_email_path %></li>
       <% end %>
       <br>

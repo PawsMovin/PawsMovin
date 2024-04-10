@@ -1,18 +1,16 @@
 <%# locals: (type:, votes:, deletable: false, lockable: false) -%>
 
 <%# path is a string here because of duplicate routes %>
-<%= form_search(path: { controller: "#{type.model_type}s/votes", action: :index }) do |f| %>
+<%= form_search(path: { controller: "#{type.model_type}s/votes", action: :index }, policy: policy(type)) do |f| %>
   <%= f.user(:user, label: "Voter") %>
   <%= f.input(:"#{type.model_type}_id", label: "#{type.model_type.to_s.titleize} ID") %>
   <br>
   <%= f.user(:"#{type.model_type}_creator", label: "#{type.model_type.to_s.titleize} Creator") %>
   <%= f.input(:timeframe, label: "Timeframe", include_blank: true, collection: [["Last Week", "7"], ["Last Month", "30"], ["Last Three Months", "90"], ["Last Year", "360"]]) %>
   <%= f.input(:score, label: "Type", include_blank: true, collection: type.vote_types) %>
-  <% if CurrentUser.is_admin? %>
-    <%= f.input(:user_ip_addr, label: "IP Address") %>
-    <%= f.input(:duplicates_only, label: "Duplicates Only", as: :boolean) %>
-    <%= f.input(:order, collection: [%w[Created id], ["IP Address", "ip_addr"]]) %>
-  <% end %>
+  <%= f.input(:user_ip_addr, label: "IP Address") %>
+  <%= f.input(:duplicates_only, label: "Duplicates Only", as: :boolean) %>
+  <%= f.input(:order, collection: [%w[Created id], ["IP Address", "ip_addr"]]) %>
 <% end %>
 
 <table class="striped" id="votes">
@@ -25,13 +23,13 @@
     <th><%= type.model_type.to_s.titlecase %></th>
     <th><%= type.model_type.to_s.titlecase %> Creator</th>
     <th>Voter</th>
-    <% if CurrentUser.is_admin? %>
+    <% if policy(type).can_see_email? %>
       <th>Email</th>
     <% end %>
     <th>Signed Up</th>
     <th>Vote</th>
     <th>Created</th>
-    <% if CurrentUser.is_admin? %>
+    <% if policy(type).can_see_ip_addr? %>
       <th>IP</th>
     <% end %>
   </tr>
@@ -46,13 +44,13 @@
       <td><%= link_to vote.send("#{type.model_type}_id"), vote.send(type.model_type) %></td>
       <td><%= link_to_user vote.send(type.model_type).send(type.model_creator_column) %></td>
       <td><%= link_to_user vote.user %></td>
-      <% if CurrentUser.is_admin? %>
+      <% if policy(vote).can_see_email? %>
         <td><%= vote.user.email %></td>
       <% end %>
       <td><%= time_ago_in_words_tagged(vote.user.created_at) %></td>
       <td><%= vote.vote_display.html_safe %></td>
       <td><%= time_ago_in_words_tagged(vote.created_at) %></td>
-      <% if CurrentUser.is_admin? %>
+      <% if policy(vote).can_see_ip_addr? %>
         <td><%= link_to_ip vote.user_ip_addr%></td>
       <% end %>
     </tr>
@@ -60,14 +58,14 @@
   </tbody>
 </table>
 
-<% if deletable || lockable %>
+<% if (deletable || lockable) && policy(type).manage? %>
   <br>
   <ul>
     <li><%= tag.button("Select All", id: "select-all-votes") %></li>
-    <% if lockable %>
+    <% if lockable && policy(type).lock? %>
       <li><%= tag.button("Lock Votes", id: "lock-votes") %> Set the votes to 0, preventing the user from voting on the <%= type.model_type %> again</li>
     <% end %>
-    <% if deletable && CurrentUser.is_admin? %>
+    <% if deletable && policy(type).delete? %>
       <li><%= tag.button("Delete Votes", id: "delete-votes") %> Remove the votes</li>
     <% end %>
   </ul>
