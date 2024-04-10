@@ -624,6 +624,36 @@ class PostTest < ActiveSupport::TestCase
             assert_no_match(/Forcefully added 1 locked tag: avoid_posting/, @post.warnings.full_messages.join(" "))
           end
         end
+
+        context "in the invalid category" do
+          setup do
+            @post = create(:post, locked_tags: "invalid_tag -invalid_tag_2", tag_string: "invalid_tag invalid_tag_2 test_tag")
+            @post.warnings.clear
+            tag = Tag.where(name: %w[invalid_tag invalid_tag_2])
+            tag.update_all(category: TagCategory.invalid)
+            tag.each(&:update_category_cache)
+          end
+
+          should "remove them" do
+            @post.tag_string += " "
+            @post.save
+
+            assert_match(/Forcefully removed 2 invalid locked tags: invalid_tag, -invalid_tag_2/, @post.warnings.full_messages.join(" "))
+            assert_equal(@post.tag_string, "invalid_tag test_tag")
+            assert_empty(@post.locked_tags)
+          end
+
+          should "not allow adding" do
+            @post.update_column(:locked_tags, nil)
+
+            @post.locked_tags = "invalid_tag -invalid_tag_2"
+            @post.save
+
+            assert_match(/Forcefully removed 2 invalid locked tags: invalid_tag, -invalid_tag_2/, @post.warnings.full_messages.join(" "))
+            assert_equal(@post.tag_string, "invalid_tag test_tag")
+            assert_empty(@post.locked_tags)
+          end
+        end
       end
 
       # TODO: Invalid tags are now reported as warnings, and don't trigger these.

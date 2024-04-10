@@ -549,6 +549,7 @@ class Post < ApplicationRecord
       if !locked_tags.nil? && locked_tags.strip.blank?
         self.locked_tags = nil
       elsif locked_tags.present?
+        remove_invalid_category_locked_tags
         locked = TagQuery.scan(locked_tags.downcase)
         to_remove, to_add = locked.partition {|x| x =~ /\A-/i}
         to_remove = to_remove.map {|x| x[1..-1]}
@@ -641,25 +642,33 @@ class Post < ApplicationRecord
       tags
     end
 
+    def remove_invalid_category_locked_tags
+      locked = (locked_tags || "").downcase.split
+      invalid = locked.select { |tag| Tag.category_for(tag.starts_with?("-") ? tag[1..] : tag) == TagCategory.invalid }
+      unless invalid.empty?
+        self.warnings.add(:base, "Forcefully removed #{invalid.length} invalid locked #{'tag'.pluralize(invalid.length)}: #{invalid.join(', ')}")
+      end
+      self.locked_tags = locked.reject { |tag| invalid.include?(tag) }.uniq.join(" ")
+    end
+
     def remove_invalid_tags(tags)
-      tags = tags.reject do |tag|
+      tags.reject do |tag|
         if tag.errors.size > 0
           self.warnings.add(:base, "Can't add tag #{tag.name}: #{tag.errors.full_messages.join('; ')}")
         end
         tag.errors.size > 0
       end
-      tags
     end
 
     def remove_negated_tags(tags)
       @negated_tags, tags = tags.partition {|x| x =~ /\A-/i}
       @negated_tags = @negated_tags.map {|x| x[1..-1]}
       @negated_tags = TagAlias.to_aliased(@negated_tags)
-      return tags - @negated_tags
+      tags - @negated_tags
     end
 
     def add_automatic_tags(tags)
-      return tags if !PawsMovin.config.enable_dimension_autotagging?
+      return tags unless PawsMovin.config.enable_dimension_autotagging?
 
       tags -= %w[thumbnail low_res hi_res absurd_res superabsurd_res huge_filesize webm mp4 wide_image long_image]
 
