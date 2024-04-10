@@ -144,7 +144,7 @@ Comment.delete = function (event) {
   const cid = parent.data("comment-id");
   $.ajax({
     url: `/comments/${cid}/hide.json`,
-    type: "POST",
+    type: "PUT",
     dataType: "json"
   }).done(() => {
     parent.attr("data-is-deleted", true);

@@ -52,6 +52,25 @@ module ModActions
         )
       end
 
+      should "format forum_topic_move correctly" do
+        old_category = @topic.category
+        category = create(:forum_category)
+        set_count!
+        @topic.update!(category: category)
+
+        assert_matches(
+          actions:                 %w[forum_topic_move forum_post_update],
+          text:                    "Moved topic ##{@topic.id} (with title #{@topic.title}) by #{user(@user)} from #{old_category.name} to #{category.name}",
+          subject:                 @topic,
+          forum_topic_title:       @topic.title,
+          user_id:                 @user.id,
+          forum_category_id:       category.id,
+          old_forum_category_id:   old_category.id,
+          forum_category_name:     category.name,
+          old_forum_category_name: old_category.name,
+        )
+      end
+
       should "format forum_topic_stick correctly" do
         @topic.update!(is_sticky: true)
 

@@ -1,4 +1,4 @@
-<% if PawsMovin.config.show_backtrace?(CurrentUser.user, @exception.backtrace) && @exception.present? %>
+<% if @exception.present? && PawsMovin.config.show_backtrace?(CurrentUser.user, @exception.backtrace) %>
   <h1><%= @exception.class.to_s %> exception raised</h1>
 
   <p><%= @message || @exception.message.dup.force_encoding("utf-8") %></p>

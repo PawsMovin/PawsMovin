@@ -77,7 +77,12 @@ class ForumTopic < ApplicationRecord
         ModAction.log!(is_sticky ? :forum_topic_stick : :forum_topic_unstick, self, forum_topic_title: title, user_id: creator_id)
       end
 
-      unless specific && !new_record?
+      if saved_change_to_category_id? && !new_record?
+        specific = true
+        ModAction.log!(:forum_topic_move, self, forum_topic_title: title, user_id: creator_id, forum_category_id: category_id, forum_category_name: category.name, old_forum_category_id: category_id_before_last_save, old_forum_category_name: ForumCategory.find_by(id: category_id_before_last_save)&.name || "")
+      end
+
+      unless specific || new_record?
         ModAction.log!(:forum_topic_update, self, forum_topic_title: title, user_id: creator_id)
       end
     end
@@ -186,7 +191,7 @@ class ForumTopic < ApplicationRecord
   extend SearchMethods
 
   def editable_by?(user)
-    return true if user.is_moderator?
+    return true if user.is_admin?
     return false unless visible?(user) && original_post.editable_by?(user)
     creator_id == user.id
   end

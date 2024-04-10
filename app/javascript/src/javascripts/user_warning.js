@@ -21,10 +21,10 @@ export default class UserWarnable {
       }
 
       $.ajax({
-        type: "POST",
+        type: "PUT",
         url: `/${type}/${id}/warning.json`,
         data: {
-          'record_type': record_type
+          "record_type": record_type
         },
       }).done(data => {
         target.closest("article.comment, article.forum-post").replaceWith(data.html);

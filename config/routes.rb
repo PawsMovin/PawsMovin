@@ -113,9 +113,9 @@ Rails.application.routes.draw do
       end
     end
     member do
-      post :hide
-      post :unhide
-      post :warning
+      put :hide
+      put :unhide
+      put :warning
     end
   end
   resources :dmails, only: %i[new create index show destroy] do
@@ -132,9 +132,9 @@ Rails.application.routes.draw do
   resources :forum_posts do
     resource :votes, controller: "forum_posts/votes", only: %i[create destroy]
     member do
-      post :hide
-      post :unhide
-      post :warning
+      put :hide
+      put :unhide
+      put :warning
     end
     collection do
       get :search
@@ -145,13 +145,19 @@ Rails.application.routes.draw do
   end
   resources :forum_topics do
     member do
-      post :hide
-      post :unhide
-      post :subscribe
-      post :unsubscribe
+      put :hide
+      put :unhide
+      put :lock
+      put :unlock
+      put :sticky
+      put :unsticky
+      get :confirm_move
+      post :move
+      put :subscribe
+      put :unsubscribe
     end
     collection do
-      post :mark_all_as_read
+      put :mark_all_as_read
     end
   end
   resources :forum_categories, only: %i[index show new create edit update destroy] do

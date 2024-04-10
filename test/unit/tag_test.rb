@@ -76,7 +76,7 @@ class TagTest < ActiveSupport::TestCase
         [5, %w[species spec]],
         [6, %w[invalid inv]],
         [7, %w[meta]],
-        [8, %w[lore lor]]
+        [8, %w[lore lor]],
       ]
       mapping.each do |category, matches|
         matches.each do |match|

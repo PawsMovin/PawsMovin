@@ -26,7 +26,7 @@ class ModAction < ApplicationRecord
     new_name old_name
     duration old_duration
     expires_at old_expires_at
-    forum_category_id forum_category_name old_forum_category_name can_view old_can_view can_create old_can_create
+    forum_category_id old_forum_category_id forum_category_name forum_category_name old_forum_category_name can_view old_can_view can_create old_can_create
     forum_topic_id forum_topic_title
     pool_name
     pattern old_pattern note hidden
@@ -218,6 +218,10 @@ class ModAction < ApplicationRecord
     forum_topic_lock:              {
       text: ->(mod, user) { "Locked topic ##{mod.subject_id} (with title #{mod.forum_topic_title}) by #{user}" },
       json: %i[forum_topic_title user_id],
+    },
+    forum_topic_move:              {
+      text: ->(mod, user) { "Moved topic ##{mod.subject_id} (with title #{mod.forum_topic_title}) by #{user} from #{mod.old_forum_category_name} to #{mod.forum_category_name}" },
+      json: %i[forum_topic_title user_id forum_category_id old_forum_category_id forum_category_name old_forum_category_name],
     },
     forum_topic_stick:             {
       text: ->(mod, user) { "Stickied topic ##{mod.subject_id} (with title #{mod.forum_topic_title}) by #{user}" },

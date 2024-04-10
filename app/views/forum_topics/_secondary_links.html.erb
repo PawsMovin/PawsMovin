@@ -5,38 +5,36 @@
   <%= subnav_link_to_if(policy(TagAlias).create?, "Request alias", new_tag_alias_path) %>
   <%= subnav_link_to_if(policy(TagImplication).create?, "Request implication", new_tag_implication_path) %>
   <%= subnav_link_to_if(policy(BulkUpdateRequest).create?, "Request BUR", new_bulk_update_request_path) %>
-  <%= subnav_link_to_if(policy(ForumTopic).mark_all_as_read?, "Mark all as read", mark_all_as_read_forum_topics_path, method: :post, data: { shortcut: "shift+r" }) %>
+  <%= subnav_link_to_if(policy(ForumTopic).mark_all_as_read?, "Mark all as read", mark_all_as_read_forum_topics_path, method: :put, data: { shortcut: "shift+r" }) %>
 
   <%= subnav_link_to "Search", search_forum_posts_path %>
   <%= subnav_link_to "Help", help_page_path(id: "forum") %>
-  <% if CurrentUser.user.is_member? && @forum_topic && !@forum_topic.new_record? %>
+  <% ftpolicy = ForumTopicPolicy.new(CurrentUser.user, @forum_topic) %>
+  <% if @forum_topic && !@forum_topic.new_record? %>
     <% if @forum_topic.user_subscription(CurrentUser.user) %>
-      <%= subnav_link_to "Unsubscribe", unsubscribe_forum_topic_path(@forum_topic), method: :post %>
+      <%= subnav_link_to_if(ftpolicy.unsubscribe?, "Unsubscribe", unsubscribe_forum_topic_path(@forum_topic), method: :put) %>
     <% else %>
-      <%= subnav_link_to "Subscribe", subscribe_forum_topic_path(@forum_topic), method: :post, data: { confirm: "Are you sure you want to receive email notifications for this forum topic?" } %>
+      <%= subnav_link_to_if(ftpolicy.subscribe?, "Subscribe", subscribe_forum_topic_path(@forum_topic), method: :put, data: { confirm: "Are you sure you want to receive email notifications for this forum topic?" }) %>
     <% end %>
-    <%#TODO: change this check when proper routes are added %>
-    <% if !@forum_topic.new_record? && policy(@forum_topic).update? %>
-      <%= subnav_link_to "Edit", edit_forum_topic_path(@forum_topic), data: { shortcut: "e" } %>
-      <% if @forum_topic.is_hidden? && policy(@forum_topic).unhide? %>
-        <%= subnav_link_to "Unhide", unhide_forum_topic_path(@forum_topic), method: :post %>
-      <% elsif policy(@forum_topic).hide? %>
-        <%= subnav_link_to "Hide", hide_forum_topic_path(@forum_topic), method: :post, data: { confirm: "Are you sure you want to hide this forum topic?" } %>
+    <% if !@forum_topic.new_record? && ftpolicy.any?(:update?, :hide?, :unhide?, :lock?, :unlock?, :sticky?, :unsticky?) %>
+      |
+      <%= subnav_link_to_if(ftpolicy.update?, "Edit", edit_forum_topic_path(@forum_topic), data: { shortcut: "e" }) %>
+      <% if @forum_topic.is_hidden? && ftpolicy.unhide? %>
+        <%= subnav_link_to "Unhide", unhide_forum_topic_path(@forum_topic), method: :put %>
+      <% elsif ftpolicy.hide? %>
+        <%= subnav_link_to "Hide", hide_forum_topic_path(@forum_topic), method: :put, data: { confirm: "Are you sure you want to hide this forum topic?" } %>
       <% end %>
-      <% if can_use_attribute?(@forum_topic, :is_locked) %>
-        <% if @forum_topic.is_locked? %>
-          <%= subnav_link_to "Unlock", forum_topic_path(@forum_topic, forum_topic: { is_locked: false }), method: :put, data: { confirm: "Are you sure you want to unlock this forum topic?" } %>
-        <% else %>
-          <%= subnav_link_to "Lock", forum_topic_path(@forum_topic, forum_topic: { is_locked: true }), method: :put, data: { confirm: "Are you sure you want to lock this forum topic?" } %>
-        <% end %>
+      <% if @forum_topic.is_locked? && ftpolicy.unlock? %>
+        <%= subnav_link_to "Unlock", unlock_forum_topic_path(@forum_topic), method: :put, data: { confirm: "Are you sure you want to unlock this forum topic?" } %>
+      <% elsif ftpolicy.lock? %>
+        <%= subnav_link_to "Lock", lock_forum_topic_path(@forum_topic), method: :put, data: { confirm: "Are you sure you want to lock this forum topic?" } %>
       <% end %>
-      <% if can_use_attribute?(@forum_topic, :is_sticky) %>
-        <% if @forum_topic.is_sticky? %>
-          <%= subnav_link_to "Unsticky", forum_topic_path(@forum_topic, forum_topic: { is_sticky: false }), method: :put, data: { confirm: "Are you sure you want to unsticky this forum topic?" } %>
-        <% else %>
-          <%= subnav_link_to "Sticky", forum_topic_path(@forum_topic, forum_topic: { is_sticky: true }), method: :put, data: { confirm: "Are you sure you want to sticky this forum topic?" } %>
-        <% end %>
+      <% if @forum_topic.is_sticky? && ftpolicy.unsticky? %>
+        <%= subnav_link_to "Unsticky", unsticky_forum_topic_path(@forum_topic), method: :put, data: { confirm: "Are you sure you want to unsticky this forum topic?" } %>
+      <% elsif ftpolicy.sticky? %>
+        <%= subnav_link_to "Sticky", sticky_forum_topic_path(@forum_topic), method: :put, data: { confirm: "Are you sure you want to sticky this forum topic?" } %>
       <% end %>
+      <%= subnav_link_to_if(ftpolicy.confirm_move?, "Move", confirm_move_forum_topic_path(@forum_topic)) %>
     <% end %>
   <% end %>
 <% end %>

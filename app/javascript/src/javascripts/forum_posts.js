@@ -134,8 +134,8 @@ ForumPost.hide = function (e) {
   const fpid = parent.data('forum-post-id');
   $.ajax({
     url: `/forum_posts/${fpid}/hide.json`,
-    type: 'POST',
-    dataType: 'json'
+    type: "PUT",
+    dataType: "json"
   }).done(function (data) {
     $(`.forum-post[data-forum-post-id="${fpid}"] div.author h4`).append(" (hidden)");
     $(`.forum-post[data-forum-post-id="${fpid}"]`).attr('data-is-hidden', 'true');

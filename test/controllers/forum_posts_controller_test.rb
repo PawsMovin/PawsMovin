@@ -153,7 +153,7 @@ class ForumPostsControllerTest < ActionDispatch::IntegrationTest
       end
 
       should "restore the post" do
-        post_auth unhide_forum_post_path(@forum_post), @mod
+        put_auth unhide_forum_post_path(@forum_post), @mod
         assert_redirected_to(forum_post_path(@forum_post))
         @forum_post.reload
         assert_equal(false, @forum_post.is_hidden?)

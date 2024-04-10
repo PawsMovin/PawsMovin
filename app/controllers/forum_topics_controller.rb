@@ -2,7 +2,7 @@
 
 class ForumTopicsController < ApplicationController
   respond_to :html, :json
-  before_action :load_topic, only: %i[edit show update destroy hide unhide subscribe unsubscribe]
+  before_action :load_topic, except: %i[index new create mark_all_as_read]
   skip_before_action :api_check
 
   def index
@@ -81,7 +81,35 @@ class ForumTopicsController < ApplicationController
   def unhide
     authorize(@forum_topic)
     @forum_topic.unhide!
-    flash[:notice] = "Topic unhidden"
+    notice("Topic unhidden")
+    respond_with(@forum_topic)
+  end
+
+  def lock
+    authorize(@forum_topic)
+    @forum_topic.update(is_locked: true)
+    notice("Topic locked")
+    respond_with(@forum_topic)
+  end
+
+  def unlock
+    authorize(@forum_topic)
+    @forum_topic.update(is_locked: false)
+    notice("Topic unlocked")
+    respond_with(@forum_topic)
+  end
+
+  def sticky
+    authorize(@forum_topic)
+    @forum_topic.update(is_sticky: true)
+    notice("Topic stickied")
+    respond_with(@forum_topic)
+  end
+
+  def unsticky
+    authorize(@forum_topic)
+    @forum_topic.update(is_sticky: false)
+    notice("Topic unstickied")
     respond_with(@forum_topic)
   end
 
@@ -110,6 +138,21 @@ class ForumTopicsController < ApplicationController
     if subscription
       subscription.destroy
     end
+    respond_with(@forum_topic)
+  end
+
+  def confirm_move
+    authorize(@forum_topic)
+    @categories = ForumCategory.visible.select { |cat| cat != @forum_topic.category && cat.can_create_within?(CurrentUser.user) && cat.can_create_within?(@forum_topic.creator) }
+  end
+
+  def move
+    authorize(@forum_topic)
+    @category = ForumCategory.find(params.dig(:forum_topic, :category_id))
+    return render_expected_error(403, "You cannot move topics into categories you cannot create within.") unless @category.can_create_within?(CurrentUser.user)
+    return render_expected_error(403, "You cannot move topics into categories the topic creator cannot create within.") unless @category.can_create_within?(@forum_topic.creator)
+    @forum_topic.update(category: @category)
+    notice("Forum topic moved")
     respond_with(@forum_topic)
   end
 

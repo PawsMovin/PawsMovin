@@ -8,6 +8,7 @@ class ForumTopicsControllerTest < ActionDispatch::IntegrationTest
       @user = create(:user)
       @other_user = create(:user)
       @mod = create(:moderator_user)
+      @admin = create(:admin_user)
 
       as(@user) do
         @forum_topic = create(:forum_topic, title: "my forum topic", original_post_attributes: { body: "xxx" })
@@ -77,12 +78,12 @@ class ForumTopicsControllerTest < ActionDispatch::IntegrationTest
         assert_response :success
       end
 
-      should "render if the editor is a moderator" do
-        get_auth edit_forum_topic_path(@forum_topic), @mod
+      should "render if the editor is an admin" do
+        get_auth edit_forum_topic_path(@forum_topic), @admin
         assert_response :success
       end
 
-      should "fail if the editor is not the creator of the topic and is not a moderator" do
+      should "fail if the editor is not the creator of the topic and is not an admin" do
         get_auth edit_forum_topic_path(@forum_topic), @other_user
         assert_response(403)
       end
@@ -121,23 +122,108 @@ class ForumTopicsControllerTest < ActionDispatch::IntegrationTest
       end
 
       should "destroy the topic and any associated posts" do
-        delete_auth forum_topic_path(@forum_topic), create(:admin_user)
+        delete_auth forum_topic_path(@forum_topic), @admin
         assert_redirected_to(forum_topics_path)
+      end
+    end
+
+    context "hide action" do
+      should "hide the topic" do
+        put_auth hide_forum_topic_path(@forum_topic), @mod
+        assert_redirected_to(forum_topic_path(@forum_topic))
+        @forum_topic.reload
+        assert(@forum_topic.is_hidden?)
       end
     end
 
     context "unhide action" do
       setup do
-        as(@mod) do
-          @forum_topic.hide!
-        end
+        @forum_topic.update_column(:is_hidden, true)
       end
 
-      should "restore the topic" do
-        post_auth unhide_forum_topic_path(@forum_topic), @mod
+      should "unhide the topic" do
+        put_auth unhide_forum_topic_path(@forum_topic), @mod
         assert_redirected_to(forum_topic_path(@forum_topic))
         @forum_topic.reload
         assert_not(@forum_topic.is_hidden?)
+      end
+    end
+
+    context "lock action" do
+      should "lock the topic" do
+        put_auth lock_forum_topic_path(@forum_topic), @mod
+        assert_redirected_to(forum_topic_path(@forum_topic))
+        @forum_topic.reload
+        assert(@forum_topic.is_locked?)
+      end
+    end
+
+    context "unlock action" do
+      setup do
+        @forum_topic.update_column(:is_locked, true)
+      end
+
+      should "unlock the topic" do
+        put_auth unlock_forum_topic_path(@forum_topic), @mod
+        assert_redirected_to(forum_topic_path(@forum_topic))
+        @forum_topic.reload
+        assert_not(@forum_topic.is_locked?)
+      end
+    end
+
+    context "sticky action" do
+      should "sticky the topic" do
+        put_auth sticky_forum_topic_path(@forum_topic), @mod
+        assert_redirected_to(forum_topic_path(@forum_topic))
+        @forum_topic.reload
+        assert(@forum_topic.is_sticky?)
+      end
+    end
+
+    context "unsticky action" do
+      setup do
+        @forum_topic.update_column(:is_sticky, true)
+      end
+
+      should "unsticky the topic" do
+        put_auth unsticky_forum_topic_path(@forum_topic), @mod
+        assert_redirected_to(forum_topic_path(@forum_topic))
+        @forum_topic.reload
+        assert_not(@forum_topic.is_sticky?)
+      end
+    end
+
+    context "move action" do
+      setup do
+        @category = @forum_topic.category
+        as(@admin) do
+          @category2 = create(:forum_category)
+        end
+      end
+
+      should "move the topic" do
+        post_auth move_forum_topic_path(@forum_topic), @mod, params: { forum_topic: { category_id: @category2.id } }
+        assert_redirected_to(forum_topic_path(@forum_topic))
+        @forum_topic.reload
+        assert_equal(@category2.id, @forum_topic.category.id)
+      end
+
+      should "not move the topic if the mover cannot create within the new category" do
+        @category2.update_column(:can_create, @mod.level + 1)
+        post_auth move_forum_topic_path(@forum_topic), @mod, params: { forum_topic: { category_id: @category2.id }, format: :json }
+        assert_response(:forbidden)
+        assert_equal("You cannot move topics into categories you cannot create within.", @response.parsed_body["message"])
+        @forum_topic.reload
+        assert_equal(@category.id, @forum_topic.category.id)
+      end
+
+      should "not move the topic if the topic creator cannot create within the new category" do
+        @category2.update_column(:can_create, @forum_topic.creator.level + 1)
+        post_auth move_forum_topic_path(@forum_topic), @mod, params: { forum_topic: { category_id: @category2.id }, format: :json }
+        assert_response(:forbidden)
+        assert_equal("You cannot move topics into categories the topic creator cannot create within.", @response.parsed_body["message"])
+        @forum_topic.reload
+        assert_equal(@category.id, @forum_topic.category.id)
       end
     end
   end

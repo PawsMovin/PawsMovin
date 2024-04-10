@@ -21,6 +21,22 @@ class ForumTopicPolicy < ApplicationPolicy
     user.is_moderator? && min_level? && (!record.is_a?(ForumTopic) || record.can_hide?(user))
   end
 
+  def lock?
+    min_level? && user.is_moderator?
+  end
+
+  def unlock?
+    min_level? && user.is_moderator?
+  end
+
+  def sticky?
+    min_level? && user.is_moderator?
+  end
+
+  def unsticky?
+    min_level? && user.is_moderator?
+  end
+
   def subscribe?
     min_level?
   end
@@ -29,12 +45,20 @@ class ForumTopicPolicy < ApplicationPolicy
     min_level?
   end
 
-  def min_level?
-    !record.is_a?(ForumTopic) || record.visible?(user)
+  def confirm_move?
+    move?
+  end
+
+  def move?
+    min_level? && user.is_moderator?
   end
 
   def mark_all_as_read?
     true
+  end
+
+  def min_level?
+    !record.is_a?(ForumTopic) || record.visible?(user)
   end
 
   def permitted_attributes

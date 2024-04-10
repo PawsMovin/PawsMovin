@@ -136,7 +136,7 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
 
     context "hide action" do
       should "mark comment as hidden" do
-        post_auth hide_comment_path(@comment.id), @user
+        put_auth hide_comment_path(@comment.id), @user
         assert_equal(true, @comment.reload.is_hidden)
         assert_redirected_to @comment
       end
@@ -148,13 +148,13 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
       end
 
       should "mark comment as unhidden if mod" do
-        post_auth unhide_comment_path(@comment.id), @mod
+        put_auth unhide_comment_path(@comment.id), @mod
         assert_equal(false, @comment.reload.is_hidden)
         assert_redirected_to(@comment)
       end
 
       should "not mark comment as unhidden if not mod" do
-        post_auth unhide_comment_path(@comment.id), @user
+        put_auth unhide_comment_path(@comment.id), @user
         assert_equal(true, @comment.reload.is_hidden)
         assert_response :forbidden
       end
