@@ -10,11 +10,11 @@ class UserRevertTest < ActiveSupport::TestCase
 
       as(@creator) do
         @parent = create(:post)
-        @post = create(:post, tag_string: "aaa bbb ccc", rating: "q", source: "xyz")
+        @post = create(:post, tag_string: "aaa bbb ccc invalid_source", rating: "q", source: "xyz")
       end
 
       as(@user) do
-        @post.update(tag_string: "bbb ccc xxx", source: "", rating: "e")
+        @post.update(tag_string: "bbb ccc xxx invalid_source", source: "", rating: "e")
       end
     end
 
@@ -33,7 +33,7 @@ class UserRevertTest < ActiveSupport::TestCase
         end
         @post.reload
 
-        assert_equal("aaa bbb ccc", @post.tag_string)
+        assert_equal("aaa bbb ccc invalid_source", @post.tag_string)
         assert_equal("xyz", @post.source)
         assert_equal("q", @post.rating)
       end

@@ -60,7 +60,7 @@ class PostVersionTest < ActiveSupport::TestCase
       should "also create a version" do
         assert_equal(1, @post.versions.size)
         @version = @post.versions.last
-        assert_equal("aaa bbb ccc", @version.tags)
+        assert_equal("aaa bbb ccc invalid_source", @version.tags)
         assert_equal(@post.rating, @version.rating)
         assert_equal(@post.parent_id, @version.parent_id)
         assert_equal(@post.source, @version.source)

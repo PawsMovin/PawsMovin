@@ -154,7 +154,7 @@ class PostTest < ActiveSupport::TestCase
     should "Copy tags to parent" do
       @post.copy_tags_to_parent
       @post.parent.save
-      assert_equal(@parent.reload.tag_string, "a b c d e f")
+      assert_equal(@parent.reload.tag_string, "a b c d e f invalid_source")
     end
     should "Copy sources to parent" do
       @post.copy_sources_to_parent
@@ -1092,6 +1092,26 @@ class PostTest < ActiveSupport::TestCase
         should "apply implications after adding the file type tag" do
           assert(@post.has_tag?("animated"), "expected 'webm' to imply 'animated'")
         end
+      end
+
+      context "with an invalid source" do
+        setup do
+          @post.update(source: "ABCD")
+        end
+
+        should "add the invalid_source tag" do
+          assert_match(/invalid_source/, @post.reload.tag_string)
+        end
+
+        should "remove the invalid_source tag when the source is removed" do
+          @post.update(source: "")
+          assert_no_match(/invalid_source/, @post.reload.tag_string)
+        end
+      end
+
+      should "not allow adding invalid_source" do
+        @post.update(tag_string: "invalid_source")
+        assert_no_match(/invalid_source/, @post.reload.tag_string)
       end
 
       context "that has been updated" do
@@ -2261,7 +2281,7 @@ class PostTest < ActiveSupport::TestCase
         end
 
         should "correctly revert all fields" do
-          assert_equal("bbb xxx yyy", @post.tag_string)
+          assert_equal("bbb invalid_source xxx yyy", @post.tag_string)
           assert_equal("xyz", @post.source)
           assert_equal("q", @post.rating)
         end

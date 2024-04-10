@@ -338,6 +338,11 @@ class Post < ApplicationRecord
     end
 
     def apply_source_diff
+      if PawsMovin.config.enable_autotagging? && !should_process_tags?
+        tags = add_automatic_tags(tag_array)
+        set_tag_string(tags.uniq.sort.join(" "))
+      end
+
       return unless source_diff.present?
 
       diff = source_diff.gsub(/\r\n?/, "\n").gsub(/%0A/i, "\n").split(/(?:\r)?\n/)
@@ -668,9 +673,9 @@ class Post < ApplicationRecord
     end
 
     def add_automatic_tags(tags)
-      return tags unless PawsMovin.config.enable_dimension_autotagging?
+      return tags unless PawsMovin.config.enable_autotagging?
 
-      tags -= %w[thumbnail low_res hi_res absurd_res superabsurd_res huge_filesize webm mp4 wide_image long_image]
+      tags -= %w[thumbnail low_res hi_res absurd_res superabsurd_res huge_filesize webm mp4 wide_image long_image invalid_source]
 
       if has_dimensions?
         tags << "superabsurd_res" if image_width >= 10_000 && image_height >= 10_000
@@ -704,7 +709,16 @@ class Post < ApplicationRecord
         tags -= ["animated_png"]
       end
 
-      return tags
+      if invalid_source?
+        tags << "invalid_source"
+      end
+
+      tags
+    end
+
+    # should_process_tags?
+    def invalid_source?
+      source_array.any? { |source| !%r{^-?https?://}.match(source) }
     end
 
     def apply_casesensitive_metatags(tags)

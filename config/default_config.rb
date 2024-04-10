@@ -547,7 +547,7 @@ module PawsMovin
       posts.select {|x| can_user_see_post?(user, x)}
     end
 
-    def enable_dimension_autotagging?
+    def enable_autotagging?
       true
     end
 

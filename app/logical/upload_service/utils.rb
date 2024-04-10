@@ -68,7 +68,7 @@ class UploadService
     end
 
     def automatic_tags(upload, file)
-      return "" unless PawsMovin.config.enable_dimension_autotagging?
+      return "" unless PawsMovin.config.enable_autotagging?
 
       tags = []
       tags += %w[animated_gif animated] if upload.is_animated_gif?(file.path)

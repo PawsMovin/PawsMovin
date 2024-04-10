@@ -14,10 +14,10 @@ module Posts
           as(@user) do
             @post = create(:post)
             travel_to(2.hours.from_now) do
-              @post.update(tag_string: "1 2", source: "xxx\nyyy", locked_tags: "4 5")
+              @post.update(tag_string: "1 2", source: "https://xxx.com\nhttps://yyy.com", locked_tags: "4 5")
             end
             travel_to(4.hours.from_now) do
-              @post.update(tag_string: "2 3", rating: "e", source: "yyy\nzzz", locked_tags: "5 6")
+              @post.update(tag_string: "2 3", rating: "e", source: "https://yyy.com\nhttps://zzz.com", locked_tags: "5 6")
             end
             @versions = @post.versions
             @post2 = create(:post)
