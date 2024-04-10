@@ -288,8 +288,12 @@ module PawsMovin
       "abc123"
     end
 
-    def tag_type_change_cutoff
-      100
+    def tag_type_change_cutoff(user)
+      if user.is_trusted?
+        1_000
+      else
+        100
+      end
     end
 
     # Users cannot search for more than X regular tags at a time.

@@ -38,12 +38,16 @@ class TagTest < ActiveSupport::TestCase
       assert_nothing_raised { TagCategory.categories }
     end
 
-    should "have convenience methods for the four main categories" do
+    should "have convenience methods for all categories" do
       assert_equal(0, TagCategory.general)
       assert_equal(1, TagCategory.artist)
+      assert_equal(2, TagCategory.voice_actor)
       assert_equal(3, TagCategory.copyright)
       assert_equal(4, TagCategory.character)
+      assert_equal(5, TagCategory.species)
+      assert_equal(6, TagCategory.invalid)
       assert_equal(7, TagCategory.meta)
+      assert_equal(8, TagCategory.lore)
     end
 
     should "have a regular expression for matching category names and shortcuts" do
@@ -63,12 +67,22 @@ class TagTest < ActiveSupport::TestCase
     end
 
     should "map a category name to its value" do
-      assert_equal(0, TagCategory.value_for("general"))
-      assert_equal(0, TagCategory.value_for("gen"))
-      assert_equal(1, TagCategory.value_for("artist"))
-      assert_equal(1, TagCategory.value_for("art"))
-      assert_equal(7, TagCategory.value_for("meta"))
-      assert_equal(0, TagCategory.value_for("unknown"))
+      mapping = [
+        [0, %w[general gen unknown]],
+        [1, %w[artist art]],
+        [2, %w[voice_actor va]],
+        [3, %w[copyright copy co]],
+        [4, %w[character char ch oc]],
+        [5, %w[species spec]],
+        [6, %w[invalid inv]],
+        [7, %w[meta]],
+        [8, %w[lore lor]]
+      ]
+      mapping.each do |category, matches|
+        matches.each do |match|
+          assert_equal(category, TagCategory.value_for(match), "value(#{match}) == #{category}")
+        end
+      end
     end
   end
 
@@ -125,7 +139,7 @@ class TagTest < ActiveSupport::TestCase
     end
 
     should "not change category when the tag is too large to be changed by a member" do
-      tag = create(:tag, post_count: 51)
+      tag = create(:tag, post_count: 101)
       Tag.find_or_create_by_name("artist:#{tag.name}", creator: create(:member_user))
 
       assert_equal(0, tag.reload.category)

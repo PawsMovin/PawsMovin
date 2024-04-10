@@ -34,7 +34,7 @@ class ApplicationController < ActionController::Base
     return if params[:controller] == "users/name_change_requests"
 
     if request.format.html? && CurrentUser.user.name_error
-      redirect_to new_user_name_change_request_path
+      redirect_to(new_user_name_change_request_path)
     end
   end
 
