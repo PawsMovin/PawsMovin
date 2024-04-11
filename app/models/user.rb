@@ -70,6 +70,7 @@ class User < ApplicationRecord
     hover_zoom_play_audio
     hover_zoom_sticky_shift
     can_manage_aibur
+    force_name_change
   ].freeze
 
   include PawsMovin::HasBitFlags
@@ -903,22 +904,26 @@ class User < ApplicationRecord
 
   module LogChanges
     def log_name_change
-      ModAction.log!(:user_name_change, self, user_id: id)
+      ModAction.log!(:user_name_change, CurrentUser.user, user_id: id)
     end
 
     def log_update
       if saved_change_to_base_upload_limit?
-        ModAction.log!(:user_upload_limit_change, self, old_upload_limit: base_upload_limit_before_last_save, upload_limit: base_upload_limit, user_id: id)
+        ModAction.log!(:user_upload_limit_change, CurrentUser.user, old_upload_limit: base_upload_limit_before_last_save, upload_limit: base_upload_limit, user_id: id)
       end
 
       return unless is_admin_edit
 
       if saved_change_to_profile_about? || saved_change_to_profile_artinfo?
-        ModAction.log!(:user_text_change, self, user_id: id)
+        ModAction.log!(:user_text_change, CurrentUser.user, user_id: id)
       end
 
       if saved_change_to_blacklisted_tags
-        ModAction.log!(:user_blacklist_change, self, user_id: id)
+        ModAction.log!(:user_blacklist_change, CurrentUser.user, user_id: id)
+      end
+
+      if force_name_change_was != force_name_change && force_name_change?
+        StaffAuditLog.log!(:force_name_change, CurrentUser.user, user_id: id)
       end
     end
   end
@@ -996,21 +1001,10 @@ class User < ApplicationRecord
     @presenter ||= UserPresenter.new(self)
   end
 
-  # Copied from UserNameValidator. Check back later how effective this was.
   # Users with invalid names may be automatically renamed in the future.
   def name_error
-    if name.length > 20
-      "must be 2 to 20 characters long"
-    elsif name !~ /\A[a-zA-Z0-9\-_~']+\z/
-      "must contain only alphanumeric characters, hypens, apostrophes, tildes and underscores"
-    elsif name =~ /\A[_\-~']/
-      "must not begin with a special character"
-    elsif name =~ /_{2}|-{2}|~{2}|'{2}/
-      "must not contain consecutive special characters"
-    elsif name =~ /\A_|_\z/
-      "cannot begin or end with an underscore"
-    elsif name =~ /\A[0-9]+\z/
-      "cannot consist of numbers only"
-    end
+    errors = UserNameValidator.validate(self)
+    errors << "Forced change by administrator" if force_name_change?
+    errors.join("; ").presence
   end
 end

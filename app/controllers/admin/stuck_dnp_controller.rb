@@ -35,7 +35,7 @@ module Admin
         end
       end
 
-      StaffAuditLog.log(:stuck_dnp, CurrentUser.user, query: query, post_ids: post_ids)
+      StaffAuditLog.log!(:stuck_dnp, CurrentUser.user, query: query, post_ids: post_ids)
       flash[:notice] = "DNP tags removed from #{post_ids.count} posts"
       redirect_to(new_admin_stuck_dnp_path)
     end

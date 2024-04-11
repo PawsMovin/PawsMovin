@@ -3,6 +3,7 @@
 <%= custom_form_for(@user, url: admin_user_path(@user), method: :put) do |f| %>
   <%= f.input(:id, as: :hidden) %>
   <%= f.input(:name, input_html: { size: 50 }) %>
+  <%= f.input(:force_name_change, collection: [["Yes", true], ["No", false]], label: "Force Name Change") %>
   <% if can_use_attribute?([:admin, @user], :email) %>
     <%= f.input(:email, input_html: { size: 50 }) %>
     <div class="input">

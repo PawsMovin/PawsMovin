@@ -12,19 +12,19 @@ class StaffNote < ApplicationRecord
 
   module LogMethods
     def log_create
-      StaffAuditLog.log(:staff_note_create, CurrentUser.user, staff_note_id: id, target_id: user_id, body: body)
+      StaffAuditLog.log!(:staff_note_create, CurrentUser.user, staff_note_id: id, target_id: user_id, body: body)
     end
 
     def log_update
       if saved_change_to_body?
-        StaffAuditLog.log(:staff_note_update, CurrentUser.user, staff_note_id: id, target_id: user_id, body: body, old_body: body_before_last_save)
+        StaffAuditLog.log!(:staff_note_update, CurrentUser.user, staff_note_id: id, target_id: user_id, body: body, old_body: body_before_last_save)
       end
 
       if saved_change_to_is_deleted?
         if is_deleted?
-          StaffAuditLog.log(:staff_note_delete, CurrentUser.user, staff_note_id: id, target_id: user_id)
+          StaffAuditLog.log!(:staff_note_delete, CurrentUser.user, staff_note_id: id, target_id: user_id)
         else
-          StaffAuditLog.log(:staff_note_undelete, CurrentUser.user, staff_note_id: id, target_id: user_id)
+          StaffAuditLog.log!(:staff_note_undelete, CurrentUser.user, staff_note_id: id, target_id: user_id)
         end
       end
     end

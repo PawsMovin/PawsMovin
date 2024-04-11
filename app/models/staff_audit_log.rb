@@ -28,15 +28,11 @@ class StaffAuditLog < ApplicationRecord
   store_accessor :values, *VALUES
   belongs_to :user, class_name: "User"
 
-  def self.log(category, user, **details)
-    create(user: user, action: category.to_s, values: details)
+  def self.log!(category, user, **details)
+    create!(user: user, action: category.to_s, values: details)
   end
 
   FORMATTERS = {
-    stuck_dnp:               {
-      text: ->(log) { "Removed dnp tags from #{log.post_ids.length} #{'post'.pluralize(log.post_ids.length)} with query \"#{log.query}\"" },
-      json: %i[query post_ids],
-    },
     min_upload_level_change: {
       text: ->(log, _user) { "Changed the minimum upload level from [b]#{User::Levels.level_name(log.old_level)}[/b] to [b]#{User::Levels.level_name(log.new_level)}[/b]" },
       json: %i[new_level old_level],
@@ -44,6 +40,14 @@ class StaffAuditLog < ApplicationRecord
     post_owner_reassign:     {
       text: ->(log) { "Reassigned #{log.post_ids.length} #{'post'.pluralize(log.post_ids.length)} with query \"#{log.query}\" from \"#{User.id_to_name(log.old_user_id)}\":/users/#{log.old_user_id} to \"#{User.id_to_name(log.new_user_id)}\":/users/#{log.new_user_id}" },
       json: %i[query post_ids old_user_id new_user_id],
+    },
+    stuck_dnp:               {
+      text: ->(log) { "Removed dnp tags from #{log.post_ids.length} #{'post'.pluralize(log.post_ids.length)} with query \"#{log.query}\"" },
+      json: %i[query post_ids],
+    },
+    force_name_change:       {
+      text: ->(log) { "Forced a name change for #{link_to_user(log.user_id)}" },
+      json: %i[user_id],
     },
 
     ### IP Ban ###
@@ -113,7 +117,7 @@ class StaffAuditLog < ApplicationRecord
   end
 
   def format_unknown(log)
-    CurrentUser.is_admin? ? "Unknown action #{log.action}: #{mod.values.inspect}" : "Unknown action #{log.action}"
+    CurrentUser.is_admin? ? "Unknown action #{log.action}: #{log.values.inspect}" : "Unknown action #{log.action}"
   end
 
   def format_text

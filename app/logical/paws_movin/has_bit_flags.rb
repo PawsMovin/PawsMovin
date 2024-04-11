@@ -27,6 +27,10 @@ module PawsMovin
             send(field) & bit_flag > 0
           end
 
+          define_method("#{attribute}_was") do
+            send("#{field}_before_last_save") & bit_flag > 0
+          end
+
           define_method("#{attribute}=") do |val|
             if val.to_s =~ /t|1|y/
               send("#{field}=", send(field) | bit_flag)

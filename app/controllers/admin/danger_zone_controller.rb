@@ -13,7 +13,7 @@ module Admin
       if new_level != DangerZone.min_upload_level
         old_level = DangerZone.min_upload_level
         DangerZone.min_upload_level = new_level
-        StaffAuditLog.log(:min_upload_level_change, CurrentUser.user, new_level: new_level, old_level: old_level)
+        StaffAuditLog.log!(:min_upload_level_change, CurrentUser.user, new_level: new_level, old_level: old_level)
       end
       redirect_to(admin_danger_zone_index_path)
     end
