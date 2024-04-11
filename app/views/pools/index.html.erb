@@ -3,13 +3,14 @@
 <table class="striped">
   <thead>
     <tr>
-      <th width="60%">Name</th>
+      <th width="50%">Name</th>
+      <th width="40%">Artists</th>
       <th width="10%">Count</th>
     </tr>
   </thead>
   <tbody>
     <% @pools.each do |pool| %>
-      <%= tag.tr(id: "pool-#{pool.id}") do %>
+      <tr id="pool-<%= pool.id %>">
         <td>
           <%= link_to pool.pretty_name, pool_path(pool) %>
 
@@ -18,10 +19,13 @@
           <% end %>
         </td>
         <td>
+          <%= link_to_pool_artists(pool.artists) %>
+        </td>
+        <td>
           <%= pool.post_count %>
         </td>
       <% end %>
-    <% end %>
+    </tr>
   </tbody>
 </table>
 

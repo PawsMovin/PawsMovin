@@ -202,6 +202,13 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
         @pool.reload
         assert_equal([@post.id], @pool.post_ids)
       end
+
+      should "update the pool's artists" do
+        as(@user) { @post.update(tag_string: "artist:foo") }
+        assert_equal([], @pool.artists)
+        post_auth add_to_pool_post_path(@post), @user, params: { pool_id: @pool.id, format: :json }
+        assert_same_elements(%w[foo], @pool.artists)
+      end
     end
 
     context "remove_from_pool action" do
@@ -226,6 +233,13 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
         post_auth remove_from_pool_post_path(@post), @user, params: { pool_id: @pool.id, format: :json }
         @pool.reload
         assert_equal([], @pool.post_ids)
+      end
+
+      should "update the pool's artists" do
+        as(@user) { @post.update(tag_string: "artist:foo") }
+        assert_same_elements(%w[foo], @pool.artists)
+        post_auth remove_from_pool_post_path(@post), @user, params: { pool_id: @pool.id, format: :json }
+        assert_equal([], @pool.artists)
       end
     end
   end

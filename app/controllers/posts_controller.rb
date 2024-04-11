@@ -208,7 +208,7 @@ class PostsController < ApplicationController
     end
 
     @pool.with_lock do
-      @pool.add(@post.id)
+      @pool.add!(@post)
       @pool.save
     end
     append_pool_to_session(@pool)

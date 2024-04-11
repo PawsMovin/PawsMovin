@@ -153,14 +153,14 @@ class TagTest < ActiveSupport::TestCase
 
     should "not change category when the tag is too large to be changed by a janitor" do
       tag = create(:tag, post_count: 1001)
-      Tag.find_or_create_by_name("artist:#{tag.name}", creator: @janitor)
+      Tag.find_or_create_by_name("artist:#{tag.name}", user: @janitor)
 
       assert_equal(0, tag.reload.category)
     end
 
     should "not change category when the tag is too large to be changed by a member" do
       tag = create(:tag, post_count: 101)
-      Tag.find_or_create_by_name("artist:#{tag.name}", creator: create(:member_user))
+      Tag.find_or_create_by_name("artist:#{tag.name}", user: create(:member_user))
 
       assert_equal(0, tag.reload.category)
     end

@@ -36,7 +36,7 @@ module TagCategory
   class AdminCategory < Category; end
 
   GENERAL = Category.new(0, "general", %w[gen])
-  ARTIST = Category.new(1, "artist", %w[art], header: "Artists", exclusion: %w[avoid_posting conditional_dnp epilepsy_warning sound_warning], formatstr: "created by %s")
+  ARTIST = Category.new(1, "artist", %w[art], header: "Artists", exclusion: PawsMovin.config.artist_exclusion_tags, formatstr: "created by %s")
   VOICE_ACTOR = Category.new(2, "voice_actor", %w[va], header: "Voice Actors", suffix: "_(va)")
   COPYRIGHT = Category.new(3, "copyright", %w[copy co], header: "Copyrights", limit: 1, formatstr: "(%s)")
   CHARACTER = Category.new(4, "character", %w[char ch oc], header: "Characters", limit: 5, regex: /^(.+?)(?:_\(.+\))?$/)

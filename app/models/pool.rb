@@ -185,6 +185,7 @@ class Pool < ApplicationRecord
       reload
       self.skip_sync = true
       update(post_ids: post_ids + [post.id])
+      update_artists(post, :add)
       self.skip_sync = false
       post.add_pool!(self)
       post.save
@@ -206,6 +207,7 @@ class Pool < ApplicationRecord
       reload
       self.skip_sync = true
       update(post_ids: post_ids - [post.id])
+      update_artists(post, :remove)
       self.skip_sync = false
       post.remove_pool!(self)
       post.save
@@ -214,6 +216,25 @@ class Pool < ApplicationRecord
 
   def posts
     Post.joins("left join pools on posts.id = ANY(pools.post_ids)").where(pools: { id: id }).order(Arel.sql("array_position(pools.post_ids, posts.id)"))
+  end
+
+  def artists
+    Cache.fetch("pa:#{id}", expires_in: 12.hours) do
+      posts.flat_map(&:artist_tags).map(&:name).reject { |name| PawsMovin.config.artist_exclusion_tags.include?(name) }
+    end
+  end
+
+  def update_artists(post, action)
+    return unless Cache.fetch("pa:#{id}")
+    arttags = post.artist_tags.map(&:name)
+    current = artists
+    case action
+    when :add
+      Cache.delete("pa:#{id}") unless (arttags - current).empty?
+    else
+      # We don't know if any other posts have the artist tags when removing a post, so we're forced to always clear the cache
+      Cache.delete("pa:#{id}")
+    end
   end
 
   def synchronize

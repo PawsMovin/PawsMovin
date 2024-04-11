@@ -105,8 +105,9 @@ class Tag < ApplicationRecord
       Post.with_timeout(30_000, nil) do
         Post.sql_raw_tag_match(name).find_each do |post|
           post.set_tag_counts(disable_cache: false)
-          args = TagCategory.category_names.to_h { |x| ["tag_count_#{x}", post.send("tag_count_#{x}")] }.update("tag_count" => post.tag_count)
-          Post.where(id: post.id).update_all(args)
+          categories = TagCategory.category_names.to_h { |x| ["tag_count_#{x}", post.send("tag_count_#{x}")] }.update("tag_count" => post.tag_count)
+          post.update(**categories)
+          post.update_pool_artists
           post.update_index
         end
       end
@@ -166,7 +167,7 @@ class Tag < ApplicationRecord
       names
     end
 
-    def find_or_create_by_name_list(names, creator: CurrentUser.user, reason: nil)
+    def find_or_create_by_name_list(names, user: CurrentUser.user, reason: nil)
       names = names.map {|x| normalize_name(x)}
       names = names.map do |x|
         if x =~ /\A(#{TagCategory.regexp}):(.+)\Z/
@@ -177,31 +178,33 @@ class Tag < ApplicationRecord
       end.to_h
 
       existing = Tag.where(name: names.keys).to_a
-      existing.each do |tag|
-        cat = names[tag.name]
-        category_id = TagCategory.value_for(cat)
-        if cat && category_id != tag.category
-          if tag.category_editable_by_implicit?(creator)
-            tag.update(category: category_id, reason: reason)
-          else
-            tag.errors.add(:category, "cannot be changed implicitly through a tag prefix")
+      CurrentUser.scoped(user) do
+        existing.each do |tag|
+          cat = names[tag.name]
+          category_id = TagCategory.value_for(cat)
+          if cat && category_id != tag.category
+            if tag.category_editable_by_implicit?(user)
+              tag.update(category: category_id, reason: reason)
+            else
+              tag.errors.add(:category, "cannot be changed implicitly through a tag prefix")
+            end
           end
+          names.delete(tag.name)
         end
-        names.delete(tag.name)
-      end
 
-      names.each do |name, cat|
-        existing << Tag.new.tap do |t|
-          t.name = name
-          t.category = TagCategory.value_for(cat)
-          t.reason = reason
-          t.save
+        names.each do |name, cat|
+          existing << Tag.new.tap do |t|
+            t.name = name
+            t.category = TagCategory.value_for(cat)
+            t.reason = reason
+            t.save
+          end
         end
       end
       existing
     end
 
-    def find_or_create_by_name(name, creator: CurrentUser.user, reason: nil)
+    def find_or_create_by_name(name, user: CurrentUser.user, reason: nil)
       name = normalize_name(name)
       category = nil
 
@@ -211,31 +214,32 @@ class Tag < ApplicationRecord
       end
 
       tag = find_by_name(name)
+      CurrentUser.scoped(user) do
+        if tag
+          if category
+            category_id = TagCategory.value_for(category)
+              # in case a category change hasn't propagated to this server yet,
+              # force an update the local cache. This may get overwritten in the
+              # next few lines if the category is changed.
+              tag.update_category_cache
 
-      if tag
-        if category
-          category_id = TagCategory.value_for(category)
-            # in case a category change hasn't propagated to this server yet,
-            # force an update the local cache. This may get overwritten in the
-            # next few lines if the category is changed.
-            tag.update_category_cache
-
-          unless category_id == tag.category
-            if tag.category_editable_by_implicit?(creator)
-              tag.update(category: category_id, reason: reason)
-            else
-              tag.errors.add(:category, "cannot be changed implicitly through a tag prefix")
+            unless category_id == tag.category
+              if tag.category_editable_by_implicit?(user)
+                tag.update(category: category_id, reason: reason)
+              else
+                tag.errors.add(:category, "cannot be changed implicitly through a tag prefix")
+              end
             end
           end
-        end
 
-        tag
-      else
-        Tag.new.tap do |t|
-          t.name = name
-          t.category = TagCategory.value_for(category)
-          t.reason = reason
-          t.save
+          tag
+        else
+          Tag.new.tap do |t|
+            t.name = name
+            t.category = TagCategory.value_for(category)
+            t.reason = reason
+            t.save
+          end
         end
       end
     end

@@ -35,6 +35,7 @@ class Post < ApplicationRecord
   after_save :create_version
   after_save :update_parent_on_save
   after_save :apply_post_metatags
+  after_commit :update_pool_artists
   after_commit :delete_files, on: :destroy
   after_commit :remove_iqdb_async, on: :destroy
   after_commit :update_iqdb_async, on: :create
@@ -440,6 +441,16 @@ class Post < ApplicationRecord
       Tag.where(name: tag_array_was)
     end
 
+    TagCategory.category_names.each do |name|
+      define_method("#{name}_tags") do
+        tags.select { |t| t.category == TagCategory.get(name).id }
+      end
+
+      define_method("#{name}_tags_was") do
+        tags_was.select { |t| t.category == TagCategory.get(name).id }
+      end
+    end
+
     def added_tags
       tags - tags_was
     end
@@ -459,6 +470,17 @@ class Post < ApplicationRecord
       increment_tags = tag_array - tag_array_was
       Tag.increment_post_counts(increment_tags)
       Tag.decrement_post_counts(decrement_tags)
+    end
+
+    def update_pool_artists
+      return unless artist_tags != artist_tags_was
+      UpdatePoolArtistsJob.perform_later(id)
+    end
+
+    def update_pool_artists!
+      pools.each do |pool|
+        pool.update_artists(self, :tag_update)
+      end
     end
 
     def set_tag_count(category, tagcount)
