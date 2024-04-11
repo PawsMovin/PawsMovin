@@ -1,9 +1,10 @@
 <h1>Edit User: <%= @user.name %></h1>
 
-<%= custom_form_for(@user, url: admin_user_path(@user), method: :put) do |f| %>
+<%= custom_form_for(@user, url: admin_user_path(@user), method: :put, policy: policy([:admin, @user])) do |f| %>
   <%= f.input(:id, as: :hidden) %>
   <%= f.input(:name, input_html: { size: 50 }) %>
   <%= f.input(:force_name_change, collection: [["Yes", true], ["No", false]], label: "Force Name Change") %>
+  <%= f.input(:title, input_html: { size: 50 }) %>
   <% if can_use_attribute?([:admin, @user], :email) %>
     <%= f.input(:email, input_html: { size: 50 }) %>
     <div class="input">

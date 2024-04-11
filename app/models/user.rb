@@ -339,6 +339,11 @@ class User < ApplicationRecord
       User.level_string(value || level)
     end
 
+    def level_string_pretty
+      return level_string if title.blank?
+      %{<span title="#{level_string}">#{title}</span>}.html_safe
+    end
+
     def level_name
       Levels.level_name(level)
     end
@@ -904,22 +909,26 @@ class User < ApplicationRecord
 
   module LogChanges
     def log_name_change
-      ModAction.log!(:user_name_change, CurrentUser.user, user_id: id)
+      ModAction.log!(:user_name_change, self, user_id: id)
     end
 
     def log_update
       if saved_change_to_base_upload_limit?
-        ModAction.log!(:user_upload_limit_change, CurrentUser.user, old_upload_limit: base_upload_limit_before_last_save, upload_limit: base_upload_limit, user_id: id)
+        ModAction.log!(:user_upload_limit_change, self, old_upload_limit: base_upload_limit_before_last_save, upload_limit: base_upload_limit, user_id: id)
       end
 
       return unless is_admin_edit
 
       if saved_change_to_profile_about? || saved_change_to_profile_artinfo?
-        ModAction.log!(:user_text_change, CurrentUser.user, user_id: id)
+        ModAction.log!(:user_text_change, self, user_id: id)
       end
 
       if saved_change_to_blacklisted_tags
-        ModAction.log!(:user_blacklist_change, CurrentUser.user, user_id: id)
+        ModAction.log!(:user_blacklist_change, self, user_id: id)
+      end
+
+      if saved_change_to_title
+        StaffAuditLog.log!(:user_title_change, CurrentUser.user, user_id: id, title: title)
       end
 
       if force_name_change_was != force_name_change && force_name_change?

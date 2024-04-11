@@ -1,22 +1,8 @@
 # frozen_string_literal: true
 
 class StaffAuditLog < ApplicationRecord
-  ACTIONS = %i[
-    stuck_dnp
-    min_upload_level_change
-    post_owner_reassign
-    staff_note_create
-    staff_note_update
-    staff_note_delete
-    staff_note_undelete
-    comment_vote_lock
-    comment_vote_delete
-    post_vote_lock
-    post_vote_delete
-  ].freeze
-
   VALUES = %i[
-    reason
+    reason title
     target_id query post_ids
     new_level old_level
     new_user_id old_user_id
@@ -33,6 +19,10 @@ class StaffAuditLog < ApplicationRecord
   end
 
   FORMATTERS = {
+    force_name_change:       {
+      text: ->(log) { "Forced a name change for #{link_to_user(log.user_id)}" },
+      json: %i[user_id],
+    },
     min_upload_level_change: {
       text: ->(log, _user) { "Changed the minimum upload level from [b]#{User::Levels.level_name(log.old_level)}[/b] to [b]#{User::Levels.level_name(log.new_level)}[/b]" },
       json: %i[new_level old_level],
@@ -45,9 +35,9 @@ class StaffAuditLog < ApplicationRecord
       text: ->(log) { "Removed dnp tags from #{log.post_ids.length} #{'post'.pluralize(log.post_ids.length)} with query \"#{log.query}\"" },
       json: %i[query post_ids],
     },
-    force_name_change:       {
-      text: ->(log) { "Forced a name change for #{link_to_user(log.user_id)}" },
-      json: %i[user_id],
+    user_title_change:       {
+      text: ->(log) { "Set the title of #{link_to_user(log.user_id)} to \"#{log.title}\"" },
+      json: %i[user_id title],
     },
 
     ### IP Ban ###
@@ -111,6 +101,7 @@ class StaffAuditLog < ApplicationRecord
       json: %i[vote forum_post_id voter_id],
     },
   }.freeze
+  ACTIONS = FORMATTERS.keys.freeze
 
   def self.link_to_user(id)
     "\"#{User.id_to_name(id)}\":/users/#{id}"

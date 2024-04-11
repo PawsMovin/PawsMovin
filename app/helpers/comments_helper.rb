@@ -16,8 +16,8 @@ module CommentsHelper
   end
 
   def comment_level_string(user)
-    return "" if user.level <= 20
-    tag.span(user.level_string, class: "comment-rank")
+    return "" if user.level <= 20 && user.title.blank?
+    tag.span(user.level_string_pretty, class: "comment-rank")
   end
 
   def comment_edited_notice(comment)

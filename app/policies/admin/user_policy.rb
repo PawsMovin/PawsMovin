@@ -28,7 +28,7 @@ module Admin
 
     def permitted_attributes
       attr = %i[profile_about profile_artinfo base_upload_limit enable_privacy_mode force_name_change]
-      attr += %i[email] if user.is_owner?
+      attr += %i[email title] if user.is_owner?
       attr
     end
   end

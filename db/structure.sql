@@ -2440,7 +2440,8 @@ furry -rating:s'::text,
     own_post_replaced_count integer DEFAULT 0 NOT NULL,
     own_post_replaced_penalize_count integer DEFAULT 0 NOT NULL,
     post_replacement_rejected_count integer DEFAULT 0 NOT NULL,
-    ticket_count integer DEFAULT 0 NOT NULL
+    ticket_count integer DEFAULT 0 NOT NULL,
+    title character varying
 );
 
 
@@ -4854,6 +4855,7 @@ ALTER TABLE ONLY public.staff_notes
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20240411041819'),
 ('20240410140320'),
 ('20240410120726'),
 ('20240410100924'),

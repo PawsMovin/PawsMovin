@@ -12,7 +12,7 @@ class UserPresenter
   end
 
   def level
-    user.level_string
+    user.level_string_pretty
   end
 
   def ban_reason(template)
