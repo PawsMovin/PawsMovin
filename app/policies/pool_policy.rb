@@ -14,7 +14,7 @@ class PoolPolicy < ApplicationPolicy
   end
 
   def permitted_attributes
-    [:name, :description, :category, :is_active, :post_ids_string, { post_ids: [] }]
+    [:name, :description, :is_active, :post_ids_string, { post_ids: [] }]
   end
 
   def permitted_search_params

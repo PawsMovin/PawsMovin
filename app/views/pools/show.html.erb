@@ -1,6 +1,5 @@
 <h2>
-  <%= @pool.pretty_category %>:
-  <%= link_to @pool.pretty_name, posts_path(tags: "pool:#{@pool.id}"), class: "pool-category-#{@pool.category}" %>
+  <%= link_to @pool.pretty_name, posts_path(tags: "pool:#{@pool.id}") %>
 </h2>
 
 <div id="description" class="dtext-container">

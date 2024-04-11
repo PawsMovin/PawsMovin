@@ -35,15 +35,14 @@ class PoolVersion < ApplicationRecord
 
   def self.queue(pool, updater, updater_ip_addr)
     self.create({
-                    pool_id:         pool.id,
-                    post_ids:        pool.post_ids,
-                    updater_id:      updater.id,
-                    updater_ip_addr: updater_ip_addr,
-                    description:     pool.description,
-                    name:            pool.name,
-                    is_active:       pool.is_active?,
-                    category:        pool.category
-                })
+        pool_id:         pool.id,
+        post_ids:        pool.post_ids,
+        updater_id:      updater.id,
+        updater_ip_addr: updater_ip_addr,
+        description:     pool.description,
+        name:            pool.name,
+        is_active:       pool.is_active?,
+    })
   end
 
   def self.calculate_version(pool_id)

@@ -1099,7 +1099,6 @@ CREATE TABLE public.pool_versions (
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     is_active boolean DEFAULT true NOT NULL,
-    category character varying,
     version integer DEFAULT 1 NOT NULL
 );
 
@@ -1135,8 +1134,7 @@ CREATE TABLE public.pools (
     is_active boolean DEFAULT true NOT NULL,
     post_ids integer[] DEFAULT '{}'::integer[] NOT NULL,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
-    category character varying DEFAULT 'series'::character varying NOT NULL
+    updated_at timestamp without time zone NOT NULL
 );
 
 
@@ -4855,6 +4853,7 @@ ALTER TABLE ONLY public.staff_notes
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20240411061400'),
 ('20240411041819'),
 ('20240410140320'),
 ('20240410120726'),

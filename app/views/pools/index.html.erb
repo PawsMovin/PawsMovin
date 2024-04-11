@@ -3,17 +3,13 @@
 <table class="striped">
   <thead>
     <tr>
-      <th width="5%"></th>
       <th width="60%">Name</th>
       <th width="10%">Count</th>
     </tr>
   </thead>
   <tbody>
     <% @pools.each do |pool| %>
-      <%= tag.tr(id: "pool-#{pool.id}", class: "pool-category-#{pool.category}") do %>
-        <td>
-
-        </td>
+      <%= tag.tr(id: "pool-#{pool.id}") do %>
         <td>
           <%= link_to pool.pretty_name, pool_path(pool) %>
 

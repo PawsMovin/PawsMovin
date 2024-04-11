@@ -1028,7 +1028,7 @@ class Post < ApplicationRecord
     def pools
       @pools ||= begin
         return Pool.none if pool_string.blank?
-        Pool.where(id: pool_ids).series_first
+        Pool.where(id: pool_ids)
       end
     end
 

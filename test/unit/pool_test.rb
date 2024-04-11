@@ -111,7 +111,7 @@ class PoolTest < ActiveSupport::TestCase
 
   context "Updating a pool" do
     setup do
-      @pool = create(:pool, category: "series")
+      @pool = create(:pool)
       @p1 = create(:post)
       @p2 = create(:post)
     end
@@ -206,31 +206,6 @@ class PoolTest < ActiveSupport::TestCase
       end
     end
 
-    context "by changing the category" do
-      setup do
-        PawsMovin.config.stubs(:pool_category_change_limit).returns(1)
-        @pool.add!(@p1)
-        @pool.add!(@p2)
-      end
-
-      should "not allow Members to change the category of large pools" do
-        @member = create(:member_user)
-        as(@member) { @pool.update(category: "collection") }
-
-        assert_equal(["You cannot change the category of pools with greater than 1 posts"], @pool.errors[:base])
-      end
-
-      should "allow janitors to change the category of large pools" do
-        @janitor = create(:janitor_user)
-        as(@janitor) { @pool.update(category: "collection") }
-
-        assert_equal(true, @pool.valid?)
-        assert_equal("collection", @pool.category)
-        assert_equal("pool:#{@pool.id}", @p1.reload.pool_string)
-        assert_equal("pool:#{@pool.id}", @p2.reload.pool_string)
-      end
-    end
-
     should "create new versions for each distinct user" do
       assert_equal(1, @pool.versions.size)
       user2 = create(:user, created_at: 1.month.ago)
@@ -278,12 +253,12 @@ class PoolTest < ActiveSupport::TestCase
     end
 
     should "normalize its post ids" do
-      @pool.update(category: "collection", post_ids: [1, 2, 2, 3, 1])
+      @pool.update(post_ids: [1, 2, 2, 3, 1])
       assert_equal([1, 2, 3], @pool.post_ids)
     end
 
     context "when validating names" do
-      ["foo,bar", "foo*bar", "123", "--", "___", "   ", "any", "none", "series", "collection"].each do |bad_name|
+      ["foo,bar", "foo*bar", "123", "--", "___", "   ", "any", "none"].each do |bad_name|
         should_not allow_value(bad_name).for(:name)
       end
 

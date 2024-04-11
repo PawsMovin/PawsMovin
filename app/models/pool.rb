@@ -14,8 +14,6 @@ class Pool < ApplicationRecord
   validate :user_not_limited, on: :update, if: :limited_attribute_changed?
   validate :user_not_posts_limited, on: :update, if: :post_ids_changed?
   validate :validate_name, if: :name_changed?
-  validates :category, inclusion: { in: %w(series collection) }
-  validate :updater_can_change_category, on: :update
   validate :updater_can_remove_posts
   validate :validate_number_of_posts
   before_validation :normalize_post_ids
@@ -29,7 +27,7 @@ class Pool < ApplicationRecord
   attr_accessor :skip_sync
 
   def limited_attribute_changed?
-    name_changed? || description_changed? || category_changed? || is_active_changed?
+    name_changed? || description_changed? || is_active_changed?
   end
 
   module SearchMethods
@@ -37,17 +35,6 @@ class Pool < ApplicationRecord
       where("pools.creator_id = ?", id)
     end
 
-    def series
-      where("pools.category = ?", "series")
-    end
-
-    def collection
-      where("pools.category = ?", "collection")
-    end
-
-    def series_first
-      order(Arel.sql("(case pools.category when 'series' then 0 else 1 end), pools.name"))
-    end
 
     def selected_first(current_pool_id)
       return where("true") if current_pool_id.blank?
@@ -69,12 +56,6 @@ class Pool < ApplicationRecord
       q = q.attribute_matches(:description, params[:description_matches])
 
       q = q.where_user(:creator_id, :creator, params)
-
-      if params[:category] == "series"
-        q = q.series
-      elsif params[:category] == "collection"
-        q = q.collection
-      end
 
       q = q.attribute_matches(:is_active, params[:is_active])
 
@@ -154,10 +135,6 @@ class Pool < ApplicationRecord
 
   def pretty_name
     name.tr("_", " ")
-  end
-
-  def pretty_category
-    category.titleize
   end
 
   def normalize_post_ids
@@ -315,20 +292,10 @@ class Pool < ApplicationRecord
     super + %i[creator_name post_count]
   end
 
-  def category_changeable_by?(user)
-    user.is_janitor? || (user.is_member? && post_count <= PawsMovin.config.pool_category_change_limit)
-  end
-
-  def updater_can_change_category
-    if category_changed? && !category_changeable_by?(CurrentUser.user)
-      errors.add(:base, "You cannot change the category of pools with greater than #{PawsMovin.config.pool_category_change_limit} posts")
-    end
-  end
-
   def validate_name
     case name
-    when /\A(any|none|series|collection)\z/i
-      errors.add(:name, "cannot be any of the following names: any, none, series, collection")
+    when /\A(any|none)\z/i
+      errors.add(:name, "cannot be any of the following names: any, none")
     when /\*/
       errors.add(:name, "cannot contain asterisks")
     when ""
