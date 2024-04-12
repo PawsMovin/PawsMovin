@@ -21,7 +21,7 @@ Post.initialize_all = function() {
 
   if ($("#c-posts #a-index").length) {
     this.initialize_gestures();
-    this.initialize_index_vote_buttons();
+    this.initialize_vote_buttons();
   }
 
   if ($("#c-posts #a-show").length) {
@@ -1092,7 +1092,7 @@ Post.toggle_hide_notes = function(save = true, init = false) {
   }
 }
 
-Post.initialize_index_vote_buttons = function() {
+Post.initialize_vote_buttons = function() {
   const containers = $(".post-preview div#vote-buttons");
   for(const set of containers) {
     for(const button of $(set).find("button.vote-button")) {

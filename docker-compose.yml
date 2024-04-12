@@ -150,13 +150,11 @@ services:
       - datadog
 
   recommender:
-    image: ghcr.io/pawsmovin/recommender:1f98eace5cecdd61b109dd0134beed062622d339
+    image: ghcr.io/pawsmovin/recommender:9637a67bd3bca07519658fc0335bf55fe4644534
     volumes:
-      - recommender_data:/data
+      - recommender_data:/recommender/data
     environment:
-      - MODEL_PATH=/data/recommender.pickle
       - DATABASE_URL=postgres://pawsmovin:@postgres/pawsmovin_development
-      - FAVS_PATH=/tmp/favs.csv
       - OPENBLAS_NUM_THREADS=1
       - TRAINING_THREADS=4
 

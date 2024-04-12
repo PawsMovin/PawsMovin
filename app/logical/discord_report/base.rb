@@ -12,6 +12,7 @@ module DiscordReport
 
     def run!
       return if webhook_url.blank?
+      return if Rails.env.test?
 
       post_webhook
     end

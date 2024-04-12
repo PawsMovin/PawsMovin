@@ -6,7 +6,7 @@ module Posts
 
     def show
       authorize(:recommender)
-      limit = params.fetch(:limit, 50).to_i.clamp(1, 320)
+      limit = params.fetch(:limit, 50).to_i.clamp(1, 50)
       sp = search_params
       sp[:post_id] = params[:post_id] if params[:post_id].present?
       sp[:user_id] = params[:user_id] if params[:user_id].present?

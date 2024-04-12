@@ -29,7 +29,22 @@ module Recommender
     response = HTTParty.get("#{PawsMovin.config.recommender_server}/similar/#{post.id}?limit=#{limit}")
     return [] unless response.ok?
 
-    process_recs(response.parsed_response, post: post, tags: tags)
+    process_recs(response.parsed_response, ogpost: post, tags: tags)
+  end
+
+  # factors: int
+  # model_size: int
+  # post_count: int
+  # trained_at: string (date)
+  # training_time: string (00:00:00)
+  # user_count: int
+  def metrics
+    HTTParty.get("#{PawsMovin.config.recommender_server}/metrics").parsed_response
+  end
+
+  def train!
+    return if Rails.env.test?
+    HTTParty.put("#{PawsMovin.config.recommender_server}/train")
   end
 
   def process_recs(recs, ogpost: nil, uploader: nil, favoriter: nil, tags: nil)

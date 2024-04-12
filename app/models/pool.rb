@@ -35,7 +35,6 @@ class Pool < ApplicationRecord
       where("pools.creator_id = ?", id)
     end
 
-
     def selected_first(current_pool_id)
       return where("true") if current_pool_id.blank?
       current_pool_id = current_pool_id.to_i
