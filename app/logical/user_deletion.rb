@@ -67,7 +67,7 @@ class UserDeletion
   end
 
   def validate
-    if user.is_blocked?
+    if user.is_banned?
       raise(ValidationError.new("Banned users cannot delete their accounts"))
     end
 

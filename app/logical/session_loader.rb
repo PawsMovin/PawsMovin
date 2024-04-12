@@ -26,7 +26,7 @@ class SessionLoader
     end
 
     CurrentUser.user.unban! if CurrentUser.user.ban_expired?
-    if CurrentUser.user.is_blocked?
+    if CurrentUser.user.is_banned?
       recent_ban = CurrentUser.user.recent_ban
       ban_message = "Account is banned: forever"
       if recent_ban && recent_ban.expires_at.present?

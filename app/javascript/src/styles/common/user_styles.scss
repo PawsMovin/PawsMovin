@@ -1,5 +1,5 @@
 $levels: (
-  "blocked"
+  "banned"
   "restricted"
   "member"
   "trusted"
@@ -21,6 +21,6 @@ $levels: (
   }
 }
 
-a.user-blocked.with-style {
+a.user-banned.with-style {
   text-decoration: line-through;
 }

@@ -62,8 +62,8 @@ body {
   $user-color-alt: #2e76b4;
 
   // User Groups
-  --color-user-blocked:           #{$user-color};
-  --color-user-blocked-alt:       #{$user-color-alt};
+  --color-user-banned:           #{$user-color};
+  --color-user-banned-alt:       #{$user-color-alt};
   --color-user-restricted:        #{$user-color};
   --color-user-restricted-alt:    #{$user-color-alt};
   --color-user-member:            #{$user-color};

@@ -43,7 +43,7 @@
     </h2>
     <span class="box-extra">
       <%= link_to("#{user.favorite_count} total", favorites_path(user_id: user.id)) %>
-      <% if user.enable_privacy_mode? || user.is_blocked? %>
+      <% if user.enable_privacy_mode? || user.is_banned? %>
         <span class="text">
           [hidden]
         </span>

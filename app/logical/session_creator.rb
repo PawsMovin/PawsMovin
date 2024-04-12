@@ -20,7 +20,7 @@ class SessionCreator
       session[:user_id] = user.id
       session[:last_authenticated_at] = Time.now.utc.to_s
       session[:ph] = user.password_token
-      user.update_column(:last_ip_addr, ip_addr) unless user.is_blocked?
+      user.update_column(:last_ip_addr, ip_addr) unless user.is_banned?
 
       if remember
         verifier = ActiveSupport::MessageVerifier.new(PawsMovin.config.remember_key, serializer: JSON, digest: "SHA256")

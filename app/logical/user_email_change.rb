@@ -10,7 +10,7 @@ class UserEmailChange
   end
 
   def process
-    if user.is_blocked?
+    if user.is_banned?
       raise(::User::PrivilegeError.new("Cannot change email while banned"))
     end
 

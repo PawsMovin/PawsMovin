@@ -13,7 +13,7 @@ class User < ApplicationRecord
 
   module Levels
     ANONYMOUS    = 0
-    BLOCKED      = 1
+    BANNED      = 1
     RESTRICTED   = 5
     MEMBER       = 10
     TRUSTED      = 15
@@ -44,7 +44,7 @@ class User < ApplicationRecord
     hide_comments
     show_hidden_comments
     show_post_statistics
-    is_banned
+    _is_banned
     _has_mail
     receive_email_notifications
     enable_keyboard_navigation
@@ -352,16 +352,16 @@ class User < ApplicationRecord
       level == Levels::ANONYMOUS
     end
 
+    def is_banned?
+      level == Levels::BANNED
+    end
+
     def is_restricted?
       level == Levels::RESTRICTED
     end
 
     def is_staff?
       is_janitor?
-    end
-
-    def is_blocked?
-      is_banned? || level == Levels::BLOCKED
     end
 
     def is_approver?
@@ -666,7 +666,7 @@ class User < ApplicationRecord
       list = super + %i[
         id created_at name level base_upload_limit
         post_upload_count post_update_count note_update_count
-        is_banned can_approve_posts can_upload_free
+        is_banned? can_approve_posts? can_upload_free?
         level_string avatar_id
       ]
 
@@ -674,7 +674,7 @@ class User < ApplicationRecord
         boolean_attributes = %i[
           description_collapsed_initially
           hide_comments show_hidden_comments show_post_statistics
-          is_banned receive_email_notifications
+          receive_email_notifications
           enable_keyboard_navigation enable_privacy_mode
           style_usernames enable_auto_complete
           can_approve_posts can_upload_free
@@ -973,7 +973,7 @@ class User < ApplicationRecord
 
   def hide_favorites?
     return false if CurrentUser.is_moderator?
-    return true if is_blocked?
+    return true if is_banned?
     enable_privacy_mode? && CurrentUser.user.id != id
   end
 

@@ -163,7 +163,7 @@ class PostSet < ApplicationRecord
     end
 
     def is_maintainer?(user)
-      return false if user.is_blocked?
+      return false if user.is_banned?
       post_set_maintainers.where(user_id: user.id, status: "approved").count() > 0
     end
 
@@ -176,7 +176,7 @@ class PostSet < ApplicationRecord
     end
 
     def is_owner?(user)
-      return false if user.is_blocked?
+      return false if user.is_banned?
       creator_id == user.id
     end
   end
