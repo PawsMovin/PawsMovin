@@ -61,7 +61,7 @@ class WikiPage < ApplicationRecord
 
   module SearchMethods
     def titled(title)
-      find_by(title: title.downcase.tr(" ", "_"))
+      find_by(title: title&.downcase&.tr(" ", "_"))
     end
 
     def recent
