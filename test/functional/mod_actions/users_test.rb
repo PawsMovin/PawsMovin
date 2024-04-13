@@ -36,7 +36,7 @@ module ModActions
       end
 
       should "format user_flags_change correctly" do
-        UserPromotion.new(@target, @admin, @target.level, { can_upload_free: true }).promote!
+        UserPromotion.new(@target, @admin, @target.level, { unrestricted_uploads: true }).promote!
 
         assert_matches(
           actions: %w[user_flags_change],

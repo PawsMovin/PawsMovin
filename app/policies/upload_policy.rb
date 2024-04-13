@@ -8,7 +8,7 @@ class UploadPolicy < ApplicationPolicy
   def permitted_attributes
     attr = %i[file direct_url source tag_string rating parent_id description description]
 
-    attr += %i[as_pending] if user.can_upload_free?
+    attr += %i[as_pending] if user.unrestricted_uploads?
     attr += %i[locked_rating] if user.is_trusted?
     attr += %i[locked_tags] if user.is_admin?
     attr

@@ -24,7 +24,7 @@ User.initialize_tabs = function() {
 }
 
 User.initialize_permissions = function() {
-  const $list = $(".permissions-list");
+  const $text = $("text.permissions-list");
   const $expand = $(".expand-permissions-link");
   const $collapse = $(".collapse-permissions-link");
 
@@ -32,16 +32,14 @@ User.initialize_permissions = function() {
     event.preventDefault();
     $expand.hide();
     $collapse.show();
-    $list.data("original-text", $list.text());
-    $list.text(`${$list.text()}, ${$expand.attr("data-extra")}`);
+    $text.text($text.attr("data-full"));
   });
 
   $collapse.on("click", function(event) {
     event.preventDefault();
     $expand.show();
     $collapse.hide();
-    $list.text($list.data("original-text"));
-    $list.removeData("original-text");
+    $text.text($text.attr("data-short"));
   });
 }
 

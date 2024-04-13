@@ -64,7 +64,7 @@
         el.focus();
         el.scrollIntoView();
       }, 20);
-      if(Utility.meta("enable-auto-complete") !== "true")
+      if(Utility.meta("enable-autocomplete") !== "true")
         return;
       Autocomplete.initialize_tag_autocomplete();
     },

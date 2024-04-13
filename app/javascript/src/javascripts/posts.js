@@ -127,7 +127,7 @@ Post.open_edit_dialog = function() {
       of: window
     },
     drag: function(e, ui) {
-      if (Utility.meta("enable-auto-complete") === "true") {
+      if (Utility.meta("enable-autocomplete") === "true") {
         $tag_string.data("uiAutocomplete").close();
       }
     },

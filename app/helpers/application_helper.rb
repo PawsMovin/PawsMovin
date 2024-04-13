@@ -125,7 +125,7 @@ module ApplicationHelper
 
     user_class = user.level_css_class
     user_class += " user-post-approver" if user.can_approve_posts?
-    user_class += " user-post-uploader" if user.can_upload_free?
+    user_class += " user-unlimited-uploads" if user.unrestricted_uploads?
     user_class += " user-banned" if user.is_banned?
     user_class += " with-style" if CurrentUser.user.style_usernames?
     html = link_to(user.pretty_name, user_path(user), class: user_class, rel: "nofollow")
@@ -139,7 +139,7 @@ module ApplicationHelper
   end
 
   def body_attributes(user = CurrentUser.user)
-    attributes = %i[id name level level_string can_approve_posts? can_upload_free? per_page]
+    attributes = %i[id name level level_string can_approve_posts? unrestricted_uploads? per_page]
     attributes += User::Roles.map { |role| :"is_#{role}?" }
 
     controller_param = params[:controller].parameterize.dasherize

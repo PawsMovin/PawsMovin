@@ -16,9 +16,9 @@ class UserPolicy < ApplicationPolicy
       time_zone per_page custom_style description_collapsed_initially hide_comments
 
       receive_email_notifications enable_keyboard_navigation
-      enable_privacy_mode disable_user_dmails show_post_statistics
+      enable_privacy_mode disable_user_dmails
       style_usernames show_hidden_comments
-      enable_auto_complete
+      enable_autocomplete
       disable_cropped_thumbnails
       enable_safe_mode disable_responsive_mode
       move_related_thumbnails enable_hover_zoom hover_zoom_shift hover_zoom_play_audio hover_zoom_sticky_shift
@@ -37,7 +37,7 @@ class UserPolicy < ApplicationPolicy
   end
 
   def permitted_search_params
-    params = super + %i[name_matches about_me avatar_id level min_level max_level can_upload_free can_approve_posts order]
+    params = super + %i[name_matches about_me avatar_id level min_level max_level unrestricted_uploads can_approve_posts order]
     params += %i[ip_addr] if can_search_ip_addr?
     params += %i[email_matches] if CurrentUser.is_admin?
     params

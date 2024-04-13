@@ -15,9 +15,9 @@ class MaintenanceTest < ActiveSupport::TestCase
 
         as(banner) { create(:ban, user: user, banner: banner, duration: 1) }
 
-        assert_equal(true, user.reload.is_banned)
+        assert_equal(true, user.reload.is_banned?)
         travel_to(2.days.from_now) { Maintenance.daily }
-        assert_equal(false, user.reload.is_banned)
+        assert_equal(false, user.reload.is_banned?)
       end
     end
   end

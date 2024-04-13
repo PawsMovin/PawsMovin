@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class UserPromotion
-  attr_reader :user, :promoter, :new_level, :options, :old_can_approve_posts, :old_can_upload_free, :old_no_flagging, :old_no_replacements, :old_can_manage_aibur
+  attr_reader :user, :promoter, :new_level, :options, :old_can_approve_posts, :old_unrestricted_uploads, :old_no_flagging, :old_no_replacements, :old_can_manage_aibur
 
   def initialize(user, promoter, new_level, options = {})
     @user = user
@@ -14,7 +14,7 @@ class UserPromotion
     validate
 
     @old_can_approve_posts = user.can_approve_posts?
-    @old_can_upload_free = user.can_upload_free?
+    @old_unrestricted_uploads = user.unrestricted_uploads?
     @old_no_flagging = user.no_flagging?
     @old_no_replacements = user.no_replacements?
     @old_can_manage_aibur = user.can_manage_aibur?
@@ -25,8 +25,8 @@ class UserPromotion
       user.can_approve_posts = options[:can_approve_posts]
     end
 
-    if options.key?(:can_upload_free)
-      user.can_upload_free = options[:can_upload_free]
+    if options.key?(:unrestricted_uploads)
+      user.unrestricted_uploads = options[:unrestricted_uploads]
     end
 
     if options.key?(:no_flagging)
@@ -64,7 +64,7 @@ class UserPromotion
     removed = []
 
     flag_check(added, removed, "can_approve_posts", "approve posts")
-    flag_check(added, removed, "can_upload_free", "unrestricted uploads")
+    flag_check(added, removed, "unrestricted_uploads", "unrestricted uploads")
     flag_check(added, removed, "no_flagging", "flagging ban")
     flag_check(added, removed, "no_replacements", "replacements ban")
     flag_check(added, removed, "can_manage_aibur", "manage tag change requests")

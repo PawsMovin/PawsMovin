@@ -1,6 +1,6 @@
 <h2>Upload Limit</h2>
 <div style="margin-bottom: 1em;">
-  <% unless CurrentUser.can_upload_free? %>
+  <% unless CurrentUser.unrestricted_uploads? %>
     <p>You can currently upload <strong><%= CurrentUser.upload_limit %></strong> posts. This limit is based on the following formula:</p>
 
     <ul>
@@ -20,14 +20,14 @@
 
   <p>
     You are limited to 30 uploads per hour.
-    <% unless CurrentUser.user.can_upload_free? || CurrentUser.user.is_trusted? %>
+    <% unless CurrentUser.user.unrestricted_uploads? || CurrentUser.user.is_trusted? %>
       You also may not upload if you have no remaining tag edits per hour.
     <% end %>
   </p>
 
   <ul>
     <li>Remaining hourly uploads: <%= CurrentUser.user.hourly_upload_limit %></li>
-    <% unless CurrentUser.user.can_upload_free? || CurrentUser.user.is_trusted? %><li>Remaining hourly tag edits: <%= CurrentUser.user.post_edit_limit %></li><% end %>
+    <% unless CurrentUser.user.unrestricted_uploads? || CurrentUser.user.is_trusted? %><li>Remaining hourly tag edits: <%= CurrentUser.user.post_edit_limit %></li><% end %>
   </ul>
 </div>
 

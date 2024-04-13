@@ -30,7 +30,7 @@ class UserPresenter
       permissions << "approve posts"
     end
 
-    if user.can_upload_free?
+    if user.unrestricted_uploads?
       permissions << "unrestricted uploads"
     end
 
@@ -54,12 +54,12 @@ class UserPresenter
   def permissions_compact
     perms = permissions.split(", ")
     return permissions if perms.length <= 2
-    visible = perms.slice!(0, 2)
-    %{#{visible.join(', ')} <a href="#" title="Expand" data-extra="#{perms.join(', ')}" class="expand-permissions-link">»</a><a title="Collapse" href="#" style="display: none;" class="collapse-permissions-link">«</a>}.html_safe
+    visible = perms.slice(0, 2)
+    %{<text class="permissions-list" data-short="#{visible.join(', ')}" data-full="#{perms.join(', ')}">#{visible.join(', ')}</text> <a href="#" title="Expand" class="expand-permissions-link">»</a><a title="Collapse" href="#" style="display: none;" class="collapse-permissions-link">«</a>}.html_safe
   end
 
   def upload_limit(template)
-    if user.can_upload_free?
+    if user.unrestricted_uploads?
       return "none"
     end
 

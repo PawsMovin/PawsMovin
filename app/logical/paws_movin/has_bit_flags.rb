@@ -10,32 +10,33 @@ module PawsMovin
       def has_bit_flags(attributes, options = {})
         field = options[:field] || :bit_flags
 
-        attributes.each.with_index do |attribute, i|
-          bit_flag = 1 << i
-
+        attributes.each do |name, value|
           define_singleton_method("flag_value_for") do |key|
-            index = attributes.index(key)
-            raise(IndexError) if index.nil?
-            1 << index
+            return value if key == name
+            raise(ArgumentError, "Invalid flag: #{key}")
           end
 
-          define_method(attribute) do
-            send(field) & bit_flag > 0
+          define_method(name) do
+            send("#{name}?")
           end
 
-          define_method("#{attribute}?") do
-            send(field) & bit_flag > 0
+          define_method("#{name}?") do
+            send(field) & value == value
           end
 
-          define_method("#{attribute}_was") do
-            send("#{field}_before_last_save") & bit_flag > 0
+          define_method("#{name}_was") do
+            send("#{name}_was?")
           end
 
-          define_method("#{attribute}=") do |val|
-            if val.to_s =~ /t|1|y/
-              send("#{field}=", send(field) | bit_flag)
+          define_method("#{name}_was?") do
+            send("#{field}_before_last_save") & value == value
+          end
+
+          define_method("#{name}=") do |val|
+            if val.to_s =~ /[t1y]/
+              send("#{field}=", send(field) | value)
             else
-              send("#{field}=", send(field) & ~bit_flag)
+              send("#{field}=", send(field) & ~value)
             end
           end
         end

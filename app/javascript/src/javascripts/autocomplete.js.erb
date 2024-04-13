@@ -11,7 +11,7 @@ Autocomplete.TAG_PREFIXES_REGEX = new RegExp("^(" + Autocomplete.TAG_PREFIXES + 
 Autocomplete.METATAGS_REGEX = new RegExp("^(" + Autocomplete.METATAGS.join("|") + "):(.*)$", "i");
 
 Autocomplete.initialize_all = function() {
-  if (Utility.meta("enable-auto-complete") !== "true")
+  if (Utility.meta("enable-autocomplete") !== "true")
     return;
 
   $.widget("ui.autocomplete", $.ui.autocomplete, {

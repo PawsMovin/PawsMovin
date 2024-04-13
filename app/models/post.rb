@@ -9,6 +9,19 @@ class Post < ApplicationRecord
   NOTE_COPY_TAGS = %w[translated partially_translated translation_check translation_request]
   ASPECT_RATIO_REGEX = /^\d+:\d+$/
 
+  module Flags
+    HAS_CROPPED              = 1 << 0
+    HIDE_FROM_ANONYMOUS      = 1 << 1
+    HIDE_FROM_SEARCH_ENGINES = 1 << 2
+
+    def self.list
+      constants.to_h { |name| [name.to_s.downcase, const_get(name)] }
+    end
+  end
+
+  include PawsMovin::HasBitFlags
+  has_bit_flags(Flags.list)
+
   before_validation :initialize_uploader, on: :create
   before_validation :merge_old_changes
   before_validation :apply_source_diff
@@ -1870,18 +1883,9 @@ class Post < ApplicationRecord
   include IqdbMethods
   include ValidationMethods
   include PostEventMethods
-  include PawsMovin::HasBitFlags
   include DocumentStore::Model
   include PostIndex
   include ViewMethods
-
-  BOOLEAN_ATTRIBUTES = %w(
-    _has_embedded_notes
-    has_cropped
-    hide_from_anonymous
-    hide_from_search_engines
-  )
-  has_bit_flags BOOLEAN_ATTRIBUTES
 
   def safeblocked?
     return true if PawsMovin.config.safe_mode? && rating != "s"

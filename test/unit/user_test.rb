@@ -22,14 +22,14 @@ class UserTest < ActiveSupport::TestCase
 
         assert_equal(User::Levels::TRUSTED, @user.level)
         assert(@user.can_approve_posts?)
-        assert_not(@user.can_upload_free?)
+        assert_not(@user.unrestricted_uploads?)
 
-        @user.promote_to!(User::Levels::TRUSTED, can_approve_posts: false, can_upload_free: true)
+        @user.promote_to!(User::Levels::TRUSTED, can_approve_posts: false, unrestricted_uploads: true)
         @user.reload
 
         assert_equal(User::Levels::TRUSTED, @user.level)
         assert_not(@user.can_approve_posts?)
-        assert(@user.can_upload_free?)
+        assert(@user.unrestricted_uploads?)
       end
     end
 

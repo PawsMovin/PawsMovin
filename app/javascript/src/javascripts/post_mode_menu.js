@@ -97,7 +97,7 @@ PostModeMenu.initialize_edit_form = function() {
 PostModeMenu.close_edit_form = function() {
   Shortcuts.disabled = false;
   $("#quick-edit-div").slideUp("fast");
-  if (Utility.meta("enable-auto-complete") === "true") {
+  if (Utility.meta("enable-autocomplete") === "true") {
     $("#post_tag_string").data("uiAutocomplete").close();
   }
 }

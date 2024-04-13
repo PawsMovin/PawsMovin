@@ -16,7 +16,7 @@ FactoryBot.define do
 
     factory(:banned_user) do
       transient { ban_duration { 3 } }
-      is_banned { true }
+      level { User::Levels::BANNED }
     end
 
     factory(:member_user) do
@@ -29,7 +29,7 @@ FactoryBot.define do
 
     factory(:janitor_user) do
       level { User::Levels::JANITOR }
-      can_upload_free { true }
+      unrestricted_uploads { true }
       can_approve_posts { true }
     end
 
