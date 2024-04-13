@@ -253,7 +253,7 @@ class ForumTopic < ApplicationRecord
   end
 
   def is_stale?
-    return false if posts.empty?
+    return false if posts.empty? || (original_post&.is_aibur? && (tag_change_request&.is_pending? || posts.last.created_at < 1.year.ago))
     posts.last.created_at < 6.months.ago
   end
 
