@@ -24,6 +24,10 @@
         <span class="post-uploader-artist">(artist)</span>
       <% end %>
     </li>
+  <% elsif CurrentUser.user.show_post_uploader? %>
+    <li>
+      Uploader: <%= link_to_user(post.uploader) %>
+    </li>
   <% end %>
   <% if post.approver %>
     <li>Approver: <%= link_to_user(post.approver) %></li>

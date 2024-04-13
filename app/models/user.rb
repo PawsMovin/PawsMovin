@@ -13,7 +13,7 @@ class User < ApplicationRecord
 
   module Levels
     ANONYMOUS    = 0
-    BANNED      = 1
+    BANNED       = 1
     RESTRICTED   = 5
     MEMBER       = 10
     TRUSTED      = 15
@@ -37,39 +37,66 @@ class User < ApplicationRecord
   ]
 
   module Preferences
-    DESCRIPTION_COLLAPSED_INITIALLY  = 1 << 0
-    HIDE_COMMENTS                    = 1 << 1
-    SHOW_HIDDEN_COMMENTS             = 1 << 2
-    RECEIVE_EMAIL_NOTIFICATIONS      = 1 << 3
-    ENABLE_KEYBOARD_NAVIGATION       = 1 << 4
-    ENABLE_PRIVACY_MODE              = 1 << 5
-    STYLE_USERNAMES                  = 1 << 6
-    ENABLE_AUTOCOMPLETE              = 1 << 7
-    CAN_APPROVE_POSTS                = 1 << 8
-    UNRESTRICTED_UPLOADS             = 1 << 9
-    DISABLE_CROPPED_THUMBNAILS       = 1 << 10
-    ENABLE_SAFE_MODE                 = 1 << 11
-    DISABLE_RESPONSIVE_MODE          = 1 << 12
-    NO_FLAGGING                      = 1 << 13
-    DISABLE_USER_DMAILS              = 1 << 14
-    ENABLE_COMPACT_UPLOADER          = 1 << 15
-    NO_REPLACEMENTS                  = 1 << 16
-    MOVE_RELATED_THUMBNAILS          = 1 << 17
-    ENABLE_HOVER_ZOOM                = 1 << 18
-    HOVER_ZOOM_SHIFT                 = 1 << 19
-    HOVER_ZOOM_STICKY_SHIFT          = 1 << 20
-    HOVER_ZOOM_PLAY_AUDIO            = 1 << 21
-    CAN_MANAGE_AIBUR                 = 1 << 22
-    FORCE_NAME_CHANGE                = 1 << 23
+    mattr_accessor :settable, default: []
+    mattr_accessor :private, default: []
+    mattr_accessor :public, default: []
+
+    def self.pref(value, settable: true, private: true, public: false)
+      self.settable << value if settable
+      self.private << value if private
+      self.public << value if public
+      value
+    end
+
+    DESCRIPTION_COLLAPSED_INITIALLY  = pref(1 << 0)
+    HIDE_COMMENTS                    = pref(1 << 1)
+    SHOW_HIDDEN_COMMENTS             = pref(1 << 2)
+    RECEIVE_EMAIL_NOTIFICATIONS      = pref(1 << 3)
+    ENABLE_KEYBOARD_NAVIGATION       = pref(1 << 4)
+    ENABLE_PRIVACY_MODE              = pref(1 << 5)
+    STYLE_USERNAMES                  = pref(1 << 6)
+    ENABLE_AUTOCOMPLETE              = pref(1 << 7)
+    CAN_APPROVE_POSTS                = pref(1 << 8, settable: false, public: true)
+    UNRESTRICTED_UPLOADS             = pref(1 << 9, settable: false, public: true)
+    DISABLE_CROPPED_THUMBNAILS       = pref(1 << 10)
+    ENABLE_SAFE_MODE                 = pref(1 << 11)
+    DISABLE_RESPONSIVE_MODE          = pref(1 << 12)
+    NO_FLAGGING                      = pref(1 << 13, settable: false, private: false)
+    DISABLE_USER_DMAILS              = pref(1 << 14, public: true)
+    ENABLE_COMPACT_UPLOADER          = pref(1 << 15)
+    NO_REPLACEMENTS                  = pref(1 << 16, settable: false, private: false)
+    MOVE_RELATED_THUMBNAILS          = pref(1 << 17)
+    ENABLE_HOVER_ZOOM                = pref(1 << 18)
+    HOVER_ZOOM_SHIFT                 = pref(1 << 19)
+    HOVER_ZOOM_STICKY_SHIFT          = pref(1 << 20)
+    HOVER_ZOOM_PLAY_AUDIO            = pref(1 << 21)
+    CAN_MANAGE_AIBUR                 = pref(1 << 22, settable: false, public: true)
+    FORCE_NAME_CHANGE                = pref(1 << 23, settable: false, private: false)
+    SHOW_POST_UPLOADER               = pref(1 << 24)
+
+    def self.map
+      constants.to_h { |name| [name.to_s.downcase, const_get(name)] }
+    end
 
     def self.list
-      constants.to_h { |name| [name.to_s.downcase, const_get(name)] }
+      map.keys.map(&:to_sym)
+    end
+
+    def self.settable_list
+      map.filter { |_name, value| settable.include?(value) }.keys.map(&:to_sym)
+    end
+
+    def self.private_list
+      map.filter { |_name, value| private.include?(value) }.keys.map(&:to_sym)
+    end
+
+    def self.public_list
+      map.filter { |_name, value| public.include?(value) }.keys.map(&:to_sym)
     end
   end
 
-
   include PawsMovin::HasBitFlags
-  has_bit_flags(Preferences.list, field: "bit_prefs")
+  has_bit_flags(Preferences.map, field: "bit_prefs")
 
   attr_accessor :password, :old_password, :validate_email_format, :is_admin_edit
 
@@ -660,23 +687,11 @@ class User < ApplicationRecord
       list = super + %i[
         id created_at name level base_upload_limit
         post_upload_count post_update_count note_update_count
-        is_banned? can_approve_posts? unrestricted_uploads?
         level_string avatar_id
-      ]
+      ] + Preferences.public_list
 
       if id == CurrentUser.user.id
-        boolean_attributes = %i[
-          description_collapsed_initially
-          hide_comments show_hidden_comments
-          receive_email_notifications
-          enable_keyboard_navigation enable_privacy_mode
-          style_usernames enable_autocomplete
-          can_approve_posts unrestricted_uploads
-          disable_cropped_thumbnails enable_safe_mode
-          disable_responsive_mode no_flagging disable_user_dmails
-          enable_compact_uploader no_replacements
-        ]
-        list += boolean_attributes + %i[
+        list += Preferences.private_list + %i[
           updated_at email last_logged_in_at last_forum_read_at
           recent_tags comment_threshold default_image_size
           favorite_tags blacklisted_tags time_zone per_page

@@ -14,13 +14,17 @@ class Post < ApplicationRecord
     HIDE_FROM_ANONYMOUS      = 1 << 1
     HIDE_FROM_SEARCH_ENGINES = 1 << 2
 
-    def self.list
+    def self.map
       constants.to_h { |name| [name.to_s.downcase, const_get(name)] }
+    end
+
+    def self.list
+      map.keys.map(&:to_sym)
     end
   end
 
   include PawsMovin::HasBitFlags
-  has_bit_flags(Flags.list)
+  has_bit_flags(Flags.map)
 
   before_validation :initialize_uploader, on: :create
   before_validation :merge_old_changes

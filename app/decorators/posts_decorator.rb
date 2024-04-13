@@ -105,14 +105,12 @@ class PostsDecorator < ApplicationDecorator
     end
 
     tooltip = "Rating: #{post.rating}\nID: #{post.id}\nDate: #{post.created_at}\nStatus: #{post.status}\nScore: #{post.score}"
-    if CurrentUser.is_janitor?
-      tooltip += "\nUploader: #{post.uploader_name}"
-      if post.is_flagged? || post.is_deleted?
+    tooltip += "\nUploader: #{post.uploader_name}" if CurrentUser.user.is_janitor? || CurrentUser.user.show_post_uploader?
+    if CurrentUser.user.is_janitor? && (post.is_flagged? || post.is_deleted?)
         flag = post.flags.order(id: :desc).first
         tooltip += "\nFlag Reason: #{flag&.reason}" if post.is_flagged?
         tooltip += "\nDel Reason: #{flag&.reason}" if post.is_deleted?
       end
-    end
     tooltip += "\n\n#{post.tag_string}"
 
     cropped_url = if PawsMovin.config.enable_image_cropping? && options[:show_cropped] && post.has_cropped? && !CurrentUser.user.disable_cropped_thumbnails?
