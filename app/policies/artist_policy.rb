@@ -30,6 +30,7 @@ class ArtistPolicy < ApplicationPolicy
   def permitted_attributes_for_update
     attr = super
     attr += %i[name] if user.is_janitor?
+    attr += %i[rename_dnp] if user.can_edit_avoid_posting_entries?
     attr
   end
 

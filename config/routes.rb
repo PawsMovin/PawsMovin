@@ -65,6 +65,17 @@ Rails.application.routes.draw do
     resource :dmail_filter, only: %i[show edit update]
   end
 
+  resources :avoid_postings, constraints: id_name_constraint do
+    collection do
+      resources :versions, only: %i[index], controller: "avoid_postings/versions", as: "avoid_posting_versions"
+    end
+    member do
+      put :deactivate
+      put :reactivate
+    end
+
+  end
+
   resources :tickets, except: %i[destroy] do
     member do
       post :claim

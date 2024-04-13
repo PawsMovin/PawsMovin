@@ -403,6 +403,30 @@ div#c-posts {
       margin: 1em 0;
     }
 
+    div#avoid-posting-notice {
+      font-size: 1.25rem;
+      line-height: 1.5rem;
+      padding: $padding-025 $padding-050;
+
+      background-color: themed("color-section");
+      border: 1px solid themed("color-foreground");
+
+      ul {
+        list-style: disc;
+      }
+
+      li {
+        .artist, .separator, .details {
+          display: table-cell;
+        }
+
+        .separator {
+          color: var(--color-text-muted);
+          padding: 0 0.3rem;
+        }
+      }
+    }
+
     div.quick-mod {
 
       .quick-mod-group {

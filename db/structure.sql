@@ -205,6 +205,80 @@ ALTER SEQUENCE public.artists_id_seq OWNED BY public.artists.id;
 
 
 --
+-- Name: avoid_posting_versions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.avoid_posting_versions (
+    id bigint NOT NULL,
+    updater_id bigint NOT NULL,
+    avoid_posting_id bigint NOT NULL,
+    artist_name character varying NOT NULL,
+    updater_ip_addr inet NOT NULL,
+    details character varying DEFAULT ''::character varying NOT NULL,
+    staff_notes character varying DEFAULT ''::character varying NOT NULL,
+    is_active boolean DEFAULT true NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: avoid_posting_versions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.avoid_posting_versions_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: avoid_posting_versions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.avoid_posting_versions_id_seq OWNED BY public.avoid_posting_versions.id;
+
+
+--
+-- Name: avoid_postings; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.avoid_postings (
+    id bigint NOT NULL,
+    creator_id bigint NOT NULL,
+    updater_id bigint NOT NULL,
+    artist_name character varying NOT NULL,
+    creator_ip_addr inet NOT NULL,
+    updater_ip_addr inet NOT NULL,
+    details character varying DEFAULT ''::character varying NOT NULL,
+    staff_notes character varying DEFAULT ''::character varying NOT NULL,
+    is_active boolean DEFAULT true NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: avoid_postings_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.avoid_postings_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: avoid_postings_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.avoid_postings_id_seq OWNED BY public.avoid_postings.id;
+
+
+--
 -- Name: bans; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -2570,6 +2644,20 @@ ALTER TABLE ONLY public.artists ALTER COLUMN id SET DEFAULT nextval('public.arti
 
 
 --
+-- Name: avoid_posting_versions id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.avoid_posting_versions ALTER COLUMN id SET DEFAULT nextval('public.avoid_posting_versions_id_seq'::regclass);
+
+
+--
+-- Name: avoid_postings id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.avoid_postings ALTER COLUMN id SET DEFAULT nextval('public.avoid_postings_id_seq'::regclass);
+
+
+--
 -- Name: bans id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -3034,6 +3122,22 @@ ALTER TABLE ONLY public.artist_versions
 
 ALTER TABLE ONLY public.artists
     ADD CONSTRAINT artists_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: avoid_posting_versions avoid_posting_versions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.avoid_posting_versions
+    ADD CONSTRAINT avoid_posting_versions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: avoid_postings avoid_postings_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.avoid_postings
+    ADD CONSTRAINT avoid_postings_pkey PRIMARY KEY (id);
 
 
 --
@@ -3615,6 +3719,41 @@ CREATE INDEX index_artists_on_name_trgm ON public.artists USING gin (name public
 --
 
 CREATE INDEX index_artists_on_other_names ON public.artists USING gin (other_names);
+
+
+--
+-- Name: index_avoid_posting_versions_on_avoid_posting_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_avoid_posting_versions_on_avoid_posting_id ON public.avoid_posting_versions USING btree (avoid_posting_id);
+
+
+--
+-- Name: index_avoid_posting_versions_on_updater_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_avoid_posting_versions_on_updater_id ON public.avoid_posting_versions USING btree (updater_id);
+
+
+--
+-- Name: index_avoid_postings_on_artist_name; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_avoid_postings_on_artist_name ON public.avoid_postings USING btree (artist_name);
+
+
+--
+-- Name: index_avoid_postings_on_creator_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_avoid_postings_on_creator_id ON public.avoid_postings USING btree (creator_id);
+
+
+--
+-- Name: index_avoid_postings_on_updater_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_avoid_postings_on_updater_id ON public.avoid_postings USING btree (updater_id);
 
 
 --
@@ -4705,6 +4844,14 @@ ALTER TABLE ONLY public.staff_audit_logs
 
 
 --
+-- Name: avoid_posting_versions fk_rails_1d1f54e17a; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.avoid_posting_versions
+    ADD CONSTRAINT fk_rails_1d1f54e17a FOREIGN KEY (updater_id) REFERENCES public.users(id);
+
+
+--
 -- Name: post_deletion_reasons fk_rails_1d9b3de04b; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4742,6 +4889,14 @@ ALTER TABLE ONLY public.tickets
 
 ALTER TABLE ONLY public.rules
     ADD CONSTRAINT fk_rails_48ba033e3f FOREIGN KEY (updater_id) REFERENCES public.users(id);
+
+
+--
+-- Name: avoid_posting_versions fk_rails_4c48affea5; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.avoid_posting_versions
+    ADD CONSTRAINT fk_rails_4c48affea5 FOREIGN KEY (avoid_posting_id) REFERENCES public.avoid_postings(id);
 
 
 --
@@ -4817,6 +4972,14 @@ ALTER TABLE ONLY public.post_events
 
 
 --
+-- Name: avoid_postings fk_rails_cccc6419c8; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.avoid_postings
+    ADD CONSTRAINT fk_rails_cccc6419c8 FOREIGN KEY (updater_id) REFERENCES public.users(id);
+
+
+--
 -- Name: favorites fk_rails_d20e53bb68; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4830,6 +4993,14 @@ ALTER TABLE ONLY public.favorites
 
 ALTER TABLE ONLY public.user_blocks
     ADD CONSTRAINT fk_rails_d2416b669a FOREIGN KEY (target_id) REFERENCES public.users(id);
+
+
+--
+-- Name: avoid_postings fk_rails_d45cc0f1a1; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.avoid_postings
+    ADD CONSTRAINT fk_rails_d45cc0f1a1 FOREIGN KEY (creator_id) REFERENCES public.users(id);
 
 
 --
@@ -4888,6 +5059,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20240126174807'),
 ('20240119211758'),
 ('20240113112949'),
+('20240103002049'),
+('20240103002040'),
 ('20240101042716'),
 ('20231213010430'),
 ('20231201235926'),

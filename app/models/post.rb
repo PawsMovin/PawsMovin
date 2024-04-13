@@ -1955,13 +1955,16 @@ class Post < ApplicationRecord
   end
 
   def uploader_linked_artists
-    linked_artists ||= tags.select { |t| t.category == TagCategory.artist }.filter_map(&:artist)
-    linked_artists.select { |artist| artist.linked_user_id == uploader_id }
+    artist_tags.select { |artist| artist.linked_user_id == uploader_id }
   end
 
   def uploader_name_matches_artists?
     return false if uploader_id.nil? || uploader_linked_artists.any?
     typed_tags(TagCategory.artist).include?(uploader_name.downcase)
+  end
+
+  def avoid_posting_artists
+    AvoidPosting.active.where(artist_name: artist_tags.map(&:name))
   end
 
   def download_filename

@@ -34,6 +34,7 @@ class ModAction < ApplicationRecord
     wiki_page wiki_page_title new_title old_title
     category_name old_category_name
     prompt old_prompt title
+    artist_name old_artist_name details old_details staff_notes old_staff_notes
   ].freeze
 
   store_accessor :values, *VALUES
@@ -540,6 +541,28 @@ class ModAction < ApplicationRecord
         text
       end,
       json: %i[reason old_reason header old_header],
+    },
+
+    ### Avoid Posting ###
+    avoid_posting_create:                       {
+      text: ->(mod, _user) { "Created avoid posting for artist \"#{mod.artist_name}\":#{url.show_or_new_artists_path(name: mod.artist_name)}"},
+      json: %i[artist_name],
+    },
+    avoid_posting_deactivate:                   {
+      text: ->(mod, _user) { "Deactivated avoid posting for artist \"#{mod.artist_name}\":#{url.show_or_new_artists_path(name: mod.artist_name)}"},
+      json: %i[artist_name],
+    },
+    avoid_posting_delete:                       {
+      text: ->(mod, _user) { "Deleted avoid posting for artist \"#{mod.artist_name}\":#{url.show_or_new_artists_path(name: mod.artist_name)}"},
+      json: %i[artist_name],
+    },
+    avoid_posting_reactivate:                   {
+      text: ->(mod, _user) { "Reactivated avoid posting for artist \"#{mod.artist_name}\":#{url.show_or_new_artists_path(name: mod.artist_name)}"},
+      json: %i[artist_name],
+    },
+    avoid_posting_update:                       {
+      text: ->(mod, _user) { "Updated avoid posting for artist \"#{mod.artist_name}\":#{url.show_or_new_artists_path(name: mod.artist_name)}"},
+      json: %i[artist_name],
     },
   }.freeze
 

@@ -1,0 +1,16 @@
+<% content_for(:secondary_links) do %>
+  <%= subnav_link_to "Listing", avoid_postings_path %>
+  <%= subnav_link_to_if(policy(AvoidPosting).create?, "New", new_avoid_posting_path) %>
+  <% if params[:action] == "show" && @avoid_posting.present? %>
+    <%= subnav_link_to_if(policy(@avoid_posting).update?, "Edit", edit_avoid_posting_path(@avoid_posting)) %>
+    <% if @avoid_posting.is_active? %>
+      <%= subnav_link_to_if(policy(@avoid_posting).deactivate?, "Deactivate", deactivate_avoid_posting_path(@avoid_posting), method: :put, data: { confirm: "Are you sure you want to delete this avoid posting entry?" }) %>
+    <% else %>
+      <%= subnav_link_to_if(policy(@avoid_posting).reactivate?, "Reactivate", reactivate_avoid_posting_path(@avoid_posting), method: :put, data: { confirm: "Are you sure you want to undelete this avoid posting entry?" }) %>
+    <% end %>
+    <%= subnav_link_to_if(policy(@avoid_posting).destroy?, "Delete", avoid_posting_path(@avoid_posting), method: :delete, data: { confirm: "Are you sure you want to destroy this avoid posting entry?" }) %>
+    <%= subnav_link_to("History", avoid_posting_versions_path(search: { artist_name: @avoid_posting.artist_name })) %>
+  <% else %>
+    <%= subnav_link_to("History", avoid_posting_versions_path) %>
+  <% end %>
+<% end %>

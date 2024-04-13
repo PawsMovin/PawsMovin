@@ -34,7 +34,7 @@
   <ul>
     <li><h1>Artists</h1></li>
     <%= li_link_to("Listing", artists_path) %>
-    <%= li_link_to("Avoid Posting", help_page_path(id: "avoid_posting")) %>
+    <%= li_link_to("Avoid Posting", avoid_postings_path) %>
     <%= li_link_to("Changes", artist_versions_path) %>
     <%= li_link_to("Help", help_page_path(id: "artists")) %>
   </ul>
@@ -119,4 +119,3 @@
 <% content_for(:page_title) do %>
   Site Map
 <% end %>
-

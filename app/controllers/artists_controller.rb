@@ -70,7 +70,7 @@ class ArtistsController < ApplicationController
     authorize(@artist).destroy
     respond_with(@artist) do |format|
       format.html do
-        redirect_to(artists_path, notice: "Artist deleted")
+        redirect_to(artists_path, notice: @artist.destroyed? ? "Artist deleted" : @artist.errors.full_messages.join("; "))
       end
     end
   end
