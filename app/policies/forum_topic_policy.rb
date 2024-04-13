@@ -45,6 +45,14 @@ class ForumTopicPolicy < ApplicationPolicy
     min_level?
   end
 
+  def mute?
+    min_level?
+  end
+
+  def unmute?
+    min_level?
+  end
+
   def confirm_move?
     move?
   end

@@ -125,18 +125,40 @@ class ForumTopicsController < ApplicationController
 
   def subscribe
     authorize(@forum_topic)
-    subscription = ForumSubscription.where(forum_topic_id: @forum_topic.id, user_id: CurrentUser.user.id).first
-    unless subscription
-      ForumSubscription.create(forum_topic_id: @forum_topic.id, user_id: CurrentUser.user.id, last_read_at: @forum_topic.updated_at)
+    status = ForumTopicStatus.where(forum_topic_id: @forum_topic, user_id: CurrentUser.user.id).first
+    if status
+      status.update(subscription: true, subscription_last_read_at: @forum_topic.updated_at, mute: false)
+    else
+      ForumTopicStatus.create(forum_topic_id: @forum_topic.id, user_id: CurrentUser.user.id, subscription_last_read_at: @forum_topic.updated_at, subscription: true)
     end
     respond_with(@forum_topic)
   end
 
   def unsubscribe
     authorize(@forum_topic)
-    subscription = ForumSubscription.where(forum_topic_id: @forum_topic.id, user_id: CurrentUser.user.id).first
-    if subscription
-      subscription.destroy
+    status = ForumTopicStatus.where(forum_topic_id: @forum_topic.id, user_id: CurrentUser.user.id, subscription: true).first
+    if status
+      status.destroy
+    end
+    respond_with(@forum_topic)
+  end
+
+  def mute
+    authorize(@forum_topic)
+    status = ForumTopicStatus.where(forum_topic_id: @forum_topic.id, user_id: CurrentUser.user.id).first
+    if status
+      status.update(mute: true, subscription: false, subscription_last_read_at: nil)
+    else
+      ForumTopicStatus.create(forum_topic_id: @forum_topic.id, user_id: CurrentUser.user.id, mute: true)
+    end
+    respond_with(@forum_topic)
+  end
+
+  def unmute
+    authorize(@forum_topic)
+    status = ForumTopicStatus.where(forum_topic_id: @forum_topic.id, user_id: CurrentUser.user.id, mute: true).first
+    if status
+      status.destroy
     end
     respond_with(@forum_topic)
   end
