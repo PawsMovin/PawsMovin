@@ -1,23 +1,26 @@
 # frozen_string_literal: true
 
 require "test_helper"
+require_relative "helper"
 
 module Sources
   class NullTest < ActiveSupport::TestCase
+    extend Sources::Helper
+
     context "A source from an unknown site" do
-      setup do
-        @site = Sources::Strategies.find("http://oremuhax.x0.com/yoro1603.jpg")
-      end
+      alternate_should_work(
+        "http://oremuhax.x0.com/yoro1603.jpg",
+        Sources::Alternates::Null,
+        "http://oremuhax.x0.com/yoro1603.jpg",
+      )
+    end
 
-      should "be handled by the null strategy" do
-        assert(@site.is_a?(Sources::Strategies::Null))
-      end
-
-      should "find the metadata" do
-        assert_equal(["http://oremuhax.x0.com/yoro1603.jpg"], @site.image_urls)
-        assert_equal("http://oremuhax.x0.com/yoro1603.jpg", @site.image_url)
-        assert_equal("http://oremuhax.x0.com/yoro1603.jpg", @site.canonical_url)
-      end
+    context "A source from imgur" do
+      alternate_should_work(
+        "http://imgur.com/gallery/qFKojyz",
+        Sources::Alternates::Null,
+        "https://imgur.com/gallery/qFKojyz",
+      )
     end
   end
 end

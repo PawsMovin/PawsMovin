@@ -5,19 +5,26 @@ module Sources
     class Base
       attr_reader :url, :gallery_url, :submission_url, :direct_url, :additional_urls, :parsed_url
 
+      SECURE_DOMAINS = %w[weasyl.com imgur.com].freeze
+
       def initialize(url)
-        if force_https?
-          url.gsub!(/\Ahttp:/, "https:")
-        end
         @url = url
 
         @parsed_url = Addressable::URI.heuristic_parse(url) rescue nil
 
-        parse if @parsed_url.present?
+        if @parsed_url.present?
+          if force_https?
+            @parsed_url.scheme = "https"
+            @url = @parsed_url.to_s
+          end
+
+          parse
+        end
       end
 
       def force_https?
-        false
+        return false if @parsed_url.blank?
+        SECURE_DOMAINS.include?(@parsed_url.domain)
       end
 
       def match?
@@ -37,7 +44,7 @@ module Sources
       end
 
       def original_url
-        @url[0..2048] # Truncate to prevent abuse
+        @url
       end
     end
   end

@@ -3,8 +3,7 @@
 module Sources
   module Alternates
     def self.all
-      return [Alternates::Furaffinity,
-              Alternates::Pixiv]
+      return constants.reject { |name| name == :Base }.map { |name| const_get(name) }
     end
 
     def self.find(url, default: Alternates::Null)
