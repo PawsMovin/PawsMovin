@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module AvoidPostings
   class VersionsController < ApplicationController
     respond_to :html, :json

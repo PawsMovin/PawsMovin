@@ -515,10 +515,10 @@ class Artist < ApplicationRecord
 
     def validate_dnp_rename_not_conflicting
       return unless CurrentUser.can_edit_avoid_posting_entries? && rename_dnp.to_s.truthy?
-      return unless AvoidPosting.where(artist_name: name_was).exists?
-      if AvoidPosting.where(artist_name: name).exists?
+      return unless AvoidPosting.exists?(artist_name: name_was)
+      if AvoidPosting.exists?(artist_name: name)
         errors.add(:base, "Cannot rename artist and dnp, a conflicting dnp entry already exists")
-        throw :abort
+        throw(:abort)
       end
     end
 
@@ -526,7 +526,7 @@ class Artist < ApplicationRecord
       return unless CurrentUser.can_edit_avoid_posting_entries? && rename_dnp.to_s.truthy?
       dnp = AvoidPosting.where(artist_name: name_before_last_save)
       return if dnp.blank?
-      return if AvoidPosting.where(artist_name: name).exists?
+      return if AvoidPosting.exists?(artist_name: name)
       dnp.update(artist_name: name)
     end
   end

@@ -30,7 +30,6 @@ class AvoidPostingPolicy < ApplicationPolicy
   end
 
   def permitted_search_params
-
     params = super + %i[creator_name creator_id any_name_matches artist_name artist_id any_other_name_matches details is_active]
     params += %i[staff_notes] if user.is_staff?
     params += %i[creator_ip_addr] if can_search_ip_addr?

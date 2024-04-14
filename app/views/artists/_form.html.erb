@@ -5,7 +5,7 @@
   <% elsif !@artist.dnp_restricted? && can_use_attribute?(@artist, :name) %>
     <%= f.input(:name, autocomplete: "tag", hint: "Change to rename this artist entry and its wiki page") %>
     <% if @artist.is_dnp? %>
-      <%= f.input :rename_dnp, label: "Rename DNP", as: :boolean, input_html: { checked: true } %>
+      <%= f.input(:rename_dnp, label: "Rename DNP", as: :boolean, input_html: { checked: true }) %>
     <% end %>
   <% else %>
     <p><%= @artist.name %></p>

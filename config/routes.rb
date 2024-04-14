@@ -73,7 +73,6 @@ Rails.application.routes.draw do
       put :deactivate
       put :reactivate
     end
-
   end
 
   resources :tickets, except: %i[destroy] do

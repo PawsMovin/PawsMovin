@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AvoidPosting < ApplicationRecord
   belongs_to_creator
   belongs_to_updater
@@ -39,11 +41,11 @@ class AvoidPosting < ApplicationRecord
 
   def create_version
     AvoidPostingVersion.create({
-      artist_name: artist_name,
+      artist_name:      artist_name,
       avoid_posting_id: id,
-      details: details,
-      staff_notes: staff_notes,
-      is_active: is_active,
+      details:          details,
+      staff_notes:      staff_notes,
+      is_active:        is_active,
     })
   end
 
@@ -60,10 +62,10 @@ class AvoidPosting < ApplicationRecord
 
     def validate_artist_rename_not_conflicting
       return unless rename_artist.to_s.truthy?
-      return unless Artist.where(name: artist_name_was).exists?
-      if Artist.where(name: artist_name).exists?
+      return unless Artist.exists?(name: artist_name_was)
+      if Artist.exists?(name: artist_name)
         errors.add(:base, "Cannot rename dnp and artist, a conflicting artist entry already exists")
-        throw :abort
+        throw(:abort)
       end
     end
 
@@ -71,7 +73,7 @@ class AvoidPosting < ApplicationRecord
       return unless rename_artist.to_s.truthy?
       artist = Artist.where(name: artist_name_before_last_save)
       return if artist.blank?
-      return if Artist.where(name: artist_name).exists?
+      return if Artist.exists?(name: artist_name)
       artist.update(name: artist_name)
     end
   end

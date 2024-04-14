@@ -1955,7 +1955,7 @@ class Post < ApplicationRecord
   end
 
   def uploader_linked_artists
-    artist_tags.select { |artist| artist.linked_user_id == uploader_id }
+    artist_tags.filter_map(&:artist).select { |artist| artist.linked_user_id == uploader_id }
   end
 
   def uploader_name_matches_artists?

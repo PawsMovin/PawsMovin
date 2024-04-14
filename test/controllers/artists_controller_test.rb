@@ -52,7 +52,7 @@ class ArtistsControllerTest < ActionDispatch::IntegrationTest
           post_auth artists_path, @user, params: { artist: attributes }
         end
 
-        artist = Artist.find_by_name(attributes[:name])
+        artist = Artist.find_by(name: attributes[:name])
         assert_not_nil(artist)
         assert_redirected_to(artist_path(artist.id))
       end
@@ -160,7 +160,7 @@ class ArtistsControllerTest < ActionDispatch::IntegrationTest
       end
 
       should "rename the dnp entry" do
-        put_auth artist_path(@artist), @owner_user, params: { artist: { name: "another_artist", rename_dnp: true }}
+        put_auth artist_path(@artist), @owner_user, params: { artist: { name: "another_artist", rename_dnp: true } }
 
         assert_redirected_to(artist_path(@artist))
         assert_same_elements(%w[artist_rename wiki_page_rename avoid_posting_update], ModAction.last(3).map(&:action))
@@ -172,7 +172,7 @@ class ArtistsControllerTest < ActionDispatch::IntegrationTest
       should "not rename dnp if new name already exists" do
         name = @avoid_posting.artist_name
         new_dnp = create(:avoid_posting)
-        put_auth artist_path(@artist), @owner_user, params: { artist: { name: new_dnp.artist_name, rename_dnp: true }}
+        put_auth artist_path(@artist), @owner_user, params: { artist: { name: new_dnp.artist_name, rename_dnp: true } }
 
         assert_equal(name, @artist.reload.name)
         assert_equal(name, @artist.wiki_page.reload.title)
@@ -182,7 +182,7 @@ class ArtistsControllerTest < ActionDispatch::IntegrationTest
       should "not rename dnp if rename_dnp=false" do
         name = @avoid_posting.artist_name
         assert_difference("ModAction.count", 2) do
-          put_auth artist_path(@artist), @owner_user, params: { artist: { name: "another_artist", rename_dnp: false }}
+          put_auth artist_path(@artist), @owner_user, params: { artist: { name: "another_artist", rename_dnp: false } }
         end
 
         assert_same_elements(%w[artist_rename wiki_page_rename], ModAction.last(2).map(&:action))

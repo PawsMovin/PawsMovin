@@ -6,6 +6,6 @@
   <%= f.input :artist_id, label: "Artist ID", hide_unless_value: true %>
   <%= f.input :any_other_name_matches, label: "Other Names", hide_unless_value: true %>
   <%= f.input :details, label: "Details" %>
-  <%= f.input :staff_notes %>
-  <%= f.input :is_active, label: "Active?", collection: [%w[Yes true], %w[No false]] %>
+  <%= f.input(:staff_notes) %>
+  <%= f.input(:is_active, label: "Active?", collection: [%w[Yes true], %w[No false]]) %>
 <% end %>
