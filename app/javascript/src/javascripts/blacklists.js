@@ -268,6 +268,7 @@ Blacklist.initialize_all = function () {
   Blacklist.initialize_disable_all_blacklists();
   Blacklist.apply();
   $("#blacklisted-hider").remove();
+  Blacklist.init_reveal_on_click();
 }
 
 Blacklist.initialize_anonymous_blacklist = function () {
@@ -298,8 +299,8 @@ Blacklist.initialize_blacklist_editor = function () {
     if($(document.body).data('user-is-anonymous') === true) {
       LS.put('anonymous-blacklist', blacklist_json);
     } else {
-      $.ajax("/users/" + Utility.meta("current-user-id") + ".json", {
-        method: "PUT",
+      $.ajax("/users/update.json", {
+        method: "POST",
         data: {
           "user[blacklisted_tags]": blacklist_content
         }
@@ -353,6 +354,13 @@ Blacklist.initialize_collapse = function () {
   });
   Blacklist.collapseUpdate();
 };
+
+Blacklist.init_reveal_on_click = function() {
+  if(!$("#c-posts #a-show").length) return;
+  $("#image-container").on("click", (event) => {
+    $(event.currentTarget).removeClass("blacklisted");
+  });
+}
 
 $(document).ready(function () {
   Blacklist.initialize_collapse();

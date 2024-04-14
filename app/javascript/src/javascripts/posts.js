@@ -1035,8 +1035,8 @@ Post.vote = function (id, score, prevent_unvote) {
 Post.set_as_avatar = function(id) {
   SendQueue.add(function() {
     $.ajax({
-      method: 'PATCH',
-      url: `/users/${Utility.meta("current-user-id")}.json`,
+      method: 'POST',
+      url: "/users/update.json",
       data: {
         'user[avatar_id]': id
       },

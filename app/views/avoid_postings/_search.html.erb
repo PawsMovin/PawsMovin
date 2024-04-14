@@ -1,11 +1,11 @@
 <%= form_search(path: avoid_postings_path, policy: policy(AvoidPosting)) do |f| %>
-  <%= f.user :creator %>
-  <%= f.input :creator_ip_addr, label: "Creator IP Address" %>
-  <%= f.input :any_name_matches, label: "Name" %>
-  <%= f.input :artist_name, label: "Artist Name", hide_unless_value: true %>
-  <%= f.input :artist_id, label: "Artist ID", hide_unless_value: true %>
-  <%= f.input :any_other_name_matches, label: "Other Names", hide_unless_value: true %>
-  <%= f.input :details, label: "Details" %>
+  <%= f.user(:creator) %>
+  <%= f.input(:creator_ip_addr, label: "Creator IP Address") %>
+  <%= f.input(:any_name_matches, label: "Name") %>
+  <%= f.input(:artist_name, label: "Artist Name", hide_unless_value: true) %>
+  <%= f.input(:artist_id, label: "Artist ID", hide_unless_value: true) %>
+  <%= f.input(:any_other_name_matches, label: "Other Names", hide_unless_value: true) %>
+  <%= f.input(:details, label: "Details") %>
   <%= f.input(:staff_notes) %>
   <%= f.input(:is_active, label: "Active?", collection: [%w[Yes true], %w[No false]]) %>
 <% end %>

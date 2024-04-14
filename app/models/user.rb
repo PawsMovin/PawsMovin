@@ -385,10 +385,6 @@ class User < ApplicationRecord
       is_janitor?
     end
 
-    def is_staff?
-      is_janitor?
-    end
-
     def is_approver?
       can_approve_posts?
     end
