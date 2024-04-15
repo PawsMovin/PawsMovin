@@ -5,7 +5,7 @@
   <% end %>
   <%= f.input(:duration, hint: "in days") %>
   <%= f.input(:is_permaban, as: :boolean, hint: "ignores days") %>
-  <%= f.input(:reason, as: :dtext) %>
+  <%= f.input(:reason, as: :dtext, limit: PawsMovin.config.user_feedback_max_size) %>
   <%= f.button(:submit, value: "Ban") %>
 <% end %>
 

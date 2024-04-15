@@ -10,7 +10,7 @@ class Tag < ApplicationRecord
   has_many :versions, class_name: "TagVersion"
 
   validates :name, uniqueness: true, tag_name: true, on: :create
-  validates :name, length: { in: 1..100 }
+  validates :name, length: { minimum: 1, maximum: 100 }
   validates :category, inclusion: { in: TagCategory.ids }
   validate :user_can_create_tag?, on: :create
   validate :user_can_change_category?, if: :category_changed?

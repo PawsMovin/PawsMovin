@@ -13,6 +13,7 @@ class Ban < ApplicationRecord
   belongs_to :banner, class_name: "User"
   validate :user_is_inferior
   validates :user_id, :reason, :duration, presence: true
+  validates :reason, length: { minimum: 1, maximum: PawsMovin.config.user_feedback_max_size }
   before_validation :initialize_banner_id, on: :create
   before_validation :initialize_permaban, on: %i[update create]
 

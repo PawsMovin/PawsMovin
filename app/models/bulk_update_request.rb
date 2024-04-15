@@ -15,7 +15,7 @@ class BulkUpdateRequest < ApplicationRecord
   validate :forum_topic_id_not_invalid
   validate :validate_script, on: :create
   validate :check_validate_script, on: :update
-  validates :reason, length: { minimum: 5 }, on: :create, unless: :skip_forum
+  validates :reason, length: { minimum: 5, maximum: PawsMovin.config.forum_post_max_size }, on: :create, unless: :skip_forum
   before_validation :normalize_text
   after_create :create_forum_topic
 

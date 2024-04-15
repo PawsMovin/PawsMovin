@@ -5,6 +5,9 @@ class AvoidPosting < ApplicationRecord
   belongs_to_updater
 
   has_many :versions, -> { order("avoid_posting_versions.id ASC") }, class_name: "AvoidPostingVersion", dependent: :destroy
+  validates :artist_name, length: { maximum: 100 }
+  validates :details, length: { maximum: 1024 }
+  validates :staff_notes, length: { maximum: 4096 }
   before_validation :validate_artist_rename_not_conflicting, if: :will_save_change_to_artist_name?
   after_create :log_create
   after_update :log_update

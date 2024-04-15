@@ -168,8 +168,8 @@ class Pool < ApplicationRecord
     post_ids_before = post_ids_before_last_save || post_ids_was
     added = post_ids - post_ids_before
     return unless added.size > 0
-    if post_ids.size > 1_000
-      errors.add(:base, "Pools can have up to 1,000 posts each")
+    if post_ids.size > PawsMovin.config.pool_post_limit
+      errors.add(:base, "Pools can only have up to #{ActiveSupport::NumberHelper.number_to_delimited(PawsMovin.config.pool_post_limit)} posts each")
       false
     else
       true

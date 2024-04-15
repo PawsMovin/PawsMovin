@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 class HelpPage < ApplicationRecord
-  validates :wiki_page, :name, uniqueness: true
-  validates :wiki_page, :name, presence: true
+  validates :wiki_page, :name, uniqueness: true, presence: true, length: { minimum: 1, maximum: 100 }
   normalizes :name, with: ->(name) { name.downcase.strip.tr(" ", "_") }
   validate :wiki_page_exists
   after_create :log_create

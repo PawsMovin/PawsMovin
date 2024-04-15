@@ -4,8 +4,8 @@ class Rule < ApplicationRecord
   belongs_to_creator
   belongs_to_updater
   belongs_to :category, class_name: "RuleCategory"
-  validates :name, presence: true, uniqueness: true
-  validates :description, presence: true
+  validates :name, presence: true, uniqueness: true, length: { min: 3, maximum: 100 }
+  validates :description, presence: true, length: { maximum: 50_000 }
   validates :order, uniqueness: { scope: :category_id }, numericality: { only_integer: true, greater_than: 0 }
 
   before_validation(on: :create) do

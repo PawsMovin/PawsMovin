@@ -4,16 +4,18 @@ class NewsUpdate < ApplicationRecord
   belongs_to_creator
   belongs_to_updater
 
+  validates :message, length: { minimum: 1, maximum: PawsMovin.config.news_update_max_size }
+
   after_save :invalidate_cache
   after_destroy :invalidate_cache
 
   def self.recent
-    Cache.fetch("recent_news_v2", expires_in: 1.day) do
+    Cache.fetch("recent_news", expires_in: 1.day) do
       order("id desc").first
     end
   end
 
   def invalidate_cache
-    Cache.delete("recent_news_v2")
+    Cache.delete("recent_news")
   end
 end

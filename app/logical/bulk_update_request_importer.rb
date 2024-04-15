@@ -151,7 +151,8 @@ class BulkUpdateRequestImporter
         errors << "Unknown token: #{token[0]}"
       end
     end
-    errors << "Cannot create BUR with more than 25 entries" if tokens.size > 25 && !user.is_admin?
+    limit = PawsMovin.config.bur_entry_limit(user)
+    errors << "Cannot create BUR with more than #{limit} entries" if tokens.size > limit
     [errors, BulkUpdateRequestImporter.untokenize(annotated).join("\n")]
   end
 

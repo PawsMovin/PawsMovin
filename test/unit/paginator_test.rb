@@ -69,7 +69,7 @@ class PaginatorTest < ActiveSupport::TestCase
         assert_invalid_page_number(model, -1)
         assert_invalid_page_number(model, "-1")
         assert_invalid_page_number(model, "a")
-        assert_invalid_page_number(model, "751")
+        assert_invalid_page_number(model, PawsMovin.config.max_numbered_pages + 1)
         assert_invalid_page_number(model, "c1")
       end
 
@@ -77,7 +77,7 @@ class PaginatorTest < ActiveSupport::TestCase
         assert_equal(PawsMovin.config.records_per_page, model.paginate(1).records_per_page)
         assert_equal(10, model.paginate(1, limit: 10).records_per_page)
         assert_equal(10, model.paginate(1, limit: "10").records_per_page)
-        assert_equal(320, model.paginate(1, limit: "321").records_per_page)
+        assert_equal(PawsMovin.config.max_per_page, model.paginate(1, limit: PawsMovin.config.max_per_page + 1).records_per_page)
         assert_equal(0, model.paginate(1, limit: "0").records_per_page)
         assert_equal(0, model.paginate(1, limit: "-1").records_per_page)
         assert_equal(0, model.paginate(1, limit: "a").records_per_page)

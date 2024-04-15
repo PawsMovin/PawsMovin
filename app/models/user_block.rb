@@ -25,6 +25,7 @@ class UserBlock < ApplicationRecord
 
     if target.is_staff? && disable_messages?
       errors.add(:base, "You cannot block messages from staff members")
+      throw(:abort)
     end
   end
 

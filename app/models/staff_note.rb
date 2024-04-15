@@ -5,6 +5,7 @@ class StaffNote < ApplicationRecord
   belongs_to_updater
   belongs_to :user
 
+  validates :body, length: { maximum: 10_000 }
   after_create :log_create
   after_update :log_update
 

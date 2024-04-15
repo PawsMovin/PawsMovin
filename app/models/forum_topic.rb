@@ -12,7 +12,7 @@ class ForumTopic < ApplicationRecord
   validates :title, :creator_id, presence: true
   validates_associated :original_post
   validates_presence_of :original_post
-  validates :title, length: {maximum: 250}
+  validates :title, length: { minimum: 1, maximum: 250 }
   validate :category_allows_creation, on: :create
   validate :validate_not_aibur, if: :will_save_change_to_is_hidden?
   accepts_nested_attributes_for :original_post

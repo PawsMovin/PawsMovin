@@ -62,7 +62,7 @@ module PawsMovin
 
       def records_per_page
         limit = @paginator_options.try(:[], :limit) || PawsMovin.config.records_per_page
-        limit.to_i.clamp(0, 320)
+        limit.to_i.clamp(0, PawsMovin.config.max_per_page)
       end
 
       # When paginating large tables, we want to avoid doing an expensive count query

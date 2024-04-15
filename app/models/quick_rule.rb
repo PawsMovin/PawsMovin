@@ -2,6 +2,8 @@
 
 class QuickRule < ApplicationRecord
   validates :order, uniqueness: true, numericality: { only_integer: true, greater_than: 0 }
+  validates :reason, length: { minimum: 3, maximum: 250 }
+  validates :header, length: { maximum: 30 }
   belongs_to :rule
 
   before_validation(on: :create) do

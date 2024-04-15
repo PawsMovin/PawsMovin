@@ -7,7 +7,8 @@ class Mascot < ApplicationRecord
   attr_accessor :mascot_file
 
   validates :display_name, :background_color, :artist_url, :artist_name, presence: true
-  validates :artist_url, format: { with: %r{\Ahttps?://}, message: "must start with http:// or https://" }
+  validates :artist_url, format: { with: %r{\Ahttps?://}, message: "must start with http:// or https://" }, length: { maximum: 1_000 }
+  validates :display_name, :artist_name, length: { maximum: 100 }
   validates :mascot_file, presence: true, on: :create
   validate :set_file_properties
   validates :md5, uniqueness: true

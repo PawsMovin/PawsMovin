@@ -2,7 +2,7 @@
 
 class ForumCategory < ApplicationRecord
   has_many :forum_topics, -> { order(id: :desc) }, foreign_key: :category
-  validates :name, uniqueness: { case_sensitive: false }
+  validates :name, uniqueness: { case_sensitive: false }, length: { minimum: 3, maximum: 100 }
 
   after_create :log_create
   after_update :log_update

@@ -109,10 +109,10 @@ class User < ApplicationRecord
 
   validates :name, user_name: true, on: :create
   validates :default_image_size, inclusion: { in: %w(large fit fitv original) }
-  validates :per_page, inclusion: { in: 1..320 }
+  validates :per_page, inclusion: { in: 1..PawsMovin.config.max_per_page }
   validates :comment_threshold, presence: true
   validates :comment_threshold, numericality: { only_integer: true, less_than: 50_000, greater_than: -50_000 }
-  validates :password, length: { minimum: 6, if: ->(rec) { rec.new_record? || rec.password.present? || rec.old_password.present? } }, unless: :is_system?
+  validates :password, length: { minimum: 6, maximum: 128, if: ->(rec) { rec.new_record? || rec.password.present? || rec.old_password.present? } }, unless: :is_system?
   validates :password, confirmation: true, unless: :is_system?
   validates :password_confirmation, presence: { if: ->(rec) { rec.new_record? || rec.old_password.present? } }, unless: :is_system?
   validate :validate_ip_addr_is_not_banned, on: :create
@@ -120,8 +120,8 @@ class User < ApplicationRecord
   before_validation :normalize_blacklisted_tags, if: ->(rec) { rec.blacklisted_tags_changed? }
   before_validation :staff_cant_disable_dmail
   before_validation :blank_out_nonexistent_avatars
-  validates :blacklisted_tags, length: { maximum: 150_000 }
-  validates :custom_style, length: { maximum: 500_000 }
+  validates :blacklisted_tags, length: { maximum: PawsMovin.config.blacklisted_tags_max_size }
+  validates :custom_style, length: { maximum: PawsMovin.config.custom_style_max_size }
   validates :profile_about, length: { maximum: PawsMovin.config.user_about_max_size }
   validates :profile_artinfo, length: { maximum: PawsMovin.config.user_about_max_size }
   validates :time_zone, inclusion: { in: ActiveSupport::TimeZone.all.map(&:name) }

@@ -306,6 +306,11 @@ module PawsMovin
       user.is_admin?
     end
 
+    def bur_entry_limit(user)
+      return Float::INFINITY if user.is_admin?
+      50
+    end
+
     # Return true if the given tag shouldn't count against the user's tag search limit.
     def is_unlimited_tag?(tag)
       !!(tag =~ /\A(-?status:deleted|rating:s.*|limit:.+)\z/i)
@@ -313,7 +318,11 @@ module PawsMovin
 
     # After this many pages, the paginator will switch to sequential mode.
     def max_numbered_pages
-      750
+      1_000
+    end
+
+    def max_per_page
+      500
     end
 
     def comment_max_size
@@ -347,6 +356,14 @@ module PawsMovin
     def user_about_max_size
       50_000
     end
+    
+    def blacklisted_tags_max_size
+      150_000
+    end
+    
+    def custom_style_max_size
+      500_000
+    end
 
     def wiki_page_max_size
       250_000
@@ -354,6 +371,18 @@ module PawsMovin
 
     def user_feedback_max_size
       20_000
+    end
+
+    def news_update_max_size
+      50_000
+    end
+
+    def pool_post_limit
+      1_000
+    end
+
+    def disapproval_message_max_size
+      250
     end
 
     def discord_site
