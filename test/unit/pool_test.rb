@@ -54,6 +54,13 @@ class PoolTest < ActiveSupport::TestCase
       @posts.each(&:reload)
       assert_equal(["pool:#{@pool.id}"] * @posts.size, @posts.map(&:pool_string))
     end
+
+    should "remove invalid post ids" do
+      invalid = Post.maximum(:id) + 1
+      @pool = create(:pool, post_ids: @posts.map(&:id) + [invalid])
+      assert_equal(@posts.size, @pool.post_count)
+      assert_equal(@posts.map(&:id), @pool.post_ids)
+    end
   end
 
   context "Reverting a pool" do
@@ -143,6 +150,14 @@ class PoolTest < ActiveSupport::TestCase
 
       should "increment the post count" do
         assert_equal(1, @pool.post_count)
+      end
+
+      should "not allow adding invalid posts" do
+        invalid = Post.maximum(:id) + 1
+        @pool.post_ids << invalid
+        @pool.save
+        assert_equal(1, @pool.post_count)
+        assert_equal([@p1.id], @pool.post_ids)
       end
 
       context "to a pool that already has the post" do
@@ -253,8 +268,8 @@ class PoolTest < ActiveSupport::TestCase
     end
 
     should "normalize its post ids" do
-      @pool.update(post_ids: [1, 2, 2, 3, 1])
-      assert_equal([1, 2, 3], @pool.post_ids)
+      @pool.update(post_ids: [@p1.id, @p2.id, @p1.id])
+      assert_equal([@p1.id, @p2.id], @pool.post_ids)
     end
 
     context "when validating names" do

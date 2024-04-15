@@ -137,7 +137,8 @@ class Pool < ApplicationRecord
   end
 
   def normalize_post_ids
-    self.post_ids = post_ids.uniq
+    valid = Post.where(id: post_ids.uniq).select(:id).pluck(:id)
+    self.post_ids = post_ids.uniq.select { |id| valid.include?(id) }
   end
 
   def revert_to!(version)
