@@ -352,12 +352,21 @@ class PoolTest < ActiveSupport::TestCase
       assert_same_elements(%w[bar], @pool.artists)
     end
 
-    should "update when a post is added/removed" do
+    should "update when a post is added/removed (via add!/remove!)" do
       @post2 = create(:post, tag_string: "artist:baz")
       @pool.add!(@post2)
       assert_same_elements(%w[foo baz], @pool.artists)
 
       @pool.remove!(@post)
+      assert_same_elements(%w[baz], @pool.artists)
+    end
+
+    should "update when a post is added/removed (via post_ids=)" do
+      @post2 = create(:post, tag_string: "artist:baz")
+      @pool.update(post_ids: [@post.id, @post2.id])
+      assert_same_elements(%w[foo baz], @pool.artists)
+
+      @pool.update(post_ids: [@post2.id])
       assert_same_elements(%w[baz], @pool.artists)
     end
   end

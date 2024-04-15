@@ -244,11 +244,13 @@ class Pool < ApplicationRecord
     removed = post_ids_before - post_ids
 
     Post.where(id: added).find_each do |post|
+      update_artists(post, :add)
       post.add_pool!(self)
       post.save
     end
 
     Post.where(id: removed).find_each do |post|
+      update_artists(post, :remove)
       post.remove_pool!(self)
       post.save
     end
