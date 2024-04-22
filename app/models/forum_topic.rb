@@ -110,7 +110,7 @@ class ForumTopic < ApplicationRecord
     end
 
     def unmuted
-      joins(:statuses).where("forum_topic_statuses.mute = ?", false)
+      left_outer_joins(:statuses).where("(forum_topic_statuses.mute = ? AND forum_topic_statuses.user_id = ?) OR forum_topic_statuses.id IS NULL", false, CurrentUser.user.id)
     end
 
     def sticky_first

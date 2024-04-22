@@ -85,8 +85,15 @@ header#top {
       color: $page-header-sign-in-link-color;
     }
 
-    li.forum-updated a {
-      font-style: italic;
+    li.forum-updated a::after {
+      content: unicode('f111');
+      @include FontAwesomeFamily;
+      font-weight: 900;
+      font-size: 0.5em;
+      color: red;
+
+      position: absolute;
+      top: -3px;
     }
   }
 }

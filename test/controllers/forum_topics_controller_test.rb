@@ -112,6 +112,17 @@ class ForumTopicsControllerTest < ActionDispatch::IntegrationTest
         assert_response :unprocessable_entity
         assert_includes(@response.parsed_body.dig("errors", "category"), "is invalid")
       end
+
+      should "cause the unread indicator to show" do
+        @other_user.update(last_forum_read_at: Time.now)
+        get_auth posts_path, @other_user
+        assert_select "#nav-forum.forum-updated", false
+
+        post_auth forum_topics_path, @user, params: { forum_topic: { title: "bababa", category_id: PawsMovin.config.alias_implication_forum_category, original_post_attributes: { body: "xaxaxa" } } }
+
+        get_auth posts_path, @other_user
+        assert_select "#nav-forum.forum-updated"
+      end
     end
 
     context "destroy action" do
