@@ -29,7 +29,7 @@ class FavoritesController < ApplicationController
   def create
     @post = authorize(Post.find(params[:post_id]), policy_class: FavoritePolicy)
     FavoriteManager.add!(user: CurrentUser.user, post: @post)
-    flash.now[:notice] = "You have favorited this post"
+    notice("You have favorited this post")
 
     respond_with(@post)
   rescue Favorite::Error, ActiveRecord::RecordInvalid => x
@@ -40,7 +40,7 @@ class FavoritesController < ApplicationController
     @post = authorize(Post.find(params[:id]), policy_class: FavoritePolicy)
     FavoriteManager.remove!(user: CurrentUser.user, post: @post)
 
-    flash.now[:notice] = "You have unfavorited this post"
+    notice("You have unfavorited this post")
     respond_with(@post)
   rescue Favorite::Error => x
     render_expected_error(422, x.message)

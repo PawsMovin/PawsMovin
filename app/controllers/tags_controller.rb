@@ -11,7 +11,7 @@ class TagsController < ApplicationController
 
   def preview
     authorize(Tag)
-    @preview = TagsPreview.new(tags: params[:tags])
+    @preview = TagsPreview.new(tags: params[:tags] || "")
     respond_to do |format|
       format.json do
         render(json: @preview.serializable_hash)

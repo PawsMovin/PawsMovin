@@ -312,7 +312,7 @@ class Pool < ApplicationRecord
   end
 
   def method_attributes
-    super + %i[creator_name post_count]
+    super + %i[artists creator_name post_count]
   end
 
   def validate_name

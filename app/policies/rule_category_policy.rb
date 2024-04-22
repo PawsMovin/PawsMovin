@@ -22,6 +22,6 @@ class RuleCategoryPolicy < ApplicationPolicy
   end
 
   def permitted_attributes
-    %i[name anchor]
+    %i[name anchor order]
   end
 end

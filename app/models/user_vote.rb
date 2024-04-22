@@ -88,8 +88,8 @@ class UserVote < ApplicationRecord
           q = q.where("#{table_name}.updated_at >= ?", params[:timeframe].to_i.days.ago)
         end
 
-        if params[:user_ip_addr].present?
-          q = q.where("user_ip_addr <<= ?", params[:user_ip_addr])
+        if params[:ip_addr].present?
+          q = q.where("user_ip_addr <<= ?", params[:ip_addr])
         end
 
         if params[:score].present?

@@ -2,21 +2,19 @@
 
 class PoolsController < ApplicationController
   respond_to :html, :json
-  before_action :member_only, except: %i[index show gallery]
-  before_action :janitor_only, only: [:destroy]
 
   def new
-    @pool = Pool.new
+    @pool = authorize(Pool.new(permitted_attributes(Pool)))
     respond_with(@pool)
   end
 
   def edit
-    @pool = Pool.find(params[:id])
+    @pool = authorize(Pool.find(params[:id]))
     respond_with(@pool)
   end
 
   def index
-    @pools = Pool.search(search_params(Pool)).paginate(params[:page], limit: params[:limit], search_count: params[:search])
+    @pools = authorize(Pool).search(search_params(Pool)).paginate(params[:page], limit: params[:limit], search_count: params[:search])
     respond_with(@pools) do |format|
       format.json do
         render(json: @pools.to_json)
@@ -54,7 +52,6 @@ class PoolsController < ApplicationController
 
   def destroy
     @pool = authorize(Pool.find(params[:id]))
-    raise(User::PrivilegeError) unless @pool.deletable_by?(CurrentUser.user)
     @pool.destroy
     notice("Pool deleted")
     respond_with(@pool)

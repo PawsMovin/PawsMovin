@@ -15,7 +15,7 @@ class TagRelationships {
 
     $.ajax({
       url: `/${route}/${id}/approve.json`,
-      type: 'POST',
+      type: "PUT",
       dataType: 'json'
     }).done(function (data) {
       Utility.notice(`Accepted ${human}.`);

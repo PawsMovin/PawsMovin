@@ -7,13 +7,14 @@ module Admin
     end
 
     def create
-      @importer = authorize(BulkUpdateRequestImporter.new(params[:batch][:text], params[:batch][:forum_id]))
+      bparams = params[:batch].presence || params
+      @importer = authorize(BulkUpdateRequestImporter.new(bparams[:script], bparams[:forum_id]))
       @importer.process!
-      flash[:notice] = "Import queued"
-      redirect_to(new_admin_bulk_update_request_import_path)
-    rescue StandardError => e
-      flash[:notice] = e.to_s
-      redirect_to(new_admin_bulk_update_request_import_path)
+      notice("Import queued")
+      respond_to do |format|
+        format.html { redirect_to(new_admin_bulk_update_request_import_path) }
+        format.json
+      end
     end
   end
 end

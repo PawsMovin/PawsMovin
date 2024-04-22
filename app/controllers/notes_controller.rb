@@ -50,16 +50,6 @@ class NotesController < ApplicationController
     end
   end
 
-  def preview
-    authorize(Note)
-    @body = helpers.format_text(params[:body].to_s)
-    respond_with(@body) do |format|
-      format.json do
-        render(json: { body: @body }.to_json)
-      end
-    end
-  end
-
   def destroy
     @note = authorize(Note.find(params[:id]))
     @note.update(is_active: false)

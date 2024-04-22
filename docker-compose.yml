@@ -117,7 +117,7 @@ services:
     image: memcached:1.5.22-alpine
 
   opensearch:
-    image: opensearchproject/opensearch:2.9.0
+    image: opensearchproject/opensearch:2.13.0
     environment:
       - discovery.type=single-node
       - logger.level=WARN

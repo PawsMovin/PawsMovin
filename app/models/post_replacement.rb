@@ -170,6 +170,22 @@ class PostReplacement < ApplicationRecord
     def hidden_attributes
       super + %i[storage_id protected uploader_id_on_approve penalize_uploader_on_approve previous_details]
     end
+
+    def method_attributes
+      super + %i[file_url]
+    end
+
+    def file_url
+      if post.deleteblocked?
+        nil
+      elsif post.visible?
+        if original_file_visible_to?(CurrentUser)
+          replacement_file_url
+        else
+          replacement_thumb_url
+        end
+      end
+    end
   end
 
   module ProcessingMethods
@@ -267,6 +283,7 @@ class PostReplacement < ApplicationRecord
 
         q = q.where_user(:creator_id, :creator, params)
         q = q.where_user(:approver_id, :approver, params)
+        q = q.where_user(:rejector_id, :rejector, params)
         q = q.where_user(:uploader_id_on_approve, %i[uploader_name_on_approve uploader_id_on_approve], params)
 
         if params[:post_id].present?

@@ -31,7 +31,7 @@ class CommentPolicy < ApplicationPolicy
 
   def permitted_attributes
     attr = %i[body]
-    attr += %i[is_sticky is_hidden] if CurrentUser.is_moderator?
+    attr += %i[is_sticky is_hidden] if user.is_moderator?
     attr
   end
 

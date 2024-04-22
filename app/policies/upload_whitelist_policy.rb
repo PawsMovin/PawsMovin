@@ -22,6 +22,6 @@ class UploadWhitelistPolicy < ApplicationPolicy
   end
 
   def permitted_search_params
-    super + %i[allowed order pattern note reason]
+    super + %i[allowed pattern note reason]
   end
 end

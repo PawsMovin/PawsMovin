@@ -145,8 +145,8 @@
       <li>» <%= link_to "My recommendations", post_recommendations_path(search: { user_id: CurrentUser.id }) %></li>
       <li>» <%= link_to "My blocked users", user_blocks_path(CurrentUser.user) %></li>
       <br>
-      <li>» <%= link_to "My sets", post_sets_path(search: {creator_id: CurrentUser.id}) %></li>
-      <li>» <%= link_to "Sets I maintain", post_sets_path(maintainer_id: CurrentUser.id) %></li>
+      <li>» <%= link_to "My sets", post_sets_path(search: { creator_id: CurrentUser.id }) %></li>
+      <li>» <%= link_to "Sets I maintain", post_sets_path(search: { maintainer_id: CurrentUser.id }) %></li>
       <li>» <%= link_to "Set maintainer invites", post_set_maintainers_path %></li>
       <br>
       <li>» <%= link_to "Search for myself in comments", comments_path(group_by: :comment, search: { body_matches: CurrentUser.name }) %></li>

@@ -1206,7 +1206,7 @@ CREATE TABLE public.pools (
     id integer NOT NULL,
     name character varying NOT NULL,
     creator_id integer NOT NULL,
-    description text,
+    description text DEFAULT ''::text NOT NULL,
     is_active boolean DEFAULT true NOT NULL,
     post_ids integer[] DEFAULT '{}'::integer[] NOT NULL,
     created_at timestamp without time zone NOT NULL,
@@ -2250,7 +2250,6 @@ CREATE TABLE public.uploads (
     status text DEFAULT 'pending'::text NOT NULL,
     backtrace text,
     post_id integer,
-    md5_confirmation character varying,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     parent_id integer,
@@ -5026,6 +5025,8 @@ ALTER TABLE ONLY public.staff_notes
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20240418103518'),
+('20240417101613'),
 ('20240413150945'),
 ('20240411061400'),
 ('20240411041819'),

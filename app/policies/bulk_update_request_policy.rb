@@ -2,7 +2,7 @@
 
 class BulkUpdateRequestPolicy < ApplicationPolicy
   def update?
-    return unbanned? && user.can_manage_aibur? unless record.is_a?(BulkUpdateRequest)
+    return unbanned? unless record.is_a?(BulkUpdateRequest)
     unbanned? && record.editable?(user)
   end
 
@@ -11,10 +11,12 @@ class BulkUpdateRequestPolicy < ApplicationPolicy
     unbanned? && record.approvable?(user)
   end
 
-  def reject?
-    return unbanned? && user.can_manage_aibur? unless record.is_a?(BulkUpdateRequest)
+  def destroy?
+    return unbanned? unless record.is_a?(BulkUpdateRequest)
     unbanned? && record.rejectable?(user)
   end
+
+  alias :reject? :destroy?
 
   def permitted_attributes
     %i[script]

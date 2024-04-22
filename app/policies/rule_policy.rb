@@ -22,10 +22,10 @@ class RulePolicy < ApplicationPolicy
   end
 
   def builder?
-    user.is_admin?
+    user.is_moderator?
   end
 
   def permitted_attributes
-    %i[name description category_id anchor]
+    %i[name description category_id anchor order]
   end
 end

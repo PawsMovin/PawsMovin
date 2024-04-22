@@ -51,19 +51,15 @@ class PostSetPolicy < ApplicationPolicy
   end
 
   def add_maintainer?
-    record.can_edit_settings?(user)
+    settings_edit_access?(record)
   end
 
   def permitted_attributes
     %i[name shortname description is_public transfer_on_delete]
   end
 
-  def permitted_attributes_for_update_posts
-    %i[post_ids_string]
-  end
-
   def permitted_search_params
-    params = super + %i[name shortname creator_id creator_name]
+    params = super + %i[name shortname creator_id creator_name post_id maintainer_id]
     params << :is_public if user.is_moderator?
     params
   end

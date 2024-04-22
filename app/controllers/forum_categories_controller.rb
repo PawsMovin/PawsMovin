@@ -5,7 +5,7 @@ class ForumCategoriesController < ApplicationController
   respond_to :html, :json
 
   def index
-    @forum_categories = authorize(ForumCategory).visible.ordered_categories.paginate(params[:page], limit: 50)
+    @forum_categories = authorize(ForumCategory).visible.ordered_categories.paginate(params[:page], limit: params[:limit] || 50)
     respond_with(@forum_categories)
   end
 
@@ -43,7 +43,7 @@ class ForumCategoriesController < ApplicationController
     authorize(ForumCategory)
     new_orders = params[:_json].reject { |o| o[:id].nil? }
     new_ids = new_orders.pluck(:id)
-    current_ids = ForumCategory..pluck(:id)
+    current_ids = ForumCategory.pluck(:id)
     missing = current_ids - new_ids
     extra = new_ids - current_ids
     duplicate = new_ids.select { |id| new_ids.count(id) > 1 }.uniq
@@ -66,9 +66,14 @@ class ForumCategoriesController < ApplicationController
     ForumCategory.log_reorder(changes) if changes != 0
 
     respond_to do |format|
-      format.html { redirect_back(fallback_location: forum_categories_path, notice: "Order updated") }
+      format.html do
+        notice("Order updated")
+        redirect_back(fallback_location: forum_categories_path)
+      end
       format.json
     end
+  rescue ActiveRecord::RecordNotFound
+    render_expected_error(400, "Category not found")
   end
 
   private

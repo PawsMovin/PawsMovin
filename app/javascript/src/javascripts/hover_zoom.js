@@ -299,13 +299,13 @@ HoverZoom.post_from_element = function(element) {
       urls = {
         preview: element.attr("data-preview-url")
           ? element.attr("data-preview-url")
-          : `https://static.femboy.fan/preview/${md5.substr(0, 2)}/${md5.substr(2, 2)}/${md5}.webp`,
+          : `https://static.pawsmov.in/preview/${md5.substr(0, 2)}/${md5.substr(2, 2)}/${md5}.webp`,
         sample: element.attr("data-large-file-url")
           ? element.attr("data-large-file-url")
           : ((width < 850 || height < 850 || ext === "gif")
-            ? `https://static.femboy.fan/${md5.substr(0, 2)}/${md5.substr(2, 2)}/${md5}.${ext}`
-            : `https://static.femboy.fan/sample/${md5.substr(0, 2)}/${md5.substr(2, 2)}/${md5}.webp`),
-        original: `https://static.femboy.fan/${md5.substr(0, 2)}/${md5.substr(2, 2)}/${md5}.${ext}`,
+            ? `https://static.pawsmov.in/${md5.substr(0, 2)}/${md5.substr(2, 2)}/${md5}.${ext}`
+            : `https://static.pawsmov.in/sample/${md5.substr(0, 2)}/${md5.substr(2, 2)}/${md5}.webp`),
+        original: `https://static.pawsmov.in/${md5.substr(0, 2)}/${md5.substr(2, 2)}/${md5}.${ext}`,
       };
     }
   }

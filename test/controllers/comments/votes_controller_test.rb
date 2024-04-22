@@ -44,7 +44,7 @@ module Comments
       context "create action" do
         should "create a vote" do
           assert_difference(-> { CommentVote.count }, 1) do
-            post_auth comment_votes_path(@comment), @user2, params: { comment_vote: { score: -1 }, format: :json }
+            post_auth comment_votes_path(@comment), @user2, params: { score: -1, format: :json }
             assert_response :success
           end
         end
@@ -52,7 +52,7 @@ module Comments
         should "unvote when the vote already exists" do
           create(:comment_vote, comment: @comment, user: @user2, score: -1)
           assert_difference(-> { CommentVote.count }, -1) do
-            post_auth comment_votes_path(@comment), @user2, params: { comment_vote: { score: -1 }, format: :json }
+            post_auth comment_votes_path(@comment), @user2, params: { score: -1, format: :json }
             assert_response :success
           end
         end

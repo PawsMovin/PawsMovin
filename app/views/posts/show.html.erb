@@ -36,7 +36,7 @@
     <section id="post-related-images">
       <h1>Related</h1>
       <ul>
-        <li><%= link_to "Sets with this post", post_sets_path(post_id: @post.id), rel: "nofollow" %></li>
+        <li><%= link_to "Sets with this post", post_sets_path(search: { post_id: @post.id }), rel: "nofollow" %></li>
         <% if PawsMovin.config.iqdb_server.present? && @post.has_preview? %>
           <li><%= link_to "Visually similar", posts_iqdb_path(search: { post_id: @post.id }), rel: "nofollow" %></li>
           <li><%= link_to "Recommendations", post_recommendations_path(search: { post_id: @post.id }), rel: "nofollow" %></li>
@@ -155,7 +155,7 @@
   </div>
 
   <section id="mark-as-translated-section" style="display: none;">
-    <%= form_tag(mark_as_translated_post_path(@post), class: "simple_form", method: :put) do |f| %>
+    <%= form_tag(mark_as_translated_post_path(@post), class: "simple_form") do |f| %>
       <%= hidden_field_tag :tags_query, params[:q] %>
       <%= hidden_field_tag :pool_id, params[:pool_id] %>
 

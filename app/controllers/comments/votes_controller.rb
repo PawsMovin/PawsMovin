@@ -14,7 +14,7 @@ module Comments
     def create
       authorize(CommentVote)
       @comment = Comment.find(params[:comment_id])
-      @comment_vote = VoteManager.comment_vote!(comment: @comment, user: CurrentUser.user, score: permitted_attributes(CommentVote)[:score])
+      @comment_vote = VoteManager.comment_vote!(comment: @comment, user: CurrentUser.user, score: params[:score])
       if @comment_vote == :need_unvote && !params[:no_unvote].to_s.truthy?
         VoteManager.comment_unvote!(comment: @comment, user: CurrentUser.user)
       end

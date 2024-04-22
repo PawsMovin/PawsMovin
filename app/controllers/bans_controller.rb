@@ -6,8 +6,8 @@ class BansController < ApplicationController
 
   def index
     @bans = authorize(Ban).search(search_params(Ban)).paginate(params[:page], limit: params[:limit])
-    respond_with(@bans) do |fmt|
-      fmt.html { @bans = @bans.includes(:user, :banner) }
+    respond_with(@bans) do |format|
+      format.html { @bans = @bans.includes(:user, :banner) }
     end
   end
 

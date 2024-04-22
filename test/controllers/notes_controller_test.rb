@@ -101,12 +101,5 @@ class NotesControllerTest < ActionDispatch::IntegrationTest
         assert_response :missing
       end
     end
-
-    context "preview action" do
-      should "work" do
-        get preview_notes_path, params: { body: "<b>test</b>", format: :json }
-        assert_response :success
-      end
-    end
   end
 end

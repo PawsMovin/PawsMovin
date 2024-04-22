@@ -56,7 +56,7 @@ Comment.vote = function (commentID, action) {
     method: "POST",
     url: `/comments/${commentID}/votes.json`,
     data: {
-      "comment_vote[score]": action
+      "score": action
     },
     dataType: "json"
   }).done((data) => {

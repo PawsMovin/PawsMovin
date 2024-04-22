@@ -74,6 +74,17 @@ class ArtistsControllerTest < ActionDispatch::IntegrationTest
         assert_not_nil(artist)
         assert_redirected_to(artist_path(artist.id))
       end
+
+      should "return expected errors" do
+        post_auth artists_path, @user, params: { artist: { name: @artist.name }, format: "json" }
+        assert_error_response("name", "has already been taken")
+
+        post_auth artists_path, @user, params: { artist: { name: "" }, format: "json" }
+        assert_error_response("name", "'' cannot be blank")
+
+        post_auth artists_path, @user, params: { artist: { name: "a" * 101 }, format: "json" }
+        assert_error_response("name", "is too long (maximum is 100 characters)")
+      end
     end
 
     context "with an artist that has notes" do

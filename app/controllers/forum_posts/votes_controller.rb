@@ -14,9 +14,14 @@ module ForumPosts
     end
 
     def create
-      authorize(ForumPostVote)
-      @forum_post_vote = @forum_post.votes.create(permitted_attributes(ForumPostVote))
-      raise(User::PrivilegeError, @forum_post_vote.errors.full_messages.join("; ")) unless @forum_post_vote.errors.empty?
+      authorize(@forum_post, policy_class: ForumPostVotePolicy)
+      @forum_post_vote = @forum_post.votes.find_by(user: CurrentUser.user)
+      if @forum_post_vote.present?
+        @forum_post_vote.update(score: params[:score]) if @forum_post_vote.score != params[:score]
+      else
+        @forum_post_vote = @forum_post.votes.create(score: params[:score])
+        raise(User::PrivilegeError, @forum_post_vote.errors.full_messages.join("; ")) unless @forum_post_vote.errors.empty?
+      end
       respond_with(@forum_post_vote) do |fmt|
         fmt.json { render(json: @forum_post_vote, code: 201) }
       end

@@ -5,13 +5,13 @@ class TagRelationshipRequest
 
   attr_reader :antecedent_name, :consequent_name, :tag_relationship, :reason, :forum_topic, :forum_topic_id, :skip_forum
 
+  validates :reason, length: { minimum: 5 }, unless: :skip_forum
   validate :validate_tag_relationship
   validate :validate_forum_topic
-  validates :reason, length: { minimum: 5 }, unless: :skip_forum
 
   def initialize(attributes)
-    @antecedent_name = attributes[:antecedent_name].strip.tr(" ", "_")
-    @consequent_name = attributes[:consequent_name].strip.tr(" ", "_")
+    @antecedent_name = attributes[:antecedent_name]&.strip&.tr(" ", "_")
+    @consequent_name = attributes[:consequent_name]&.strip&.tr(" ", "_")
     @reason = attributes[:reason]
     @forum_topic_id = attributes[:forum_topic_id]
     self.skip_forum = attributes[:skip_forum]
@@ -70,7 +70,7 @@ class TagRelationshipRequest
     tag_relationship = @tag_relationship || build_tag_relationship
 
     if tag_relationship.invalid?
-      errors.add(:base, tag_relationship.errors.full_messages.join("; "))
+      self.errors.merge!(tag_relationship.errors)
     end
   end
 

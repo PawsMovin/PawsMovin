@@ -6,7 +6,7 @@ class RulesController < ApplicationController
   respond_to :js, only: %i[reorder]
 
   def index
-    @rules = authorize(Rule).order(:order)
+    @rules = authorize(Rule).order(:order).paginate(params[:page], limit: params[:limit])
     @wiki = WikiPage.find_by(title: "internal:rules_body")
     respond_to do |format|
       format.html
@@ -49,7 +49,7 @@ class RulesController < ApplicationController
 
   def reorder
     authorize(Rule)
-    return render_expected_error(422, "Error: No rules provided") unless params[:_json].is_a?(Array) && params[:_json].any?
+    return render_expected_error(400, "No rules provided") unless params[:_json].is_a?(Array) && params[:_json].any?
     changes = 0
     Rule.transaction do
       params[:_json].each do |data|
@@ -78,9 +78,9 @@ class RulesController < ApplicationController
       end
     end
   rescue ActiveRecord::InvalidForeignKey
-    render_expected_error(422, "Error: Invalid category")
+    render_expected_error(400, "Invalid category")
   rescue ActiveRecord::RecordNotFound
-    render_expected_error(422, "Error: Rule not found")
+    render_expected_error(400, "Rule not found")
   end
 
   def builder

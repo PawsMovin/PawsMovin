@@ -188,7 +188,6 @@ Rails.application.routes.draw do
   resources :notes do
     collection do
       get :search
-      get :preview
       resources :versions, controller: "notes/versions", as: "note_versions", only: %i[index]
     end
     member do
@@ -256,21 +255,21 @@ Rails.application.routes.draw do
       end
     end
     member do
-      get :update_iqdb
+      put :update_iqdb
       put :revert
       put :copy_notes
       get :show_seq
-      put :mark_as_translated
+      post :mark_as_translated
       get :comments, to: "comments#for_post"
       get :favorites
 
-      post :expunge
+      put :expunge
       get :delete
-      post :undelete
+      put :undelete
       get :confirm_move_favorites
-      post :move_favorites
-      post :regenerate_thumbnails
-      post :regenerate_videos
+      put :move_favorites
+      put :regenerate_thumbnails
+      put :regenerate_videos
       post :add_to_pool
       post :remove_from_pool
     end
@@ -280,7 +279,7 @@ Rails.application.routes.draw do
       get :order
       post :reorder
       get :builder
-      resources :categories, controller: "rules/categories", as: "rule_categories", only: %i[new create edit update destroy] do
+      resources :categories, controller: "rules/categories", as: "rule_categories" do
         collection do
           get :order
           post :reorder
@@ -300,7 +299,7 @@ Rails.application.routes.draw do
   resources :stats, only: %i[index]
   resources :tags, constraints: id_name_constraint, only: %i[index show edit update] do
     collection do
-      post :preview
+      get :preview
       get :meta_search
       resource :related, controller: "tags/related", as: "related_tags", only: %i[show] do
         collection do
@@ -310,13 +309,13 @@ Rails.application.routes.draw do
       end
       resources :versions, controller: "tags/versions", as: "tag_versions", only: %i[index]
       resources :aliases, controller: "tags/aliases", as: "tag_aliases" do
-        post :approve, on: :member
+        put :approve, on: :member
       end
       resources :implications, controller: "tags/implications", as: "tag_implications" do
-        post :approve, on: :member
+        put :approve, on: :member
       end
     end
-    post :correct, on: :member
+    put :correct, on: :member
   end
   resources :uploads, only: %i[index show new create]
   resources :users, except: %i[edit update] do
@@ -333,6 +332,7 @@ Rails.application.routes.draw do
       get :search
       get :upload_limit
       get :custom_style
+      get :me
       get :edit
       post "/update", to: "users#update", as: "update"
       resources :feedbacks, controller: "users/feedbacks", as: "user_feedbacks" do

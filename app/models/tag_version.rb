@@ -15,7 +15,7 @@ class TagVersion < ApplicationRecord
 
       q = q.where_user(:updater_id, :updater, params)
 
-      q.order(id: :desc)
+      q.apply_basic_order(params)
     end
   end
 

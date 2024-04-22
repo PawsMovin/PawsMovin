@@ -138,7 +138,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
           @post.delete!("test delete")
         end
         assert_difference(-> { PostEvent.count }, 1) do
-          post_auth undelete_post_path(@post), @admin, params: { format: :json }
+          put_auth undelete_post_path(@post), @admin, params: { format: :json }
         end
 
         assert_response :success
@@ -162,7 +162,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
           @child.reload
         end
 
-        post_auth move_favorites_post_path(@child.id), @admin, params: { commit: "Submit" }
+        put_auth move_favorites_post_path(@child.id), @admin, params: { commit: "Submit" }
         assert_redirected_to(@child)
         perform_enqueued_jobs(only: TransferFavoritesJob)
         @parent.reload
@@ -176,7 +176,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
     context "expunge action" do
       should "render" do
-        post_auth expunge_post_path(@post), @admin, params: { format: :json }
+        put_auth expunge_post_path(@post), @admin, params: { format: :json }
 
         assert_response :success
         assert_equal(false, ::Post.exists?(@post.id))

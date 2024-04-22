@@ -2,7 +2,7 @@
 <% allow_creator ||= params.dig(:search, :creator_id).to_i == CurrentUser.user.id %>
 <% allow_creator ||= params.dig(:search, :creator_name)&.downcase == CurrentUser.user.name %>
 <%= form_search(path: tickets_path, policy: policy(Ticket)) do |f| %>
-  <%= f.user(:creator, label: "Reporter", policy: SearchOverwritePolicy.new(allow_creator)) %>
+  <%= f.user(:creator, label: "Reporter", policy: OverwritePolicy.new(allow_creator)) %>
   <%= f.user(:accused) %>
   <%= f.user(:claimant) %>
   <%= f.input(:reason) %>

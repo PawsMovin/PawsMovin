@@ -502,9 +502,8 @@
         this.tagPreview.tags = [];
         const self = this;
         const data = {tags: this.tags};
-        jQuery.ajax("/tags/preview.json", {
-          method: "POST",
-          type: "POST",
+        $.ajax("/tags/preview.json", {
+          method: "GET",
           data: data,
           success: function (result) {
             self.tagPreview.loading = false;

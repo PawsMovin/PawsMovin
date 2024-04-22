@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class StatsController < ApplicationController
-  respond_to :html
+  respond_to :html, :json
 
   def index
     stats = Cache.redis.get("e6stats")
@@ -10,5 +10,6 @@ class StatsController < ApplicationController
     else
       @stats = JSON.parse(stats)
     end
+    respond_with(@stats)
   end
 end

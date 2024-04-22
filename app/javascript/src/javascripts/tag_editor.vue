@@ -129,8 +129,7 @@
         const self = this;
         const data = {tags: this.tags};
         $.ajax("/tags/preview.json", {
-          method: 'POST',
-          type: 'POST',
+          method: "GET",
           data: data,
           success: function (result) {
             self.preview.loading = false;

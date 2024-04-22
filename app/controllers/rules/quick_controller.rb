@@ -2,20 +2,23 @@
 
 module Rules
   class QuickController < ApplicationController
-    respond_to :html
+    respond_to :html, :json
 
     def index
-      @quick = authorize(QuickRule).order(:order)
+      @quick = authorize(QuickRule).order(:order).paginate(params[:page], limit: params[:limit])
+      respond_with(@quick)
     end
 
     def new
       @quick = authorize(QuickRule.new)
       @rules = Rule.joins(:category).order("rule_categories.order, rules.order")
+      respond_with(@quick)
     end
 
     def edit
       @quick = authorize(QuickRule.find(params[:id]))
       @rules = Rule.joins(:category).order("rule_categories.order, rules.order")
+      respond_with(@quick)
     end
 
     def create
@@ -48,7 +51,7 @@ module Rules
 
     def reorder
       authorize(QuickRule)
-      return render_expected_error(422, "Error: No quick rules provided") unless params[:_json].is_a?(Array) && params[:_json].any?
+      return render_expected_error(400, "No quick rules provided") unless params[:_json].is_a?(Array) && params[:_json].any?
       changes = 0
       QuickRule.transaction do
         params[:_json].each do |data|
@@ -76,7 +79,7 @@ module Rules
         end
       end
     rescue ActiveRecord::RecordNotFound
-      render_expected_error(422, "Error: Category not found")
+      render_expected_error(400, "Quick rule not found")
     end
   end
 end

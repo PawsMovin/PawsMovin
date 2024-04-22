@@ -96,6 +96,10 @@ class ArtistsController < ApplicationController
   private
 
   def load_artist
-    @artist = Artist.find(params[:id])
+    if params[:id] =~ /\A\d+\z/
+      @artist = Artist.find(params[:id])
+    else
+      @artist = Artist.find_by!(name: Artist.normalize_name(params[:id]))
+    end
   end
 end

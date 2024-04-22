@@ -30,6 +30,10 @@ class IpBan < ApplicationRecord
     q.apply_basic_order(params)
   end
 
+  def hidden_attributes
+    super - %i[ip_addr]
+  end
+
   def validate_ip_addr
     if ip_addr.blank?
       errors.add(:ip_addr, "is invalid")

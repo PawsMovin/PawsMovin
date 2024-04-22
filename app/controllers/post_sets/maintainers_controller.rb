@@ -2,7 +2,6 @@
 
 module PostSets
   class MaintainersController < ApplicationController
-    before_action :member_only
     respond_to :html
     respond_to :js, except: %i[index]
 

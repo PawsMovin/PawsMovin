@@ -29,4 +29,8 @@ class WikiPagePolicy < ApplicationPolicy
     attr += %i[title] if user.is_janitor?
     attr
   end
+
+  def permitted_search_params
+    super + %i[title title_matches body_matches creator_id creator_name is_locked]
+  end
 end

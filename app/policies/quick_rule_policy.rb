@@ -22,6 +22,6 @@ class QuickRulePolicy < ApplicationPolicy
   end
 
   def permitted_attributes
-    %i[header reason rule_id]
+    %i[header reason rule_id order]
   end
 end

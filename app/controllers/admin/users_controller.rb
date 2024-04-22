@@ -19,7 +19,7 @@ module Admin
       @alts = @alts.group_by { |i| i["u1id"] }.transform_values { |v| v.pluck("u2id") }
       user_ids = @alts.flatten(2).uniq
       @users = User.where(id: user_ids).index_by(&:id)
-      @alts = PawsMovin::Paginator::PaginatedArray.new(@alts.to_a, { pagination_mode: :numbered, records_per_page: 250, total_count: 9_999_999_999, current_page: params[:page].to_i })
+      @alts = PawsMovin::Paginator::PaginatedArray.new(@alts.to_a, { pagination_mode: :numbered, records_per_page: 250, total_count: 9_999_999_999, current_page: params[:page].to_i, max_numbered_pages: 9999 })
       respond_with(@alts)
     end
 
@@ -31,6 +31,7 @@ module Admin
     # TODO: redo this, remove the UserPromotion middleman and move strong parameters to pundit
     def update
       @user = authorize([:admin, User.find(params[:id])])
+      raise(User::PrivilegeError) unless @user.can_admin_edit?(CurrentUser.user)
       @user.validate_email_format = true
       @user.is_admin_edit = true
       @user.update!(user_params(CurrentUser.user))
@@ -44,17 +45,22 @@ module Admin
       old_username = @user.name
       desired_username = params[:user][:name]
       if old_username != desired_username && desired_username.present?
-        change_request = UserNameChangeRequest.create!(
+        change_request = UserNameChangeRequest.create(
           original_name:           @user.name,
           user_id:                 @user.id,
           desired_name:            desired_username,
           change_reason:           "Administrative change",
           skip_limited_validation: true,
         )
-        change_request.approve!
-        @user.log_name_change
+        if change_request.valid?
+          change_request.approve!
+          @user.log_name_change
+        else
+          @user.errors.add(:name, change_request.errors[:desired_name].join("; "))
+        end
       end
-      redirect_to(user_path(@user), notice: "User updated")
+      notice("User updated")
+      respond_with(@user)
     end
 
     def edit_blacklist
@@ -64,8 +70,9 @@ module Admin
     def update_blacklist
       @user = authorize([:admin, User.find(params[:id])])
       @user.is_admin_edit = true
-      @user.update!(params[:user].permit([:blacklisted_tags]))
-      redirect_to(edit_blacklist_admin_user_path(@user), notice: "Blacklist updated")
+      @user.update(params[:user].permit([:blacklisted_tags]))
+      notice("Blacklist updated")
+      respond_with(@user, status: 200)
     end
 
     def request_password_reset

@@ -8,7 +8,7 @@ class StaffAuditLog < ApplicationRecord
     new_user_id old_user_id
     staff_note_id body old_body
     ip_addr
-    comment_id post_id vote voter_id forum_post_id
+    comment_id post_id forum_post_id vote voter_id
   ].freeze
 
   store_accessor :values, *VALUES
@@ -95,6 +95,7 @@ class StaffAuditLog < ApplicationRecord
       text: ->(log) { "Locked #{['downvote', 'locked vote', 'upvote'][log.vote + 1]} on post ##{log.post_id} for user #{link_to_user(log.voter_id)}" },
       json: %i[vote post_id voter_id],
     },
+
     ### Forum Posts ###
     forum_post_vote_delete:  {
       text: ->(log) { "Deleted #{['downvote', 'meh vote', 'upvote'][log.vote + 1]} on forum ##{log.forum_post_id} for user #{link_to_user(log.voter_id)}" },

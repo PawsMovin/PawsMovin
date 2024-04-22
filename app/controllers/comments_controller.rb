@@ -6,7 +6,7 @@ class CommentsController < ApplicationController
 
   def index
     authorize(Comment)
-    if params[:group_by] == "comment" || (request.format.json? && params[:group_by].blank?)
+    if params[:group_by] == "comment" || (request.format.json? && params[:group_by] != "post")
       index_by_comment
     else
       index_by_post

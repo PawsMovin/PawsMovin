@@ -13,7 +13,7 @@
       <%= subnav_link_to("Posts (#{@wiki_page.tag.post_count})", posts_path(tags: @wiki_page.title)) %>
 
       <%= subnav_link_to_if(policy(@wiki_page.tag).update?, "Edit Tag Type", edit_tag_path(@wiki_page.tag)) %>
-      <%= subnav_link_to_if(policy(@wiki_page.tag).correct?, "Fix Tag Count", correct_tag_path(@wiki_page.tag), method: :post) %>
+      <%= subnav_link_to_if(policy(@wiki_page.tag).correct?, "Fix Tag Count", correct_tag_path(@wiki_page.tag), method: :put) %>
     <% end %>
 
     <% if @wiki_page.persisted? %>

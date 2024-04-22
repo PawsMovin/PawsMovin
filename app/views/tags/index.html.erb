@@ -23,7 +23,7 @@
           <%= link_to_if(policy(tag).update?, "edit", edit_tag_path(tag)) { "" } %>
           | <%= link_to "history", tag_versions_path(search: { tag: tag.name }) %>
           <% if policy(tag).correct? %>
-            | <%= link_to "fix", correct_tag_path(tag), method: :post %>
+            | <%= link_to "fix", correct_tag_path(tag), method: :put %>
           <% end %>
         </td>
       </tr>

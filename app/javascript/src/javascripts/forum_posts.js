@@ -63,7 +63,7 @@ ForumPost.vote = function(evt, score) {
     type: "POST",
     dataType: "json",
     accept: "text/javascript",
-    data: { "forum_post_vote[score]": score }
+    data: { "score": score }
   }).done(function(data) {
     create_post(data);
     $(`#forum-post-votes-for-${id} .forum-post-vote-block`).hide();

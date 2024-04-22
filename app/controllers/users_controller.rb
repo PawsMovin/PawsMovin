@@ -47,7 +47,11 @@ class UsersController < ApplicationController
     @approved_count = pieces[:approved]
     @deleted_count = pieces[:deleted]
     @pending_count = pieces[:pending]
-    respond_with(CurrentUser.user)
+  end
+
+  def me
+    @user = authorize(CurrentUser.user)
+    respond_with(@user, methods: @user.full_attributes)
   end
 
   def show

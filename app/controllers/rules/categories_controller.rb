@@ -2,8 +2,14 @@
 
 module Rules
   class CategoriesController < ApplicationController
-    respond_to :html, :json
+    respond_to :html, except: %i[index]
+    respond_to :json
     respond_to :js, only: %i[reorder]
+
+    def index
+      @categories = authorize(RuleCategory).order(:order).paginate(params[:page], limit: params[:limit])
+      respond_with(@categories)
+    end
 
     def new
       @category = authorize(RuleCategory.new)
@@ -40,7 +46,7 @@ module Rules
 
     def reorder
       authorize(RuleCategory)
-      return render_expected_error(422, "Error: No categories provided") unless params[:_json].is_a?(Array) && params[:_json].any?
+      return render_expected_error(400, "No categories provided") unless params[:_json].is_a?(Array) && params[:_json].any?
       changes = 0
       RuleCategory.transaction do
         params[:_json].each do |data|
@@ -68,7 +74,7 @@ module Rules
         end
       end
     rescue ActiveRecord::RecordNotFound
-      render_expected_error(422, "Error: Category not found")
+      render_expected_error(400, "Category not found")
     end
   end
 end

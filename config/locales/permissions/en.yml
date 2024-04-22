@@ -74,7 +74,6 @@ en:
       "dtext_previews:create": "Preview DText"
       "posts/iqdb:show": "Query IQDB"
       "users/count_fixes:create": "Fix User Stat Counts"
-      "notes/previews:show": "Preview Note"
       "posts/recommendations:show": "List Post Recommendations"
       "posts/votes:delete": "Admin: Delete Post Vote"
       "posts/votes:lock": "Lock Post Votes"

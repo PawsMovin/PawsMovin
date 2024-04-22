@@ -15,7 +15,7 @@ class NewsUpdatesController < ApplicationController
 
   def update
     @news_update = authorize(NewsUpdate.find(params[:id]))
-    @news_update.update(news_update_params)
+    @news_update.update(permitted_attributes(NewsUpdate))
     respond_with(@news_update, location: news_updates_path)
   end
 
@@ -25,7 +25,7 @@ class NewsUpdatesController < ApplicationController
   end
 
   def create
-    @news_update = authorize(NewsUpdate.new(news_update_params))
+    @news_update = authorize(NewsUpdate.new(permitted_attributes(NewsUpdate)))
     @news_update.save
     respond_with(@news_update, location: news_updates_path)
   end
@@ -36,11 +36,5 @@ class NewsUpdatesController < ApplicationController
     respond_with(@news_update) do |format|
       format.js
     end
-  end
-
-  private
-
-  def news_update_params
-    params.require(:news_update).permit([:message])
   end
 end

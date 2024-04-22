@@ -45,7 +45,7 @@ class TicketPolicy < ApplicationPolicy
   end
 
   def permitted_search_params
-    params = %i[model_type status order model_id creator_id creator_name]
+    params = super + %i[model_id model_type status creator_id creator_name]
     params += %i[accused_name accused_id claimant_id claimant_name reason] if user.is_moderator?
     params
   end

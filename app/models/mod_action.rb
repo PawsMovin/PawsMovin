@@ -5,36 +5,37 @@ class ModAction < ApplicationRecord
   belongs_to :subject, polymorphic: true, optional: true
   cattr_accessor :disable_logging, default: false
 
-  # inline results in rubucop aligning everything with :values
+  # make sure to update the openapi spec when changing the values, actions, or classes
+
+  # inline results in rubocop aligning everything with :values
   VALUES = %i[
     user_id
     name
     total
     tag_name
-    ip_addr
     change_desc
     reason old_reason
     header old_header
     description old_description
     antecedent consequent
-    alias_id alias_desc
-    implication_id implication_desc
+    alias_desc
+    implication_desc
     is_public
     added removed
     level old_level
     upload_limit old_upload_limit
     new_name old_name
-    duration old_duration
+    duration
     expires_at old_expires_at
-    forum_category_id old_forum_category_id forum_category_name forum_category_name old_forum_category_name can_view old_can_view can_create old_can_create
+    forum_category_id old_forum_category_id forum_category_name old_forum_category_name can_view old_can_view can_create old_can_create
     forum_topic_id forum_topic_title
     pool_name
     pattern old_pattern note hidden
     type old_type
-    wiki_page wiki_page_title new_title old_title
+    wiki_page wiki_page_title old_title
     category_name old_category_name
     prompt old_prompt title
-    artist_name old_artist_name details old_details staff_notes old_staff_notes
+    artist_name
   ].freeze
 
   store_accessor :values, *VALUES
@@ -583,7 +584,9 @@ class ModAction < ApplicationRecord
   end
 
   def json_keys
-    FORMATTERS[action.to_sym]&.[](:json) || (CurrentUser.is_admin? ? values.keys : [])
+    formatter = FORMATTERS[action.to_sym]&.[](:json)
+    return CurrentUser.is_admin? ? values.keys : [] unless formatter
+    formatter.is_a?(Proc) ? formatter.call(self, user) : formatter
   end
 
   def format_json
@@ -610,7 +613,7 @@ class ModAction < ApplicationRecord
 
   module ApiMethods
     def method_attributes
-      json_keys
+      super + json_keys
     end
 
     def hidden_attributes

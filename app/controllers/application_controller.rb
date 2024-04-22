@@ -78,8 +78,10 @@ class ApplicationController < ActionController::Base
       render_expected_error(403, "ActionController::InvalidAuthenticityToken. Did you properly authorize your request?")
     when ActiveRecord::RecordNotFound
       render_404
-    when User::PrivilegeError, ActiveSupport::MessageVerifier::InvalidSignature, Pundit::NotAuthorizedError
+    when ActiveSupport::MessageVerifier::InvalidSignature, Pundit::NotAuthorizedError
       access_denied
+    when User::PrivilegeError
+      access_denied(exception)
     when ActionController::RoutingError
       render_error_page(405, exception)
     when ActionController::UnknownFormat, ActionView::MissingTemplate
@@ -137,7 +139,7 @@ class ApplicationController < ActionController::Base
     end
 
     PawsMovin::Logger.log(@exception, expected: @expected)
-    log = ExceptionLog.add(exception, CurrentUser.id, request) if !@expected
+    log = ExceptionLog.add(exception, CurrentUser.id, request) unless @expected
     @log_code = log&.code
     render("static/error", status: status, formats: format)
   end

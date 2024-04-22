@@ -26,7 +26,7 @@ class ForumPostPolicy < ApplicationPolicy
   end
 
   def warning?
-    user.is_moderator?
+    min_level? && user.is_moderator?
   end
 
   def min_level?
@@ -46,6 +46,6 @@ class ForumPostPolicy < ApplicationPolicy
   end
 
   def permitted_search_params
-    super + %i[creator_id creator_name topic_id topic_title_matches body_matches topic_category_id is_hidden order]
+    super + %i[creator_id creator_name topic_id topic_title_matches body_matches topic_category_id is_hidden]
   end
 end

@@ -63,7 +63,7 @@ class User < ApplicationRecord
     DISABLE_RESPONSIVE_MODE          = pref(1 << 12)
     NO_FLAGGING                      = pref(1 << 13, settable: false, private: false)
     DISABLE_USER_DMAILS              = pref(1 << 14, public: true)
-    ENABLE_COMPACT_UPLOADER          = pref(1 << 15)
+    ENABLE_COMPACT_UPLOADER          = pref(1 << 15, settable: false)
     NO_REPLACEMENTS                  = pref(1 << 16, settable: false, private: false)
     MOVE_RELATED_THUMBNAILS          = pref(1 << 17)
     ENABLE_HOVER_ZOOM                = pref(1 << 18)
@@ -1028,5 +1028,11 @@ class User < ApplicationRecord
     errors = UserNameValidator.validate(self)
     errors << "Forced change by administrator" if force_name_change?
     errors.join("; ").presence
+  end
+  
+  def can_admin_edit?(user)
+    return true if user.is_owner?
+    return false if self.is_admin?
+    user.is_admin?
   end
 end

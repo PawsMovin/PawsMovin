@@ -798,7 +798,7 @@ Post.undelete = function(post_id) {
   Post.notice_update("inc");
   SendQueue.add(function() {
     $.ajax({
-      type: "POST",
+      type: "PUT",
       url: `/posts/${post_id}/undelete.json`
     }).fail(function(data) {
 //      var message = $.map(data.responseJSON.errors, function(msg, attr) { return msg; }).join('; ');
@@ -854,7 +854,10 @@ Post.unapprove = function(post_id) {
 }
 
 Post.destroy = function(post_id) {
-  $.post(`/posts/${post_id}/expunge.json`, {})
+  $.ajax({
+    method: "PUT",
+    url: `/posts/${post_id}/expunge.json`
+  })
   .fail(data => {
     var message = $.map(data.responseJSON.errors, function(msg, attr) { return msg; }).join("; ");
     $(window).trigger("danbooru:error", "Error: " + message);
@@ -864,7 +867,10 @@ Post.destroy = function(post_id) {
 };
 
 Post.regenerate_image_samples = function(post_id) {
-  $.post(`/posts/${post_id}/regenerate_thumbnails.json`, {})
+  $.ajax({
+    method: "PUT",
+    url: `/posts/${post_id}/regenerate_thumbnails.json`
+  })
   .fail(data => {
     Utility.error("Error: " + data.responseJSON.reason);
   }).done(data => {
@@ -873,7 +879,10 @@ Post.regenerate_image_samples = function(post_id) {
 };
 
 Post.regenerate_video_samples = function(post_id) {
-  $.post(`/posts/${post_id}/regenerate_videos.json`, {})
+  $.ajax({
+    method: "PUT",
+    url: `/posts/${post_id}/regenerate_videos.json`
+})
   .fail(data => {
     Utility.error("Error: " + data.responseJSON.reason);
   }).done(data => {
@@ -888,20 +897,20 @@ Post.approve = function(post_id, callback) {
       `/posts/approvals.json`,
       { post_id }
     ).fail(function(data) {
-      const message = $.map(data.responseJSON.errors, function(msg, attr) { return msg; }).join("; ");
+      const message = $.map(data.responseJSON.errors, function(msg, attr) { return msg; }).join("; ") || data.responseJSON.message;
+      Post.notice_update("dec");
       Danbooru.error("Error: " + message);
     }).done(function(data) {
       var $post = $("#post_" + post_id);
       if ($post.length) {
         $post.data("flags", $post.data("flags").replace(/pending/, ""));
         $post.removeClass("post-status-pending");
+        Post.notice_update("dec");
         Danbooru.notice("Approved post #" + post_id);
       }
       if(callback) {
         callback();
       }
-    }).always(function() {
-      Post.notice_update("dec");
     });
   });
 }

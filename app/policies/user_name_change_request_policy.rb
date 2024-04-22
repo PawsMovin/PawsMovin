@@ -12,4 +12,8 @@ class UserNameChangeRequestPolicy < ApplicationPolicy
   def permitted_attributes
     %i[desired_name change_reason]
   end
+
+  def permitted_search_params
+    super + %i[user_id user_name original_name desired_name]
+  end
 end

@@ -5,7 +5,7 @@ module Users
     respond_to :html, :json
 
     def index
-      @change_requests = authorize(UserNameChangeRequest).search(search_params).paginate(params[:page], limit: params[:limit])
+      @change_requests = authorize(UserNameChangeRequest).search(search_params(UserNameChangeRequest)).paginate(params[:page], limit: params[:limit])
       respond_with(@change_requests)
     end
 
@@ -23,12 +23,11 @@ module Users
       @change_request = authorize(UserNameChangeRequest.new(permitted_attributes(UserNameChangeRequest)))
       @change_request.save
 
-      if @change_request.errors.any?
-        render(action: "new")
-      else
+      if @change_request.valid?
         @change_request.approve!
-        redirect_to(user_name_change_request_path(@change_request), notice: "Your name has been changed")
+        notice("Your name has been changed")
       end
+      respond_with(@change_request)
     end
   end
 end

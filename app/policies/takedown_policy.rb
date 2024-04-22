@@ -35,9 +35,7 @@ class TakedownPolicy < ApplicationPolicy
 
   def permitted_attributes
     params = %i[email source instructions reason post_ids reason_hidden]
-    if user.can_handle_takedowns?
-      params += %i[notes del_post_ids status]
-    end
+    params += %i[notes del_post_ids status] if user.can_handle_takedowns?
     [*params, { post_ids: [] }]
   end
 

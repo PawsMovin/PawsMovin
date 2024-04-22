@@ -40,7 +40,7 @@
       <% end %>
 
       <% if PawsMovin.config.iqdb_server.present? && policy(post).update_iqdb? %>
-        <li><%= link_to "Update IQDB", update_iqdb_post_path(@post) %></li>
+        <li><%= link_to("Update IQDB", update_iqdb_post_path(@post), method: :put) %></li>
       <% end %>
       <% if policy(post).expunge? %>
         <li><%= tag.a("Destroy", href: "#", id: "destroy-post-link", 'data-pid': post.id) %></li>

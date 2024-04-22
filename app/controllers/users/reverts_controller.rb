@@ -11,7 +11,10 @@ module Users
       user = User.find(params[:user_id])
       revert = authorize(UserRevert.new(user.id))
       revert.process
-      redirect_to(user_path(user.id))
+      respond_to do |format|
+        format.html { redirect_to(user_path(user.id)) }
+        format.json
+      end
     end
   end
 end

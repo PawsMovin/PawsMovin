@@ -109,6 +109,11 @@ class ActionDispatch::IntegrationTest
   def delete_auth(url, user, options = {})
     method_authenticated(:delete, url, user, options)
   end
+
+  def assert_error_response(key, *messages)
+    assert_not_nil(@response.parsed_body.dig("errors", key))
+    assert_same_elements(messages, @response.parsed_body.dig("errors", key))
+  end
 end
 
 module ActionView

@@ -32,4 +32,8 @@ class PostReplacementPolicy < ApplicationPolicy
   def permitted_attributes
     %i[replacement_url replacement_file reason source]
   end
+
+  def permitted_search_params
+    super + %i[file_ext md5 status creator_id creator_name approver_id approver_name rejector_id rejector_name uploader_name_on_approve uploader_id_on_approve]
+  end
 end

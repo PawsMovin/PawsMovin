@@ -9,6 +9,7 @@ class PostsController < ApplicationController
       @post = authorize(Post.find_by!(md5: params[:md5]))
       respond_with(@post) do |format|
         format.html { redirect_to(@post) }
+        format.json { render json: [@post].to_json }
       end
     else
       authorize(Post)
@@ -100,7 +101,7 @@ class PostsController < ApplicationController
   def mark_as_translated
     @post = authorize(Post.find(params[:id]))
     ensure_can_edit(@post)
-    @post.mark_as_translated(params[:post])
+    @post.mark_as_translated(mark_as_translated_params)
     respond_with_post_after_update(@post)
   end
 
@@ -120,10 +121,10 @@ class PostsController < ApplicationController
   def destroy
     @post = authorize(Post.find(params[:id]))
     if params[:commit] != "Cancel"
-      @post.delete!(params[:reason], move_favorites: params[:move_favorites].present?)
-      @post.copy_sources_to_parent if params[:copy_sources].present?
-      @post.copy_tags_to_parent if params[:copy_tags].present?
-      @post.parent.save if params[:copy_tags].present? || params[:copy_sources].present?
+      @post.delete!(params[:reason], move_favorites: params[:move_favorites]&.truthy?)
+      @post.copy_sources_to_parent if params[:copy_sources]&.truthy?
+      @post.copy_tags_to_parent if params[:copy_tags]&.truthy?
+      @post.parent.save if params[:copy_tags]&.truthy? || params[:copy_sources]&.truthy?
     end
     respond_with(@post) do |format|
       format.html { redirect_to(post_path(@post)) }
@@ -144,7 +145,7 @@ class PostsController < ApplicationController
     @post = authorize(Post.find(params[:id]))
     @post.give_favorites_to_parent
     @post.give_votes_to_parent
-    redirect_to(post_path(@post))
+    respond_with(@post)
   end
 
   def expunge
@@ -171,15 +172,15 @@ class PostsController < ApplicationController
     @post = authorize(Post.find(params[:id]))
     if @post.is_approvable?
       @post.approve!
-      respond_with do |format|
-        format.json do
-          render(json: {}, status: 201)
-        end
+      respond_to do |format|
+        format.json
       end
     elsif @post.approver.present?
       flash[:notice] = "Post is already approved"
+      render_expected_error(400, "Post is already approved") if request.format.json?
     else
       flash[:notice] = "You can't approve this post"
+      render_expected_error(400, "You can't approve this post") if request.format.json?
     end
   end
 
@@ -190,6 +191,7 @@ class PostsController < ApplicationController
       respond_with(nil)
     else
       flash[:notice] = "You can't unapprove this post"
+      render_expected_error(400, "You can't unapprove this post") if request.format.json?
     end
   end
 
@@ -297,5 +299,9 @@ class PostsController < ApplicationController
     recent_pool_ids << pool.id.to_s
     recent_pool_ids = recent_pool_ids.slice(1, 5) if recent_pool_ids.size > 5
     session[:recent_pool_ids] = recent_pool_ids.uniq.join(",")
+  end
+
+  def mark_as_translated_params
+    (params.extract!(:translation_check, :translation_check).presence || params.require(:post)).permit(:translation_check, :translation_check)
   end
 end

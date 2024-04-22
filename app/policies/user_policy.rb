@@ -9,6 +9,10 @@ class UserPolicy < ApplicationPolicy
     unbanned?
   end
 
+  def me?
+    unbanned?
+  end
+
   def permitted_attributes
     %i[
       password old_password password_confirmation
@@ -29,7 +33,7 @@ class UserPolicy < ApplicationPolicy
   end
 
   def permitted_search_params
-    params = super + %i[name_matches about_me avatar_id level min_level max_level unrestricted_uploads can_approve_posts order]
+    params = super + %i[name_matches about_me avatar_id level min_level max_level unrestricted_uploads can_approve_posts]
     params += %i[ip_addr] if can_search_ip_addr?
     params += %i[email_matches] if CurrentUser.is_admin?
     params

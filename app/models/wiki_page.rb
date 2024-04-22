@@ -80,12 +80,9 @@ class WikiPage < ApplicationRecord
       end
 
       q = q.attribute_matches(:body, params[:body_matches])
+      q = q.attribute_matches(:title, params[:title_matches])
 
       q = q.where_user(:creator_id, :creator, params)
-
-      if params[:hide_deleted].to_s.truthy?
-        q = q.where("is_deleted = false")
-      end
 
       q = q.attribute_matches(:is_locked, params[:is_locked])
 

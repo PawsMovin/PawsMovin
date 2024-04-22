@@ -89,8 +89,8 @@ class PostPolicy < ApplicationPolicy
     attr = %i[
       tag_string old_tag_string
       tag_string_diff source_diff
-      parent_id old_parent_id
       source old_source
+      parent_id old_parent_id
       description old_description
       rating old_rating
       edit_reason
@@ -100,6 +100,10 @@ class PostPolicy < ApplicationPolicy
     attr += %i[is_comment_locked] if user.is_moderator?
     attr += %i[is_status_locked is_comment_disabled locked_tags hide_from_anonymous hide_from_search_engines] if user.is_admin?
     attr
+  end
+  
+  def permitted_attributes_for_mark_as_translated
+    %i[]
   end
 
   def permitted_search_params_for_uploaders

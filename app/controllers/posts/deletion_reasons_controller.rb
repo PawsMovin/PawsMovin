@@ -73,6 +73,8 @@ module Posts
         format.html { redirect_back(fallback_location: post_deletion_reasons_path) }
         format.json
       end
+    rescue ActiveRecord::RecordNotFound
+      render_expected_error(400, "Deletion reason not found")
     end
 
     private

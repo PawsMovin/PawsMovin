@@ -3,6 +3,7 @@
 module Tags
   class ImplicationsController < ApplicationController
     respond_to :html, :json
+    wrap_parameters :tag_implication
 
     def index
       @tag_implications = authorize(TagImplication).includes(:antecedent_tag, :consequent_tag, :approver).search(search_params).paginate(params[:page], limit: params[:limit])
@@ -28,12 +29,12 @@ module Tags
 
       if @tag_implication_request.invalid?
         respond_with(@tag_implication_request) do |format|
-          format.html { redirect_back(fallback_location: new_tag_implication_path, notice: @tag_implication_request.errors.full_messages.join("; ")) }
+          format.html { redirect_back(fallback_location: new_tag_alias_path, notice: @tag_implication_request.errors.full_messages.join("; ")) }
         end
       elsif @tag_implication_request.forum_topic
-        redirect_to(forum_topic_path(@tag_implication_request.forum_topic))
+        respond_with(@tag_implication_request.tag_relationship, location: forum_topic_path(@tag_implication_request.forum_topic, page: @tag_implication_request.tag_relationship.forum_post.forum_topic_page, anchor: "forum_post_#{@tag_implication_request.tag_relationship.forum_post_id}"))
       else
-        redirect_to(tag_implication_path(@tag_implication_request.tag_relationship))
+        respond_with(@tag_implication_request.tag_relationship)
       end
     end
 
