@@ -13,9 +13,9 @@ Datadog.configure do |c|
   })
 
   # Ignore pg errors during rack requests
-  c.tracing.instrument :pg, on_error: ->(span, error) do
+  c.tracing.instrument(:pg, on_error: ->(span, error) do
     if Datadog::Tracing.active_trace&.name != Datadog::Tracing::Contrib::Rack::Ext::SPAN_REQUEST
       span&.set_error(error)
     end
-  end
+  end)
 end
