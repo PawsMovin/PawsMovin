@@ -87,7 +87,7 @@ module Moderator
 
             @users.each do |user|
               as(user) do
-                VoteManager.comment_vote!(user: user, comment: @comment, score: -1)
+                VoteManager::Comments.vote!(user: user, comment: @comment, score: -1)
               end
             end
           end

@@ -14,12 +14,12 @@ module Comments
     def create
       authorize(CommentVote)
       @comment = Comment.find(params[:comment_id])
-      @comment_vote = VoteManager.comment_vote!(comment: @comment, user: CurrentUser.user, score: params[:score])
-      if @comment_vote == :need_unvote && !params[:no_unvote].to_s.truthy?
-        VoteManager.comment_unvote!(comment: @comment, user: CurrentUser.user)
+      @comment_vote, @status = VoteManager::Comments.vote!(comment: @comment, user: CurrentUser.user, score: params[:score])
+      if @status == :need_unvote && !params[:no_unvote].to_s.truthy?
+        VoteManager::Comments.unvote!(comment: @comment, user: CurrentUser.user)
       end
       @comment.reload
-      render(json: { score: @comment.score, our_score: @comment_vote == :need_unvote ? 0 : @comment_vote.score })
+      render(json: { score: @comment.score, our_score: @status == :need_unvote ? 0 : @comment_vote.score, is_locked: @comment_vote.is_locked? })
     rescue UserVote::Error, ActiveRecord::RecordInvalid => e
       render_expected_error(422, e)
     end
@@ -27,7 +27,7 @@ module Comments
     def destroy
       authorize(CommentVote)
       @comment = Comment.find(params[:comment_id])
-      VoteManager.comment_unvote!(comment: @comment, user: CurrentUser.user)
+      VoteManager::Comments.unvote!(comment: @comment, user: CurrentUser.user)
     rescue UserVote::Error => e
       render_expected_error(422, e)
     end
@@ -37,7 +37,7 @@ module Comments
       ids = params[:ids].split(",")
 
       ids.each do |id|
-        VoteManager.comment_lock!(id)
+        VoteManager::Comments.lock!(id)
       end
     end
 
@@ -46,7 +46,7 @@ module Comments
       ids = params[:ids].split(",")
 
       ids.each do |id|
-        VoteManager.admin_comment_unvote!(id)
+        VoteManager::Comments.admin_unvote!(id)
       end
     end
   end

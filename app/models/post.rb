@@ -1219,7 +1219,7 @@ class Post < ApplicationRecord
     def give_votes_to_parent!
       return if parent.nil?
 
-      VoteManager.give_to_parent!(self)
+      VoteManager::Posts.give_to_parent!(self)
     end
 
     def parent_exists?

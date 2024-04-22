@@ -8,6 +8,9 @@
   <%= f.user(:"#{type.model_type}_creator", label: "#{type.model_type.to_s.titleize} Creator") %>
   <%= f.input(:timeframe, label: "Timeframe", include_blank: true, collection: [["Last Week", "7"], ["Last Month", "30"], ["Last Three Months", "90"], ["Last Year", "360"]]) %>
   <%= f.input(:score, label: "Type", include_blank: true, collection: type.vote_types) %>
+  <% if lockable %>
+    <%= f.input(:is_locked, label: "Locked", as: :boolean) %>
+  <% end %>
   <%= f.input(:ip_addr, label: "IP Address") %>
   <%= f.input(:duplicates_only, label: "Duplicates Only", as: :boolean) %>
   <%= f.input(:order, collection: [%w[Created id], ["IP Address", "ip_addr"]]) %>

@@ -14,11 +14,11 @@ module Posts
     def create
       authorize(PostVote)
       @post = Post.find(params[:post_id])
-      @post_vote = VoteManager.vote!(post: @post, user: CurrentUser.user, score: params[:score])
-      if @post_vote == :need_unvote && !params[:no_unvote].to_s.truthy?
-        VoteManager.unvote!(post: @post, user: CurrentUser.user)
+      @post_vote, @status = VoteManager::Posts.vote!(post: @post, user: CurrentUser.user, score: params[:score])
+      if @status == :need_unvote && !params[:no_unvote].to_s.truthy?
+        VoteManager::Posts.unvote!(post: @post, user: CurrentUser.user)
       end
-      render(json: { score: @post.score, up: @post.up_score, down: @post.down_score, our_score: @post_vote == :need_unvote ? 0 : @post_vote.score })
+      render(json: { score: @post.score, up: @post.up_score, down: @post.down_score, our_score: @status == :need_unvote ? 0 : @post_vote.score, is_locked: @post_vote.is_locked? })
     rescue UserVote::Error, ActiveRecord::RecordInvalid => e
       render_expected_error(422, e)
     end
@@ -26,7 +26,7 @@ module Posts
     def destroy
       authorize(PostVote)
       @post = Post.find(params[:post_id])
-      VoteManager.unvote!(post: @post, user: CurrentUser.user)
+      VoteManager::Posts.unvote!(post: @post, user: CurrentUser.user)
     rescue UserVote::Error => e
       render_expected_error(422, e)
     end
@@ -36,7 +36,7 @@ module Posts
       ids = params[:ids].split(",")
 
       ids.each do |id|
-        VoteManager.lock!(id)
+        VoteManager::Posts.lock!(id)
       end
     end
 
@@ -45,7 +45,7 @@ module Posts
       ids = params[:ids].split(",")
 
       ids.each do |id|
-        VoteManager.admin_unvote!(id)
+        VoteManager::Posts.admin_unvote!(id)
       end
     end
   end

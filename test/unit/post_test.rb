@@ -260,7 +260,7 @@ class PostTest < ActiveSupport::TestCase
           c1 = create(:post, parent_id: p1.id)
           user = create(:trusted_user)
           FavoriteManager.add!(user: user, post: c1)
-          VoteManager.vote!(user: user, post: c1, score: 1)
+          VoteManager::Posts.vote!(user: user, post: c1, score: 1)
           c1.delete!("test")
           p1.reload
           assert(Favorite.exists?(post_id: c1.id, user_id: user.id), "Child should still have favorites")
@@ -274,7 +274,7 @@ class PostTest < ActiveSupport::TestCase
           c1 = create(:post, parent_id: p1.id)
           user = create(:trusted_user)
           FavoriteManager.add!(user: user, post: c1)
-          VoteManager.vote!(user: user, post: c1, score: 1)
+          VoteManager::Posts.vote!(user: user, post: c1, score: 1)
           with_inline_jobs { c1.delete!("test", move_favorites: true) }
           p1.reload
           assert_not(Favorite.exists?(post_id: c1.id, user_id: user.id), "Child should not still have favorites")
@@ -1898,8 +1898,8 @@ class PostTest < ActiveSupport::TestCase
       as(old_user) do
         upvoted   = create(:post, tag_string: "abc")
         downvoted = create(:post, tag_string: "abc")
-        VoteManager.vote!(user: CurrentUser.user, post: upvoted, score: 1)
-        VoteManager.vote!(user: CurrentUser.user, post: downvoted, score: -1)
+        VoteManager::Posts.vote!(user: CurrentUser.user, post: upvoted, score: 1)
+        VoteManager::Posts.vote!(user: CurrentUser.user, post: downvoted, score: -1)
 
         assert_tag_match([upvoted],   "upvote:#{CurrentUser.name}")
         assert_tag_match([downvoted], "downvote:#{CurrentUser.name}")
@@ -2056,9 +2056,9 @@ class PostTest < ActiveSupport::TestCase
       user = create(:trusted_user)
       post = create(:post)
       as(user) do
-        assert_nothing_raised { VoteManager.vote!(user: user, post: post, score: 1) }
+        assert_nothing_raised { VoteManager::Posts.vote!(user: user, post: post, score: 1) }
         # Need unvote is returned upon duplicates that are accounted for.
-        assert_equal(:need_unvote, VoteManager.vote!(user: user, post: post, score: 1) )
+        assert_equal(:need_unvote, VoteManager::Posts.vote!(user: user, post: post, score: 1)[1])
         post.reload
         assert_equal(1, PostVote.count)
         assert_equal(1, post.score)
@@ -2072,19 +2072,19 @@ class PostTest < ActiveSupport::TestCase
       # We deliberately don't call post.reload until the end to verify that
       # post.unvote! returns the correct score even when not forcibly reloaded.
       as(user) do
-        VoteManager.vote!(post: post, user: user, score: 1)
+        VoteManager::Posts.vote!(post: post, user: user, score: 1)
         assert_equal(1, post.score)
 
-        VoteManager.unvote!(post: post, user: user)
+        VoteManager::Posts.unvote!(post: post, user: user)
         assert_equal(0, post.score)
 
-        assert_nothing_raised { VoteManager.vote!(post: post, user: user, score: -1) }
+        assert_nothing_raised { VoteManager::Posts.vote!(post: post, user: user, score: -1) }
         assert_equal(-1, post.score)
 
-        VoteManager.unvote!(post: post, user: user)
+        VoteManager::Posts.unvote!(post: post, user: user)
         assert_equal(0, post.score)
 
-        assert_nothing_raised { VoteManager.vote!(post: post, user: user, score: 1) }
+        assert_nothing_raised { VoteManager::Posts.vote!(post: post, user: user, score: 1) }
         assert_equal(1, post.score)
 
         post.reload
@@ -2103,10 +2103,10 @@ class PostTest < ActiveSupport::TestCase
         @user2 = create(:user)
         @user3 = create(:user)
 
-        VoteManager.vote!(user: @user1, post: @child, score: 1)
-        VoteManager.vote!(user: @trusted1, post: @child, score: -1)
-        VoteManager.vote!(user: @user2, post: @child, score: -1)
-        VoteManager.vote!(user: @user2, post: @parent, score: -1)
+        VoteManager::Posts.vote!(user: @user1, post: @child, score: 1)
+        VoteManager::Posts.vote!(user: @trusted1, post: @child, score: -1)
+        VoteManager::Posts.vote!(user: @user2, post: @child, score: -1)
+        VoteManager::Posts.vote!(user: @user2, post: @parent, score: -1)
 
         with_inline_jobs { @child.give_votes_to_parent }
         @child.reload
@@ -2121,8 +2121,8 @@ class PostTest < ActiveSupport::TestCase
       end
 
       should "not move locked votes" do
-        vote = VoteManager.vote!(user: @user3, post: @child, score: 1)
-        as(create(:admin_user)) { VoteManager.lock!(vote.id) }
+        vote, _status = VoteManager::Posts.vote!(user: @user3, post: @child, score: 1)
+        as(create(:admin_user)) { VoteManager::Posts.lock!(vote.id) }
         with_inline_jobs { @child.give_votes_to_parent }
 
         assert_equal(1, @child.votes.count)

@@ -11,7 +11,7 @@ users.each_with_index do |user, i|
     puts "Creating #{count} favorites for #{user.name} (#{i + 1}/#{users.count})"
     Post.find(Post.pluck(:id).sample(count)).each do |post|
       FavoriteManager.add!(user: CurrentUser.user, post: post)
-      VoteManager.vote!(user: CurrentUser.user, post: post, score: rand(1..100) > 90 ? -1 : 1)
+      VoteManager::Posts.vote!(user: CurrentUser.user, post: post, score: rand(1..100) > 90 ? -1 : 1)
     rescue Favorite::Error, ActiveRecord::RecordInvalid
       # ignore
     end

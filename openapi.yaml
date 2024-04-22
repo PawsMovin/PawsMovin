@@ -515,7 +515,7 @@ components:
           type: string
     CommentVote:
       allOf:
-        - $ref: "#/components/schemas/Vote"
+        - $ref: "#/components/schemas/LockableUserVote"
         - type: object
           required:
             - comment_id
@@ -821,7 +821,7 @@ components:
             - TagImplication
     ForumPostVote:
       allOf:
-        - $ref: "#/components/schemas/Vote"
+        - $ref: "#/components/schemas/UserVote"
         - type: object
           required:
             - forum_post_id
@@ -979,6 +979,15 @@ components:
           type: number
         post:
           $ref: "#/components/schemas/Post"
+    LockableUserVote:
+      allOf:
+        - $ref: "#/components/schemas/UserVote"
+        - type: object
+          required:
+            - is_locked
+          properties:
+            is_locked:
+              type: boolean
     Mascot:
       type: object
       required:
@@ -2162,14 +2171,14 @@ components:
           type: string
     PostVote:
       allOf:
-        - $ref: "#/components/schemas/Vote"
+        - $ref: "#/components/schemas/LockableUserVote"
         - type: object
           required:
             - post_id
           properties:
             post_id:
               type: number
-    Vote:
+    UserVote:
       type: object
       required:
         - id
@@ -4663,9 +4672,13 @@ paths:
             description: Number of days.
         - in: query
           name: search[score]
-          description: -1 for down, 0 for locked, 1 for up
+          description: -1 for down, 1 for up
           schema:
             type: number
+        - in: query
+          name: search[is_locked]
+          schema:
+            type: boolean
         - in: query
           name: search[duplicates_only]
           description: Must be Admin+ to use.
@@ -9279,9 +9292,13 @@ paths:
             description: Number of days.
         - in: query
           name: search[score]
-          description: -1 for down, 0 for locked, 1 for up
+          description: -1 for down, 1 for up
           schema:
             type: number
+        - in: query
+          name: search[is_locked]
+          schema:
+            type: boolean
         - in: query
           name: search[duplicates_only]
           description: Must be Admin+ to use.

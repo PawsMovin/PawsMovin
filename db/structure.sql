@@ -363,7 +363,8 @@ CREATE TABLE public.comment_votes (
     score integer NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    user_ip_addr inet
+    user_ip_addr inet,
+    is_locked boolean DEFAULT false NOT NULL
 );
 
 
@@ -1621,7 +1622,8 @@ CREATE TABLE public.post_votes (
     score integer NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    user_ip_addr inet
+    user_ip_addr inet,
+    is_locked boolean DEFAULT false NOT NULL
 );
 
 
@@ -5025,6 +5027,7 @@ ALTER TABLE ONLY public.staff_notes
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20240422110202'),
 ('20240418103518'),
 ('20240417101613'),
 ('20240413150945'),

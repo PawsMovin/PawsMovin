@@ -95,7 +95,7 @@ class CommentTest < ActiveSupport::TestCase
         c1 = create(:comment, post: post)
 
         as(user2) do
-          VoteManager.comment_vote!(user: user2, comment: c1, score: -1)
+          VoteManager::Comments.vote!(user: user2, comment: c1, score: -1)
           c1.reload
           assert_not_equal(user2.id, c1.updater_id)
         end
@@ -109,12 +109,12 @@ class CommentTest < ActiveSupport::TestCase
         c2 = create(:comment, post: post)
 
         as(user2) do
-          assert_nothing_raised { VoteManager.comment_vote!(user: user2, comment: c1, score: -1) }
-          assert_equal(:need_unvote, VoteManager.comment_vote!(user: user2, comment: c1, score: -1))
+          assert_nothing_raised { VoteManager::Comments.vote!(user: user2, comment: c1, score: -1) }
+          assert_equal(:need_unvote, VoteManager::Comments.vote!(user: user2, comment: c1, score: -1)[1])
           assert_equal(1, CommentVote.count)
           assert_equal(-1, CommentVote.last.score)
 
-          assert_nothing_raised { VoteManager.comment_vote!(user: user2, comment: c2, score: -1) }
+          assert_nothing_raised { VoteManager::Comments.vote!(user: user2, comment: c2, score: -1) }
           assert_equal(2, CommentVote.count)
         end
       end
@@ -124,7 +124,7 @@ class CommentTest < ActiveSupport::TestCase
         post = create(:post)
         c1 = create(:comment, post: post)
 
-        exception = assert_raises(ActiveRecord::RecordInvalid) { VoteManager.comment_vote!(user: user, comment: c1, score: 1) }
+        exception = assert_raises(ActiveRecord::RecordInvalid) { VoteManager::Comments.vote!(user: user, comment: c1, score: 1) }
         assert_equal("Validation failed: You cannot vote on your own comments", exception.message)
       end
 
@@ -133,7 +133,7 @@ class CommentTest < ActiveSupport::TestCase
         post = create(:post)
         c1 = create(:comment, post: post)
 
-        exception = assert_raises(ActiveRecord::RecordInvalid) { VoteManager.comment_vote!(user: user, comment: c1, score: -1) }
+        exception = assert_raises(ActiveRecord::RecordInvalid) { VoteManager::Comments.vote!(user: user, comment: c1, score: -1) }
         assert_equal("Validation failed: You cannot vote on your own comments", exception.message)
       end
 
@@ -142,7 +142,7 @@ class CommentTest < ActiveSupport::TestCase
         post = create(:post)
         c1 = create(:comment, post: post, is_sticky: true)
 
-        exception = assert_raises(ActiveRecord::RecordInvalid) { VoteManager.comment_vote!(user: user, comment: c1, score: -1) }
+        exception = assert_raises(ActiveRecord::RecordInvalid) { VoteManager::Comments.vote!(user: user, comment: c1, score: -1) }
         assert_match(/You cannot vote on sticky comments/, exception.message)
       end
 
@@ -152,13 +152,13 @@ class CommentTest < ActiveSupport::TestCase
         post = create(:post)
         comment = create(:comment, post: post)
         as(user2) do
-          VoteManager.comment_vote!(user: user2, comment: comment, score: 1)
+          VoteManager::Comments.vote!(user: user2, comment: comment, score: 1)
           comment.reload
           assert_equal(1, comment.score)
-          VoteManager.comment_unvote!(user: user2, comment: comment)
+          VoteManager::Comments.unvote!(user: user2, comment: comment)
           comment.reload
           assert_equal(0, comment.score)
-          assert_nothing_raised { VoteManager.comment_vote!(user: user2, comment: comment, score: -1) }
+          assert_nothing_raised { VoteManager::Comments.vote!(user: user2, comment: comment, score: -1) }
         end
       end
 

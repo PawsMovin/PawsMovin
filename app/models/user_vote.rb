@@ -6,7 +6,6 @@ class UserVote < ApplicationRecord
   self.abstract_class = true
 
   belongs_to :user
-  validates :score, inclusion: { in: [-1, 0, 1], message: "must be 1 or -1" }
   after_initialize :initialize_attributes, if: :new_record?
   scope :for_user, ->(uid) { where("user_id = ?", uid) }
 

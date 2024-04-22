@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class PostVotePolicy < UserVotePolicy
+class PostVotePolicy < LockableUserVotePolicy
   protected
 
   def model

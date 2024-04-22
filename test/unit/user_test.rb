@@ -72,14 +72,14 @@ class UserTest < ActiveSupport::TestCase
       comments = as(user2) do
         create_list(:comment, PawsMovin.config.comment_vote_limit)
       end
-      comments.each { |c| VoteManager.comment_vote!(comment: c, user: @user, score: -1) }
+      comments.each { |c| VoteManager::Comments.vote!(comment: c, user: @user, score: -1) }
       assert_equal(@user.can_comment_vote_with_reason, :REJ_LIMITED)
 
       comment = as(user2) do
         create(:comment)
       end
       assert_raises ActiveRecord::RecordInvalid do
-        VoteManager.comment_vote!(comment: comment, user: @user, score: -1)
+        VoteManager::Comments.vote!(comment: comment, user: @user, score: -1)
       end
 
       CommentVote.update_all("created_at = '1990-01-01'")

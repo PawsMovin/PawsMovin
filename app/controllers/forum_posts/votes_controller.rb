@@ -29,7 +29,7 @@ module ForumPosts
 
     def destroy
       authorize(ForumPostVote)
-      VoteManager.forum_post_unvote!(forum_post: @forum_post, user: CurrentUser.user)
+      VoteManager::ForumPosts.unvote!(forum_post: @forum_post, user: CurrentUser.user)
     rescue UserVote::Error => e
       render_expected_error(422, e)
     end
@@ -39,7 +39,7 @@ module ForumPosts
       ids = params[:ids].split(",")
 
       ids.each do |id|
-        VoteManager.admin_forum_post_unvote!(id)
+        VoteManager::ForumPosts.admin_unvote!(id)
       end
     end
 
