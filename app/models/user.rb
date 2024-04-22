@@ -1029,7 +1029,7 @@ class User < ApplicationRecord
     errors << "Forced change by administrator" if force_name_change?
     errors.join("; ").presence
   end
-  
+
   def can_admin_edit?(user)
     return true if user.is_owner?
     return false if self.is_admin?

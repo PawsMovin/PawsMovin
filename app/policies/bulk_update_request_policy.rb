@@ -16,7 +16,7 @@ class BulkUpdateRequestPolicy < ApplicationPolicy
     unbanned? && record.rejectable?(user)
   end
 
-  alias :reject? :destroy?
+  alias reject? destroy?
 
   def permitted_attributes
     %i[script]

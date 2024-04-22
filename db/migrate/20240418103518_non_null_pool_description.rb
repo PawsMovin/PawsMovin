@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class NonNullPoolDescription < ActiveRecord::Migration[7.1]
   def change
     change_column_default(:pools, :description, from: nil, to: "")

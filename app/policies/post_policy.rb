@@ -101,7 +101,7 @@ class PostPolicy < ApplicationPolicy
     attr += %i[is_status_locked is_comment_disabled locked_tags hide_from_anonymous hide_from_search_engines] if user.is_admin?
     attr
   end
-  
+
   def permitted_attributes_for_mark_as_translated
     %i[]
   end

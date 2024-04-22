@@ -9,7 +9,7 @@ class PostsController < ApplicationController
       @post = authorize(Post.find_by!(md5: params[:md5]))
       respond_with(@post) do |format|
         format.html { redirect_to(@post) }
-        format.json { render json: [@post].to_json }
+        format.json { render(json: [@post].to_json) }
       end
     else
       authorize(Post)

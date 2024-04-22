@@ -70,7 +70,7 @@ class TagRelationshipRequest
     tag_relationship = @tag_relationship || build_tag_relationship
 
     if tag_relationship.invalid?
-      self.errors.merge!(tag_relationship.errors)
+      errors.merge!(tag_relationship.errors)
     end
   end
 

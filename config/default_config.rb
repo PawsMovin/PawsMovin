@@ -356,11 +356,11 @@ module PawsMovin
     def user_about_max_size
       50_000
     end
-    
+
     def blacklisted_tags_max_size
       150_000
     end
-    
+
     def custom_style_max_size
       500_000
     end
