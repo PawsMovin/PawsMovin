@@ -469,7 +469,7 @@ let Note = {
       $note_box.find(".note-box-inner-border").addClass("unsaved");
       Note.Body.set_text($note_body, $note_box, "Loading...");
       $.post("/dtext_preview.json", { body: text, color: false }).then(function(data) {
-        Note.Body.set_text($note_body, $note_box, data.body);
+        Note.Body.set_text($note_body, $note_box, data.html);
         $note_body.show();
         $(window).trigger("e621:add_deferred_posts", data.posts);
       });

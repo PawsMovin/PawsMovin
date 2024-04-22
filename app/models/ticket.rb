@@ -14,7 +14,7 @@ class Ticket < ApplicationRecord
   validates :response, length: { minimum: 2, maximum: PawsMovin.config.ticket_max_size }, on: :update
   validates :report_type, presence: true
   validate :validate_report_type_for_ticket
-  enum status: %i[pending partial approved rejected].index_with(&:to_s)
+  enum :status, %i[pending partial approved rejected].index_with(&:to_s)
   after_update :log_update
   after_update :create_dmail
   validate :validate_model_exists, on: :create
