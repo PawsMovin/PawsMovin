@@ -27,7 +27,7 @@ class UserVote < ApplicationRecord
   end
 
   def self.vote_types
-    [%w[Downvote redtext -1], %w[Upvote greentext 1]]
+    [%w[Downvote -1 redtext], %w[Upvote 1 greentext]]
   end
 
   def initialize_attributes
@@ -55,7 +55,7 @@ class UserVote < ApplicationRecord
   end
 
   def vote_display
-    self.class.vote_types.to_h { |type, clazz, value| [value, %(<span class="#{clazz}">#{type.titleize}</span>)] }[score.to_s]
+    self.class.vote_types.to_h { |type, value, klass| [value, %(<span class="#{klass}">#{type.titleize}</span>)] }[score.to_s]
   end
 
   module SearchMethods

@@ -545,6 +545,25 @@ components:
             - favorite_limit
             - tag_query_limit
             - has_mail
+            - description_collapsed_initially
+            - hide_comments
+            - show_hidden_comments
+            - receive_email_notifications
+            - enable_keyboard_navigation
+            - enable_privacy_mode
+            - style_usernames
+            - enable_autocomplete
+            - disable_cropped_thumbnails
+            - enable_safe_mode
+            - disable_responsive_mode
+            - enable_compact_uploader
+            - move_related_thumbnails
+            - enable_hover_zoom
+            - hover_zoom_shift
+            - hover_zoom_sticky_shift
+            - hover_zoom_play_audio
+            - show_post_uploader
+            - go_to_recent_forum_post
           properties:
             recent_tags:
               type: ["string", "null"]
@@ -583,6 +602,44 @@ components:
             tag_query_limit:
               type: number
             has_mail:
+              type: boolean
+            description_collapsed_initially:
+              type: boolean
+            hide_comments:
+              type: boolean
+            show_hidden_comments:
+              type: boolean
+            receive_email_notifications:
+              type: boolean
+            enable_keyboard_navigation:
+              type: boolean
+            enable_privacy_mode:
+              type: boolean
+            style_usernames:
+              type: boolean
+            enable_autocomplete:
+              type: boolean
+            disable_cropped_thumbnails:
+              type: boolean
+            enable_safe_mode:
+              type: boolean
+            disable_responsive_mode:
+              type: boolean
+            enable_compact_uploader:
+              type: boolean
+            move_related_thumbnails:
+              type: boolean
+            enable_hover_zoom:
+              type: boolean
+            hover_zoom_shift:
+              type: boolean
+            hover_zoom_sticky_shift:
+              type: boolean
+            hover_zoom_play_audio:
+              type: boolean
+            show_post_uploader:
+              type: boolean
+            go_to_recent_forum_post:
               type: boolean
     DMail:
       type: object
@@ -11342,6 +11399,8 @@ paths:
                 hover_zoom_play_audio:
                   type: boolean
                 show_post_uploader:
+                  type: boolean
+                go_to_recent_forum_post:
                   type: boolean
       responses:
         201:

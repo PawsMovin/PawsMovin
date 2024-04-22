@@ -9,7 +9,7 @@ class ForumPostVote < UserVote
   scope :excluding_user, ->(user_id) {where("user_id <> ?", user_id)}
 
   def self.vote_types
-    [%w[Downvote redtext -1], %w[Meh yellowtext 0], %w[Upvote greentext 1]]
+    [%w[Downvote -1 redtext], %w[Meh 0 yellowtext], %w[Upvote 1 greentext]]
   end
 
   def self.model_creator_column

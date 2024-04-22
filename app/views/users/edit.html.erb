@@ -117,7 +117,10 @@
                 hint: "Enables playing audio when videos are hovered over, while Hover Zoom is enabled.") %>
 
     <%= f.input(:hover_zoom_sticky_shift, label: "Hover Zoom: Sticky Shift", as: :select, collection: [%w[No false], %w[Yes true]], include_blank: false,
-                hint: "if enabled, shift does not need to continuously be held down while hovering over a post.") %>
+                hint: "If enabled, shift does not need to continuously be held down while hovering over a post.") %>
+
+    <%= f.input(:go_to_recent_forum_post, label: "Go To Recent Forum Post", as: :select, collection: [%w[No false], %w[Yes true]], include_blank: false,
+                hint: "When enabled, clicking on a forum topic will take you to the most recent post.") %>
   </fieldset>
 
   <%= f.button(:submit, "Submit") %>

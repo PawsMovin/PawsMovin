@@ -100,6 +100,7 @@ module PawsMovin
         user.enable_hover_zoom = true
         user.hover_zoom_shift = true
         user.hover_zoom_sticky_shift = true
+        user.go_to_recent_forum_post = true
       end
 
       def default_blacklist

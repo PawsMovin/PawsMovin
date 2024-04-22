@@ -73,6 +73,7 @@ class User < ApplicationRecord
     CAN_MANAGE_AIBUR                 = pref(1 << 22, settable: false, public: true)
     FORCE_NAME_CHANGE                = pref(1 << 23, settable: false, private: false)
     SHOW_POST_UPLOADER               = pref(1 << 24)
+    GO_TO_RECENT_FORUM_POST          = pref(1 << 25)
 
     def self.map
       constants.to_h { |name| [name.to_s.downcase, const_get(name)] }
