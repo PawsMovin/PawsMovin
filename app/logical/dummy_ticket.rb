@@ -9,7 +9,7 @@ class DummyTicket
       creator_id: User.system.id,
       status:     "pending",
       model:      accused,
-      reason:     "User ##{accused.id} (#{accused.name}) tried to reupload destroyed post ##{post_id}",
+      reason:     "[User ##{accused.id}](https://pawsmov.in/users/#{accused.id}) (#{accused.name}) tried to reupload destroyed post ##{post_id}",
     )
   end
 

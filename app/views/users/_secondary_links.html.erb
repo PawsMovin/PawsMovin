@@ -16,8 +16,8 @@
       <%= subnav_link_to("Blocked Users", user_blocks_path(CurrentUser.user)) %>
     <% else %>
       <%= subnav_link_to("Send message", new_dmail_path(dmail: { to_id: @user.id })) %>
-      <%= subnav_link_to("Report", model_new_ticket_path(model: @user, report_type: "report")) %>
-      <%= subnav_link_to("Commend", model_new_ticket_path(model: @user, report_type: "commendation")) %>
+      <%= subnav_link_to("Report", model_new_ticket_path(model: @user, ticket: { report_type: "report" })) %>
+      <%= subnav_link_to("Commend", model_new_ticket_path(model: @user, ticket: { report_type: "commendation" })) %>
       <% unless CurrentUser.user.is_staff? %>
         <% if CurrentUser.user.is_blocking?(@user) %>
           <%= subnav_link_to("Edit Block", edit_user_block_path(CurrentUser.user, CurrentUser.user.block_for(@user))) %>

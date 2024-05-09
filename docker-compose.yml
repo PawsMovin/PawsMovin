@@ -1,5 +1,3 @@
-version: "3"
-
 x-environment: &common-env
   PAWSMOVIN_HOSTNAME: http://localhost:${EXPOSED_SERVER_PORT:-3001}
   PAWSMOVIN_REDIS_URL: redis://redis
@@ -12,7 +10,7 @@ x-environment: &common-env
   # Must be internally accessible
   PAWSMOVIN_REPORTS_SERVER_INTERNAL: http://reports:3000
   PAWSMOVIN_REPORTS_ENABLED: 1
-  PAWSMOVIN_DISCORD_SITE: http://localhost:8000
+  PAWSMOVIN_DISCORD_SITE: http://localhost:3003
   PAWSMOVIN_DISCORD_SECRET: super_secret_for_url_discord
   PAWSMOVIN_REPORT_KEY: super_secret_key_for_reports_signature
   # These are just development secrets, do not use them in production
@@ -173,21 +171,33 @@ services:
 
   # Discord integration
 
-  discord_joiner:
-    image: ghcr.io/e621ng/discord_joiner:fdd9563e75d6f1b2b756c032b9749199c08d9765
+  discordbot:
+    image: ghcr.io/pawsmovin/discordbot:0dd23de434763af44c37ba61c6d9ff14b48fc7a8
     environment:
-      FETCH_SECRET: abc123
-      URL_SECRET: super_secret_for_url_discord
-      JOINER_BASE_URL: http://localhost:8000
-      BOT_TOKEN: ${JOINER_BOT_TOKEN-}
-      OAUTH2_CLIENT_ID: ${JOINER_OAUTH2_CLIENT_ID-}
-      OAUTH2_CLIENT_SECRET: ${JOINER_OAUTH2_CLIENT_SECRET-}
-      GUILD_ID: ${JOINER_GUILD_ID-}
-      FAILED_JOIN_URL: ${JOINER_FAILED_JOIN_WEBHOOK_URL-}
+      DISCORD_TOKEN: ${DISCORDBOT_DISCORD_TOKEN-}
+      DISCORD_ID: ${DISCORDBOT_DISCORD_ID-}
+      DISCORD_SECRET: ${DISCORDBOT_DISCORD_SECRET-}
+      REDIS_URL: redis://redis/1
+      REDIS_CHANNELS_TICKETS: ticket_updates
+      GUILD_ID: ${DISCORDBOT_GUILD_ID-}
+      ADMIN_ROLE: ${DISCORDBOT_ADMIN_ROLE-}
+      JOINER_PORT: ${JOINER_PORT:-3003}
+      JOINER_URL: http://localhost:${EXPOSED_JOINER_PORT:-3003}
+      JOINER_SECRET: ${PAWSMOVIN_DISCORD_SECRET-}
+      JOINER_CHANNEL_ID: ${DISCORDBOT_JOINER_CHANNEL_ID-}
+      AUDIT_LOG_CHANNEL_ID: ${DISCORDBOT_AUDIT_LOG_CHANNEL_ID-}
+      EVENT_CHANNEL_ID: ${DISCORDBOT_EVENT_CHANNEL_ID-}
+      TICKET_CHANNEL_ID: ${DISCORDBOT_TICKET_CHANNEL_ID-}
+      BASE_URL: http://localhost:${EXPOSED_SERVER_PORT:-3001}
+      FETCH_URL: http://nginx:${EXPOSED_SERVER_PORT:-3001}
+      CDN_HOST: localhost:${EXPOSED_SERVER_PORT:-3001}
+      BLACKLISTED_TAGS: ${DISCORDBOT_BLACKLISTED_TAGS:-}
+      STAFF_CATEGORIES: ${DISCORDBOT_STAFF_CATEGORIES:-}
+      SAFE_CHANNELS: ${DISCORDBOT_SAFE_CHANNELS:-}
+      ENCRYPTION_KEY: ${DISCORDBOT_ENCRYPTION_KEY:-o7SrC4IZKDeX4WOC4Zulp2xhQxNM1tvkHmi4Wh8AEqbjdCR3vFQplQCPE6FlnisLCLbs3Axeg0B96hYr}
+      ENCRYPTION_SALT: ${DISCORDBOT_ENCRYPTION_SALT:-apPyQsjNgUOIiAV62Evly0qgJATdocWwKT0vsdow}
     ports:
-      - "8000:8000"
-    volumes:
-      - discord_joiner_data:/opt/app/data
+      - "${EXPOSED_JOINER_PORT:-${JOINER_PORT-}}:${JOINER_PORT:-3003}"
     profiles:
       - discord
 

@@ -6,7 +6,7 @@ class TakedownPolicy < ApplicationPolicy
   end
 
   def show?
-    user.can_handle_takedowns?
+    true
   end
 
   def update?

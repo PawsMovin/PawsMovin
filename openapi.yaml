@@ -10723,10 +10723,13 @@ paths:
                     reason_hidden:
                       type: boolean
                 takedown_posts:
-                  type: string
+                  type: object
+                  patternProperties:
+                    "^(0-9)+$":
+                      type: number
+                      description: 0 to keep, 1 to delete
                 process_takedown:
                   type: boolean
-                  description: If not truthy, the takedown will be denied.
                 delete_reason:
                   type: boolean
       responses:

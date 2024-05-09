@@ -56,11 +56,11 @@ class StaticController < ApplicationController
       raise(User::PrivilegeError.new("You must have an account for at least one week in order to join the Discord server."))
     end
     if request.post?
-      time = (Time.now + 5.minute).to_i
+      time = (Time.now + 5.minutes).to_i
       secret = PawsMovin.config.discord_secret
       # TODO: Proper HMAC
-      hashed_values = Digest::SHA256.hexdigest("#{CurrentUser.name} #{CurrentUser.id} #{time} #{secret}")
-      user_hash = "?user_id=#{CurrentUser.id}&username=#{CurrentUser.name}&time=#{time}&hash=#{hashed_values}"
+      hashed_values = Digest::SHA256.hexdigest("#{CurrentUser.id};#{CurrentUser.name};#{time};#{secret};index")
+      user_hash = "?user_id=#{CurrentUser.id}&user_name=#{CurrentUser.name}&time=#{time}&hash=#{hashed_values}"
 
       redirect_to(PawsMovin.config.discord_site + user_hash, allow_other_host: true)
     end
