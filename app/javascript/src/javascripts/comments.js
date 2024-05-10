@@ -166,7 +166,7 @@ Comment.undelete = function (event) {
   const cid = parent.data("comment-id");
   $.ajax({
     url: `/comments/${cid}/unhide.json`,
-    type: "POST",
+    type: "PUT",
     dataType: "json"
   }).done(() => {
     parent.attr("data-is-deleted", false);

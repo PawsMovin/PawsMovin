@@ -153,7 +153,7 @@ ForumPost.unhide = function (e) {
   const fpid = parent.data('forum-post-id');
   $.ajax({
     url: `/forum_posts/${fpid}/unhide.json`,
-    type: 'POST',
+    type: 'PUT',
     dataType: 'json'
   }).done(function (data) {
     const $author = $(`.forum-post[data-forum-post-id="${fpid}"] div.author h4`);
