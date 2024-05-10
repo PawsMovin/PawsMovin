@@ -6,7 +6,7 @@ module Posts
   class IqdbControllerTest < ActionDispatch::IntegrationTest
     context "The iqdb controller" do
       setup do
-        PawsMovin.config.stubs(:iqdb_server).returns("https://karasuma.donmai.us")
+        IqdbProxy.stubs(:endpoint).returns("http://iqdb:5588")
         @user = create(:user)
         CurrentUser.user = @user
         as(@user) do

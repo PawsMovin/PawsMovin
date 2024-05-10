@@ -10,12 +10,12 @@ module PawsMovin
       def has_bit_flags(attributes, options = {})
         field = options[:field] || :bit_flags
 
-        attributes.each do |name, value|
-          define_singleton_method("flag_value_for") do |key|
-            return value if key == name
-            raise(ArgumentError, "Invalid flag: #{key}")
-          end
+        define_singleton_method("flag_value_for") do |key|
+          return value if key == name
+          raise(ArgumentError, "Invalid flag: #{key}")
+        end
 
+        attributes.each do |name, value|
           define_method(name) do
             send("#{name}?")
           end

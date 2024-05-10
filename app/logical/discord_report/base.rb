@@ -18,16 +18,10 @@ module DiscordReport
     end
 
     def post_webhook
-      HTTParty.post(
-        webhook_url,
-        body:    {
+      conn = Faraday.new(PawsMovin.config.faraday_options)
+      conn.post(webhook_url, {
           content: report,
-          flags:   4096,
-        }.to_json,
-        headers: {
-          "Content-Type" => "application/json",
-        },
-      )
+          flags:   4096 }.to_json, { content_type: "application/json" })
     end
 
     def formatted_number(input)

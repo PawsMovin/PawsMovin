@@ -590,17 +590,18 @@ module PawsMovin
     # services will fail if you don't set a valid User-Agent.
     def http_headers
       {
-        "User-Agent" => "#{PawsMovin.config.safe_app_name}/#{PawsMovin.config.version}",
+        user_agent: "#{safe_app_name}/#{version}",
       }
     end
 
-    def httparty_options
-      # proxy example:
-      # {http_proxyaddr: "", http_proxyport: "", http_proxyuser: nil, http_proxypass: nil}
+    # https://lostisland.github.io/faraday/#/customization/connection-options
+    def faraday_options
       {
-        timeout:     10,
-        open_timout: 5,
-        headers:     PawsMovin.config.http_headers,
+        request: {
+          timeout: 10,
+          open_timeout: 10,
+        },
+        headers: http_headers,
       }
     end
 

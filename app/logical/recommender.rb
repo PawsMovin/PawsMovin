@@ -19,17 +19,17 @@ module Recommender
   end
 
   def recommend_for_user(user, tags: nil, limit: 50)
-    response = HTTParty.get("#{PawsMovin.config.recommender_server}/recommend/#{user.id}?limit=#{limit}")
-    return [] unless response.ok?
+    response = Faraday.new(PawsMovin.config.faraday_options).get("#{PawsMovin.config.recommender_server}/recommend/#{user.id}?limit=#{limit}")
+    return [] unless response.success?
 
-    process_recs(response.parsed_response, tags: tags, uploader: user, favoriter: user)
+    process_recs(JSON.parse(response.body), tags: tags, uploader: user, favoriter: user)
   end
 
   def recommend_for_post(post, tags: nil, limit: 50)
-    response = HTTParty.get("#{PawsMovin.config.recommender_server}/similar/#{post.id}?limit=#{limit}")
-    return [] unless response.ok?
+    response = Faraday.new(PawsMovin.config.faraday_options).get("#{PawsMovin.config.recommender_server}/similar/#{post.id}?limit=#{limit}")
+    return [] unless response.success?
 
-    process_recs(response.parsed_response, ogpost: post, tags: tags)
+    process_recs(JSON.parse(response.body), ogpost: post, tags: tags)
   end
 
   # factors: int
@@ -39,12 +39,13 @@ module Recommender
   # training_time: string (00:00:00)
   # user_count: int
   def metrics
-    HTTParty.get("#{PawsMovin.config.recommender_server}/metrics").parsed_response
+    response = Faraday.new(PawsMovin.config.faraday_options).get("#{PawsMovin.config.recommender_server}/metrics")
+    JSON.parse(response.body)
   end
 
   def train!
     return if Rails.env.test?
-    HTTParty.put("#{PawsMovin.config.recommender_server}/train")
+    Faraday.new(PawsMovin.config.faraday_options).put("#{PawsMovin.config.recommender_server}/train")
   end
 
   def process_recs(recs, ogpost: nil, uploader: nil, favoriter: nil, tags: nil)

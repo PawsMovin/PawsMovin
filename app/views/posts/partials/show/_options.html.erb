@@ -39,7 +39,7 @@
         <li><%= tag.a("Unapprove", href: "#", 'data-pid': post.id, id: "unapprove-post-link") %></li>
       <% end %>
 
-      <% if PawsMovin.config.iqdb_server.present? && policy(post).update_iqdb? %>
+      <% if IqdbProxy.enabled? && policy(post).update_iqdb? %>
         <li><%= link_to("Update IQDB", update_iqdb_post_path(@post), method: :put) %></li>
       <% end %>
       <% if policy(post).expunge? %>

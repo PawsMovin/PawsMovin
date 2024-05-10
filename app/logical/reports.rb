@@ -10,7 +10,8 @@ module Reports
   end
 
   def get(path)
-    HTTParty.get("#{PawsMovin.config.reports_server_internal}#{path}", PawsMovin.config.httparty_options).parsed_response
+    response = Faraday.new(PawsMovin.config.faraday_options).get("#{PawsMovin.config.reports_server_internal}#{path}")
+    JSON.parse(response.body)
   end
 
   # Integer

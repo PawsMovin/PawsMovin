@@ -16,7 +16,6 @@ gem "responders"
 gem "dtext_rb", git: "https://github.com/PawsMovin/dtext_rb.git", branch: "master", require: "dtext"
 gem "bootsnap"
 gem "addressable"
-gem "httparty"
 gem "recaptcha", require: "recaptcha/rails"
 gem "webpacker", ">= 4.0.x"
 gem "retriable"
@@ -39,6 +38,10 @@ gem "datadog", require: "datadog/auto_instrument"
 gem "opensearch-ruby"
 
 gem "mailgun-ruby"
+
+gem "faraday"
+gem "faraday-follow_redirects"
+gem "faraday-retry"
 
 group :production do
   gem "unicorn"
