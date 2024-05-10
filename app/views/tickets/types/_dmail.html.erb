@@ -1,9 +1,9 @@
 <% @dmail = @ticket.model %>
 <tr>
-  <td><span class='title'>Reported Message</span></td>
+  <td><span class="title">Reported Message</span></td>
   <td>
-    <%= link_to "Message", dmail_path(@dmail) %>
-    sent from <%= link_to_user @dmail.from %> to
-    <%= link_to_user @dmail.to %>
+    <%= link_to("Message", dmail_path(@dmail)) %>
+    sent from <%= link_to_user(@dmail.from) %> to
+    <%= link_to_user(@dmail.to) %>
   </td>
 </tr>

@@ -1,7 +1,7 @@
 <ul>
   <% if CurrentUser.user.is_member? %>
     <li class="vpad-05"><%= tag.a("+Favorite", href: "#", class: "button btn-success", id: "add-to-favorites", "data-shortcut": "f", style: ("display: none;" if @post.is_favorited?), 'data-pid': @post.id) %></li>
-    <li class="vpad-05"><%= tag.a("-Favorite", href: "#", class: "button btn-danger", id: "remove-from-favorites", "data-shortcut": "shift+f", style: ("display: none;" if !@post.is_favorited?), 'data-pid': @post.id) %></li>
+    <li class="vpad-05"><%= tag.a("-Favorite", href: "#", class: "button btn-danger", id: "remove-from-favorites", "data-shortcut": "shift+f", style: ("display: none;" unless @post.is_favorited?), 'data-pid': @post.id) %></li>
     <% if policy(post).update? %>
       <li><%= link_to "Edit", "#edit", id: "side-edit-link" %></li>
     <% end %>

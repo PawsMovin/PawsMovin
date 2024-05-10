@@ -1,0 +1,6 @@
+<% if @ticket.model %>
+  <tr>
+    <td><span class="title">Reported Tag</span></td>
+    <td><%= link_to(@ticket.model.name, @ticket.model) %></td>
+  </tr>
+<% end %>

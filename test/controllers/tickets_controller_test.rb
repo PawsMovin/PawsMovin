@@ -22,7 +22,8 @@ class TicketsControllerTest < ActionDispatch::IntegrationTest
   context "The tickets controller" do
     setup do
       @admin = create(:admin_user)
-      @bystander = create(:user)
+      @janitor = create(:janitor_user)
+      @user = create(:user)
       @reporter = create(:user)
       @bad_actor = create(:user, created_at: 2.weeks.ago)
     end
@@ -57,36 +58,27 @@ class TicketsControllerTest < ActionDispatch::IntegrationTest
       end
     end
 
-    context "for a forum ticket" do
+    context "for an artist ticket" do
       setup do
         as @bad_actor do
-          @content = create(:forum_topic, creator: @bad_actor).original_post
+          @content = create(:artist, creator: @bad_actor)
         end
       end
 
-      should "restrict reporting" do
-        assert_ticket_create_permissions([[@bystander, true], [@admin, true], [@bad_actor, true]], model: @content)
-        @content.update_columns(is_hidden: true)
-        assert_ticket_create_permissions([[@bystander, false], [@admin, true], [@bad_actor, true]], model: @content)
+      should "allow reporting artists" do
+        assert_ticket_create_permissions([[@user, true], [@janitor, true], [@admin, true], [@bad_actor, true]], model: @content)
       end
 
-      should "restrict access" do
+      should "restrict access to users" do
         @ticket = create(:ticket, creator: @reporter, model: @content)
-        get_auth ticket_path(@ticket), @admin
-        assert_response :success
-        get_auth ticket_path(@ticket), @reporter
-        assert_response :success
-        get_auth ticket_path(@ticket), @bystander
-        assert_response :success
-
-        @content.topic.update_columns(is_hidden: true)
-        get_auth ticket_path(@ticket), @bystander
+        get_auth ticket_path(@ticket), @user
         assert_response :forbidden
+      end
 
-        @content.topic.update_columns(is_hidden: false)
-        @content.update_columns(is_hidden: true)
-        get_auth ticket_path(@ticket), @bystander
-        assert_response :forbidden
+      should "not restrict access to janitors" do
+        @ticket = create(:ticket, creator: @reporter, model: @content)
+        get_auth ticket_path(@ticket), @janitor
+        assert_response :success
       end
     end
 
@@ -98,37 +90,201 @@ class TicketsControllerTest < ActionDispatch::IntegrationTest
       end
 
       should "restrict reporting" do
-        assert_ticket_create_permissions([[@bystander, true], [@admin, true], [@bad_actor, true]], model: @content)
+        assert_ticket_create_permissions([[@user, true], [@janitor, true], [@admin, true], [@bad_actor, true]], model: @content)
         @content.update_columns(is_hidden: true)
-        assert_ticket_create_permissions([[@bystander, false], [@admin, true], [@bad_actor, true]], model: @content)
+        assert_ticket_create_permissions([[@user, false], [@janitor, false], [@admin, true], [@bad_actor, true]], model: @content)
       end
 
-      should "not restrict access" do
+      should "restrict access" do
         @ticket = create(:ticket, creator: @reporter, model: @content)
-        @content.update_columns(is_hidden: true)
-        get_auth ticket_path(@ticket), @bystander
-        assert_response :success
+        get_auth ticket_path(@ticket), @user
+        assert_response :forbidden
+        get_auth ticket_path(@ticket), @janitor
+        assert_response :forbidden
       end
     end
 
     context "for a dmail ticket" do
       setup do
         as @bad_actor do
-          @content = create(:dmail, from: @bad_actor, to: @bystander, owner: @bystander)
+          @content = create(:dmail, from: @bad_actor, to: @reporter, owner: @reporter)
         end
       end
 
       should "disallow reporting dmails you did not recieve" do
-        assert_ticket_create_permissions([[@bystander, true], [@admin, false], [@bad_actor, false]], model: @content)
+        assert_ticket_create_permissions([[@reporter, true], [@user, false], [@janitor, false], [@admin, false], [@bad_actor, false]], model: @content)
       end
 
       should "restrict access" do
-        @ticket = create(:ticket, creator: @bystander, model: @content)
+        @ticket = create(:ticket, creator: @reporter, model: @content)
+        get_auth ticket_path(@ticket), @reporter
+        assert_response :success
         get_auth ticket_path(@ticket), @admin
         assert_response :success
-        get_auth ticket_path(@ticket), @bystander
-        assert_response :success
+        get_auth ticket_path(@ticket), @janitor
+        assert_response :forbidden
+        get_auth ticket_path(@ticket), @user
+        assert_response :forbidden
         get_auth ticket_path(@ticket), @bad_actor
+        assert_response :forbidden
+      end
+    end
+
+    context "for a forum ticket" do
+      setup do
+        as @bad_actor do
+          @content = create(:forum_topic, creator: @bad_actor).original_post
+        end
+      end
+
+      should "restrict reporting" do
+        assert_ticket_create_permissions([[@janitor, true], [@admin, true], [@bad_actor, true]], model: @content)
+        @content.update_columns(is_hidden: true)
+        assert_ticket_create_permissions([[@janitor, false], [@admin, true], [@bad_actor, true]], model: @content)
+      end
+
+      should "restrict access" do
+        @ticket = create(:ticket, creator: @reporter, model: @content)
+        get_auth ticket_path(@ticket), @admin
+        assert_response :success
+        get_auth ticket_path(@ticket), @reporter
+        assert_response :success
+        get_auth ticket_path(@ticket), @janitor
+        assert_response :forbidden
+      end
+    end
+
+    context "for a pool ticket" do
+      setup do
+        as @bad_actor do
+          @content = create(:pool, creator: @bad_actor)
+        end
+      end
+
+      should "allow reporting pools" do
+        assert_ticket_create_permissions([[@reporter, true], [@user, true], [@janitor, true], [@admin, true], [@bad_actor, true]], model: @content)
+      end
+
+      should "restrict access to users" do
+        @ticket = create(:ticket, creator: @reporter, model: @content)
+        get_auth ticket_path(@ticket), @user
+        assert_response :forbidden
+      end
+
+      should "not restrict access to janitors" do
+        @ticket = create(:ticket, creator: @reporter, model: @content)
+        get_auth ticket_path(@ticket), @janitor
+        assert_response :success
+      end
+    end
+
+    context "for a post ticket" do
+      setup do
+        as @bad_actor do
+          @content = create(:post, uploader: @bad_actor)
+        end
+      end
+
+      should "allow reports" do
+        assert_ticket_create_permissions([[@janitor, true], [@admin, true], [@bad_actor, true]], model: @content)
+      end
+
+      should "not restrict access" do
+        @ticket = create(:ticket, creator: @reporter, model: @content)
+        get_auth ticket_path(@ticket), @janitor
+        assert_response :success
+      end
+    end
+
+    context "for a post set ticket" do
+      setup do
+        as @bad_actor do
+          @content = create(:post_set, is_public: true, creator: @bad_actor)
+        end
+      end
+
+      should "disallow reporting sets you can't see" do
+        assert_ticket_create_permissions([[@reporter, true], [@user, true], [@janitor, true], [@admin, true], [@bad_actor, true]], model: @content)
+        @content.update_columns(is_public: false)
+        assert_ticket_create_permissions([[@reporter, false], [@user, false], [@janitor, false], [@admin, true], [@bad_actor, true]], model: @content)
+      end
+
+      should "restrict access" do
+        @ticket = create(:ticket, creator: @reporter, model: @content)
+        get_auth ticket_path(@ticket), @janitor
+        assert_response :forbidden
+        get_auth ticket_path(@ticket), @user
+        assert_response :forbidden
+      end
+    end
+
+    context "for a tag ticket" do
+      setup do
+        as @bad_actor do
+          @content = create(:tag)
+        end
+      end
+
+      should "allow reporting tags" do
+        assert_ticket_create_permissions([[@reporter, true], [@user, true], [@janitor, true], [@admin, true], [@bad_actor, true]], model: @content)
+      end
+
+      should "restrict access to users" do
+        @ticket = create(:ticket, creator: @reporter, model: @content)
+        get_auth ticket_path(@ticket), @user
+        assert_response :forbidden
+      end
+
+      should "not restrict access to janitors" do
+        @ticket = create(:ticket, creator: @reporter, model: @content)
+        get_auth ticket_path(@ticket), @janitor
+        assert_response :success
+      end
+    end
+
+    context "for user tickets" do
+      setup do
+        @content = create(:user)
+      end
+
+      should "allow reporting users" do
+        assert_ticket_create_permissions([[@reporter, true], [@user, true], [@janitor, true], [@admin, true], [@bad_actor, true]], model: @content)
+      end
+
+      should "restrict access" do
+        @ticket = create(:ticket, creator: @reporter, model: @content)
+        get_auth ticket_path(@ticket), @reporter
+        assert_response :success
+        get_auth ticket_path(@ticket), @admin
+        assert_response :success
+        get_auth ticket_path(@ticket), @janitor
+        assert_response :forbidden
+        get_auth ticket_path(@ticket), @user
+        assert_response :forbidden
+      end
+
+      should "not restrict access to janitors for commendations" do
+        @ticket = create(:ticket, creator: @reporter, model: @content, report_type: "commendation")
+        get_auth ticket_path(@ticket), @reporter
+        assert_response :success
+        get_auth ticket_path(@ticket), @admin
+        assert_response :success
+        get_auth ticket_path(@ticket), @janitor
+        assert_response :success
+        get_auth ticket_path(@ticket), @user
+        assert_response :forbidden
+      end
+
+      should "not restrict access to janitors for janitor created tickets" do
+        @janitor2 = create(:janitor_user)
+        @ticket = create(:ticket, creator: @janitor2, model: @content)
+        get_auth ticket_path(@ticket), @janitor2
+        assert_response :success
+        get_auth ticket_path(@ticket), @admin
+        assert_response :success
+        get_auth ticket_path(@ticket), @janitor
+        assert_response :success
+        get_auth ticket_path(@ticket), @user
         assert_response :forbidden
       end
     end
@@ -141,90 +297,19 @@ class TicketsControllerTest < ActionDispatch::IntegrationTest
       end
 
       should "allow reporting wiki pages" do
-        assert_ticket_create_permissions([[@bystander, true], [@admin, true], [@bad_actor, true]], model: @content)
+        assert_ticket_create_permissions([[@reporter, true], [@user, true], [@janitor, true], [@admin, true], [@bad_actor, true]], model: @content)
       end
 
-      should "not restrict access" do
+      should "restrict access to users" do
         @ticket = create(:ticket, creator: @reporter, model: @content)
-        get_auth ticket_path(@ticket), @bystander
-        assert_response :success
-      end
-    end
-
-    context "for a pool ticket" do
-      setup do
-        as @bad_actor do
-          @content = create(:pool, creator: @bad_actor)
-        end
-      end
-
-      should "allow reporting pools" do
-        assert_ticket_create_permissions([[@bystander, true], [@admin, true], [@bad_actor, true]], model: @content)
-      end
-
-      should "not restrict access" do
-        @ticket = create(:ticket, creator: @reporter, model: @content)
-        get_auth ticket_path(@ticket), @bystander
-        assert_response :success
-      end
-    end
-
-    context "for a set ticket" do
-      setup do
-        as @bad_actor do
-          @content = create(:post_set, is_public: true, creator: @bad_actor)
-        end
-      end
-
-      should "dissallow reporting sets you can't see" do
-        assert_ticket_create_permissions([[@bystander, true], [@admin, true], [@bad_actor, true]], model: @content)
-        @content.update_columns(is_public: false)
-        assert_ticket_create_permissions([[@bystander, false], [@admin, true], [@bad_actor, true]], model: @content)
-      end
-
-      should "not restrict access" do
-        @ticket = create(:ticket, creator: @reporter, model: @content)
-        @content.update_columns(is_public: false)
-        get_auth ticket_path(@ticket), @bystander
-        assert_response :success
-      end
-    end
-
-    context "for post tickets" do
-      setup do
-        as @bad_actor do
-          @content = create(:post, uploader: @bad_actor)
-        end
-      end
-
-      should "allow reports" do
-        assert_ticket_create_permissions([[@bystander, true], [@admin, true], [@bad_actor, true]], model: @content)
-      end
-
-      should "not restrict access" do
-        @ticket = create(:ticket, creator: @reporter, model: @content)
-        get_auth ticket_path(@ticket), @bystander
-        assert_response :success
-      end
-    end
-
-    context "for user tickets" do
-      setup do
-        @content = create(:user)
-      end
-
-      should "allow reporting users" do
-        assert_ticket_create_permissions([[@bystander, true], [@admin, true], [@bad_actor, true]], model: @content)
-      end
-
-      should "restrict access" do
-        @ticket = create(:ticket, creator: @reporter, model: @content)
-        get_auth ticket_path(@ticket), @reporter
-        assert_response :success
-        get_auth ticket_path(@ticket), @admin
-        assert_response :success
-        get_auth ticket_path(@ticket), @bystander
+        get_auth ticket_path(@ticket), @user
         assert_response :forbidden
+      end
+
+      should "not restrict access to janitors" do
+        @ticket = create(:ticket, creator: @reporter, model: @content)
+        get_auth ticket_path(@ticket), @janitor
+        assert_response :success
       end
     end
   end

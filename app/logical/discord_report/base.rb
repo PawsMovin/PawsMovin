@@ -20,8 +20,9 @@ module DiscordReport
     def post_webhook
       conn = Faraday.new(PawsMovin.config.faraday_options)
       conn.post(webhook_url, {
-          content: report,
-          flags:   4096 }.to_json, { content_type: "application/json" })
+        content: report,
+        flags:   4096,
+      }.to_json, { content_type: "application/json" })
     end
 
     def formatted_number(input)

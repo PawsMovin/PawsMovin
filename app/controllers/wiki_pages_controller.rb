@@ -12,7 +12,7 @@ class WikiPagesController < ApplicationController
     if params[:id] =~ /\A\d+\z/
       @wiki_page = WikiPage.find(params[:id])
     else
-      @wiki_page = WikiPage.titled(params[:id]).first
+      @wiki_page = WikiPage.titled(params[:id])
       if @wiki_page.nil? && request.format.html?
         redirect_to(show_or_new_wiki_pages_path(title: params[:id]))
         return
@@ -26,7 +26,7 @@ class WikiPagesController < ApplicationController
   def index
     authorize(WikiPage)
     if params[:title].present?
-      @wiki_page = WikiPage.titled(params[:title]).first
+      @wiki_page = WikiPage.titled(params[:title])
       if @wiki_page.nil?
         return redirect_to(show_or_new_wiki_pages_path(title: params[:id])) if request.format.html?
         raise(ActiveRecord::RecordNotFound)
@@ -64,7 +64,7 @@ class WikiPagesController < ApplicationController
     authorize(@wiki_page, policy_class: WikiPagePolicy)
     if @wiki_page.present?
       unless @wiki_page.parent.nil?
-        @wiki_redirect = WikiPage.titled(@wiki_page.parent).first
+        @wiki_redirect = WikiPage.titled(@wiki_page.parent)
       end
       respond_with(@wiki_page)
     elsif request.format.html?

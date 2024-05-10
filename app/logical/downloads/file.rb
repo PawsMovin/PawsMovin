@@ -23,19 +23,19 @@ module Downloads
     def download!(max_size: PawsMovin.config.max_file_size)
       file = Tempfile.new(binmode: true)
       conn = Faraday.new(PawsMovin.config.faraday_options) do |f|
-        f.response :follow_redirects, callback: ->(_old_env, new_env) { validate_uri_allowed!(new_env.url) }
-        f.request :retry, max: 3, retry_block: ->(*) { file = Tempfile.new(binmode: true) }
+        f.response(:follow_redirects, callback: ->(_old_env, new_env) { validate_uri_allowed!(new_env.url) })
+        f.request(:retry, max: 3, retry_block: ->(*) { file = Tempfile.new(binmode: true) })
       end
 
       res = conn.get(uncached_url, nil, strategy.headers) do |req|
         req.options.on_data = ->(chunk, overall_recieved_bytes, env) do
           next if [301, 302].include?(env.status)
 
-          raise Error, "File is too large (max size: #{max_size})" if overall_recieved_bytes > max_size
+          raise(Error, "File is too large (max size: #{max_size})") if overall_recieved_bytes > max_size
           file.write(chunk)
         end
       end
-      raise Error, "HTTP error code: #{res.status} #{Rack::Utils::HTTP_STATUS_CODES[res.status]}" unless res.success?
+      raise(Error, "HTTP error code: #{res.status} #{Rack::Utils::HTTP_STATUS_CODES[res.status]}") unless res.success?
 
       file.rewind
       file

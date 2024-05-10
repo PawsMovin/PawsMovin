@@ -172,7 +172,7 @@ services:
   # Discord integration
 
   discordbot:
-    image: ghcr.io/pawsmovin/discordbot:0dd23de434763af44c37ba61c6d9ff14b48fc7a8
+    image: ghcr.io/pawsmovin/discordbot:4a99cf146ed3224bb058b3325ca68649afe97233
     environment:
       DISCORD_TOKEN: ${DISCORDBOT_DISCORD_TOKEN-}
       DISCORD_ID: ${DISCORDBOT_DISCORD_ID-}

@@ -598,7 +598,7 @@ module PawsMovin
     def faraday_options
       {
         request: {
-          timeout: 10,
+          timeout:      10,
           open_timeout: 10,
         },
         headers: http_headers,

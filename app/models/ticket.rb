@@ -24,41 +24,48 @@ class Ticket < ApplicationRecord
 
   attr_accessor :record_type, :send_update_dmail
 
-=begin
-    Permission truth table.
-    Type            | Field         | Access
-    -----------------------------------------
-    Any             | Username      | Admin+ / Current User
-    Name Change     | Old Nme       | Any
-    Any             | Created At    | Any
-    Any             | Updated At    | Any
-    Any             | Claimed By    | Admin+
-    Any             | Status        | Any
-    Any             | IP Address    | Admin+
-    User Complaint  | Reported User | Admin+ / Current User
-    Dmail           | Details       | Admin+ / Current User
-    Comment         | Comment Link  | Any
-    Comment         | Comment Author| Any
-    Forum           | Forum Post    | Forum Visibility / Any
-    Wiki            | Wiki Page     | Any
-    Pool            | Pool          | Any
-    Set             | Set           | Any
-    Other           | Any           | N/A(No details shown)
-    DMail           | Reason        | Admin+ / Current User
-    User Complaint  | Reason        | Admin+ / Current User
-    Any             | Reason        | Any
-    DMail           | Response      | Admin+ / Current User
-    User Complaint  | Response      | Admin+ / Current User
-    Any             | Response      | Any
-    Any             | Handled By    | Any
-=end
-
   MODEL_TYPES = %w[Artist Comment Dmail ForumPost Pool Post PostSet User WikiPage].freeze
 
+=begin
+Permissions Table
+
+|    Type    |      Can Create     |    Details Visible   |
+|:----------:|:-------------------:|:--------------------:|
+|   Artist   |         Any         |  Janitor+ / Creator  |
+|   Comment  |       Visible       | Moderator+ / Creator |
+|    Dmail   | Visible & Recipient | Moderator+ / Creator |
+| Forum Post |       Visible       | Moderator+ / Creator |
+|    Pool    |         Any         |  Janitor+ / Creator  |
+|    Post    |         Any         |  Janitor+ / Creator  |
+|  Post Set  |       Visible       | Moderator+ / Creator |
+|     Tag    |         Any         |  Janitor+ / Creator  |
+|    User    |         Any         |  *Janitor+ / Creator |
+|  Wiki Page |         Any         |  Janitor+ / Creator  |
+
+* Janitor+ can see details if the creator is Janitor+ or the ticket is a commendation, else Moderator+
+=end
   module TicketTypes
+    module Artist
+      def can_create_for?(_user)
+        true
+      end
+
+      def can_see_details?(user)
+        user.is_janitor? || user.id == creator_id
+      end
+
+      def bot_target_name
+        model&.name
+      end
+    end
+
     module Comment
       def can_create_for?(user)
         model&.visible_to?(user)
+      end
+
+      def can_see_details?(user)
+        user.is_moderator? || (user.id == creator_id)
       end
     end
 
@@ -82,27 +89,17 @@ class Ticket < ApplicationRecord
       end
 
       def can_see_details?(user)
-        if model
-          model.visible?(user) || (user.id == creator_id)
-        else
-          true
-        end
-      end
-    end
-
-    module WikiPage
-      def can_create_for?(user)
-        true
-      end
-
-      def bot_target_name
-        model&.title
+        user.is_moderator? || (user.id == creator_id)
       end
     end
 
     module Pool
-      def can_create_for?(user)
+      def can_create_for?(_user)
         true
+      end
+
+      def can_see_details?(user)
+        user.is_janitor? || user.id == creator_id
       end
 
       def bot_target_name
@@ -115,8 +112,12 @@ class Ticket < ApplicationRecord
         reason.split("\n")[0] || "Unknown Report Type"
       end
 
-      def can_create_for?(user)
+      def can_create_for?(_user)
         true
+      end
+
+      def can_see_details?(user)
+        user.is_janitor? || user.id == creator_id
       end
 
       def bot_target_name
@@ -129,22 +130,54 @@ class Ticket < ApplicationRecord
         model&.can_view?(user)
       end
 
-      def bot_target_name
-        model&.name
-      end
-    end
-
-    module User
-      def can_create_for?(user)
-        true
-      end
-
       def can_see_details?(user)
         user.is_moderator? || user.id == creator_id
       end
 
       def bot_target_name
         model&.name
+      end
+    end
+
+    module Tag
+      def can_create_for?(_user)
+        true
+      end
+
+      def can_see_details?(user)
+        user.is_janitor? || (user.id == creator_id)
+      end
+
+      def bot_target_name
+        model&.name
+      end
+    end
+
+    module User
+      def can_create_for?(_user)
+        true
+      end
+
+      def can_see_details?(user)
+        user.is_moderator? || user.id == creator_id || (user.is_janitor? && (report_type == "commendation" || creator.is_janitor?))
+      end
+
+      def bot_target_name
+        model&.name
+      end
+    end
+
+    module WikiPage
+      def can_create_for?(_user)
+        true
+      end
+
+      def can_see_details?(user)
+        user.is_janitor? || (user.id == creator_id)
+      end
+
+      def bot_target_name
+        model&.title
       end
     end
   end
@@ -378,7 +411,7 @@ class Ticket < ApplicationRecord
         ticket: {
           id:          id,
           user_id:     creator_id,
-          user_name:        creator_id ? User.id_to_name(creator_id) : nil,
+          user_name:   creator_id ? User.id_to_name(creator_id) : nil,
           claimant:    claimant_id ? User.id_to_name(claimant_id) : nil,
           target:      bot_target_name,
           status:      status,
@@ -391,6 +424,8 @@ class Ticket < ApplicationRecord
     end
 
     def push_pubsub(action)
+      # learned the hard way via receiving 25 pings during testing
+      return if Rails.env.test?
       Cache.redis.publish("ticket_updates", pubsub_hash(action).to_json)
     end
   end
@@ -402,4 +437,15 @@ class Ticket < ApplicationRecord
   include NotificationMethods
   include PubSubMethods
   extend SearchMethods
+
+  def self.visible(_user)
+    # if user.is_moderator?
+    #  all
+    # elsif user.is_janitor?
+    #  where(creator: user).or(where(model_type: %w[Artist Pool Post WikiPage User]))
+    # else
+    #  where(creator: user)
+    # end
+    all
+  end
 end

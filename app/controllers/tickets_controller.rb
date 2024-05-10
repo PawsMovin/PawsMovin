@@ -4,7 +4,7 @@ class TicketsController < ApplicationController
   respond_to :html # TODO: json
 
   def index
-    @tickets = authorize(Ticket).search(search_params(Ticket)).paginate(params[:page], limit: params[:limit])
+    @tickets = authorize(Ticket).visible(CurrentUser.user).search(search_params(Ticket)).paginate(params[:page], limit: params[:limit])
     respond_with(@tickets)
   end
 

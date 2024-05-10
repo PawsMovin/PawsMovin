@@ -1,0 +1,8 @@
+<% @artist = @ticket.model %>
+<h4>You are reporting the following artist page:</h4>
+<div class="page"><%= link_to(@artist.name, @artist) %></div>
+<span class="date">Created <%= time_ago_in_words_tagged(@artist.created_at) %></span>
+<br><br>
+<div class="dtext-container">
+  <%= format_text(@artist.notes) %>
+</div>

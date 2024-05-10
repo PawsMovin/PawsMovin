@@ -66,9 +66,9 @@
       <% end %>
       <%= li_link_to_if(policy(comment).destroy?, "Destroy", "", class: "comment-destroy-link") %>
 
-      <% unless comment.is_sticky %>
+      <% unless comment.is_sticky && TicketPolicy.new(CurrentUser.user, comment).create? %>
         <li>
-          <%= link_to new_ticket_path(disp_id: comment.id, qtype: "comment"), class: "comment-report-link" do %>
+          <%= link_to model_new_ticket_path(model: comment), class: "comment-report-link" do %>
             <%= tag.i(class: "far fa-flag fa-flip-horizontal") %> Report
           <% end %>
         </li>
