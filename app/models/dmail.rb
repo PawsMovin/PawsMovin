@@ -11,13 +11,14 @@ class Dmail < ApplicationRecord
   belongs_to :owner, class_name: "User"
   belongs_to :to, class_name: "User"
   belongs_to :from, class_name: "User"
+  belongs_to :respond_to, class_name: "User", optional: true
 
   after_initialize :initialize_attributes, if: :new_record?
   before_create :auto_read_if_filtered
   after_create :update_recipient
   after_commit :send_email, on: :create, unless: :no_email_notification
 
-  attr_accessor :bypass_limits, :no_email_notification
+  attr_accessor :bypass_limits, :no_email_notification, :original
 
   module AddressMethods
     def to_name=(name)
@@ -79,8 +80,9 @@ class Dmail < ApplicationRecord
           dmail.title = "Re: #{title}"
         end
         dmail.owner_id = from_id
+        dmail.original = self
         dmail.body = quoted_body
-        dmail.to_id = from_id unless options[:forward]
+        dmail.to_id = respond_to_id || from_id unless options[:forward]
         dmail.from_id = to_id
       end
     end

@@ -25,8 +25,9 @@ class PostSetMaintainer < ApplicationRecord
 
     Dmail.create_automated(
       to_id: user_id,
-      title: "You were invite to be a maintainer of #{post_set.name}",
-      body:  body
+      title: "You were invited to be a maintainer of #{post_set.name}",
+      body:  body,
+      respond_to_id: post_set.creator_id
     )
   end
 
@@ -42,7 +43,8 @@ class PostSetMaintainer < ApplicationRecord
       Dmail.create_automated(
         to_id: user_id,
         title: "You were removed as a set maintainer of #{post_set.name}",
-        body:  body
+        body:  body,
+        respond_to_id: post_set.creator_id
       )
     end
     destroy
@@ -54,7 +56,8 @@ class PostSetMaintainer < ApplicationRecord
     Dmail.create_automated(
       to_id: post_set.creator_id,
       title: "#{user.name} approved your invite to maintain #{post_set.name}",
-      body:  "\"#{user.name}\":/users/#{user_id} approved your invite to maintain \"#{post_set.name}\":/post_sets/#{post_set.id}."
+      body:  "\"#{user.name}\":/users/#{user_id} approved your invite to maintain \"#{post_set.name}\":/post_sets/#{post_set.id}.",
+      respond_to_id: user.id
     )
   end
 
@@ -63,13 +66,15 @@ class PostSetMaintainer < ApplicationRecord
       Dmail.create_automated(
         to_id: post_set.creator_id,
         title: "#{user.name} denied your invite to maintain #{post_set.name}",
-        body:  "\"#{user.name}\":/users/#{user.id} denied your invite to maintain \"#{post_set.name}\":/post_sets/#{post_set.id}."
+        body:  "\"#{user.name}\":/users/#{user.id} denied your invite to maintain \"#{post_set.name}\":/post_sets/#{post_set.id}.",
+        respond_to_id: user.id
       )
     elsif status == "approved"
       Dmail.create_automated(
         to_id: post_set.creator_id,
         title: "#{user.name} removed themselves as a maintainer of #{post_set.name}",
-        body:  "\"#{user.name}\":/users/#{user.id} removed themselves as a maintainer of \"#{post_set.name}\":/post_sets/#{post_set.id}."
+        body:  "\"#{user.name}\":/users/#{user.id} removed themselves as a maintainer of \"#{post_set.name}\":/post_sets/#{post_set.id}.",
+        respond_to_id: user.id
       )
     end
     destroy
@@ -80,13 +85,15 @@ class PostSetMaintainer < ApplicationRecord
       Dmail.create_automated(
         to_id: post_set.creator_id,
         title: "#{user.name} removed themselves as a maintainer of #{post_set.name}",
-        body:  "\"#{user.name}\":/users/#{user.id} removed themselves as a maintainer of \"#{post_set.name}\":/post_sets/#{post_set.id} and blocked all future invites."
+        body:  "\"#{user.name}\":/users/#{user.id} removed themselves as a maintainer of \"#{post_set.name}\":/post_sets/#{post_set.id} and blocked all future invites.",
+        respond_to_id: user.id
       )
     elsif status == "pending"
       Dmail.create_automated(
         to_id: post_set.creator_id,
         title: "#{user.name} denied your invite to maintain #{post_set.name}",
-        body:  "\"#{user.name}\":/users/#{user.id} denied your invite to maintain \"#{post_set.name}\":/post_sets/#{post_set.id} and blocked all future invites."
+        body:  "\"#{user.name}\":/users/#{user.id} denied your invite to maintain \"#{post_set.name}\":/post_sets/#{post_set.id} and blocked all future invites.",
+        respond_to_id: user.id
       )
     end
     self.status = "blocked"

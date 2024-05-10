@@ -13,7 +13,7 @@ class UserFeedbackTest < ActiveSupport::TestCase
 
     should "create a dmail" do
       dmail = <<~DMAIL.chomp
-        #{@mod.name} created a "positive record":#{Rails.application.routes.url_helpers.user_feedbacks_path(search: { user_id: @user.id })} for your account:
+        "#{@mod.name}":/users/#{@mod.id} created a "positive record":#{Rails.application.routes.url_helpers.user_feedbacks_path(search: { user_id: @user.id })} for your account:
 
         good job!
       DMAIL
@@ -27,7 +27,7 @@ class UserFeedbackTest < ActiveSupport::TestCase
       feedback = create(:user_feedback, user: @user, body: "good job!")
 
       dmail = <<~DMAIL.chomp
-        #{@admin.name} updated a "positive record":#{Rails.application.routes.url_helpers.user_feedbacks_path(search: { user_id: @user.id })} for your account:
+        "#{@admin.name}":/users/#{@admin.id} updated a "positive record":#{Rails.application.routes.url_helpers.user_feedbacks_path(search: { user_id: @user.id })} for your account:
 
         great job!
       DMAIL

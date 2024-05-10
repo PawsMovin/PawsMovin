@@ -18,6 +18,7 @@ class DmailsController < ApplicationController
       @dmail = authorize(Dmail.new(permitted_attributes(Dmail)))
     end
 
+
     respond_with(@dmail)
   end
 

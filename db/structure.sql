@@ -518,7 +518,8 @@ CREATE TABLE public.dmails (
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     creator_ip_addr inet NOT NULL,
-    key character varying DEFAULT ''::character varying NOT NULL
+    key character varying DEFAULT ''::character varying NOT NULL,
+    respond_to_id bigint
 );
 
 
@@ -3898,6 +3899,13 @@ CREATE INDEX index_dmails_on_owner_id ON public.dmails USING btree (owner_id);
 
 
 --
+-- Name: index_dmails_on_respond_to_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_dmails_on_respond_to_id ON public.dmails USING btree (respond_to_id);
+
+
+--
 -- Name: index_dmails_on_to_tsvector_english_body; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -4917,6 +4925,14 @@ ALTER TABLE ONLY public.rules
 
 
 --
+-- Name: dmails fk_rails_64867f7932; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dmails
+    ADD CONSTRAINT fk_rails_64867f7932 FOREIGN KEY (respond_to_id) REFERENCES public.users(id);
+
+
+--
 -- Name: user_feedback fk_rails_9329a36823; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -5027,6 +5043,7 @@ ALTER TABLE ONLY public.staff_notes
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20240510030953'),
 ('20240422110202'),
 ('20240418103518'),
 ('20240417101613'),
