@@ -146,9 +146,10 @@ class PostVersion < ApplicationRecord
     })
   end
 
-  def self.merge(version, post)
+  def self.merge(version, post, updater = CurrentUser.user)
     raise(MergeError, "Attempted to merge post ##{post.id} into its first version (#{version.id})") if version.first?
     raise(MergeError, "Attempted to merge post ##{post.id} into non-basic post version ##{version.id}") unless version.basic?
+    raise(MergeError, "Attempted to merge post ##{post.id} into post version ##{version.id} created by different updater (#{version.updater_id}/#{updater.id})") unless version.updater_id == updater.id
     version.source = post.source
     version.tags = post.tag_string
     version.locked_tags = post.locked_tags

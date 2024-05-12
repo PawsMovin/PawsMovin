@@ -1130,13 +1130,25 @@ class PostTest < ActiveSupport::TestCase
         end
 
         context "as an automated edit" do
-          should "error if attempting to merge into the first version or a non-basic version" do
+          should "error if attempting to merge into the first" do
             post = create(:post)
-            assert_raises(PostVersion::MergeError) do
+            assert_raises(PostVersion::MergeError, match: "Attempted to merge post ##{post.id} into its first version (#{post.versions.first.id})") do
               post.merge_post_version(post.versions.first)
             end
+          end
+
+          should "error if attempting to merge into a non-basic version" do
+            post = create(:post)
             post.update(description: "test")
-            assert_raises(PostVersion::MergeError) do
+            assert_raises(PostVersion::MergeError, match: "Attempted to merge post ##{post.id} into non-basic post version ##{post.versions.last.id}") do
+              post.merge_post_version(post.versions.last)
+            end
+          end
+
+          should "error if attempting to merge into a version made by another updater" do
+            post = create(:post)
+            as(create(:user)) { post.update(tag_string: "zzz") }
+            assert_raises(PostVersion::MergeError, match: "Attempted to merge post ##{post.id} into post version ##{post.versions.last.id} created by different updater (#{post.versions.last.updater_id}/#{@user.id})") do
               post.merge_post_version(post.versions.last)
             end
           end
