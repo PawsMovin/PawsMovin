@@ -106,9 +106,9 @@ class PostSet < ApplicationRecord
 
     def send_maintainer_destroy_dmails
       PostSetMaintainer.active.where(post_set_id: id).each do |maintainer|
-        Dmail.create_automated(to_id: maintainer.user_id,
-                               title: "A set you maintain was deleted",
-                               body:  "The set #{name} by \"#{creator.name}\":#{user_path(creator)} that you maintain was deleted.",
+        Dmail.create_automated(to_id:         maintainer.user_id,
+                               title:         "A set you maintain was deleted",
+                               body:          "The set #{name} by \"#{creator.name}\":#{user_path(creator)} that you maintain was deleted.",
                                respond_to_id: creator_id)
       end
     end
