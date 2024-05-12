@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/PawsMovin/dtext_rb.git
-  revision: 14dd57cabc274636fb16d18c5c0072aa0f4bfca3
+  revision: 3d2dc57ae579fdfca01ea71ad56861959ac4a3e1
   branch: master
   specs:
-    dtext_rb (1.14.4)
+    dtext_rb (1.15.0)
 
 GEM
   remote: https://rubygems.org/

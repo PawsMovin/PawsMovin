@@ -1705,7 +1705,8 @@ CREATE TABLE public.posts (
     is_comment_disabled boolean DEFAULT false NOT NULL,
     original_tag_string text DEFAULT ''::text NOT NULL,
     is_comment_locked boolean DEFAULT false NOT NULL,
-    tag_count_voice_actor integer DEFAULT 0 NOT NULL
+    tag_count_voice_actor integer DEFAULT 0 NOT NULL,
+    qtags character varying[] DEFAULT '{}'::character varying[] NOT NULL
 );
 
 
@@ -5043,6 +5044,7 @@ ALTER TABLE ONLY public.staff_notes
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20240510062438'),
 ('20240510030953'),
 ('20240422110202'),
 ('20240418103518'),

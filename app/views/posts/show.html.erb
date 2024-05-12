@@ -182,7 +182,7 @@
       <details id="description" <%= "open" unless CurrentUser.description_collapsed_initially? %>>
         <summary>Description</summary>
         <div>
-          <%= format_text(@post.description, max_thumbs: 0) %>
+          <%= format_text(@post.description, max_thumbs: 0, qtags: true) %>
         </div>
       </details>
     </div>

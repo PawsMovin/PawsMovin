@@ -274,6 +274,7 @@ Rails.application.routes.draw do
       post :remove_from_pool
     end
   end
+  resources(:qtags, path: "q", only: %i[show])
   resources :rules, only: %i[index new create edit update destroy] do
     collection do
       get :order

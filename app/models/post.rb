@@ -48,6 +48,7 @@ class Post < ApplicationRecord
   validate :updater_can_change_rating
   before_save :update_tag_post_counts, if: :should_process_tags?
   before_save :set_tag_counts, if: :should_process_tags?
+  before_save :update_qtags, if: :will_save_change_to_description?
   after_save :create_lock_post_events
   after_save :create_version
   after_save :update_parent_on_save
@@ -1634,6 +1635,7 @@ class Post < ApplicationRecord
         own_vote:      own_vote&.score,
         has_notes:     has_notes?,
         duration:      duration&.to_f,
+        qtags:         qtags,
       }
     end
   end
@@ -1858,6 +1860,12 @@ class Post < ApplicationRecord
     end
   end
 
+  module QTagMethods
+    def update_qtags
+      self.qtags = DText.parse(description, qtags: true)[:qtags]
+    end
+  end
+
   include PostFileMethods
   include FileMethods
   include ImageMethods
@@ -1870,19 +1878,20 @@ class Post < ApplicationRecord
   include PoolMethods
   include SetMethods
   include VoteMethods
-  extend CountMethods
   include ParentMethods
   include DeletionMethods
   include VersionMethods
   include NoteMethods
   include ApiMethods
-  extend SearchMethods
   include IqdbMethods
   include ValidationMethods
   include PostEventMethods
   include DocumentStore::Model
   include PostIndex
   include ViewMethods
+  include QTagMethods
+  extend CountMethods
+  extend SearchMethods
 
   def safeblocked?
     return true if PawsMovin.config.safe_mode? && rating != "s"
