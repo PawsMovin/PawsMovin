@@ -21,7 +21,7 @@ module Admin
       Post.tag_match_system("#{query} ~avoid_posting ~conditional_dnp").limit(1000).each do |p|
         previous_tags = p.fetch_tags(*dnp_tags)
 
-        p.do_not_version_changes = true
+        p.automated_edit = true
 
         locked_tags = TagQuery.scan((p.locked_tags || "").downcase)
         locked_tags -= dnp_tags

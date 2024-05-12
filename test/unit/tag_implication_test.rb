@@ -219,13 +219,15 @@ class TagImplicationTest < ActiveSupport::TestCase
       assert_equal(%w[bbb ccc ddd eee], ti5.descendant_names)
     end
 
-    should "update any affected post upon save" do
+    should "update any affected post when saved" do
       p1 = create(:post, tag_string: "aaa bbb ccc")
       ti1 = create(:tag_implication, antecedent_name: "aaa", consequent_name: "xxx")
       ti2 = create(:tag_implication, antecedent_name: "aaa", consequent_name: "yyy")
-      with_inline_jobs do
-        ti1.approve!
-        ti2.approve!
+      assert_difference("PostVersion.count", 1) do
+        with_inline_jobs do
+          ti1.approve!
+          ti2.approve!
+        end
       end
 
       assert_equal("aaa bbb ccc xxx yyy", p1.reload.tag_string)

@@ -16,7 +16,7 @@ class TagBatchJob < ApplicationJob
     updater = User.find(updater_id)
 
     CurrentUser.scoped(updater, updater_ip_addr) do
-      migrate_posts(from, to)
+      CurrentUser.as_system { migrate_posts(from, to) }
       migrate_blacklists(from, to)
       ModAction.log!(:mass_update, nil, antecedent: antecedent, consequent: consequent)
     end
@@ -25,7 +25,7 @@ class TagBatchJob < ApplicationJob
   def migrate_posts(from, to)
     Post.sql_raw_tag_match(from).find_each do |post|
       post.with_lock do
-        post.do_not_version_changes = true
+        post.automated_edit = true
         post.remove_tag(from)
         post.add_tag(to)
         post.save

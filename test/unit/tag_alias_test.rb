@@ -81,7 +81,9 @@ class TagAliasTest < ActiveSupport::TestCase
       post2 = create(:post, tag_string: "ccc ddd")
 
       ta = create(:tag_alias, antecedent_name: "aaa", consequent_name: "ccc")
-      with_inline_jobs { ta.approve!(approver: @admin) }
+      assert_difference("PostVersion.count", 1) do
+        with_inline_jobs { ta.approve!(approver: @admin) }
+      end
 
       assert_equal("bbb ccc", post1.reload.tag_string)
       assert_equal("ccc ddd", post2.reload.tag_string)

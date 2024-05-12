@@ -505,7 +505,7 @@ class PostTest < ActiveSupport::TestCase
           assert_equal(TagCategory.copyright, Tag.find_by_name("abc").category)
         end
 
-        should "1234 update the category cache of the tag" do
+        should "update the category cache of the tag" do
           assert_equal(TagCategory.copyright, Cache.fetch("tc:abc"))
         end
 
@@ -1126,6 +1126,96 @@ class PostTest < ActiveSupport::TestCase
           post = create(:post)
           assert_difference("PostVersion.count", 1) do
             post.update(tag_string: "zzz")
+          end
+        end
+
+        context "as an automated edit" do
+          should "error if attempting to merge into the first version or a non-basic version" do
+            post = create(:post)
+            assert_raises(PostVersion::MergeError) do
+              post.merge_post_version(post.versions.first)
+            end
+            post.update(description: "test")
+            assert_raises(PostVersion::MergeError) do
+              post.merge_post_version(post.versions.last)
+            end
+          end
+
+          should "not attempt to merge into the first version" do
+            post = create(:post)
+            assert_difference("PostVersion.count", 1) do
+              post.update(automated_edit: true, tag_string: "zzz")
+            end
+          end
+
+          should "merge versions for consecutive edits" do
+            post = create(:post)
+            assert_difference("PostVersion.count", 1) do
+              post.update(tag_string: "zzz")
+              post.update(automated_edit: true, tag_string: "yyy")
+            end
+          end
+
+          should "not merge non-consecutive edits" do
+            post = create(:post)
+            assert_difference("PostVersion.count", 2) do
+              post.update(tag_string: "zzz")
+              as(create(:user)) do
+                post.update(automated_edit: true, tag_string: "yyy")
+              end
+            end
+          end
+
+          should "not merge non-basic edits" do
+            post = create(:post)
+            assert_difference("PostVersion.count", 2) do
+              post.update(tag_string: "zzz")
+              post.update(automated_edit: true, tag_string: "yyy", description: "foo")
+            end
+          end
+
+          should "delete the previous version if all changes are undone" do
+            post = create(:post)
+            post.update(tag_string: "xxx yyy zzz")
+            assert_no_difference("PostVersion.count") do
+              post.update(tag_string_diff: "-zzz")
+              post.update(automated_edit: true, tag_string_diff: "zzz")
+            end
+          end
+
+          should "merge versions for consecutive edits (locked_tags)" do
+            post = create(:post)
+            assert_difference("PostVersion.count", 1) do
+              post.update(locked_tags: "zzz")
+              post.update(automated_edit: true, locked_tags: "yyy")
+            end
+          end
+
+          should "not merge non-consecutive edits (locked_tags)" do
+            post = create(:post)
+            assert_difference("PostVersion.count", 2) do
+              post.update(locked_tags: "zzz")
+              as(create(:user)) do
+                post.update(automated_edit: true, locked_tags: "yyy")
+              end
+            end
+          end
+
+          should "not merge non-basic edits (locked_tags)" do
+            post = create(:post)
+            assert_difference("PostVersion.count", 2) do
+              post.update(locked_tags: "zzz")
+              post.update(automated_edit: true, locked_tags: "yyy", description: "foo")
+            end
+          end
+
+          should "delete the previous version if all changes are undone (locked_tags)" do
+            post = create(:post)
+            post.update(tag_string: "yyy", locked_tags: "yyy")
+            assert_no_difference("PostVersion.count") do
+              post.update(tag_string: "yyy zzz", locked_tags: "yyy zzz")
+              post.update(automated_edit: true, tag_string: "yyy", locked_tags: "yyy")
+            end
           end
         end
 

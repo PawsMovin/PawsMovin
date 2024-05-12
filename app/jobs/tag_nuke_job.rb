@@ -19,7 +19,7 @@ class TagNukeJob < ApplicationJob
 
     CurrentUser.scoped(updater, updater_ip_addr) do
       create_undo_information(tag)
-      migrate_posts(tag.name)
+      CurrentUser.as_system { migrate_posts(tag.name) }
       ModAction.log!(:nuke_tag, Tag.find_by(name: tag_name), tag_name: tag_name)
     end
   end
@@ -27,7 +27,7 @@ class TagNukeJob < ApplicationJob
   def migrate_posts(tag_name)
     Post.sql_raw_tag_match(tag_name).find_each do |post|
       post.with_lock do
-        post.do_not_version_changes = true
+        post.automated_edit = true
         post.remove_tag(tag_name)
         post.save
       end
@@ -47,13 +47,15 @@ class TagNukeJob < ApplicationJob
   end
 
   def self.process_undo!(tag)
-    TagRelUndo.where(tag_rel: tag, applied: false).find_each do |tag_rel_undo|
-      Post.where(id: tag_rel_undo.undo_data).find_each do |post|
-        post.do_not_version_changes = true
-        post.add_tag(tag.name)
-        post.save
+    CurrentUser.as_system do
+      TagRelUndo.where(tag_rel: tag, applied: false).find_each do |tag_rel_undo|
+        Post.where(id: tag_rel_undo.undo_data).find_each do |post|
+          post.automated_edit = true
+          post.add_tag(tag.name)
+          post.save
+        end
+        tag_rel_undo.update(applied: true)
       end
-      tag_rel_undo.update(applied: true)
     end
   end
 end

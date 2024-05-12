@@ -2,6 +2,7 @@
 
 class PostVersion < ApplicationRecord
   class UndoError < StandardError; end
+  class MergeError < StandardError; end
   belongs_to :post
   belongs_to_updater counter_cache: "post_update_count"
 
@@ -145,6 +146,23 @@ class PostVersion < ApplicationRecord
     })
   end
 
+  def self.merge(version, post)
+    raise(MergeError, "Attempted to merge post ##{post.id} into its first version (#{version.id})") if version.first?
+    raise(MergeError, "Attempted to merge post ##{post.id} into non-basic post version ##{version.id}") unless version.basic?
+    version.source = post.source
+    version.tags = post.tag_string
+    version.locked_tags = post.locked_tags
+    # Don't even bother merging, just toss it out entirely. We should only be merging system edits, which
+    # won't have an original tag string either way
+    version.original_tags = ""
+    version.fill_changes
+    if version.empty?
+      version.destroy
+    else
+      version.save
+    end
+  end
+
   def self.calculate_version(post_id)
     1 + where("post_id = ?", post_id).maximum(:version).to_i
   end
@@ -172,6 +190,18 @@ class PostVersion < ApplicationRecord
     self.parent_changed = prev.nil? || parent_id != prev.try(:parent_id)
     self.source_changed = prev.nil? || source != prev.try(:source)
     self.description_changed = prev.nil? || description != prev.try(:description)
+  end
+
+  def first?
+    version == 1
+  end
+
+  def basic?
+    !rating_changed && !parent_changed && !description_changed
+  end
+
+  def empty?
+    added_tags.empty? && removed_tags.empty? && added_locked_tags.empty? && removed_locked_tags.empty? && !source_changed && !description_changed && !parent_changed && !rating_changed
   end
 
   def tag_array

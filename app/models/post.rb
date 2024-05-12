@@ -75,7 +75,8 @@ class Post < ApplicationRecord
   has_many :replacements, class_name: "PostReplacement", dependent: :destroy
 
   attr_accessor :old_tag_string, :old_parent_id, :old_source, :old_rating,
-                :do_not_version_changes, :tag_string_diff, :source_diff, :edit_reason, :tag_string_before_parse
+                :do_not_version_changes, :tag_string_diff, :source_diff, :edit_reason, :tag_string_before_parse,
+                :automated_edit
 
   has_many :versions, -> {order("post_versions.id ASC")}, class_name: "PostVersion", dependent: :destroy
 
@@ -582,7 +583,8 @@ class Post < ApplicationRecord
     end
 
     def tag_count_not_insane
-      return if do_not_version_changes
+      return if do_not_version_changes || automated_edit
+      return if do_not_version_changes || automated_edit
 
       max_count = PawsMovin.config.max_tags_per_post
       if TagQuery.scan(tag_string).size > max_count
@@ -1400,19 +1402,42 @@ class Post < ApplicationRecord
   module VersionMethods
     def create_version(force = false)
       return if do_not_version_changes == true
-      if new_record? || saved_change_to_watched_attributes? || force
+      if new_record? || force
+        create_new_version
+      elsif automated_edit
+        # the original tag string is not useful for automated edits
+        self.original_tag_string = nil
+        latest = versions.last
+        if saved_change_to_mergable_attributes? && !saved_change_to_unmergable_attributes? && latest.updater_id == CurrentUser.user.id && latest.basic? && !latest.first?
+          merge_post_version(versions.last)
+        elsif saved_change_to_watched_attributes?
+          create_new_version
+        end
+      elsif saved_change_to_watched_attributes?
         create_new_version
       end
     end
 
     def saved_change_to_watched_attributes?
-      saved_change_to_rating? || saved_change_to_source? || saved_change_to_parent_id? || saved_change_to_tag_string? || saved_change_to_locked_tags? || saved_change_to_description?
+      saved_change_to_unmergable_attributes? || saved_change_to_mergable_attributes?
+    end
+
+    def saved_change_to_unmergable_attributes?
+      saved_change_to_rating? || saved_change_to_parent_id? || saved_change_to_description?
+    end
+
+    def saved_change_to_mergable_attributes?
+      saved_change_to_source? || saved_change_to_tag_string? || saved_change_to_locked_tags?
     end
 
     def create_new_version
       # This function name is misleading, this directly creates the version.
       # Previously there was a queue involved, now there isn't.
       PostVersion.queue(self)
+    end
+
+    def merge_post_version(version)
+      PostVersion.merge(version, self)
     end
 
     def revert_to(target)

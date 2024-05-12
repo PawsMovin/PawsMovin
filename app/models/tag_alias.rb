@@ -120,9 +120,9 @@ class TagAlias < TagRelationship
 
     CurrentUser.scoped(approver) do
       update(status: "pending")
-      update_posts_locked_tags_undo
+      CurrentUser.as_system { update_posts_locked_tags_undo }
       update_blacklists_undo
-      update_posts_undo
+      CurrentUser.as_system { update_posts_undo }
       rename_artist_undo
       forum_updater.update(retirement_message, "UNDONE") if update_topic
     end
@@ -133,7 +133,7 @@ class TagAlias < TagRelationship
     Post.without_timeout do
       Post.where_ilike(:locked_tags, "*#{consequent_name}*").find_each(batch_size: 50) do |post|
         fixed_tags = TagAlias.to_aliased_query(post.locked_tags, overrides: {consequent_name => antecedent_name})
-        post.update_column(:locked_tags, fixed_tags)
+        post.update_attribute(:locked_tags, fixed_tags)
       end
     end
   end
@@ -149,11 +149,13 @@ class TagAlias < TagRelationship
 
   def update_posts_undo
     Post.without_timeout do
-      tag_rel_undos.where(applied: false).each do |tu|
-        Post.where(id: tu.undo_data).find_each do |post|
-          post.do_not_version_changes = true
-          post.tag_string_diff = "-#{consequent_name} #{antecedent_name}"
-          post.save
+      CurrentUser.as_system do
+        tag_rel_undos.where(applied: false).each do |tu|
+          Post.where(id: tu.undo_data).find_each do |post|
+            post.automated_edit = true
+            post.tag_string_diff = "-#{consequent_name} #{antecedent_name}"
+            post.save
+          end
         end
       end
 
@@ -179,9 +181,9 @@ class TagAlias < TagRelationship
         update!(status: "processing")
         move_aliases_and_implications
         ensure_category_consistency
-        update_posts_locked_tags
+        CurrentUser.as_system { update_posts_locked_tags }
         update_blacklists
-        update_posts
+        CurrentUser.as_system { update_posts }
         rename_artist
         forum_updater.update(approval_message(approver), "APPROVED") if update_topic
         update(status: "active", post_count: consequent_tag.post_count)
@@ -263,7 +265,7 @@ class TagAlias < TagRelationship
     Post.without_timeout do
       Post.where_ilike(:locked_tags, "*#{antecedent_name}*").find_each(batch_size: 50) do |post|
         fixed_tags = TagAlias.to_aliased_query(post.locked_tags)
-        post.update_column(:locked_tags, fixed_tags)
+        post.update_attribute(:locked_tags, fixed_tags)
       end
     end
   end

@@ -126,7 +126,7 @@ class TagImplication < TagRelationship
       begin
         CurrentUser.scoped(approver) do
           update!(status: "processing")
-          update_posts
+          CurrentUser.as_system { update_posts }
           update(status: "active")
           update_descendant_names_for_parents
           forum_updater.update(approval_message(approver), "APPROVED") if update_topic
@@ -204,7 +204,7 @@ class TagImplication < TagRelationship
 
       CurrentUser.scoped(approver) do
         update(status: "pending")
-        update_posts_undo
+        CurrentUser.as_system { update_posts_undo }
         forum_updater.update(retirement_message, "UNDONE") if update_topic
       end
       tag_rel_undos.update_all(applied: true)
@@ -214,7 +214,7 @@ class TagImplication < TagRelationship
       Post.without_timeout do
         tag_rel_undos.where(applied: false).each do |tu|
           Post.where(id: tu.undo_data.keys).find_each do |post|
-            post.do_not_version_changes = true
+            post.automated_edit = true
             if TagQuery.scan(tu.undo_data[post.id]).include?(consequent_name)
               Rails.logger.info("[TIU] Skipping post that already contains target tag.")
               next
