@@ -15,6 +15,7 @@ module ForumPosts
 
     def create
       authorize(@forum_post, policy_class: ForumPostVotePolicy)
+      raise(User::PrivilegeError, "You are not allowed to vote on tag change requests.") if CurrentUser.user.no_aibur_voting?
       @forum_post_vote = @forum_post.votes.find_by(user: CurrentUser.user)
       if @forum_post_vote.present?
         @forum_post_vote.update(score: params[:score]) if @forum_post_vote.score != params[:score]
@@ -51,7 +52,7 @@ module ForumPosts
 
     def validate_forum_post
       raise(User::PrivilegeError) unless @forum_post.visible?(CurrentUser.user)
-      raise(User::PrivilegeError) unless @forum_post.votable?
+      render_expected_error(400, "Forum post does not allow votes.") unless @forum_post.votable?
     end
 
     def validate_no_vote_on_own_post

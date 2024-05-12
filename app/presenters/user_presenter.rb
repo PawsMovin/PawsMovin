@@ -46,6 +46,10 @@ class UserPresenter
       if user.no_replacements?
         permissions << "no replacements"
       end
+
+      if user.no_aibur_voting?
+        permissions << "no tag change request voting"
+      end
     end
 
     permissions.join(", ")

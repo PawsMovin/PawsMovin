@@ -10,7 +10,8 @@ module ForumPosts
         as(@user) do
           @topic = create(:forum_topic, original_post_attributes: { body: "test" })
           @forum_post = @topic.original_post
-          create(:tag_alias, forum_post: @forum_post)
+          ta = create(:tag_alias, forum_post: @forum_post)
+          @forum_post.update(tag_change_request: ta)
         end
 
         @user2 = create(:user)
@@ -39,6 +40,24 @@ module ForumPosts
             assert_equal(1, response.parsed_body.length)
             assert_equal(@user2.id, response.parsed_body[0]["user_id"])
           end
+        end
+      end
+
+      context "create action" do
+        should "create a vote" do
+          post_auth forum_post_votes_path(@forum_post), @user2, params: { score: 1, format: :json }
+          assert_response :success
+
+          assert_equal(1, @forum_post.votes.find_by(user: @user2)&.score)
+        end
+
+        should "not allow voting is user is forbidden" do
+          as(@admin) { @user2.update(no_aibur_voting: true) }
+          post_auth forum_post_votes_path(@forum_post), @user2, params: { score: 1, format: :json }
+          assert_response :forbidden
+          assert_equal("Access Denied: You are not allowed to vote on tag change requests.", @response.parsed_body["reason"])
+
+          assert_nil(@forum_post.votes.find_by(user: @user2))
         end
       end
 

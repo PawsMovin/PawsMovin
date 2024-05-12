@@ -75,6 +75,7 @@ class User < ApplicationRecord
     SHOW_POST_UPLOADER               = pref(1 << 24)
     GO_TO_RECENT_FORUM_POST          = pref(1 << 25)
     DISABLE_COLORS                   = pref(1 << 26)
+    NO_AIBUR_VOTING                  = pref(1 << 27, settable: false, private: false)
 
     def self.map
       constants.to_h { |name| [name.to_s.downcase, const_get(name)] }

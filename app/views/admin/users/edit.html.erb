@@ -55,6 +55,11 @@
     <%= select(:user, :can_manage_aibur, [["Yes", true], ["No", false]]) %>
   </div>
 
+  <div class="input">
+    <label for="user_no_aibur_voting" class="optional">No AIBUR Voting</label>
+    <%= select(:user, :no_aibur_voting, [["Yes", true], ["No", false]]) %>
+  </div>
+
   <%= f.button(:submit, value: "Update") %>
 <% end %>
 

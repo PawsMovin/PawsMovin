@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class UserPromotion
-  attr_reader :user, :promoter, :new_level, :options, :old_can_approve_posts, :old_unrestricted_uploads, :old_no_flagging, :old_no_replacements, :old_can_manage_aibur
+  attr_reader :user, :promoter, :new_level, :options, :old_can_approve_posts, :old_unrestricted_uploads, :old_no_flagging, :old_no_replacements, :old_can_manage_aibur, :old_no_aibur_voting
 
   def initialize(user, promoter, new_level, options = {})
     @user = user
@@ -18,6 +18,7 @@ class UserPromotion
     @old_no_flagging = user.no_flagging?
     @old_no_replacements = user.no_replacements?
     @old_can_manage_aibur = user.can_manage_aibur?
+    @old_no_aibur_voting = user.no_aibur_voting?
 
     user.level = new_level
 
@@ -39,6 +40,10 @@ class UserPromotion
 
     if options.key?(:can_manage_aibur)
       user.can_manage_aibur = options[:can_manage_aibur]
+    end
+
+    if options.key?(:no_aibur_voting)
+      user.no_aibur_voting = options[:no_aibur_voting]
     end
 
     create_mod_actions
