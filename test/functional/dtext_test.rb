@@ -200,7 +200,7 @@ class DtextTest < ActiveSupport::TestCase
       end
 
       should "parse anchor" do
-        assert_parse_dtext(%(<p><a rel="nofollow" class="dtext-link dtext-wiki-link" href="/wiki_pages/show_or_new?title=test#anchor">test#anchor</a></p>), "[[test#anchor]]")
+        assert_parse_dtext(%(<p><a rel="nofollow" class="dtext-link dtext-wiki-link" href="/wiki_pages/show_or_new?title=test#dtext-anchor">test</a></p>), "[[test#Anchor]]")
       end
 
       should "include spaces" do
@@ -225,7 +225,7 @@ class DtextTest < ActiveSupport::TestCase
         end
 
         should "parse anchor" do
-          assert_parse_dtext(%(<p><a rel="nofollow" class="dtext-link dtext-wiki-link" href="/wiki_pages/show_or_new?title=test#anchor">Test</a></p>), "[[test#anchor|Test]]")
+          assert_parse_dtext(%(<p><a rel="nofollow" class="dtext-link dtext-wiki-link" href="/wiki_pages/show_or_new?title=test#dtext-anchor">Test</a></p>), "[[test#Anchor|Test]]")
         end
 
         should "include spaces" do
@@ -355,11 +355,11 @@ class DtextTest < ActiveSupport::TestCase
 
       context "[section]" do
         should "parse" do
-          assert_parse_dtext(%(<details><summary>Show</summary><div><p>test</p></div></details>), "[section]test[/section]")
+          assert_parse_dtext(%(<details><summary></summary><div><p>test</p></div></details>), "[section]test[/section]")
         end
 
         should "parse expanded" do
-          assert_parse_dtext(%(<details open><summary>Show</summary><div><p>test</p></div></details>), "[section,expanded]test[/section]")
+          assert_parse_dtext(%(<details open><summary></summary><div><p>test</p></div></details>), "[section,expanded]test[/section]")
         end
 
         should "parse with title" do
@@ -461,7 +461,7 @@ class DtextTest < ActiveSupport::TestCase
 
       context "[color]" do
         should "parse" do
-          assert_parse_dtext(%(<p><span class="dtext-color" style="color:red">test</span></p>), "[color=red]test[/color]", allow_color: true)
+          assert_parse_dtext(%(<p><span class="dtext-color" style="color: red">test</span></p>), "[color=red]test[/color]", allow_color: true)
         end
 
         should "not parse if allow_color is not enabled" do
