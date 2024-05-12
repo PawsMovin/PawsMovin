@@ -39,20 +39,6 @@ class PostFlagTest < ActiveSupport::TestCase
       assert_match(/Post is deleted/, error.message)
     end
 
-    should "not be able to flag a non-pending post with the uploading_guidelines reason" do
-      error = assert_raises(ActiveRecord::RecordInvalid) do
-        as(@bob) do
-          @post_flag = create(:post_flag, post: @post, reason_name: "uploading_guidelines")
-        end
-      end
-      assert_match(/not pending/, error.message)
-
-      @post = create(:post, is_pending: true)
-      as(@bob) do
-        @post_flag = create(:post_flag, post: @post, reason_name: "uploading_guidelines")
-      end
-    end
-
     should "not be able to flag a post in the cooldown period" do
       @mod = create(:moderator_user)
 

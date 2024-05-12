@@ -77,16 +77,20 @@ class TagAliasTest < ActiveSupport::TestCase
     end
 
     should "update any affected posts when saved" do
-      post1 = create(:post, tag_string: "aaa bbb")
-      post2 = create(:post, tag_string: "ccc ddd")
+      post1 = create(:post, tag_string: "aaa bbb eee")
+      post2 = create(:post, tag_string: "ccc ddd eee")
 
       ta = create(:tag_alias, antecedent_name: "aaa", consequent_name: "ccc")
-      assert_difference("PostVersion.count", 1) do
-        with_inline_jobs { ta.approve!(approver: @admin) }
+      ta2 = create(:tag_alias, antecedent_name: "eee", consequent_name: "fff")
+      assert_difference("PostVersion.count", 2) do
+        with_inline_jobs do
+          ta.approve!(approver: @admin)
+          ta2.approve!(approver: @admin)
+        end
       end
 
-      assert_equal("bbb ccc", post1.reload.tag_string)
-      assert_equal("ccc ddd", post2.reload.tag_string)
+      assert_equal("bbb ccc fff", post1.reload.tag_string)
+      assert_equal("ccc ddd fff", post2.reload.tag_string)
     end
 
     should "not validate for transitive relations" do
