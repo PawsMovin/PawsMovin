@@ -72,6 +72,9 @@
     <%= f.input(:hide_comments, as: :select, collection: [%w[No false], %w[Yes true]], include_blank: false,
     hint: "Do not show the comments section on post pages.") %>
 
+    <%= f.input(:disable_colors, label: "Disable colors", as: :select, collection: [%w[No false], %w[Yes true]], include_blank: false,
+                hint: "If colors (in DText) should be disabled. Only applies to comments and forum posts. Does not apply to yourself.") %>
+
     <%= f.input(:show_post_uploader, as: :select, collection: [%w[No false], %w[Yes true]], include_blank: false,
     hint: "Show the uploader on posts.") %>
 

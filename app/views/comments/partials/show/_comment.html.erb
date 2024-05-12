@@ -27,7 +27,7 @@
     </div>
 
     <div class="comment-body dtext-container">
-      <%= format_text(comment.body, allow_color: comment.creator.is_trusted?) %>
+      <%= format_text(comment.body, allow_color: CurrentUser.id == comment.creator_id || (CurrentUser.is_anonymous? || !CurrentUser.disable_colors?)) %>
       <%= render "application/warned_notice", record: comment %>
     </div>
 
