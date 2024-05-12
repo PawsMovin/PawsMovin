@@ -102,6 +102,11 @@ class PostPolicy < ApplicationPolicy
     attr
   end
 
+  # due to how internals work (inline editing), this is needed
+  def permitted_attributes_for_show
+    permitted_attributes_for_update
+  end
+
   def permitted_attributes_for_mark_as_translated
     %i[]
   end
