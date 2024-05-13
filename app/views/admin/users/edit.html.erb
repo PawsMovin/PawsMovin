@@ -22,9 +22,7 @@
   <%= f.input(:profile_artinfo, as: :dtext, label: "Commission Info", limit: PawsMovin.config.user_about_max_size) %>
   <%= f.input(:base_upload_limit) %>
 
-  <% if CurrentUser.user.is_owner? || !@user.is_owner? %>
-    <%= f.input(:level, collection: user_levels_for_select) %>
-  <% end %>
+  <%= f.input(:level, collection: user_levels_for_select) %>
   <%= f.input(:unrestricted_uploads, collection: [%w[Yes true], %w[No false]], label: "Unrestricted Uploads") %>
   <%= f.input(:can_approve_posts, collection: [%w[Yes true], %w[No false]], label: "Approve Posts") %>
   <%= f.input(:no_flagging, collection: [%w[Yes true], %w[No false]], label: "Banned From Flagging") %>
