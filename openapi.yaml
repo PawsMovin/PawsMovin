@@ -5547,6 +5547,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ForumPostVote"
+        400:
+          $ref: "#/components/responses/ExpectedError"
         403:
           $ref: "#/components/responses/AccessDenied"
         404:
@@ -5642,7 +5644,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/ForumPostVote"
   /forum_posts/votes/delete.json:
-    put:
+    delete:
       summary: Delete Forum Post Vote
       tags:
         - Forum Post Votes

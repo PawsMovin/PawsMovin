@@ -96,7 +96,8 @@ class BulkUpdateRequestsControllerTest < ActionDispatch::IntegrationTest
 
       context "for a member" do
         should "fail" do
-          post_auth approve_bulk_update_request_path(@bulk_update_request), @user
+          post_auth approve_bulk_update_request_path(@bulk_update_request), @user, params: { format: :json }
+          assert_response :forbidden
           @bulk_update_request.reload
           assert_equal("pending", @bulk_update_request.status)
         end
@@ -104,9 +105,19 @@ class BulkUpdateRequestsControllerTest < ActionDispatch::IntegrationTest
 
       context "for an admin" do
         should "succeed" do
-          post_auth approve_bulk_update_request_path(@bulk_update_request), @admin
+          post_auth approve_bulk_update_request_path(@bulk_update_request), @admin, params: { format: :json }
+          assert_response :success
           @bulk_update_request.reload
           assert_equal("approved", @bulk_update_request.status)
+        end
+
+        should "not succeed if its estimated count is greater than allowed" do
+          PawsMovin.config.stubs(:tag_change_request_update_limit).returns(1)
+          create_list(:post, 2, tag_string: "aaa")
+          post_auth approve_bulk_update_request_path(@bulk_update_request), @admin, params: { format: :json }
+          assert_response :forbidden
+          @bulk_update_request.reload
+          assert_equal("pending", @bulk_update_request.status)
         end
       end
     end

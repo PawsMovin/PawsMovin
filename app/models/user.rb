@@ -121,6 +121,7 @@ class User < ApplicationRecord
   validates :password_confirmation, presence: { if: ->(rec) { rec.new_record? || rec.old_password.present? } }, unless: :is_system?
   validate :validate_ip_addr_is_not_banned, on: :create
   validate :validate_sock_puppets, on: :create, if: -> { PawsMovin.config.enable_sock_puppet_validation? && !is_system? }
+  validate :validate_prefs
   before_validation :normalize_blacklisted_tags, if: ->(rec) { rec.blacklisted_tags_changed? }
   before_validation :staff_cant_disable_dmail
   before_validation :blank_out_nonexistent_avatars
@@ -1039,5 +1040,10 @@ class User < ApplicationRecord
     return true if user.is_owner?
     return false if self.is_admin?
     user.is_admin?
+  end
+
+  def validate_prefs
+    errors.add(:can_manage_aibur, "Members cannot have the \"Manage Tag Change Requests\" permission") if level == Levels::MEMBER && can_manage_aibur?
+    errors.add(:no_aibur_voting, "User cannot have both \"Manage Tag Change Requests\" & \"No AIBUR Voting\"") if can_manage_aibur? && no_aibur_voting?
   end
 end

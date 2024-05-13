@@ -76,7 +76,7 @@ class TagRelationship < ApplicationRecord
 
   def approvable_by?(user)
     return false unless is_pending? && user.can_manage_aibur?
-    creator_id != user.id || user.is_admin?
+    (creator_id != user.id || user.is_admin?) && PawsMovin.config.tag_change_request_update_limit(user) >= estimate_update_count
   end
 
   def rejectable_by?(user)

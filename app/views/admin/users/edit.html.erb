@@ -1,6 +1,6 @@
 <h1>Edit User: <%= @user.name %></h1>
 
-<%= custom_form_for(@user, url: admin_user_path(@user), method: :put, policy: policy([:admin, @user])) do |f| %>
+<%= custom_form_for(@user, url: admin_user_path(@user), method: :patch, policy: policy([:admin, @user])) do |f| %>
   <%= f.input(:id, as: :hidden) %>
   <%= f.input(:name, policy: OverwritePolicy.new(true), input_html: { size: 50 }) %>
   <%= f.input(:force_name_change, collection: [["Yes", true], ["No", false]], label: "Force Name Change") %>
@@ -23,42 +23,14 @@
   <%= f.input(:base_upload_limit) %>
 
   <% if CurrentUser.user.is_owner? || !@user.is_owner? %>
-    <div class="input integer optional">
-      <label for="user_level" class="optional">Level</label>
-      <%= user_level_select(:user, :level) %>
-    </div>
+    <%= f.input(:level, collection: user_levels_for_select) %>
   <% end %>
-
-  <div class="input">
-    <label for="user_unrestricted_uploads" class="optional">Unrestricted Uploads</label>
-    <%= select(:user, :unrestricted_uploads, [["Yes", true], ["No", false]]) %>
-  </div>
-
-  <div class="input">
-    <label for="user_can_approve_posts" class="optional">Approve Posts</label>
-    <%= select(:user, :can_approve_posts, [["Yes", true], ["No", false]]) %>
-  </div>
-
-  <div class="input">
-    <label for="user_no_flagging" class="optional">Banned From Flagging</label>
-    <%= select(:user, :no_flagging, [["Yes", true], ["No", false]]) %>
-  </div>
-
-  <div class="input">
-    <label for="user_no_replacements" class="optional">Banned From Replacements</label>
-    <%= select(:user, :no_replacements, [["Yes", true], ["No", false]]) %>
-  </div>
-
-  <%# TODO: restrict managing flags to certain levels %>
-  <div class="input">
-    <label for="user_can_manage_aibur" class="optional">Manage Tag Change Requests</label>
-    <%= select(:user, :can_manage_aibur, [["Yes", true], ["No", false]]) %>
-  </div>
-
-  <div class="input">
-    <label for="user_no_aibur_voting" class="optional">No AIBUR Voting</label>
-    <%= select(:user, :no_aibur_voting, [["Yes", true], ["No", false]]) %>
-  </div>
+  <%= f.input(:unrestricted_uploads, collection: [%w[Yes true], %w[No false]], label: "Unrestricted Uploads") %>
+  <%= f.input(:can_approve_posts, collection: [%w[Yes true], %w[No false]], label: "Approve Posts") %>
+  <%= f.input(:no_flagging, collection: [%w[Yes true], %w[No false]], label: "Banned From Flagging") %>
+  <%= f.input(:no_replacements, collection: [%w[Yes true], %w[No false]], label: "Banned From Replacements") %>
+  <%= f.input(:can_manage_aibur, collection: [%w[Yes true], %w[No false]], label: "Manage Tag Change Requests") %>
+  <%= f.input(:no_aibur_voting, collection: [%w[Yes true], %w[No false]], label: "No AIBUR Voting") %>
 
   <%= f.button(:submit, value: "Update") %>
 <% end %>

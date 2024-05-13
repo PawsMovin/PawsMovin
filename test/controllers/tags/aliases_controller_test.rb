@@ -108,6 +108,30 @@ module Tags
         end
       end
 
+      context "approve action" do
+        setup do
+          as(@admin) do
+            @tag_alias = create(:tag_alias, antecedent_name: "aaa", consequent_name: "bbb", status: "pending")
+          end
+        end
+
+        should "approve the alias" do
+          put_auth approve_tag_alias_path(@tag_alias), @admin, params: { format: :json }
+          assert_response :success
+          perform_enqueued_jobs(only: TagAliasJob)
+          @tag_alias.reload
+          assert_equal("active", @tag_alias.status)
+        end
+
+        should "not approve the alias if its estimated count is greater than allowed" do
+          PawsMovin.config.stubs(:tag_change_request_update_limit).returns(1)
+          create_list(:post, 2, tag_string: "aaa")
+          put_auth approve_tag_alias_path(@tag_alias), @admin, params: { format: :json }
+          assert_response :forbidden
+          assert_equal("pending", @tag_alias.status)
+        end
+      end
+
       context "destroy action" do
         setup do
           as(@admin) do

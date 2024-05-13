@@ -34,7 +34,7 @@ module Admin
       raise(User::PrivilegeError) unless @user.can_admin_edit?(CurrentUser.user)
       @user.validate_email_format = true
       @user.is_admin_edit = true
-      @user.update!(user_params(CurrentUser.user))
+      @user.update(user_params(CurrentUser.user))
 
       if CurrentUser.is_owner?
         @user.mark_verified! if params[:user][:verified].to_s.truthy?
@@ -59,7 +59,7 @@ module Admin
           @user.errors.add(:name, change_request.errors[:desired_name].join("; "))
         end
       end
-      notice("User updated")
+      notice(@user.errors.any? ? "Update failed" : "User updated")
       respond_with(@user)
     end
 
