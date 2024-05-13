@@ -875,7 +875,8 @@ CREATE TABLE public.forum_topics (
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     category_id integer DEFAULT 0 NOT NULL,
-    creator_ip_addr inet NOT NULL
+    creator_ip_addr inet NOT NULL,
+    last_post_created_at timestamp(6) without time zone
 );
 
 
@@ -5044,6 +5045,7 @@ ALTER TABLE ONLY public.staff_notes
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20240513023551'),
 ('20240510062438'),
 ('20240510030953'),
 ('20240422110202'),

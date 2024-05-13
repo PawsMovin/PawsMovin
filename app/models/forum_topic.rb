@@ -114,11 +114,11 @@ class ForumTopic < ApplicationRecord
     end
 
     def sticky_first
-      order(is_sticky: :desc, updated_at: :desc)
+      order(is_sticky: :desc, last_post_created_at: :desc)
     end
 
     def default_order
-      order(updated_at: :desc)
+      order(last_post_created_at: :desc)
     end
 
     def search(params)
@@ -142,6 +142,10 @@ class ForumTopic < ApplicationRecord
       case params[:order]
       when "sticky"
         q = q.sticky_first
+      when "last_post_created_at"
+        q = q.order(last_post_created_at: :desc)
+      when "created_at"
+        q = q.order(created_at: :desc)
       else
         q = q.apply_basic_order(params)
       end
