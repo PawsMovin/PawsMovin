@@ -35,6 +35,14 @@ class Pool < ApplicationRecord
       where("pools.creator_id = ?", id)
     end
 
+    def any_artist_name_matches(regex)
+      where(id: Pool.from("unnest(artist_names) AS artist_name").where("artist_name ~ ?", regex))
+    end
+
+    def any_artist_name_like(name)
+      where(id: Pool.from("unnest(artist_names) AS artist_name").where("artist_name LIKE ?", name.to_escaped_for_sql_like))
+    end
+
     def selected_first(current_pool_id)
       return where("true") if current_pool_id.blank?
       current_pool_id = current_pool_id.to_i
@@ -52,10 +60,10 @@ class Pool < ApplicationRecord
         q = q.attribute_matches(:name, normalize_name(params[:name_matches]), convert_to_wildcard: true)
       end
 
+      q = q.any_artist_name_matches(params[:any_artist_name_matches]) if params[:any_artist_name_matches].present?
+      q = q.any_artist_name_like(params[:any_artist_name_like]) if params[:any_artist_name_like].present?
       q = q.attribute_matches(:description, params[:description_matches])
-
       q = q.where_user(:creator_id, :creator, params)
-
       q = q.attribute_matches(:is_active, params[:is_active])
 
       case params[:order]
@@ -219,13 +227,15 @@ class Pool < ApplicationRecord
   end
 
   def artists
-    Cache.fetch("pa:#{id}", expires_in: 12.hours) do
-      posts.flat_map(&:artist_tags).map(&:name).reject { |name| PawsMovin.config.artist_exclusion_tags.include?(name) }
-    end
+    return artist_names if Cache.fetch("pa:#{id}", expires_in: 12.hours) == "1"
+    names = posts.flat_map(&:artist_tags).map(&:name).reject { |name| PawsMovin.config.artist_exclusion_tags.include?(name) }
+    update_column(:artist_names, names)
+    self.artist_names = names
+    Cache.write("pa:#{id}", "1", expires_in: 12.hours)
+    artist_names
   end
 
   def update_artists(post, action)
-    return unless Cache.fetch("pa:#{id}")
     arttags = post.artist_tags.map(&:name)
     current = artists
     case action

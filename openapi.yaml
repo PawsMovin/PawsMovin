@@ -902,6 +902,7 @@ components:
         - created_at
         - updated_at
         - category_id
+        - last_post_created_at
       properties:
         id:
           type: number
@@ -927,6 +928,9 @@ components:
           format: date-time
         category_id:
           type: number
+        last_post_created_at:
+          type: ["string", "null"]
+          format: date-time
     FullUser:
       allOf:
         - $ref: "#/components/schemas/User"
@@ -5681,6 +5685,8 @@ paths:
               - id_asc
               - id_desc
               - sticky
+              - last_post_created_at
+              - created_at
         - in: query
           name: search[title]
           schema:
@@ -6916,6 +6922,14 @@ paths:
             type: string
         - in: query
           name: search[description_matches]
+          schema:
+            type: string
+        - in: query
+          name: search[any_artist_name_matches]
+          schema:
+            type: string
+        - in: query
+          name: search[any_artist_name_like]
           schema:
             type: string
         - in: query

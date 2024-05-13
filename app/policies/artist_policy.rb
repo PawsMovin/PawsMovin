@@ -35,6 +35,6 @@ class ArtistPolicy < ApplicationPolicy
   end
 
   def permitted_search_params
-    super + %i[name any_other_name_like any_name_matches any_name_or_url_matches url_matches creator_id creator_name has_tag is_linked order]
+    super + %i[name any_other_name_like any_name_matches any_name_or_url_matches url_matches creator_id creator_name has_tag is_linked is_active order]
   end
 end

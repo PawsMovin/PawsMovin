@@ -18,6 +18,6 @@ class PoolPolicy < ApplicationPolicy
   end
 
   def permitted_search_params
-    super + %i[name_matches description_matches creator_id creator_name category is_active]
+    super + %i[name_matches description_matches any_artist_name_like any_artist_name_matches creator_id creator_name category is_active]
   end
 end

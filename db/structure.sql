@@ -1213,7 +1213,8 @@ CREATE TABLE public.pools (
     is_active boolean DEFAULT true NOT NULL,
     post_ids integer[] DEFAULT '{}'::integer[] NOT NULL,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    artist_names character varying[] DEFAULT '{}'::character varying[] NOT NULL
 );
 
 
@@ -5045,6 +5046,7 @@ ALTER TABLE ONLY public.staff_notes
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20240513033445'),
 ('20240513023551'),
 ('20240510062438'),
 ('20240510030953'),

@@ -205,9 +205,11 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
       should "update the pool's artists" do
         as(@user) { @post.update(tag_string: "artist:foo") }
+        perform_enqueued_jobs(only: UpdatePoolArtistsJob)
         assert_equal([], @pool.artists)
         post_auth add_to_pool_post_path(@post), @user, params: { pool_id: @pool.id, format: :json }
-        assert_same_elements(%w[foo], @pool.artists)
+        perform_enqueued_jobs(only: UpdatePoolArtistsJob)
+        assert_same_elements(%w[foo], @pool.reload.artists)
       end
     end
 
@@ -237,9 +239,11 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
       should "update the pool's artists" do
         as(@user) { @post.update(tag_string: "artist:foo") }
+        perform_enqueued_jobs(only: UpdatePoolArtistsJob)
         assert_same_elements(%w[foo], @pool.artists)
         post_auth remove_from_pool_post_path(@post), @user, params: { pool_id: @pool.id, format: :json }
-        assert_equal([], @pool.artists)
+        perform_enqueued_jobs(only: UpdatePoolArtistsJob)
+        assert_equal([], @pool.reload.artists)
       end
     end
   end
