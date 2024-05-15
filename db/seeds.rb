@@ -135,11 +135,11 @@ module Seeds
       upload = service.start!
 
       if upload.errors.any?
-        throw(StandardError, "Failed to create upload: #{upload.errors.full_messages}")
+        raise(StandardError, "Failed to create upload: #{upload.errors.full_messages}")
       end
 
       if upload.post&.errors&.any?
-        throw(StandardError, "Failed to create post: #{upload.post.errors.full_messages}")
+        raise(StandardError, "Failed to create post: #{upload.post.errors.full_messages}")
       end
 
       upload.post

@@ -71,8 +71,7 @@ module PawsMovin
       end
 
       def system_user
-        User.find_or_create_by!(name: system_user_name) do |user|
-          user.level = User::Levels::SYSTEM
+        User.find_or_create_by!(name: system_user_name, level: User::Levels::SYSTEM) do |user|
           user.email = "system@pawsmov.in"
           user.can_approve_posts = true
           user.unrestricted_uploads = true

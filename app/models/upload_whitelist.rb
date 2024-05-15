@@ -69,7 +69,7 @@ class UploadWhitelist < ApplicationRecord
       all
     end
 
-    if PawsMovin.config.bypass_upload_whitelist?(CurrentUser)
+    if PawsMovin.config.bypass_upload_whitelist?(CurrentUser.user)
       return [true, "bypassed"]
     end
 

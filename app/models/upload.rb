@@ -63,6 +63,11 @@ class Upload < ApplicationRecord
       end
       self.direct_url = Sources::Strategies.find(direct_url).canonical_url rescue direct_url
     end
+
+    def direct_url_parsed
+      return nil unless direct_url =~ %r!\Ahttps?://!i
+      Addressable::URI.heuristic_parse(direct_url) rescue nil
+    end
   end
 
   module UploaderMethods
@@ -157,8 +162,8 @@ class Upload < ApplicationRecord
   end
 
   def direct_url_is_whitelisted
-    return true if direct_url.blank?
-    valid, reason = UploadWhitelist.is_whitelisted?(direct_url)
+    return true if parsed_direct_url.blank?
+    valid, reason = UploadWhitelist.is_whitelisted?(parsed_direct_url)
     unless valid
       self.errors.add(:source, "is not whitelisted: #{reason}")
       return false
