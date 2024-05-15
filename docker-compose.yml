@@ -160,12 +160,13 @@ services:
   # To change this, set the PAWSMOVIN_REPORTS_SERVER env variable
   # For internal access, change the PAWSMOVIN_REPORTS_SERVER_INTERNAL env varable (defaults to http://reports:3000)
   reports:
-    image: ghcr.io/pawsmovin/reports:b110f35e3b9baed09e0e3b99382108751545f767
+    image: ghcr.io/pawsmovin/reports:a74fe3b0b4cf848b0338a80dbb93810ca38c280d
     environment:
       - DB_HOST=postgres
       - DB_PORT=5432
+      - DB_USER=pawsmovin
       - REPORTS_REDIS_URL=redis://redis
-      - REPORTS_REPORT_KEY=super_secret_key_for_reports_signature
+      - REPORTS_REPORT_KEY=${PAWSMOVIN_REPORT_KEY:-super_secret_key_for_reports_signature}
     ports:
       - "${EXPOSED_REPORTS_PORT:-3002}:3000"
 
@@ -183,7 +184,7 @@ services:
       ADMIN_ROLE: ${DISCORDBOT_ADMIN_ROLE-}
       JOINER_PORT: ${JOINER_PORT:-3003}
       JOINER_URL: http://localhost:${EXPOSED_JOINER_PORT:-3003}
-      JOINER_SECRET: ${PAWSMOVIN_DISCORD_SECRET-}
+      JOINER_SECRET: ${PAWSMOVIN_DISCORD_SECRET:-super_secret_for_url_discord}
       JOINER_CHANNEL_ID: ${DISCORDBOT_JOINER_CHANNEL_ID-}
       AUDIT_LOG_CHANNEL_ID: ${DISCORDBOT_AUDIT_LOG_CHANNEL_ID-}
       EVENT_CHANNEL_ID: ${DISCORDBOT_EVENT_CHANNEL_ID-}
