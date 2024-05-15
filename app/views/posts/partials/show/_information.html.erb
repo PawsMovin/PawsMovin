@@ -1,6 +1,6 @@
 <ul>
   <li>ID: <%= post.id %></li>
-  <% unless post.source_array.empty? && !post.upload_url.present? %>
+  <% unless post.source_array.empty? && post.upload_url.blank? %>
     <li class="source-links">Source:
       <% post.source_array.partition { |s| !s.start_with?("-") }.flatten.each do |source| %>
         <div class="source-link"><%= post_source_tag(source) %></div>

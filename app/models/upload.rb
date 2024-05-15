@@ -56,7 +56,7 @@ class Upload < ApplicationRecord
 
   module DirectURLMethods
     def normalize_direct_url
-      return unless direct_url.present?
+      return if direct_url.blank?
       self.direct_url = direct_url.unicode_normalize(:nfc)
       if direct_url =~ %r!\Ahttps?://!i
         self.direct_url = Addressable::URI.normalized_encode(direct_url) rescue direct_url
