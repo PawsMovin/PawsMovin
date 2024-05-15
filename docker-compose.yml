@@ -160,12 +160,12 @@ services:
   # To change this, set the PAWSMOVIN_REPORTS_SERVER env variable
   # For internal access, change the PAWSMOVIN_REPORTS_SERVER_INTERNAL env varable (defaults to http://reports:3000)
   reports:
-    image: ghcr.io/pawsmovin/reports:a74fe3b0b4cf848b0338a80dbb93810ca38c280d
+    image: ghcr.io/pawsmovin/reports:7994ad67fb827e89812a5b74f97132ebbbb91bcf
     environment:
       - DB_HOST=postgres
       - DB_PORT=5432
       - DB_USER=pawsmovin
-      - REPORTS_REDIS_URL=redis://redis
+      - REPORTS_REDIS_URL=redis://redis/1
       - REPORTS_REPORT_KEY=${PAWSMOVIN_REPORT_KEY:-super_secret_key_for_reports_signature}
     ports:
       - "${EXPOSED_REPORTS_PORT:-3002}:3000"
@@ -178,7 +178,7 @@ services:
       DISCORD_TOKEN: ${DISCORDBOT_DISCORD_TOKEN-}
       DISCORD_ID: ${DISCORDBOT_DISCORD_ID-}
       DISCORD_SECRET: ${DISCORDBOT_DISCORD_SECRET-}
-      REDIS_URL: redis://redis/1
+      REDIS_URL: redis://redis/2
       REDIS_CHANNELS_TICKETS: ticket_updates
       GUILD_ID: ${DISCORDBOT_GUILD_ID-}
       ADMIN_ROLE: ${DISCORDBOT_ADMIN_ROLE-}
