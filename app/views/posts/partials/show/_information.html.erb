@@ -1,10 +1,15 @@
 <ul>
   <li>ID: <%= post.id %></li>
-  <li class="source-links">Source:
-    <% post.source_array.partition { |s| !s.start_with?("-") }.flatten.each do |source| %>
-      <div class="source-link"><%= post_source_tag(source) %></div>
-    <% end %>
-  </li>
+  <% unless post.source_array.empty? && !post.upload_url.present? %>
+    <li class="source-links">Source:
+      <% post.source_array.partition { |s| !s.start_with?("-") }.flatten.each do |source| %>
+        <div class="source-link"><%= post_source_tag(source) %></div>
+      <% end %>
+      <% if post.upload_url.present? %>
+        <div class="source-link"><i class="fa-solid fa-upload"></i><%= post_source_tag(post.upload_url) %></div>
+      <% end %>
+    </li>
+  <% end %>
   <li>Rating: <%= pretty_html_rating(post) %></li>
   <li>Score: <%= post_vote_block(post, post.own_vote) %>
     <% if PostVotePolicy.new(CurrentUser.user, post).index? %>

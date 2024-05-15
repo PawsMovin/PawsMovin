@@ -1708,7 +1708,8 @@ CREATE TABLE public.posts (
     original_tag_string text DEFAULT ''::text NOT NULL,
     is_comment_locked boolean DEFAULT false NOT NULL,
     tag_count_voice_actor integer DEFAULT 0 NOT NULL,
-    qtags character varying[] DEFAULT '{}'::character varying[] NOT NULL
+    qtags character varying[] DEFAULT '{}'::character varying[] NOT NULL,
+    upload_url character varying
 );
 
 
@@ -2264,7 +2265,8 @@ CREATE TABLE public.uploads (
     file_size integer,
     image_width integer,
     image_height integer,
-    description text DEFAULT ''::text NOT NULL
+    description text DEFAULT ''::text NOT NULL,
+    direct_url character varying
 );
 
 
@@ -5046,6 +5048,7 @@ ALTER TABLE ONLY public.staff_notes
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20240514063636'),
 ('20240513033445'),
 ('20240513023551'),
 ('20240510062438'),

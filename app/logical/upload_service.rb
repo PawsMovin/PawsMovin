@@ -64,6 +64,7 @@ class UploadService
       p.parent_id = upload.parent_id
       p.has_cropped = upload.is_image?
       p.duration = upload.video_duration(upload.file.path)
+      p.upload_url = upload.direct_url
 
       if !upload.uploader.unrestricted_uploads? || (!upload.uploader.can_approve_posts? && p.avoid_posting_artists.any?) || upload.upload_as_pending?
         p.is_pending = true

@@ -1661,6 +1661,7 @@ class Post < ApplicationRecord
         has_notes:     has_notes?,
         duration:      duration&.to_f,
         qtags:         qtags,
+        upload_url:    upload_url,
       }
     end
   end

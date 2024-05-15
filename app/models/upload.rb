@@ -5,13 +5,13 @@ require "tmpdir"
 class Upload < ApplicationRecord
   class Error < Exception ; end
 
-  attr_accessor :as_pending, :replaced_post, :file, :direct_url, :original_post_id, :locked_tags, :locked_rating, :replacement_id
+  attr_accessor :as_pending, :replaced_post, :file, :original_post_id, :locked_tags, :locked_rating, :replacement_id
 
   belongs_to :uploader, class_name: "User"
   belongs_to :post, optional: true
 
   before_validation :assign_rating_from_tags
-  before_validation :fixup_source, on: :create
+  before_validation :normalize_direct_url, on: :create
   validate :uploader_is_not_limited, on: :create
   validate :direct_url_is_whitelisted, on: :create
   validates :rating, inclusion: { in: %w(q e s) }, allow_nil: false
@@ -55,20 +55,13 @@ class Upload < ApplicationRecord
   end
 
   module DirectURLMethods
-    def direct_url=(source)
-      source = source.unicode_normalize(:nfc)
-
-      # percent encode unicode characters in urls
-      if source =~ %r!\Ahttps?://!i
-        source = Addressable::URI.normalized_encode(source) rescue source
+    def normalize_direct_url
+      return unless direct_url.present?
+      self.direct_url = direct_url.unicode_normalize(:nfc)
+      if direct_url =~ %r!\Ahttps?://!i
+        self.direct_url = Addressable::URI.normalized_encode(direct_url) rescue direct_url
       end
-
-      super(source)
-    end
-
-    def direct_url_parsed
-      return nil unless direct_url =~ %r!\Ahttps?://!i
-      Addressable::URI.heuristic_parse(direct_url) rescue nil
+      self.direct_url = Sources::Strategies.find(direct_url).canonical_url rescue direct_url
     end
   end
 
@@ -164,9 +157,9 @@ class Upload < ApplicationRecord
   end
 
   def direct_url_is_whitelisted
-    return true if direct_url_parsed.nil?
-    valid, reason = UploadWhitelist.is_whitelisted?(direct_url_parsed)
-    if !valid
+    return true if direct_url.blank?
+    valid, reason = UploadWhitelist.is_whitelisted?(direct_url)
+    unless valid
       self.errors.add(:source, "is not whitelisted: #{reason}")
       return false
     end
@@ -210,13 +203,6 @@ class Upload < ApplicationRecord
   def assign_rating_from_tags
     if (rating = TagQuery.fetch_metatag(tag_string, "rating"))
       self.rating = rating.downcase.first
-    end
-  end
-
-  def fixup_source
-    if direct_url_parsed.present?
-      canonical = Sources::Strategies.find(direct_url_parsed).canonical_url
-      self.source += "\n#{canonical}" if canonical
     end
   end
 

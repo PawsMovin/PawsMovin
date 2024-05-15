@@ -46,6 +46,16 @@
           <br>
 
           <span class="post-info">
+            <strong>Upload URL</strong>
+            <% if upload.direct_url %>
+              <%= link_to upload.direct_url %>
+            <% else %>
+              <em>file</em>
+            <% end %>
+          </span>
+          <br>
+
+          <span class="post-info">
             <strong>Tags</strong>
             <%= upload.presenter.inline_tag_list_html(:wiki_page) %>
           </span>

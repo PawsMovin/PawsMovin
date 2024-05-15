@@ -1600,6 +1600,7 @@ components:
         - own_vote
         - has_notes
         - duration
+        - upload_fur
       properties:
         id:
           type: number
@@ -1821,6 +1822,8 @@ components:
           type: boolean
         duration:
           type: ["number", "null"]
+        upload_url:
+          type: string
     PostApproval:
       type: object
       required:
@@ -2987,6 +2990,7 @@ components:
         - image_height
         - description
         - uploader_name
+        - direct_url
       properties:
         id:
           type: number
@@ -3035,6 +3039,8 @@ components:
         description:
           type: string
         uploader_name:
+          type: string
+        direct_url:
           type: string
     User:
       type: object
