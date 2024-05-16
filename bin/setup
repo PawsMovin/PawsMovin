@@ -30,6 +30,8 @@ FileUtils.chdir(APP_ROOT) do
   system!("RAILS_ENV=test bin/rails db:create") unless Rails.env.production?
   system!("RAILS_ENV=#{env} bin/rails db:schema:load")
   system!("RAILS_ENV=#{env} PAWSMOVIN_DISABLE_THROTTLES=true bin/rails db:seed") unless Rails.env.production?
+  # ensure we create system user
+  puts("System User: #{System.user.id}")
 
   puts("\n== Removing old logs and tempfiles ==")
   system!("bin/rails log:clear tmp:clear")

@@ -3,7 +3,7 @@
 class StatsUpdater
   def self.run!
     stats = {}
-    stats[:started] = Post.find(Post.minimum("id")).created_at
+    stats[:started] = User.find(User.minimum("id")).created_at
 
     daily_average = ->(total) do
       (total / ((Time.now - stats[:started]) / (60 * 60 * 24))).round
