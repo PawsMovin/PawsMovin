@@ -160,13 +160,16 @@ services:
   # To change this, set the PAWSMOVIN_REPORTS_SERVER env variable
   # For internal access, change the PAWSMOVIN_REPORTS_SERVER_INTERNAL env varable (defaults to http://reports:3000)
   reports:
-    image: ghcr.io/pawsmovin/reports:39e12655410c0abe002b4e66252d209e2c31c30a
+    image: ghcr.io/pawsmovin/reports:e7bd7e5f02cf1a63473850fce9d670ffd0d57488
     environment:
       - DB_HOST=postgres
       - DB_PORT=5432
       - DB_USER=pawsmovin
       - REPORTS_REDIS_URL=redis://redis/1
       - REPORTS_REPORT_KEY=${PAWSMOVIN_REPORT_KEY:-super_secret_key_for_reports_signature}
+    volumes:
+      - ./config/master.key:/app/config/master.key
+      - ./config/credentials.yml.enc:/app/config/credentials.yml.enc
     ports:
       - "${EXPOSED_REPORTS_PORT:-3002}:3000"
 

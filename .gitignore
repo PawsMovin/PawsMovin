@@ -29,3 +29,7 @@ yarn-debug.log*
 .yarn-integrity
 /coverage/*
 !/coverage/.gitkeep
+/docker-compose.prod.yml
+
+/config/master.key
+/config/credentials.yml.enc
