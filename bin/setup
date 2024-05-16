@@ -27,9 +27,9 @@ FileUtils.chdir(APP_ROOT) do
 
   puts("\n== Preparing database ==")
   # Create the test database, since only development exists at this point
-  system!("RAILS_ENV=test bin/rails db:create") unless Rails.env.production?
+  system!("RAILS_ENV=test bin/rails db:create") unless env == "production"
   system!("RAILS_ENV=#{env} bin/rails db:schema:load")
-  system!("RAILS_ENV=#{env} PAWSMOVIN_DISABLE_THROTTLES=true bin/rails db:seed") unless Rails.env.production?
+  system!("RAILS_ENV=#{env} PAWSMOVIN_DISABLE_THROTTLES=true bin/rails db:seed") unless env == "production"
   # ensure we create system user
   puts("System User: #{System.user.id}")
 
