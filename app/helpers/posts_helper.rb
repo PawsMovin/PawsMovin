@@ -138,8 +138,7 @@ module PostsHelper
   end
 
   def post_vote_block(post, vote, buttons: false)
-    voted = !vote.nil?
-    vote_score = voted ? vote.score : 0
+    vote_score = vote || 0
     post_score = post.score
 
     up_tag = tag.a(

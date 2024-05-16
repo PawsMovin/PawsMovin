@@ -162,8 +162,8 @@ class Upload < ApplicationRecord
   end
 
   def direct_url_is_whitelisted
-    return true if parsed_direct_url.blank?
-    valid, reason = UploadWhitelist.is_whitelisted?(parsed_direct_url)
+    return true if direct_url_parsed.blank?
+    valid, reason = UploadWhitelist.is_whitelisted?(direct_url_parsed)
     unless valid
       self.errors.add(:source, "is not whitelisted: #{reason}")
       return false

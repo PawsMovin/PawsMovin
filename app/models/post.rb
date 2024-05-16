@@ -1106,7 +1106,9 @@ class Post < ApplicationRecord
   module VoteMethods
     def own_vote(user = CurrentUser.user)
       return nil unless user
-      votes.where("user_id = ?", user.id).first
+      v = vote_string.scan(/(?:\A| )(up|down):#{user.id}(?:\Z| )/).map { $1 }.first
+      return nil if v.nil?
+      %w[down locked up].index(v) - 1
     end
 
     def is_voted?(user = CurrentUser.user)
@@ -1116,17 +1118,40 @@ class Post < ApplicationRecord
 
     def is_voted_down?(user = CurrentUser.user)
       return false unless user
-      own_vote(user).try(:is_negative?) || false
+      own_vote(user) == -1
     end
 
     def is_voted_up?(user = CurrentUser.user)
       return false unless user
-      own_vote(user).try(:is_positive?) || false
+      own_vote(user) == 1
     end
 
     def is_vote_locked?(user = CurrentUser.user)
       return false unless user
-      own_vote(user).try(:is_locked?) || false
+      own_vote(user) == 0
+    end
+
+    def append_user_to_vote_string(user_id, type)
+      if vote_string =~ /(?:\A| )(locked|up|down):#{user_id}(?:\Z| )/
+        return if $1 == type
+        self.vote_string = vote_string.gsub(/(?:\A| )(locked|up|down):#{user_id}(?:\Z| )/, " #{type}:#{user_id} ")
+      else
+        self.vote_string = vote_string + " #{type}:#{user_id}"
+      end
+      clean_vote_string!
+    end
+
+    def delete_user_from_vote_string(user_id)
+      self.vote_string = vote_string.gsub(/(?:\A| )(locked|up|down):#{user_id}(?:\Z| )/, " ").strip
+      clean_vote_string!
+    end
+
+    def clean_vote_string!
+      array = vote_string.split.uniq { |x| x[/\d+/] }
+      self.vote_string = array.join(" ")
+      self.up_score = array.count { |x| x =~ /up/ }
+      self.down_score = array.count { |x| x =~ /down/ }
+      self.score = up_score - down_score
     end
   end
 
@@ -1657,7 +1682,7 @@ class Post < ApplicationRecord
         description:   description,
         comment_count: visible_comment_count(CurrentUser.user),
         is_favorited:  is_favorited?,
-        own_vote:      own_vote&.score,
+        own_vote:      own_vote,
         has_notes:     has_notes?,
         duration:      duration&.to_f,
         qtags:         qtags,

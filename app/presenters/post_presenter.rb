@@ -121,7 +121,7 @@ class PostPresenter < Presenter
         "data-uploader-id"  => post.uploader_id,
         "data-uploader"     => post.uploader_name,
         "data-is-favorited" => post.favorited_by?(CurrentUser.user.id),
-        "data-own-vote"     => post.own_vote&.score
+        "data-own-vote"     => post.own_vote
     }
 
     if post.visible?
@@ -215,7 +215,7 @@ class PostPresenter < Presenter
         tags:          post.tag_string.split(" "),
         locked_tags:   post.locked_tags&.split(" ") || [],
         is_favorited:  post.is_favorited?,
-        own_vote:      post.own_vote&.score
+        own_vote:      post.own_vote
     }
   end
 

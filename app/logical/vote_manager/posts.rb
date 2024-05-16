@@ -13,25 +13,16 @@ module VoteManager
         raise(UserVote::Error, "You do not have permission to vote") unless user.is_member?
         PostVote.transaction(**ISOLATION) do
           PostVote.uncached do
-            score_modifier = score
-            @vote = old_vote = PostVote.where(user_id: user.id, post_id: post.id).first
+            @vote = PostVote.where(user_id: user.id, post_id: post.id).first
             if @vote
               raise(UserVote::Error, "Vote is locked") if @vote.is_locked?
               raise(VoteManager::NeedUnvoteError) if @vote.score == score
-              score_modifier *= 2
               @vote.destroy
             end
-            @vote = vote = PostVote.create!(user: user, score: score, post: post)
-            vote_cols = "score = score + #{score_modifier}"
-            if vote.score > 0
-              vote_cols += ", up_score = up_score + #{vote.score}"
-              vote_cols += ", down_score = down_score - #{old_vote.score}" if old_vote
-            else
-              vote_cols += ", down_score = down_score + #{vote.score}"
-              vote_cols += ", up_score = up_score - #{old_vote.score}" if old_vote
-            end
-            Post.where(id: post.id).update_all(vote_cols)
-            post.reload
+            @vote = PostVote.create!(user: user, score: score, post: post)
+            post.append_user_to_vote_string(user.id, %w[down locked up].fetch(score + 1))
+            post.do_not_version_changes = true
+            post.save
           end
         end
       rescue ActiveRecord::SerializationFailure
@@ -56,8 +47,9 @@ module VoteManager
             raise(VoteManager::NoVoteError) unless vote
             raise(UserVote::Error, "You can't remove locked votes") if vote.is_locked? && !force
             post.votes.where(user: user).delete_all
-            subtract_vote(post, vote)
-            post.reload
+            post.delete_user_from_vote_string(user.id)
+            post.do_not_version_changes = true
+            post.save
           end
         end
       rescue ActiveRecord::SerializationFailure
@@ -77,7 +69,9 @@ module VoteManager
         raise(VoteManager::NoVoteError) unless vote
         StaffAuditLog.log!(:post_vote_lock, CurrentUser.user, post_id: vote.post_id, vote: vote.score, voter_id: vote.user_id)
         post = vote.post
-        subtract_vote(post, vote)
+        post.append_user_to_vote_string(vote.user_id, "locked")
+        post.do_not_version_changes = true
+        post.save
         vote.update_columns(is_locked: true)
       end
       post&.update_index
@@ -107,16 +101,6 @@ module VoteManager
         end
       end
       true
-    end
-
-    def subtract_vote(post, vote)
-      vote_cols = "score = score - #{vote.score}"
-      if vote.score > 0
-        vote_cols += ", up_score = up_score - #{vote.score}"
-      else
-        vote_cols += ", down_score = down_score - #{vote.score}"
-      end
-      Post.where(id: post.id).update_all(vote_cols)
     end
   end
 end

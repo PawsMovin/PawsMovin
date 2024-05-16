@@ -2155,44 +2155,74 @@ class PostTest < ActiveSupport::TestCase
   end
 
   context "Voting:" do
+    setup do
+      @user = create(:trusted_user, created_at: 7.days.ago)
+      @post = create(:post)
+    end
+
     should "not allow duplicate votes" do
-      user = create(:trusted_user)
-      post = create(:post)
-      as(user) do
-        assert_nothing_raised { VoteManager::Posts.vote!(user: user, post: post, score: 1) }
+      as(@user) do
+        assert_nothing_raised { VoteManager::Posts.vote!(user: @user, post: @post, score: 1) }
         # Need unvote is returned upon duplicates that are accounted for.
-        assert_equal(:need_unvote, VoteManager::Posts.vote!(user: user, post: post, score: 1)[1])
-        post.reload
+        assert_equal(:need_unvote, VoteManager::Posts.vote!(user: @user, post: @post, score: 1)[1])
+        @post.reload
         assert_equal(1, PostVote.count)
-        assert_equal(1, post.score)
+        assert_equal(1, @post.score)
       end
     end
 
     should "allow undoing of votes" do
-      user = create(:trusted_user, created_at: 7.days.ago)
-      post = create(:post)
-
       # We deliberately don't call post.reload until the end to verify that
       # post.unvote! returns the correct score even when not forcibly reloaded.
-      as(user) do
-        VoteManager::Posts.vote!(post: post, user: user, score: 1)
-        assert_equal(1, post.score)
+      as(@user) do
+        VoteManager::Posts.vote!(post: @post, user: @user, score: 1)
+        assert_equal(1, @post.score)
 
-        VoteManager::Posts.unvote!(post: post, user: user)
-        assert_equal(0, post.score)
+        VoteManager::Posts.unvote!(post: @post, user: @user)
+        assert_equal(0, @post.score)
 
-        assert_nothing_raised { VoteManager::Posts.vote!(post: post, user: user, score: -1) }
-        assert_equal(-1, post.score)
+        assert_nothing_raised { VoteManager::Posts.vote!(post: @post, user: @user, score: -1) }
+        assert_equal(-1, @post.score)
 
-        VoteManager::Posts.unvote!(post: post, user: user)
-        assert_equal(0, post.score)
+        VoteManager::Posts.unvote!(post: @post, user: @user)
+        assert_equal(0, @post.score)
 
-        assert_nothing_raised { VoteManager::Posts.vote!(post: post, user: user, score: 1) }
-        assert_equal(1, post.score)
+        assert_nothing_raised { VoteManager::Posts.vote!(post: @post, user: @user, score: 1) }
+        assert_equal(1, @post.score)
 
-        post.reload
-        assert_equal(1, post.score)
+        @post.reload
+        assert_equal(1, @post.score)
       end
+    end
+
+    should "periodically clean the vote_string" do
+      @post.update_column(:vote_string, "down:1 locked:1 up:1")
+      @post.update_column(:score, -1)
+      @post.append_user_to_vote_string(2, "down")
+      assert_same_elements(%w[down:1 down:2], @post.vote_string.split)
+      assert_equal(-2, @post.score)
+    end
+
+    should "update the fav strings on the post" do
+      VoteManager::Posts.vote!(user: @user, post: @post, score: 1)
+      @post.reload
+      assert_equal("up:#{@user.id}", @post.vote_string)
+      assert(PostVote.exists?(user_id: @user.id, post_id: @post.id))
+
+      VoteManager::Posts.vote!(user: @user, post: @post, score: 1)
+      @post.reload
+      assert_equal("up:#{@user.id}", @post.vote_string)
+      assert(PostVote.exists?(user_id: @user.id, post_id: @post.id))
+
+      VoteManager::Posts.unvote!(user: @user, post: @post)
+      @post.reload
+      assert_equal("", @post.vote_string)
+      assert(!PostVote.exists?(user_id: @user.id, post_id: @post.id))
+
+      VoteManager::Posts.unvote!(user: @user, post: @post)
+      @post.reload
+      assert_equal("", @post.vote_string)
+      assert(!PostVote.exists?(user_id: @user.id, post_id: @post.id))
     end
 
     context "Moving votes to a parent post" do
@@ -2217,10 +2247,14 @@ class PostTest < ActiveSupport::TestCase
       end
 
       should "move the votes" do
+        assert_equal(0, @child.score)
         assert_equal(0, @child.votes.count)
+        assert_equal("", @child.vote_string)
         assert_equal([], @child.votes.pluck(:user_id))
 
+        assert_equal(-1, @parent.score)
         assert_equal(3, @parent.votes.count)
+        assert_same_elements(%W[down:#{@user2.id} up:#{@user1.id} down:#{@trusted1.id}], @parent.vote_string.split)
       end
 
       should "not move locked votes" do

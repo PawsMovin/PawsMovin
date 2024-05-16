@@ -5,10 +5,11 @@ class PostsDecorator < ApplicationDecorator
     PaginatedDecorator
   end
 
+  alias post object
+
   delegate_all
 
   def preview_class(options)
-    post = object
     klass = ["post-preview"]
     klass << "post-status-pending" if post.is_pending?
     klass << "post-status-flagged" if post.is_flagged?
@@ -23,7 +24,6 @@ class PostsDecorator < ApplicationDecorator
   end
 
   def data_attributes
-    post = object
     attributes = {
         "data-id":           post.id,
         "data-has-sound":    post.has_tag?("sound"),
@@ -39,7 +39,7 @@ class PostsDecorator < ApplicationDecorator
         "data-score-down":   post.down_score,
         "data-fav-count":    post.fav_count,
         "data-is-favorited": post.favorited_by?(CurrentUser.user.id),
-        "data-own-vote":     post.own_vote&.score,
+        "data-own-vote":     post.own_vote,
         "data-created-at":   post.created_at.iso8601,
         "data-created-ago":  "#{Class.new.extend(ActionView::Helpers::DateHelper).time_ago_in_words(post.created_at)} ago",
         "data-width":        post.image_width,
@@ -73,10 +73,7 @@ class PostsDecorator < ApplicationDecorator
   end
 
   def preview_html(t, options = {})
-    post = object
-    if post.nil?
-      return ""
-    end
+    return "" if post.nil?
 
     if !options[:show_deleted] && post.is_deleted? && options[:tags] !~ /(?:status:(?:all|any|deleted))|(?:deletedby:)|(?:delreason:)/i
       return ""
@@ -151,10 +148,61 @@ class PostsDecorator < ApplicationDecorator
       "".html_safe
     end
 
-    ribbons = t.render("posts/partials/index/ribbons", post: post).html_safe
-    vote_buttons = t.render("posts/partials/index/vote_buttons", post: post).html_safe
+    ribbons = ribbons(t)
+    # ribbons = t.render("posts/partials/index/ribbons", post: post).html_safe
+    vote_buttons = vote_buttons(t)
+    # vote_buttons = t.render("posts/partials/index/vote_buttons", post: post, vote: vote).html_safe
     t.tag.article(**article_attrs) do
       img_contents + desc_contents + ribbons + vote_buttons
+    end
+  end
+
+  def ribbons(t)
+    t.tag.div(class: "ribbons") do # rubocop:disable Metrics/BlockLength
+      if post.parent_id.present?
+        if post.has_visible_children?
+          t.tag.div(class: "ribbon left has-parent has-children", title: "Has Parent\nHas Children") do
+            t.tag.span
+          end
+        else
+          t.tag.div(class: "ribbon left has-parent", title: "Has Parent") do
+            t.tag.span
+          end
+        end
+      else
+        t.tag.div(class: "ribbon left has-parent has-children", title: "Has Parent\nHas Children") do
+          t.tag.span
+        end
+      end
+      if post.is_flagged?
+        if post.is_pending?
+          t.tag.div(class: "ribbon right is-flagged is-pending", title: "Flagged\nPending") do
+            t.tag.span
+          end
+        else
+          t.tag.div(class: "ribbon right is-flagged", title: "Flagged") do
+            t.tag.span
+          end
+        end
+      else
+        t.tag.div(class: "ribbon right is-pending", title: "Pending") do
+          t.tag.span
+        end
+      end
+    end
+  end
+
+  def vote_buttons(t)
+    t.tag.div(id: "vote-buttons") do
+      t.tag.button("", class: "button vote-button vote score-neutral", disabled: post.is_vote_locked?, data: { action: "up" }) do
+        t.tag.span(class: "post-vote-up-#{post.id} score-#{post.is_voted_up? ? 'positive' : 'neutral'}")
+      end +
+        t.tag.button("", class: "button vote-button vote score-neutral", disabled: post.is_vote_locked?, data: { action: "down" }) do
+          t.tag.span(class: "post-vote-down-#{post.id} score-#{post.is_voted_down? ? 'negative' : 'neutral'}")
+        end +
+        t.tag.button("", class: "button vote-button fav score-neutral", data: { action: "fav", state: post.is_favorited? }) do
+          t.tag.span(class: "post-favorite-#{post.id} score-neutral#{post.is_favorited? ? ' is-favorited' : ''}")
+        end
     end
   end
 end
