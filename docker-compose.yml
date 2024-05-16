@@ -160,7 +160,7 @@ services:
   # To change this, set the PAWSMOVIN_REPORTS_SERVER env variable
   # For internal access, change the PAWSMOVIN_REPORTS_SERVER_INTERNAL env varable (defaults to http://reports:3000)
   reports:
-    image: ghcr.io/pawsmovin/reports:7994ad67fb827e89812a5b74f97132ebbbb91bcf
+    image: ghcr.io/pawsmovin/reports:39e12655410c0abe002b4e66252d209e2c31c30a
     environment:
       - DB_HOST=postgres
       - DB_PORT=5432
