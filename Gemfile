@@ -44,8 +44,7 @@ gem "faraday-follow_redirects"
 gem "faraday-retry"
 
 group :production do
-  gem "unicorn"
-  gem "unicorn-worker-killer"
+  gem "pitchfork"
 end
 
 group :development, :test do
