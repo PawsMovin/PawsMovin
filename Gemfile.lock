@@ -149,8 +149,6 @@ GEM
     faraday-retry (2.2.1)
       faraday (~> 2.0)
     ffi (1.16.3)
-    get_process_mem (0.2.7)
-      ffi (~> 1.0)
     globalid (1.2.1)
       activesupport (>= 6.1)
     hashdiff (1.1.0)
@@ -164,7 +162,6 @@ GEM
       rdoc
       reline (>= 0.4.2)
     json (2.7.2)
-    kgio (2.11.4)
     language_server-protocol (3.17.0.3)
     libdatadog (6.0.0.2.0)
     libddwaf (1.14.0.0.0)
@@ -218,6 +215,9 @@ GEM
       ast (~> 2.4.1)
       racc
     pg (1.5.6)
+    pitchfork (0.13.0)
+      rack (>= 2.0)
+      raindrops (~> 0.7)
     prism (0.24.0)
     psych (5.1.2)
       stringio
@@ -365,12 +365,6 @@ GEM
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     unicode-display_width (2.5.0)
-    unicorn (6.1.0)
-      kgio (~> 2.6)
-      raindrops (~> 0.7)
-    unicorn-worker-killer (0.4.5)
-      get_process_mem (~> 0)
-      unicorn (>= 4, < 7)
     uri (0.13.0)
     webmock (3.23.0)
       addressable (>= 2.8.0)
@@ -412,6 +406,7 @@ DEPENDENCIES
   mocha
   opensearch-ruby
   pg
+  pitchfork
   puma
   pundit (~> 2.3)
   rack (~> 2.0)
@@ -436,8 +431,6 @@ DEPENDENCIES
   simplecov
   simplecov-cobertura
   streamio-ffmpeg
-  unicorn
-  unicorn-worker-killer
   webmock
   webpacker (>= 4.0.x)
 
