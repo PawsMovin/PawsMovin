@@ -169,8 +169,12 @@ services:
       - REPORTS_REDIS_URL=redis://redis/1
       - REPORTS_REPORT_KEY=${PAWSMOVIN_REPORT_KEY:-super_secret_key_for_reports_signature}
     volumes:
-      - ./config/master.key:/app/config/master.key
-      - ./config/credentials.yml.enc:/app/config/credentials.yml.enc
+      - type: bind
+        source: ./config/master.key
+        target: /app/config/master.key
+      - type: bind
+        source: ./config/credentials.yml.enc
+        target: /app/config/credentials.yml.enc
     ports:
       - "${EXPOSED_REPORTS_PORT:-3002}:3000"
 
