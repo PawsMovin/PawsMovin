@@ -73,7 +73,7 @@ class UsersController < ApplicationController
           session[:user_id] = @user.id
           session[:ph] = @user.password_token
           if PawsMovin.config.enable_email_verification?
-            User::EmailConfirmationMailer.confirmation(@user).deliver_now
+            Users::EmailConfirmationMailer.confirmation(@user).deliver_now
           end
         else
           flash[:notice] = "Sign up failed: #{@user.errors.full_messages.join('; ')}"

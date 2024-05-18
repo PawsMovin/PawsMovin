@@ -49,9 +49,6 @@ services:
     environment:
       <<: *common-env
       RAILS_ENV: development
-      DD_AGENT_HOST: datadog-agent
-      DD_SERVICE: ${DD_SERVICE:-}
-      DD_ENV: ${DD_ENV:-}
     depends_on:
       <<: *common-depends-on
       autocompleted:
@@ -136,17 +133,6 @@ services:
     command: iqdb http 0.0.0.0 5588 /iqdb/iqdb.db
     volumes:
       - iqdb_data:/iqdb
-
-  datadog-agent:
-    image: datadog/agent:7.52.0
-    environment:
-      DD_API_KEY: ${DD_API_KEY:-}
-      DD_SITE: ${DD_SITE:-us5.datadoghq.com}
-      DD_HOSTNAME: datadog-agent
-      DD_LOG_LEVEL: WARN
-      DD_APM_NON_LOCAL_TRAFFIC: true
-    profiles:
-      - datadog
 
   recommender:
     image: ghcr.io/pawsmovin/recommender:9637a67bd3bca07519658fc0335bf55fe4644534
