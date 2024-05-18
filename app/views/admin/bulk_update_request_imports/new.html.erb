@@ -15,14 +15,17 @@ mass update aaa -> bbb
     <label for="batch_text">
       Script
     </label>
-    <%= text_area "batch", "script", size: "60x20" %>
+    <%= text_area "batch", "script", size: "60x20", value: @importer.try(:text) %>
+    <% if @error %>
+      <span class="error"><%= @error.message %></span>
+    <% end %>
   </div>
 
   <div class="input">
     <label for="batch_forum_id">
       Forum ID
     </label>
-    <%= text_field "batch", "forum_id" %>
+    <%= text_field "batch", "forum_id", value: @importer.try(:forum_id) %>
   </div>
 
   <%= submit_tag "Import" %>
