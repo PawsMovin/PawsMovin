@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class StorageManager::Hybrid < StorageManager
+class StorageManager::Hybrid < StorageManager::Base
   attr_reader :submanager
 
   def initialize(&block)

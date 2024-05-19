@@ -2,7 +2,7 @@
 
 =begin
 
-Generalizes the hybrid storage manager to be more declarative in 
+Generalizes the hybrid storage manager to be more declarative in
 syntax. Matches are executed in order of appearance so the first
 matching manager is returned. You should always add at least one
 manager with no constraints as a default case.
@@ -25,7 +25,7 @@ manager with no constraints as a default case.
 
 =end
 
-class StorageManager::Match < StorageManager
+class StorageManager::Match < StorageManager::Base
   def initialize
     @managers = []
 
@@ -50,7 +50,7 @@ class StorageManager::Match < StorageManager
       end
 
       if params[:type] && constraints[:type]
-        if constraints[:type].respond_to?(:include?) 
+        if constraints[:type].respond_to?(:include?)
           if !constraints[:type].include?(params[:type])
             match = false
           end

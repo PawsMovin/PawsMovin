@@ -247,10 +247,10 @@ class PostVersion < ApplicationRecord
     removed_sources = old_sources - new_sources
 
     {
-        added_sources:     added_sources,
-        unchanged_sources: new_sources & old_sources,
-        removed_sources:   removed_sources,
-        obsolete_added_sources: added_sources - latest_sources,
+        added_sources:            added_sources,
+        unchanged_sources:        new_sources & old_sources,
+        removed_sources:          removed_sources,
+        obsolete_added_sources:   added_sources - latest_sources,
         obsolete_removed_sources: removed_sources & latest_sources
     }
   end

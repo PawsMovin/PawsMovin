@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class StorageManager::Local < StorageManager
+class StorageManager::Local < StorageManager::Base
   DEFAULT_PERMISSIONS = 0644
 
   def store(io, dest_path)

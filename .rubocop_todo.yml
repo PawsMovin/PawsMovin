@@ -1034,10 +1034,6 @@ Style/BlockComments:
 Style/ClassAndModuleChildren:
   Exclude:
     - 'app/logical/meta_searches/tag.rb'
-    - 'app/logical/storage_manager/hybrid.rb'
-    - 'app/logical/storage_manager/local.rb'
-    - 'app/logical/storage_manager/match.rb'
-    - 'app/logical/storage_manager/null.rb'
     - 'test/test_helper.rb'
 
 # Offense count: 4

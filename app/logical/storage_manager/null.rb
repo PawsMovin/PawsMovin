@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class StorageManager::Null < StorageManager
+class StorageManager::Null < StorageManager::Base
   def store(io, path)
     # no-op
   end
