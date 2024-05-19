@@ -6,10 +6,12 @@ module PostVersionsHelper
     changes = []
 
     diff[:added_sources].each do |source|
-      changes << tag.div(tag.ins(wordbreak_source("+#{source}")))
+      classes = diff[:obsolete_added_sources].include?(source) ? "obsolete" : ""
+      changes << tag.div(tag.ins(wordbreak_source("+#{source}"), class: classes))
     end
     diff[:removed_sources].each do |source|
-      changes << tag.div(tag.del(wordbreak_source("-#{source}")))
+      classes = diff[:obsolete_removed_sources].include?(source) ? "obsolete" : ""
+      changes << tag.div(tag.del(wordbreak_source("-#{source}"), class: classes))
     end
     diff[:unchanged_sources].each do |source|
       changes << tag.div(wordbreak_source(source))

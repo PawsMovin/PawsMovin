@@ -2171,10 +2171,15 @@ components:
         - version
         - reason
         - original_tags
+        - updater_name
         - obsolete_added_tags
         - obsolete_removed_tags
         - unchanged_tags
-        - updater_name
+        - added_sources
+        - removed_sources
+        - obsolete_added_sources
+        - obsolete_removed_sources
+        - unchanged_sources
       properties:
         id:
           type: number
@@ -2228,14 +2233,34 @@ components:
           type: ["string", "null"]
         original_tags:
           type: string
+        updater_name:
+          type: string
         obsolete_added_tags:
           type: string
         obsolete_removed_tags:
           type: string
         unchanged_tags:
           type: string
-        updater_name:
-          type: string
+        added_sources:
+          type: array
+          items:
+            type: string
+        removed_sources:
+          type: array
+          items:
+            type: string
+        obsolete_added_sources:
+          type: array
+          items:
+            type: string
+        obsolete_removed_sources:
+          type: array
+          items:
+            type: string
+        unchanged_sources:
+          type: array
+          items:
+            type: string
     PostVote:
       allOf:
         - $ref: "#/components/schemas/LockableUserVote"

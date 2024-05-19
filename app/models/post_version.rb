@@ -239,16 +239,19 @@ class PostVersion < ApplicationRecord
   end
 
   def diff_sources(version = nil)
+    latest_sources = post.source&.split("\n") || []
     new_sources = source&.split("\n") || []
     old_sources = version&.source&.split("\n") || []
 
     added_sources = new_sources - old_sources
     removed_sources = old_sources - new_sources
 
-    return {
+    {
         added_sources:     added_sources,
         unchanged_sources: new_sources & old_sources,
-        removed_sources:   removed_sources
+        removed_sources:   removed_sources,
+        obsolete_added_sources: added_sources - latest_sources,
+        obsolete_removed_sources: removed_sources & latest_sources
     }
   end
 
@@ -268,7 +271,7 @@ class PostVersion < ApplicationRecord
     added_locked = new_locked - old_locked
     removed_locked = old_locked - new_locked
 
-    return {
+    {
         added_tags:            added_tags,
         removed_tags:          removed_tags,
         obsolete_added_tags:   added_tags - latest_tags,
@@ -289,18 +292,29 @@ class PostVersion < ApplicationRecord
   def changes
     return @changes if defined?(@changes)
 
+    new_sources = source&.split("\n") || []
+    old_sources = previous&.source&.split("\n") || []
+
     delta = {
-      added_tags:            added_tags,
-      removed_tags:          removed_tags,
-      obsolete_removed_tags: [],
-      obsolete_added_tags:   [],
-      unchanged_tags:        [],
+      added_tags:               added_tags,
+      removed_tags:             removed_tags,
+      obsolete_removed_tags:    [],
+      obsolete_added_tags:      [],
+      unchanged_tags:           [],
+      added_sources:            new_sources - old_sources,
+      removed_sources:          old_sources - new_sources,
+      obsolete_added_sources:   [],
+      obsolete_removed_sources: [],
+      unchanged_sources:        new_sources & old_sources,
     }
 
+    latest_sources = post.source&.split("\n") || []
     latest_tags = post.tag_array
     latest_tags << "rating:#{post.rating}" if post.rating.present?
     latest_tags << "parent:#{post.parent_id}" if post.parent_id.present?
     latest_tags << "source:#{post.source}" if post.source.present?
+    delta[:obsolete_added_sources] = delta[:added_sources] - latest_sources
+    delta[:obsolete_removed_sources] = delta[:removed_sources] & latest_sources
 
     if parent_changed
       if parent_id.present?
@@ -317,16 +331,6 @@ class PostVersion < ApplicationRecord
 
       if previous
         delta[:removed_tags] << "rating:#{previous.rating}"
-      end
-    end
-
-    if source_changed
-      if source.present?
-        delta[:added_tags] << "source:#{source}"
-      end
-
-      if previous
-        delta[:removed_tags] << "source:#{previous.source}"
       end
     end
 
@@ -394,23 +398,17 @@ class PostVersion < ApplicationRecord
 
   concerning :ApiMethods do
     def method_attributes
-      super + %i[obsolete_added_tags obsolete_removed_tags unchanged_tags updater_name]
-    end
-
-    def obsolete_added_tags
-      changes[:obsolete_added_tags].join(" ")
-    end
-
-    def obsolete_removed_tags
-      changes[:obsolete_removed_tags].join(" ")
+      super + %i[updater_name]
     end
 
     def original_tags_array
       @original_tags_array ||= original_tags.split
     end
 
-    def unchanged_tags
-      changes[:unchanged_tags].join(" ")
+    def serializable_hash(*)
+      hash = super
+      changes.each { |key, value| key.to_s.include?("tags") && value.is_a?(Array) ? hash[key] = value.join(" ") : hash[key] = value }
+      hash
     end
   end
 end
