@@ -59,23 +59,23 @@ class StorageManager
 
   def delete_file(post_id, md5, file_ext, type, scale_factor: nil)
     delete(file_path(md5, file_ext, type, scale_factor: scale_factor))
-    delete(file_path(md5, file_ext, type, true, scale_factor: scale_factor))
+    delete(file_path(md5, file_ext, type, protected: true, scale_factor: scale_factor))
   end
 
   def delete_post_files(post_or_md5, file_ext)
     md5 = post_or_md5.is_a?(String) ? post_or_md5 : post_or_md5.md5
     IMAGE_TYPES.each do |type|
-      delete(file_path(md5, file_ext, type, false))
-      delete(file_path(md5, file_ext, type, true))
+      delete(file_path(md5, file_ext, type, protected: false))
+      delete(file_path(md5, file_ext, type, protected: true))
     end
     PawsMovin.config.video_rescales.each_key do |k|
       %w[mp4 webm].each do |ext|
-        delete(file_path(md5, ext, :scaled, false, scale_factor: k.to_s))
-        delete(file_path(md5, ext, :scaled, true, scale_factor: k.to_s))
+        delete(file_path(md5, ext, :scaled, protected: false, scale_factor: k.to_s))
+        delete(file_path(md5, ext, :scaled, protected: true, scale_factor: k.to_s))
       end
     end
-    delete(file_path(md5, "mp4", :original, false))
-    delete(file_path(md5, "mp4", :original, true))
+    delete(file_path(md5, "mp4", :original, protected: false))
+    delete(file_path(md5, "mp4", :original, protected: true))
   end
 
   def delete_replacement(replacement)
@@ -145,7 +145,7 @@ class StorageManager
     origin
   end
 
-  def file_path(post_or_md5, file_ext, type, protected=false, scale_factor: nil)
+  def file_path(post_or_md5, file_ext, type, protected: false, scale_factor: nil)
     md5 = post_or_md5.is_a?(String) ? post_or_md5 : post_or_md5.md5
     subdir = subdir_for(md5)
     file = file_name(md5, file_ext, type, scale_factor: scale_factor)

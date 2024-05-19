@@ -474,6 +474,7 @@ module PawsMovin
       # hierarchical: false - store files in a single directory
       # hierarchical: true - store files in a hierarchical directory structure, based on the MD5 hash
       StorageManager::Local.new(base_dir: "#{Rails.root}/public/data", hierarchical: true)
+      # StorageManager::Ftp.new(ftp_hostname, ftp_port, ftp_username, ftp_password, base_dir: "", base_path: "", base_url: "https://static.pawsmov.in", hierarchical: true)
 
       # Select the storage method based on the post's id and type (preview, large, or original).
       # StorageManager::Hybrid.new do |id, md5, file_ext, type|
@@ -697,6 +698,21 @@ module PawsMovin
 
     def aibur_stats_discord_webhook_url
       nil
+    end
+
+    def ftp_hostname
+    end
+
+    def ftp_port
+    end
+
+    def ftp_username
+    end
+
+    def ftp_password
+    end
+
+    def bunny_secret_token
     end
 
     def ticket_quick_response_buttons

@@ -30,39 +30,39 @@ class StorageManager::Local < StorageManager
 
   def move_file_delete(post)
     IMAGE_TYPES.each do |type|
-      path = file_path(post, post.file_ext, type, false)
-      new_path = file_path(post, post.file_ext, type, true)
+      path = file_path(post, post.file_ext, type, protected: false)
+      new_path = file_path(post, post.file_ext, type, protected: true)
       move_file(path, new_path)
     end
     return unless post.is_video?
     PawsMovin.config.video_rescales.each_key do |k|
       %w[mp4 webm].each do |ext|
-        path = file_path(post, ext, :scaled, false, scale_factor: k.to_s)
-        new_path = file_path(post, ext, :scaled, true, scale_factor: k.to_s)
+        path = file_path(post, ext, :scaled, protected: false, scale_factor: k.to_s)
+        new_path = file_path(post, ext, :scaled, protected: true, scale_factor: k.to_s)
         move_file(path, new_path)
       end
     end
-    path = file_path(post, "mp4", :original, false)
-    new_path = file_path(post, "mp4", :original, true)
+    path = file_path(post, "mp4", :original, protected: false)
+    new_path = file_path(post, "mp4", :original, protected: true)
     move_file(path, new_path)
   end
 
   def move_file_undelete(post)
     IMAGE_TYPES.each do |type|
-      path = file_path(post, post.file_ext, type, true)
-      new_path = file_path(post, post.file_ext, type, false)
+      path = file_path(post, post.file_ext, type, protected: true)
+      new_path = file_path(post, post.file_ext, type, protected: false)
       move_file(path, new_path)
     end
     return unless post.is_video?
     PawsMovin.config.video_rescales.each_key do |k|
       %w[mp4 webm].each do |ext|
-        path = file_path(post, ext, :scaled, true, scale_factor: k.to_s)
-        new_path = file_path(post, ext, :scaled, false, scale_factor: k.to_s)
+        path = file_path(post, ext, :scaled, protected: true, scale_factor: k.to_s)
+        new_path = file_path(post, ext, :scaled, protected: false, scale_factor: k.to_s)
         move_file(path, new_path)
       end
     end
-    path = file_path(post, "mp4", :original, true)
-    new_path = file_path(post, "mp4", :original, false)
+    path = file_path(post, "mp4", :original, protected: true)
+    new_path = file_path(post, "mp4", :original, protected: false)
     move_file(path, new_path)
   end
 

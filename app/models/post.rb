@@ -156,15 +156,15 @@ class Post < ApplicationRecord
     end
 
     def file_path
-      storage_manager.file_path(self, file_ext, :original, is_deleted?)
+      storage_manager.file_path(self, file_ext, :original, protected: is_deleted?)
     end
 
     def large_file_path
-      storage_manager.file_path(self, file_ext, :large, is_deleted?)
+      storage_manager.file_path(self, file_ext, :large, protected: is_deleted?)
     end
 
     def preview_file_path
-      storage_manager.file_path(self, file_ext, :preview, is_deleted?)
+      storage_manager.file_path(self, file_ext, :preview, protected: is_deleted?)
     end
 
     def crop_file_url
