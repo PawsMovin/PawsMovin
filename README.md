@@ -62,6 +62,7 @@ These wik/help pages are expected to exist, as they are linked to in various pla
 * help:accounts
 * help:api
 * help:artists
+* help:avoid_posting
 * help:blacklist
 * help:cheatsheat
 * help:comments
@@ -97,6 +98,7 @@ These wik/help pages are expected to exist, as they are linked to in various pla
 * accounts (help:accounts)
 * api (help:api)
 * artists (help:artists)
+* avoid_posting (help:avoid_posting)
 * blacklist (help:blacklist)
 * cheatsheet (help:cheatsheet)
 * comments (help:comments)

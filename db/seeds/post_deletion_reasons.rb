@@ -30,7 +30,7 @@ module PostDeletionReasons
       "Traced artwork",
       "Traced artwork (post #%PARENT_ID%)",
       "Takedown #%OTHER_ID%",
-      "The artist of this post is on the \"avoid posting list\":/avoid_postings",
+      "The artist of this post is on the \"avoid posting list\":/help/avoid_posting",
       "[[conditional_dnp|Conditional DNP]] (Only the artist is allowed to post)",
       "[[conditional_dnp|Conditional DNP]] (%OTHER_ID%)",
     ].each_with_index.map do |data, index|

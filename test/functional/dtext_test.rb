@@ -14,11 +14,6 @@ class DtextTest < ActiveSupport::TestCase
     assert_parse_dtext(%(<p><a #{rel}class="dtext-link dtext-id-link #{clazz}" href="#{url}">#{text}</a></p>), parse, **)
   end
 
-  # TODO: remove this when the avoid posting pr has been merged
-  def avoid_posting_path(id:)
-    "/avoid_postings/#{id}"
-  end
-
   def u(val)
     CGI.unescape(val)
   end
