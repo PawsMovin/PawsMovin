@@ -56,6 +56,71 @@ Running a single machine install in production is possible, but is likely to be 
 Minimum RAM is 4GB. You will need to adjust values in config files to match how much RAM is available.
 If you are targeting more than a hundred thousand posts and reasonable user volumes, you probably want to procure yourself a database server. See tuning guides for postgresql and opensearch for help planning these requirements.
 
+### Help & Wiki Pages
+These wik/help pages are expected to exist, as they are linked to in various places.
+#### Wiki Pages
+* help:accounts
+* help:api
+* help:artists
+* help:blacklist
+* help:cheatsheat
+* help:comments
+* help:contact
+* help:dmails
+* help:flag_notice
+* help:forums
+* help:global_blacklist
+* help:home
+* help:notes
+* help:pools
+* help:post_relationships
+* help:posts
+* help:privacy_policy
+* help:replacement_notice
+* help:sets
+* help:tag_aliases
+* help:tag_implications
+* help:tagging_checklist
+* help:tags
+* help:takedown
+* help:takedown_verification
+* help:terms_of_service
+* help:upload
+* help:upload_whitelist
+* help:uploading_guidelines
+* help:user_name_change_requests
+* help:user_settings
+* help:wiki
+* internal:rules_body
+
+#### Help Pages
+* accounts (help:accounts)
+* api (help:api)
+* artists (help:artists)
+* blacklist (help:blacklist)
+* cheatsheet (help:cheatsheet)
+* comments (help:comments)
+* dmails (help:dmails)
+* forums (help:forums)
+* global_blacklist (help:global_blacklist)
+* notes (help:notes)
+* pools (help:pools)
+* post_relationships (help:post_relationships)
+* posts (help:posts)
+* privacy_policy (help:privacy_policy)
+* sets (help:sets)
+* tag_aliases (help:tag_aliases)
+* tag_implications (help:tag_implications)
+* tagging_checklist (help:tagging_checklist)
+* tags (help:tags)
+* terms_of_service (help:terms_of_service)
+* upload (help:upload)
+* upload_whitelist (help:upload_whitelist)
+* uploading_guidelines (help:uploading_guidelines)
+* user_name_change_requests (help:user_name_change_requests)
+* user_settings (help:user_settings)
+* wiki (help:wiki)
+
 ### Production Troubleshooting
 
 These instructions won't work for everyone. If your setup is not

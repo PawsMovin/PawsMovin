@@ -39,20 +39,20 @@ module PostsHelper
   def has_parent_message(post, parent_post_set)
     html = +""
 
-    html << "Parent: "
-    html << link_to("post ##{post.parent_id}", post_path(id: post.parent_id))
-    html << " (deleted)" if parent_post_set.parent.first.is_deleted?
+    html += "Parent: "
+    html += link_to("post ##{post.parent_id}", post_path(id: post.parent_id))
+    html += " (deleted)" if parent_post_set.parent.first.is_deleted?
 
     sibling_count = parent_post_set.children.count - 1
     if sibling_count > 0
-      html << " that has "
+      html += " that has "
       text = sibling_count == 1 ? "a sibling" : "#{sibling_count} siblings"
-      html << link_to(text, posts_path(tags: "parent:#{post.parent_id}"))
+      html += link_to(text, posts_path(tags: "parent:#{post.parent_id}"))
     end
 
-    html << " (#{link_to('learn more', wiki_pages_path(title: 'help:post_relationships'))}) "
+    html += " (#{link_to('learn more', help_page_path(id: 'post_relationships'))}) "
 
-    html << link_to("show »", "#", id: "has-parent-relationship-preview-link")
+    html += link_to("show »", "#", id: "has-parent-relationship-preview-link")
 
     html.html_safe
   end
@@ -60,13 +60,13 @@ module PostsHelper
   def has_children_message(post, children_post_set)
     html = +""
 
-    html << "Children: "
+    html += "Children: "
     text = children_post_set.children.count == 1 ? "1 child" : "#{children_post_set.children.count} children"
-    html << link_to(text, posts_path(tags: "parent:#{post.id}"))
+    html += link_to(text, posts_path(tags: "parent:#{post.id}"))
 
-    html << " (#{link_to('learn more', wiki_pages_path(title: 'help:post_relationships'))}) "
+    html += " (#{link_to('learn more', help_page_path(id: 'post_relationships'))}) "
 
-    html << link_to("show »", "#", id: "has-children-relationship-preview-link")
+    html += link_to("show »", "#", id: "has-children-relationship-preview-link")
 
     html.html_safe
   end

@@ -503,13 +503,13 @@ module PawsMovin
       [
         {
           name:   "uploading_guidelines",
-          reason: "Does not meet the [[uploading_guidelines|uploading guidelines]]",
-          text:   "This post fails to meet the site's standards, be it for artistic worth, image quality, relevancy, or something else.\nKeep in mind that your personal preferences have no bearing on this. If you find the content of a post objectionable, simply [[help:blacklist|blacklist]] it."
+          reason: "Does not meet the \"uploading guidelines\":/help/uploading_guidelines.",
+          text:   "This post fails to meet the site's standards, be it for artistic worth, image quality, relevancy, or something else.\nKeep in mind that your personal preferences have no bearing on this. If you find the content of a post objectionable, simply \"blacklist\":/help/blacklist it."
         },
         {
           name:   "dnp_artist",
           reason: "The artist of this post is on the \"avoid posting list\":/avoid_postings",
-          text:   "Certain artists have requested that their work is not to be published on this site, and were granted [[avoid_posting|Do Not Post]] status.\nSometimes, that status comes with conditions; see [[conditional_dnp]] for more information"
+          text:   "Certain artists have requested that their work is not to be published on this site, and were granted \"Do Not Post\":/avoid_postings status.\nSometimes, that status comes with conditions rather than a blanket ban."
         },
         {
           name:   "pay_content",
@@ -725,7 +725,7 @@ module PawsMovin
         { name: "Reply", text: "I believe that you tried to reply to a comment, but reported it instead.\nPlease, be more careful in the future." },
         { name: "Already", text: "User already received a record for that message." },
         { name: "Banned", text: "This user is already banned." },
-        { name: "Blacklist", text: "If you find the contents of that post objectionable, [[help:blacklist|blacklist]] it." },
+        { name: "Blacklist", text: "If you find the contents of that post objectionable, \"blacklist\":/help/blacklist it." },
         { name: "Takedown", text: "Artists and character owners may request a takedown here: https://pawsmov.in/static/takedown.\nWe do not accept third party takedowns." },
       ]
     end

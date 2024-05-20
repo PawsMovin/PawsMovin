@@ -8,7 +8,7 @@
   <%= subnav_link_to_if(policy(ForumTopic).mark_all_as_read?, "Mark all as read", mark_all_as_read_forum_topics_path, method: :put, data: { shortcut: "shift+r" }) %>
 
   <%= subnav_link_to "Search", search_forum_posts_path %>
-  <%= subnav_link_to "Help", help_page_path(id: "forum") %>
+  <%= subnav_link_to "Help", help_page_path(id: "forums") %>
   <% ftpolicy = ForumTopicPolicy.new(CurrentUser.user, @forum_topic) %>
   <% if @forum_topic && !@forum_topic.new_record? %>
     <% if @forum_topic.user_subscription(CurrentUser.user) %>

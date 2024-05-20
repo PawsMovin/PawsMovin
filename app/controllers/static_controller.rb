@@ -4,19 +4,19 @@ class StaticController < ApplicationController
   respond_to :text, only: %i[robots]
 
   def privacy
-    @page = WikiPage.find_by(title: "help:privacy_policy")
+    @page = view_context.safe_wiki("help:privacy_policy")
   end
 
   def terms_of_service
-    @page = WikiPage.find_by(title: "help:terms_of_service")
+    @page = view_context.safe_wiki("help:terms_of_service")
   end
 
   def contact
-    @page = WikiPage.find_by(title: "help:contact")
+    @page = view_context.safe_wiki("help:contact")
   end
 
   def takedown
-    @page = WikiPage.find_by(title: "help:takedown")
+    @page = view_context.safe_wiki("help:takedown")
   end
 
   def not_found

@@ -1886,17 +1886,17 @@ class Post < ApplicationRecord
     end
 
     def has_artist_tag
-      return if !new_record?
+      return unless new_record?
       return if tags.any? { |t| t.category == TagCategory.artist }
 
       self.warnings.add(:base, 'Artist tag is required. "Click here":/help/tags#catchange if you need help changing the category of an tag. Ask on the forum if you need naming help')
     end
 
     def has_enough_tags
-      return if !new_record?
+      return unless new_record?
 
-      if tags.count {|t| t.category == TagCategory.general} < 10
-        self.warnings.add(:base, "Uploads must have at least 10 general tags. Read [[help:tags]] for guidelines on tagging your uploads")
+      if tags.count { |t| t.category == TagCategory.general} < 10
+        self.warnings.add(:base, "Uploads must have at least 10 general tags. Read the \"Tagging Checklist\":/help/tagging_checklist for information on tagging your uploads")
       end
     end
   end

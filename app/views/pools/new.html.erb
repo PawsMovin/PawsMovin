@@ -1,6 +1,6 @@
 <h2>New Pool</h2>
 
-<p style="font-weight: bold;">Before creating a pool, read the <%= link_to "pool guidelines", wiki_page_path(id: "help:pools") %>.</p>
+<p style="font-weight: bold;">Before creating a pool, read the <%= link_to "pool guidelines", help_page_path(id: "pools") %>.</p>
 
 <%= custom_form_for(@pool) do |f| %>
   <%= f.input(:name, as: :string, required: true) %>
