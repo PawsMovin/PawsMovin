@@ -276,10 +276,6 @@ module PawsMovin
       5
     end
 
-    def replacements_minimum_posts
-      20
-    end
-
     def compact_uploader_minimum_posts
       10
     end
