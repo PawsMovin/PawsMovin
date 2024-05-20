@@ -76,7 +76,7 @@ class EmailsController < ApplicationController
     end
     signature = Base64.decode64(@body["Signature"])
     pubkey = fetch_public_key(@body["SigningCertURL"])
-    pubkey&.verify(OpenSSL::Digest::SHA1.new, signature, sign) || false
+    pubkey&.verify(OpenSSL::Digest.new("SHA1"), signature, sign) || false
   end
 
   def fetch_public_key(url)
