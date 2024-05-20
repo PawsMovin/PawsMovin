@@ -2,7 +2,7 @@
 
 class EmailsController < ApplicationController
   respond_to :html
-  skip_before_action :verify_authenticity_token, only: %i[bounce]
+  skip_before_action :verify_authenticity_token, only: %i[bounce complaint]
 
   def resend_confirmation
     if IpBan.is_banned?(CurrentUser.ip_addr)
