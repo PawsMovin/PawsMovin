@@ -2,6 +2,7 @@
 
 class EmailsController < ApplicationController
   respond_to :html
+  skip_before_action :verify_authenticity_token, only: %i[bounce]
 
   def resend_confirmation
     if IpBan.is_banned?(CurrentUser.ip_addr)
@@ -36,7 +37,41 @@ class EmailsController < ApplicationController
     redirect_to(home_users_path, notice: "Account activated")
   end
 
+  def bounce
+    @body = JSON.parse(request.body.read)
+    @message = JSON.parse(@body["Message"])
+    return head(403) unless sns_valid?
+    if @message["eventType"] == "Bounce"
+      address = @message.dig("bounce", "bouncedRecipients", 0, "emailAddress")
+      user = User.find_by(email: address)
+      user&.update!(receive_email_notifications: false)
+    end
+    head(204)
+  end
+
   private
+
+  def sns_valid?
+    @body["SignatureVersion"] == "1" && verify_sns!
+  end
+
+  def verify_sns!
+    parts = %w[Message MessageId Subject Timestamp TopicArn Type]
+    sign = ""
+    parts.each do |key|
+      sign += "#{key}\n"
+      sign += "#{@body[key]}\n"
+    end
+    signature = Base64.decode64(@body["Signature"])
+    pubkey = fetch_public_key(@body["SigningCertURL"])
+    pubkey&.verify(OpenSSL::Digest::SHA1.new, signature, sign) || false
+  end
+
+  def fetch_public_key(url)
+    response = Faraday.new(PawsMovin.config.faraday_options).get(url)
+    return nil unless response.success?
+    OpenSSL::X509::Certificate.new(response.body).public_key
+  end
 
   def verify_get_user(purpose)
     message = EmailLinkValidator.validate(params[:sig], purpose)

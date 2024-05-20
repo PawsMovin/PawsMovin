@@ -382,6 +382,7 @@ Rails.application.routes.draw do
     collection do
       get :activate_user
       get :resend_confirmation
+      post :bounce
     end
   end
   resources :mascots, only: %i[index new create edit update destroy]
