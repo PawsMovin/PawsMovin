@@ -59,7 +59,7 @@ module StorageManager
 
     def delete_post_files(post_or_md5, file_ext)
       md5 = post_or_md5.is_a?(String) ? post_or_md5 : post_or_md5.md5
-      IMAGE_TYPES.each do |type|
+      StorageManager::IMAGE_TYPES.each do |type|
         delete(file_path(md5, file_ext, type, protected: false))
         delete(file_path(md5, file_ext, type, protected: true))
       end

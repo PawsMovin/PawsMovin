@@ -320,4 +320,8 @@ class TagAlias < TagRelationship
       ModAction.log!(:tag_alias_update, self, alias_desc: alias_desc, change_desc: change_desc)
     end
   end
+
+  def self.fix_nonzero_post_counts!
+    TagAlias.joins(:antecedent_tag).where("tag_aliases.status in ('active', 'processing') AND tags.post_count != 0").find_each { |ta| ta.antecedent_tag.fix_post_count }
+  end
 end

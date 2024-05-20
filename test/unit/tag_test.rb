@@ -232,4 +232,35 @@ class TagTest < ActiveSupport::TestCase
       assert_equal(1, tag.reload.post_count)
     end
   end
+
+  context "An aliased tag with a non-zero post count" do
+    should "be fixed" do
+      reset_post_index
+      tag = create(:tag, name: "foo", post_count: 1)
+      post = create(:post, tag_string: "foo")
+      assert_equal(2, tag.reload.post_count)
+      ta = create(:tag_alias, antecedent_name: "foo", consequent_name: "bar")
+      with_inline_jobs { ta.approve! }
+      tag.update_column(:post_count, 1)
+      assert_equal(1, tag.reload.post_count)
+
+      TagAlias.fix_nonzero_post_counts!
+      assert_equal(0, tag.reload.post_count)
+    end
+
+    should "not be fixed if the alias is inactive" do
+      reset_post_index
+      tag = create(:tag, name: "foo", post_count: 1)
+      post = create(:post, tag_string: "foo")
+      assert_equal(2, tag.reload.post_count)
+      ta = create(:tag_alias, antecedent_name: "foo", consequent_name: "bar")
+      with_inline_jobs { ta.approve! }
+      tag.update_column(:post_count, 1)
+      with_inline_jobs { ta.reject! }
+      assert_equal(1, tag.reload.post_count)
+
+      TagAlias.fix_nonzero_post_counts!
+      assert_equal(1, tag.reload.post_count)
+    end
+  end
 end

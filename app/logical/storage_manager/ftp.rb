@@ -65,7 +65,7 @@ module StorageManager
     end
 
     def move_file_delete(post)
-      IMAGE_TYPES.each do |type|
+      StorageManager::IMAGE_TYPES.each do |type|
         path = file_path(post, post.file_ext, type)
         new_path = file_path(post, post.file_ext, type, protected: true)
         move_file(path, new_path)
@@ -84,7 +84,7 @@ module StorageManager
     end
 
     def move_file_undelete(post)
-      IMAGE_TYPES.each do |type|
+      StorageManager::IMAGE_TYPES.each do |type|
         path = file_path(post, post.file_ext, type, protected: true)
         new_path = file_path(post, post.file_ext, type)
         move_file(path, new_path)
