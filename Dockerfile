@@ -19,7 +19,7 @@ FROM ruby:3.3.1-alpine3.19
 RUN apk --no-cache add ffmpeg vips \
   postgresql15-client \
   git jemalloc tzdata \
-  sudo
+  sudo xz
 
 WORKDIR /app
 

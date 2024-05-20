@@ -407,7 +407,7 @@ let Note = {
     },
 
     error_handler: function(xhr, status, exception) {
-      Utility.error("Error: " + (xhr.responseJSON.reason || xhr.responseJSON.reasons.join("; ")));
+      Utility.error("Error: " + (xhr.responseJSON.reason || xhr.responseJSON.message));
     },
 
     success_handler: function(data, status, xhr) {

@@ -1,25 +1,27 @@
 # frozen_string_literal: true
 
-class StorageManager::Hybrid < StorageManager::Base
-  attr_reader :submanager
+module StorageManager
+  class Hybrid < StorageManager::Base
+    attr_reader :submanager
 
-  def initialize(&block)
-    @submanager = block
-  end
+    def initialize(&block)
+      @submanager = block
+    end
 
-  def store_file(io, post, type)
-    submanager[post.id, post.md5, post.file_ext, type].store_file(io, post, type)
-  end
+    def store_file(io, post, type)
+      submanager[post.id, post.md5, post.file_ext, type].store_file(io, post, type)
+    end
 
-  def delete_file(post_id, md5, file_ext, type)
-    submanager[post_id, md5, file_ext, type].delete_file(post_id, md5, file_ext, type)
-  end
+    def delete_file(post_id, md5, file_ext, type)
+      submanager[post_id, md5, file_ext, type].delete_file(post_id, md5, file_ext, type)
+    end
 
-  def open_file(post, type)
-    submanager[post.id, post.md5, post.file_ext, type].open_file(post, type)
-  end
+    def open_file(post, type)
+      submanager[post.id, post.md5, post.file_ext, type].open_file(post, type)
+    end
 
-  def file_url(post, type, **)
-    submanager[post.id, post.md5, post.file_ext, type].file_url(post, type, **)
+    def file_url(post, type, **)
+      submanager[post.id, post.md5, post.file_ext, type].file_url(post, type, **)
+    end
   end
 end

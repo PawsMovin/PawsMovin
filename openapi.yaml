@@ -960,8 +960,6 @@ components:
               type: number
             comment_count:
               type: number
-            flag_count:
-              type: number
             favorite_count:
               type: number
             positive_feedback_count:

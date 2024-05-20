@@ -4,7 +4,7 @@ module StorageManager
   class Base
     attr_reader :base_url, :base_dir, :hierarchical, :large_image_prefix, :protected_prefix, :base_path, :replacement_prefix
 
-    def initialize(base_url: default_base_url, base_path: default_base_path, base_dir: DEFAULT_BASE_DIR, hierarchical: false,
+    def initialize(base_url: default_base_url, base_path: default_base_path, base_dir: DEFAULT_BASE_DIR, hierarchical: false, # rubocop:disable Metrics/ParameterLists
                    large_image_prefix: PawsMovin.config.large_image_prefix,
                    protected_prefix: PawsMovin.config.protected_path_prefix,
                    replacement_prefix: PawsMovin.config.replacement_path_prefix)
@@ -52,7 +52,7 @@ module StorageManager
       store(io, replacement_path(replacement.storage_id, replacement.file_ext, image_size))
     end
 
-    def delete_file(post_id, md5, file_ext, type, scale_factor: nil)
+    def delete_file(_post_id, md5, file_ext, type, scale_factor: nil)
       delete(file_path(md5, file_ext, type, scale_factor: scale_factor))
       delete(file_path(md5, file_ext, type, protected: true, scale_factor: scale_factor))
     end
@@ -79,7 +79,7 @@ module StorageManager
     end
 
     def open_file(post, type)
-      open(file_path(post.md5, post.file_ext, type))
+      open(file_path(post.md5, post.file_ext, type)) # rubocop:disable Security/Open
     end
 
     def move_file_delete(post)
@@ -90,11 +90,10 @@ module StorageManager
       raise(NotImplementedError, "move_file_undelete not implemented")
     end
 
-    def protected_params(url, post, secret: PawsMovin.config.protected_file_secret)
+    def protected_params(url, _post, secret: PawsMovin.config.protected_file_secret)
       user_id = CurrentUser.id
-      time = (Time.now + 15.minute).to_i
-      secret = secret
-      hmac = Digest::MD5.base64digest("#{time} #{url} #{user_id} #{secret}").tr("+/","-_").gsub("==","")
+      time = (Time.now + 15.minutes).to_i
+      hmac = Digest::MD5.base64digest("#{time} #{url} #{user_id} #{secret}").tr("+/", "-_").gsub("==", "")
       "?auth=#{hmac}&expires=#{time}&uid=#{user_id}"
     end
 
@@ -108,9 +107,7 @@ module StorageManager
                "#{base}/preview/#{subdir}#{file}"
              elsif type == :crop
                "#{base}/crop/#{subdir}#{file}"
-             elsif type == :scaled
-               "#{base}/sample/#{subdir}#{file}"
-             elsif type == :large && post.has_large?
+             elsif type == :scaled || (type == :large && post.has_large?)
                "#{base}/sample/#{subdir}#{file}"
              else
                "#{base}/#{subdir}#{file}"
@@ -151,9 +148,7 @@ module StorageManager
         "#{base}/preview/#{subdir}#{file}"
       when :crop
         "#{base}/crop/#{subdir}#{file}"
-      when :large
-        "#{base}/sample/#{subdir}#{file}"
-      when :scaled
+      when :large, :scaled
         "#{base}/sample/#{subdir}#{file}"
       when :original
         "#{base}/#{subdir}#{file}"
@@ -162,9 +157,7 @@ module StorageManager
 
     def file_name(md5, file_ext, type, scale_factor: nil)
       case type
-      when :preview
-        "#{md5}.webp"
-      when :crop
+      when :preview, :crop
         "#{md5}.webp"
       when :large
         "#{large_image_prefix}#{md5}.webp"
