@@ -383,6 +383,7 @@ Rails.application.routes.draw do
       get :activate_user
       get :resend_confirmation
       post :bounce
+      post :complaint
     end
   end
   resources :mascots, only: %i[index new create edit update destroy]

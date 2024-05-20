@@ -49,6 +49,18 @@ class EmailsController < ApplicationController
     head(204)
   end
 
+  def complaint
+    @body = JSON.parse(request.body.read)
+    @message = JSON.parse(@body["Message"])
+    return head(403) unless sns_valid?
+    if @message["eventType"] == "Complaint"
+      address = @message.dig("complaint", "complainedRecipients", 0, "emailAddress")
+      user = User.find_by(email: address)
+      user&.update!(receive_email_notifications: false)
+    end
+    head(204)
+  end
+
   private
 
   def sns_valid?
