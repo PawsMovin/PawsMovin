@@ -167,7 +167,7 @@ services:
   # Discord integration
 
   discordbot:
-    image: ghcr.io/pawsmovin/discordbot:ebebaa0c8dbf76c2f33975ca6cfc2984b35eab3e
+    image: ghcr.io/pawsmovin/discordbot:87abb08c1fab82f5e1ce979bdb846c264263e027
     environment:
       DISCORD_TOKEN: ${DISCORDBOT_DISCORD_TOKEN-}
       DISCORD_ID: ${DISCORDBOT_DISCORD_ID-}
@@ -183,6 +183,7 @@ services:
       AUDIT_LOG_CHANNEL_ID: ${DISCORDBOT_AUDIT_LOG_CHANNEL_ID-}
       EVENT_CHANNEL_ID: ${DISCORDBOT_EVENT_CHANNEL_ID-}
       TICKET_CHANNEL_ID: ${DISCORDBOT_TICKET_CHANNEL_ID-}
+      MEMBER_ROLE: ${DISCORDBOT_MEMBER_ROLE-}
       BASE_URL: ${DISCORDBOT_BASE_URL:-http://localhost:${EXPOSED_SERVER_PORT:-3001}}
       FETCH_URL: ${DISCORDBOT_FETCH_URL:-http://nginx:${EXPOSED_SERVER_PORT:-3001}}
       CDN_HOST: ${DISCORDBOT_CDN_HOST:-localhost:${EXPOSED_SERVER_PORT:-3001}}
