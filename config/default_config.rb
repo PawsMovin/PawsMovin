@@ -34,11 +34,11 @@ module PawsMovin
 
     # Contact email address of the admin.
     def contact_email
-      "management@#{domain}"
+      "admin@#{domain}"
     end
 
     def takedown_email
-      "management@#{domain}"
+      "admin@#{domain}"
     end
 
     def source_code_url
