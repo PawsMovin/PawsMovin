@@ -28,7 +28,7 @@ module PostSets
     def fill_children(posts)
       posts = posts.filter(&:has_children?)
       ids = posts.map(&:id)
-      children = ::Post.select(%i[id parent_id]).where(parent_id: ids).to_a.group_by {|p| p.parent_id}
+      children = ::Post.select(%i[id parent_id]).where(parent_id: ids).to_a.group_by(&:parent_id)
       posts.each do |p|
         p.inject_children(children[p.id] || [])
       end

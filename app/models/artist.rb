@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Artist < ApplicationRecord
-  class RevertError < Exception; end
+  class RevertError < StandardError; end
 
   attr_accessor :url_string_changed, :rename_dnp
 
@@ -27,7 +27,7 @@ class Artist < ApplicationRecord
   after_save :clear_url_string_changed
 
   has_many :urls, dependent: :destroy, class_name: "ArtistUrl", autosave: true
-  has_many :versions, -> {order("artist_versions.id ASC")}, class_name: "ArtistVersion"
+  has_many :versions, -> { order("artist_versions.id ASC") }, class_name: "ArtistVersion"
   has_one :wiki_page, foreign_key: "title", primary_key: "name"
   has_one :tag_alias, foreign_key: "antecedent_name", primary_key: "name"
   has_one :tag, foreign_key: "name", primary_key: "name"
@@ -62,7 +62,7 @@ class Artist < ApplicationRecord
       SITE_BLACKLIST = [
         "artstation.com/artist", # http://www.artstation.com/artist/serafleur/
         "www.artstation.com", # http://www.artstation.com/serafleur/
-        %r!cdn[ab]?\.artstation\.com/p/assets/images/images!i, # https://cdna.artstation.com/p/assets/images/images/001/658/068/large/yang-waterkuma-b402.jpg?1450269769
+        %r{cdn[ab]?\.artstation\.com/p/assets/images/images}i, # https://cdna.artstation.com/p/assets/images/images/001/658/068/large/yang-waterkuma-b402.jpg?1450269769
         "ask.fm", # http://ask.fm/mikuroko_396
         "bcyimg.com",
         "bcyimg.com/drawer", # https://img9.bcyimg.com/drawer/32360/post/178vu/46229ec06e8111e79558c1b725ebc9e6.jpg
@@ -109,7 +109,7 @@ class Artist < ApplicationRecord
         "hentai-foundry.com",
         "hentai-foundry.com/pictures/user", # http://www.hentai-foundry.com/pictures/user/aaaninja/
         "hentai-foundry.com/user", # http://www.hentai-foundry.com/user/aaaninja/profile
-        %r!pictures\.hentai-foundry\.com(?:/\w)?!i, # http://pictures.hentai-foundry.com/a/aaaninja/
+        %r{pictures\.hentai-foundry\.com(?:/\w)?}i, # http://pictures.hentai-foundry.com/a/aaaninja/
         "i.imgur.com", # http://i.imgur.com/Ic9q3.jpg
         "instagram.com", # http://www.instagram.com/serafleur.art/
         "iwara.tv",
@@ -125,7 +125,7 @@ class Artist < ApplicationRecord
         "nicovideo.jp/user", # http://www.nicovideo.jp/user/317609
         "nicovideo.jp/user/illust", # http://seiga.nicovideo.jp/user/illust/29075429
         "nijie.info", # http://nijie.info/members.php?id=15235
-        %r!nijie\.info/nijie_picture!i, # http://pic03.nijie.info/nijie_picture/32243_20150609224803_0.png
+        %r{nijie\.info/nijie_picture}i, # http://pic03.nijie.info/nijie_picture/32243_20150609224803_0.png
         "patreon.com", # http://patreon.com/serafleur
         "pawoo.net", # https://pawoo.net/@148nasuka
         "pawoo.net/web/accounts", # https://pawoo.net/web/accounts/228341
@@ -168,11 +168,11 @@ class Artist < ApplicationRecord
         "youtube.com/channel", # https://www.youtube.com/channel/UCfrCa2Y6VulwHD3eNd3HBRA
         "youtube.com/user", # https://www.youtube.com/user/148nasuka
         "youtu.be", # http://youtu.be/gibeLKKRT-0
-      ]
+      ].freeze
 
       SITE_BLACKLIST_REGEXP = Regexp.union(SITE_BLACKLIST.map do |domain|
         domain = Regexp.escape(domain) if domain.is_a?(String)
-        %r!\Ahttps?://(?:[a-zA-Z0-9_-]+\.)*#{domain}/\z!i
+        %r{\Ahttps?://(?:[a-zA-Z0-9_-]+\.)*#{domain}/\z}i
       end)
 
       # Looks at the url and goes one directory down if no results are found.
@@ -184,10 +184,10 @@ class Artist < ApplicationRecord
         url = ArtistUrl.normalize(url)
         artists = []
         while artists.empty? && url.length > 10
-          u = url.sub(/\/+$/, "") + "/"
-          u = u.to_escaped_for_sql_like.gsub("*", "%") + "%"
+          u = "#{url.sub(%r{/+$}, '')}/"
+          u = "#{u.to_escaped_for_sql_like.gsub('*', '%')}%"
           artists += Artist.joins(:urls).where(["artist_urls.normalized_url ILIKE ? ESCAPE E'\\\\'", u]).limit(10).order("artists.name").all
-          url = File.dirname(url) + "/"
+          url = "#{File.dirname(url)}/"
 
           break if url =~ SITE_BLACKLIST_REGEXP
         end
@@ -197,7 +197,7 @@ class Artist < ApplicationRecord
     end
 
     def sorted_urls
-      urls.sort {|a, b| b.priority <=> a.priority}
+      urls.sort { |a, b| b.priority <=> a.priority }
     end
 
     def url_array
@@ -218,7 +218,7 @@ class Artist < ApplicationRecord
 
       self.urls = string.to_s.scan(/[^[:space:]]+/).map do |url|
         is_active, url = ArtistUrl.parse_prefix(url)
-        self.urls.find_or_initialize_by(url: url, is_active: is_active)
+        urls.find_or_initialize_by(url: url, is_active: is_active)
       end.uniq(&:url).first(MAX_URLS_PER_ARTIST)
 
       self.url_string_changed = (url_string_was != url_string)
@@ -233,7 +233,7 @@ class Artist < ApplicationRecord
       "twimg.com", # https://pbs.twimg.com/media/E627JTbVcAI94NW?format=jpg&name=orig
       "wixmp.com", # https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/885a6dec-35b8-456f-a409-43b214729c22/desps0r-87920cf6-c246-4b04-8144-06f0ed108aaa.jpg/v1/fill/w_980,h_735,q_75,strp/3136__tortie_cat_by_cryptid_creations_desps0r-fullview.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9NzM1IiwicGF0aCI6IlwvZlwvODg1YTZkZWMtMzViOC00NTZmLWE0MDktNDNiMjE0NzI5YzIyXC9kZXNwczByLTg3OTIwY2Y2LWMyNDYtNGIwNC04MTQ0LTA2ZjBlZDEwOGFhYS5qcGciLCJ3aWR0aCI6Ijw9OTgwIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmltYWdlLm9wZXJhdGlvbnMiXX0.qOCiaQZhVwya39kW1hxEY6ufK-0fYw-cJgtBG8wOpLo
       "ngfiles.com", # https://art.ngfiles.com/images/224000/224977_signhereplease_razeal-s-trick.jpg?f1353472836
-    ]
+    ].freeze
 
     # Returns a count of sourced domains for the artist.
     # A domain only gets counted once per post, direct image urls are filtered out.
@@ -244,15 +244,15 @@ class Artist < ApplicationRecord
         sources = Post.tag_match(name, resolve_aliases: false).limit(100).pluck(:source).each do |source_string|
           sources = source_string.split("\n")
           # try to filter out direct file urls
-          domains = sources.filter {|s| !re.match?(s) }.map do |x|
+          domains = sources.filter { |s| !re.match?(s) }.map do |x|
             Addressable::URI.parse(x).domain
           rescue Addressable::URI::InvalidURIError
             nil
           end.compact.uniq
           domains = domains.filter { |d| DOMAINS_COUNT_BLACKLIST.exclude?(d) }
-          domains.each {|domain| counted[domain] += 1}
+          domains.each { |domain| counted[domain] += 1 }
         end
-        counted.sort {|a, b| b[1] <=> a[1]}
+        counted.sort { |a, b| b[1] <=> a[1] }
       end
     end
   end
@@ -283,7 +283,7 @@ class Artist < ApplicationRecord
   end
 
   module VersionMethods
-    def create_version(force=false)
+    def create_version(force: false)
       if saved_change_to_name? || url_string_changed || saved_change_to_other_names? || saved_change_to_notes? || force
         create_new_version
       end
@@ -297,13 +297,13 @@ class Artist < ApplicationRecord
         updater_ip_addr: CurrentUser.ip_addr,
         urls:            url_array,
         other_names:     other_names,
-        notes_changed:   saved_change_to_notes?
+        notes_changed:   saved_change_to_notes?,
       )
     end
 
     def revert_to!(version)
       if id != version.artist_id
-        raise(RevertError.new("You cannot revert to a previous version of another artist."))
+        raise(RevertError, "You cannot revert to a previous version of another artist.")
       end
 
       self.name = version.name
@@ -424,7 +424,7 @@ class Artist < ApplicationRecord
     end
 
     def url_matches(query)
-      if query =~ %r!\Ahttps?://!i
+      if query =~ %r{\Ahttps?://}i
         find_artists(query)
       else
         where(id: ArtistUrl.search(url_matches: query).select(:artist_id))
@@ -432,7 +432,7 @@ class Artist < ApplicationRecord
     end
 
     def any_name_or_url_matches(query)
-      if query =~ %r!\Ahttps?://!i
+      if query =~ %r{\Ahttps?://}i
         url_matches(query)
       else
         any_name_matches(query)
@@ -469,7 +469,7 @@ class Artist < ApplicationRecord
       end
 
       if params[:is_linked].to_s.truthy?
-        q = q.where("linked_user_id IS NOT NULL")
+        q = q.where.not(linked_user_id: nil)
       end
 
       case params[:order]

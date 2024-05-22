@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 class PostFlag < ApplicationRecord
-  class Error < Exception;
+  class Error < StandardError
   end
 
-  COOLDOWN_PERIOD = 1.days
-  MAPPED_REASONS = PawsMovin.config.flag_reasons.map { |i| [i[:name], i[:reason]] }.to_h
+  COOLDOWN_PERIOD = 1.day
+  MAPPED_REASONS = PawsMovin.config.flag_reasons.to_h { |i| [i[:name], i[:reason]] }
 
   belongs_to_creator class_name: "User", counter_cache: "post_flag_count"
   belongs_to :post
@@ -136,7 +136,7 @@ class PostFlag < ApplicationRecord
       # You're probably looking at this line as you get this validation failure
       errors.add(:reason, "is not one of the available choices") unless is_deletion
     when "inferior"
-      unless parent_post.present?
+      if parent_post.blank?
         errors.add(:parent_id, "must exist")
         return false
       end
@@ -178,7 +178,7 @@ class PostFlag < ApplicationRecord
   def parent_post
     @parent_post ||= begin
       Post.where("id = ?", parent_id).first
-    rescue
+    rescue StandardError
       nil
     end
   end

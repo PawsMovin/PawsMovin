@@ -28,11 +28,11 @@ class TagAlias < TagRelationship
   module ForumMethods
     def forum_updater
       @forum_updater ||= ForumUpdater.new(
-          forum_topic,
-          forum_post:     (forum_post if forum_topic),
-          expected_title: TagAliasRequest.topic_title(antecedent_name, consequent_name),
-          skip_update:    !TagRelationship::SUPPORT_HARD_CODED,
-        )
+        forum_topic,
+        forum_post:     (forum_post if forum_topic),
+        expected_title: TagAliasRequest.topic_title(antecedent_name, consequent_name),
+        skip_update:    !TagRelationship::SUPPORT_HARD_CODED,
+      )
     end
   end
 
@@ -58,7 +58,7 @@ class TagAlias < TagRelationship
     end
 
     def has_transitives
-      @has_transitives ||= list_transitives.size > 0
+      @has_transitives ||= !list_transitives.empty?
     end
   end
 
@@ -77,8 +77,8 @@ class TagAlias < TagRelationship
   def self.to_aliased_with_originals(names)
     names = Array(names).map(&:to_s)
     return {} if names.empty?
-    aliases = active.where(antecedent_name: names).map { |ta| [ta.antecedent_name, ta.consequent_name] }.to_h
-    names.map { |tag| [tag, tag] }.to_h.merge(aliases)
+    aliases = active.where(antecedent_name: names).to_h { |ta| [ta.antecedent_name, ta.consequent_name] }
+    names.to_h { |tag| [tag, tag] }.merge(aliases)
   end
 
   def self.to_aliased(names)
@@ -93,9 +93,9 @@ class TagAlias < TagRelationship
     lines = query.downcase.split("\n")
     collected_tags = []
     lines.each do |line|
-      tags = line.split(" ").reject(&:blank?).map do |x|
+      tags = line.split.compact_blank.map do |x|
         negated = x[0] == "-"
-        [negated ? x[1..-1] : x, negated]
+        [negated ? x[1..] : x, negated]
       end
       tags.each do |t|
         collected_tags << t[0]
@@ -104,9 +104,9 @@ class TagAlias < TagRelationship
     aliased = to_aliased_with_originals(collected_tags)
     aliased.merge!(overrides) if overrides
     lines = lines.map do |line|
-      tags = line.split(" ").reject(&:blank?).reject {|t| t == "-"}.map do |x|
+      tags = line.split.compact_blank.reject { |t| t == "-" }.map do |x|
         negated = x[0] == "-"
-        [negated ? x[1..-1] : x, negated]
+        [negated ? x[1..] : x, negated]
       end
       tags.map { |t| "#{t[1] ? '-' : ''}#{aliased[t[0]]}" }.join(" ")
     end
@@ -132,7 +132,7 @@ class TagAlias < TagRelationship
   def update_posts_locked_tags_undo
     Post.without_timeout do
       Post.where_ilike(:locked_tags, "*#{consequent_name}*").find_each(batch_size: 50) do |post|
-        fixed_tags = TagAlias.to_aliased_query(post.locked_tags, overrides: {consequent_name => antecedent_name})
+        fixed_tags = TagAlias.to_aliased_query(post.locked_tags, overrides: { consequent_name => antecedent_name })
         post.update_attribute(:locked_tags, fixed_tags)
       end
     end
@@ -141,7 +141,7 @@ class TagAlias < TagRelationship
   def update_blacklists_undo
     User.without_timeout do
       User.where_ilike(:blacklisted_tags, "*#{consequent_name}*").find_each(batch_size: 50) do |user|
-        fixed_blacklist = TagAlias.to_aliased_query(user.blacklisted_tags, overrides: {consequent_name => antecedent_name})
+        fixed_blacklist = TagAlias.to_aliased_query(user.blacklisted_tags, overrides: { consequent_name => antecedent_name })
         user.update_column(:blacklisted_tags, fixed_blacklist)
       end
     end
@@ -150,7 +150,7 @@ class TagAlias < TagRelationship
   def update_posts_undo
     Post.without_timeout do
       CurrentUser.as_system do
-        tag_rel_undos.where(applied: false).each do |tu|
+        tag_rel_undos.where(applied: false).find_each do |tu|
           Post.where(id: tu.undo_data).find_each do |post|
             post.automated_edit = true
             post.tag_string_diff = "-#{consequent_name} #{antecedent_name}"
@@ -160,16 +160,14 @@ class TagAlias < TagRelationship
       end
 
       # TODO: Race condition with indexing jobs here.
-      antecedent_tag.fix_post_count if antecedent_tag
-      consequent_tag.fix_post_count if consequent_tag
+      antecedent_tag&.fix_post_count
+      consequent_tag&.fix_post_count
     end
   end
 
   def rename_artist_undo
-    if consequent_tag.category == TagCategory.artist
-      if consequent_tag.artist.present? && antecedent_tag.artist.blank?
-        consequent_tag.artist.update!(name: antecedent_name)
-      end
+    if consequent_tag.category == TagCategory.artist && (consequent_tag.artist.present? && antecedent_tag.artist.blank?)
+      consequent_tag.artist.update!(name: antecedent_name)
     end
   end
 
@@ -195,7 +193,7 @@ class TagAlias < TagRelationship
       Rails.logger.error("[TA] #{e.message}\n#{e.backtrace}")
       if tries < 5 && !Rails.env.test?
         tries += 1
-        sleep(2 ** tries)
+        sleep(2**tries)
         retry
       end
 
@@ -217,7 +215,7 @@ class TagAlias < TagRelationship
   def move_aliases_and_implications
     aliases = TagAlias.where(["consequent_name = ?", antecedent_name])
     aliases.each do |ta|
-      ta.consequent_name = self.consequent_name
+      ta.consequent_name = consequent_name
       success = ta.save
       if !success && ta.errors.full_messages.join("; ") =~ /Cannot alias a tag to itself/
         ta.destroy
@@ -226,7 +224,7 @@ class TagAlias < TagRelationship
 
     implications = TagImplication.where(["antecedent_name = ?", antecedent_name])
     implications.each do |ti|
-      ti.antecedent_name = self.consequent_name
+      ti.antecedent_name = consequent_name
       success = ti.save
       if !success && ti.errors.full_messages.join("; ") =~ /Cannot implicate a tag to itself/
         ti.destroy
@@ -235,7 +233,7 @@ class TagAlias < TagRelationship
 
     implications = TagImplication.where(["consequent_name = ?", antecedent_name])
     implications.each do |ti|
-      ti.consequent_name = self.consequent_name
+      ti.consequent_name = consequent_name
       success = ti.save
       if !success && ti.errors.full_messages.join("; ") =~ /Cannot implicate a tag to itself/
         ti.destroy
@@ -283,10 +281,8 @@ class TagAlias < TagRelationship
   end
 
   def rename_artist
-    if antecedent_tag.category == TagCategory.artist
-      if antecedent_tag.artist.present? && consequent_tag.artist.blank?
-        antecedent_tag.artist.update!(name: consequent_name)
-      end
+    if antecedent_tag.category == TagCategory.artist && (antecedent_tag.artist.present? && consequent_tag.artist.blank?)
+      antecedent_tag.artist.update!(name: consequent_name)
     end
   end
 
@@ -302,18 +298,19 @@ class TagAlias < TagRelationship
   end
 
   def create_mod_action
-    alias_desc = %Q("tag alias ##{id}":[#{Rails.application.routes.url_helpers.tag_alias_path(self)}]: [[#{antecedent_name}]] -> [[#{consequent_name}]])
+    alias_desc = %("tag alias ##{id}":[#{Rails.application.routes.url_helpers.tag_alias_path(self)}]: [[#{antecedent_name}]] -> [[#{consequent_name}]])
 
     if previously_new_record?
       ModAction.log!(:tag_alias_create, self, alias_desc: alias_desc)
     else
       # format the changes hash more nicely.
       change_desc = saved_changes.except(:updated_at).map do |attribute, values|
-        old, new = values[0], values[1]
+        old = values[0]
+        new = values[1]
         if old.nil?
-          %Q(set #{attribute} to "#{new}")
+          %(set #{attribute} to "#{new}")
         else
-          %Q(changed #{attribute} from "#{old}" to "#{new}")
+          %(changed #{attribute} from "#{old}" to "#{new}")
         end
       end.join(", ")
 

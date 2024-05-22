@@ -11,10 +11,10 @@ class SessionsController < ApplicationController
       PawsMovin::Logger.add_attributes("user.login" => "rate_limited")
       return redirect_to(new_session_path, notice: "Username/Password was incorrect")
     end
-    session_creator = SessionCreator.new(session, cookies, sparams[:name], sparams[:password], request.remote_ip, sparams[:remember], request.ssl?)
+    session_creator = SessionCreator.new(session, cookies, sparams[:name], sparams[:password], request.remote_ip, remember: sparams[:remember], secure: request.ssl?)
 
     if session_creator.authenticate
-      url = sparams[:url] if sparams[:url] && sparams[:url].start_with?("/") && !sparams[:url].start_with?("//")
+      url = sparams[:url] if sparams[:url]&.start_with?("/") && !sparams[:url].start_with?("//")
       PawsMovin::Logger.add_attributes("user.login" => "success")
       redirect_to(url || posts_path)
     else

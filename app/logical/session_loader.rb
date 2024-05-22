@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class SessionLoader
-  class AuthenticationFailure < Exception ; end
+  class AuthenticationFailure < StandardError; end
 
   attr_reader :session, :cookies, :request, :params
 
@@ -32,7 +32,7 @@ class SessionLoader
       if recent_ban && recent_ban.expires_at.present?
         ban_message = "Account is suspended for another #{recent_ban.expire_days}"
       end
-      raise(AuthenticationFailure.new(ban_message))
+      raise(AuthenticationFailure, ban_message)
     end
     set_statement_timeout
     update_last_logged_in_at
@@ -59,25 +59,23 @@ class SessionLoader
   end
 
   def load_remember_token
-    begin
-      message = @remember_validator.verify(cookies.encrypted[:remember], purpose: "rbr")
-      return if message.nil?
-      pieces = message.split(":")
-      return unless pieces.length == 2
-      user = User.find_by_id(pieces[0].to_i)
-      return unless user
-      return if pieces[1].to_i != user.password_token
-      CurrentUser.user = user
-      session[:user_id] = user.id
-      session[:ph] = user.password_token # This has been validated by the remember token
-    rescue
-      return
-    end
+    message = @remember_validator.verify(cookies.encrypted[:remember], purpose: "rbr")
+    return if message.nil?
+    pieces = message.split(":")
+    return unless pieces.length == 2
+    user = User.find_by(id: pieces[0].to_i)
+    return unless user
+    return if pieces[1].to_i != user.password_token
+    CurrentUser.user = user
+    session[:user_id] = user.id
+    session[:ph] = user.password_token # This has been validated by the remember token
+  rescue StandardError
+    nil
   end
 
   def refresh_old_remember_token
     if cookies.encrypted[:remember] && !CurrentUser.is_anonymous?
-      cookies.encrypted[:remember] = {value: @remember_validator.generate("#{CurrentUser.id}:#{CurrentUser.password_token}", purpose: "rbr", expires_in: 14.days), expires: Time.now + 14.days, httponly: true, same_site: :lax, secure: Rails.env.production?}
+      cookies.encrypted[:remember] = { value: @remember_validator.generate("#{CurrentUser.id}:#{CurrentUser.password_token}", purpose: "rbr", expires_in: 14.days), expires: Time.now + 14.days, httponly: true, same_site: :lax, secure: Rails.env.production? }
     end
   end
 
@@ -98,7 +96,7 @@ class SessionLoader
   end
 
   def authenticate_api_key(name, key)
-    user, api_key = User.find_by_name(name)&.authenticate_api_key(key)
+    user, api_key = User.find_by_normalized_name(name)&.authenticate_api_key(key)
     raise(AuthenticationFailure, "Invalid API key") if user.blank?
     update_api_key(api_key)
     raise(User::PrivilegeError) unless api_key.has_permission?(request.remote_ip, request.params[:controller], request.params[:action])
@@ -106,7 +104,7 @@ class SessionLoader
   end
 
   def load_session_user
-    user = User.find_by_id(session[:user_id])
+    user = User.find_by(id: session[:user_id])
     raise(AuthenticationFailure) if user.nil?
     return if session[:ph] != user.password_token
     CurrentUser.user = user

@@ -26,8 +26,8 @@ class PostPresenter < Presenter
     }
 
     locals[:article_attrs] = {
-        "id"    => "post_#{post.id}",
-        "class" => preview_class(post, **options).join(" ")
+      "id"    => "post_#{post.id}",
+      "class" => preview_class(post, **options).join(" "),
     }.merge(data_attributes(post))
 
     locals[:link_target] = options[:link_target] || post
@@ -93,7 +93,7 @@ class PostPresenter < Presenter
     ApplicationController.render(partial: "posts/partials/index/preview", locals: locals)
   end
 
-  def self.preview_class(post, pool: nil, size: nil, similarity: nil, **options)
+  def self.preview_class(post, pool: nil, size: nil, similarity: nil, **options) # rubocop:disable Lint/UnusedMethodArgument
     klass = ["post-preview"]
     klass << "post-status-pending" if post.is_pending?
     klass << "post-status-flagged" if post.is_flagged?
@@ -109,19 +109,19 @@ class PostPresenter < Presenter
 
   def self.data_attributes(post, include_post: false)
     attributes = {
-        "data-id"           => post.id,
-        "data-has-sound"    => post.has_tag?("video_with_sound"),
-        "data-tags"         => post.tag_string,
-        "data-rating"       => post.rating,
-        "data-width"        => post.image_width,
-        "data-height"       => post.image_height,
-        "data-flags"        => post.status_flags,
-        "data-score"        => post.score,
-        "data-file-ext"     => post.file_ext,
-        "data-uploader-id"  => post.uploader_id,
-        "data-uploader"     => post.uploader_name,
-        "data-is-favorited" => post.favorited_by?(CurrentUser.user.id),
-        "data-own-vote"     => post.own_vote
+      "data-id"           => post.id,
+      "data-has-sound"    => post.has_tag?("video_with_sound"),
+      "data-tags"         => post.tag_string,
+      "data-rating"       => post.rating,
+      "data-width"        => post.image_width,
+      "data-height"       => post.image_height,
+      "data-flags"        => post.status_flags,
+      "data-score"        => post.score,
+      "data-file-ext"     => post.file_ext,
+      "data-uploader-id"  => post.uploader_id,
+      "data-uploader"     => post.uploader_name,
+      "data-is-favorited" => post.favorited_by?(CurrentUser.user.id),
+      "data-own-vote"     => post.own_vote,
     }
 
     if post.visible?
@@ -138,93 +138,93 @@ class PostPresenter < Presenter
 
   def self.post_attribute_attribute(post)
     alternate_samples = {}
-    PawsMovin.config.video_rescales.each do |k,v|
+    PawsMovin.config.video_rescales.each do |k, v|
       next unless post.has_sample_size?(k)
       dims = post.scaled_sample_dimensions(v)
       alternate_samples[k] = {
-          type:   "video",
-          height: dims[1],
-          width:  dims[0],
-          urls:   post.visible? ? [post.scaled_url_ext(k, "webm"), post.scaled_url_ext(k, "mp4")] : [nil, nil]
+        type:   "video",
+        height: dims[1],
+        width:  dims[0],
+        urls:   post.visible? ? [post.scaled_url_ext(k, "webm"), post.scaled_url_ext(k, "mp4")] : [nil, nil],
       }
     end
     if post.has_sample_size?("original")
       alternate_samples["original"] = {
-          type:   "video",
-          height: post.image_height,
-          width:  post.image_width,
-          urls:   post.visible? ? [nil, post.file_url_ext("mp4")] : [nil, nil]
+        type:   "video",
+        height: post.image_height,
+        width:  post.image_width,
+        urls:   post.visible? ? [nil, post.file_url_ext("mp4")] : [nil, nil],
       }
     end
-    PawsMovin.config.image_rescales.each do |k,v|
+    PawsMovin.config.image_rescales.each do |k, v|
       next unless post.has_sample_size?(k)
       dims = post.scaled_sample_dimensions(v)
       alternate_samples[k] = {
-          type:   "image",
-          height: dims[1],
-          width:  dims[0],
-          url:    post.visible? ? post.scaled_url_ext(k, "webp") : nil
+        type:   "image",
+        height: dims[1],
+        width:  dims[0],
+        url:    post.visible? ? post.scaled_url_ext(k, "webp") : nil,
       }
     end
     {
-        id:            post.id,
-        created_at:    post.created_at,
-        updated_at:    post.updated_at,
-        fav_count:     post.fav_count,
-        comment_count: post.visible_comment_count(CurrentUser),
-        change_seq:    post.change_seq,
-        uploader_id:   post.uploader_id,
-        description:   post.description,
-        flags:         {
-            pending:       post.is_pending,
-            flagged:       post.is_flagged,
-            note_locked:   post.is_note_locked,
-            status_locked: post.is_status_locked,
-            rating_locked: post.is_rating_locked,
-            deleted:       post.is_deleted,
-            has_notes:     post.has_notes?
-        },
-        score:         {
-            up:    post.up_score,
-            down:  post.down_score,
-            total: post.score
-        },
-        relationships: {
-            parent_id:           post.parent_id,
-            has_children:        post.has_children,
-            has_active_children: post.has_active_children,
-            children:            []
-        },
-        pools:         post.pool_ids,
-        file:          {
-            width:  post.image_width,
-            height: post.image_height,
-            ext:    post.file_ext,
-            size:   post.file_size,
-            md5:    post.md5,
-            url:    post.visible? ? post.file_url : nil
-        },
-        sample:        {
-            has:        post.has_large?,
-            height:     post.large_image_height,
-            width:      post.large_image_width,
-            url:        post.visible? ? post.large_file_url : nil,
-            alternates: alternate_samples
-        },
-        sources:       post.source&.split('\n'),
-        tags:          post.tag_string.split(" "),
-        locked_tags:   post.locked_tags&.split(" ") || [],
-        is_favorited:  post.is_favorited?,
-        own_vote:      post.own_vote
+      id:            post.id,
+      created_at:    post.created_at,
+      updated_at:    post.updated_at,
+      fav_count:     post.fav_count,
+      comment_count: post.visible_comment_count(CurrentUser),
+      change_seq:    post.change_seq,
+      uploader_id:   post.uploader_id,
+      description:   post.description,
+      flags:         {
+        pending:       post.is_pending,
+        flagged:       post.is_flagged,
+        note_locked:   post.is_note_locked,
+        status_locked: post.is_status_locked,
+        rating_locked: post.is_rating_locked,
+        deleted:       post.is_deleted,
+        has_notes:     post.has_notes?,
+      },
+      score:         {
+        up:    post.up_score,
+        down:  post.down_score,
+        total: post.score,
+      },
+      relationships: {
+        parent_id:           post.parent_id,
+        has_children:        post.has_children,
+        has_active_children: post.has_active_children,
+        children:            [],
+      },
+      pools:         post.pool_ids,
+      file:          {
+        width:  post.image_width,
+        height: post.image_height,
+        ext:    post.file_ext,
+        size:   post.file_size,
+        md5:    post.md5,
+        url:    post.visible? ? post.file_url : nil,
+      },
+      sample:        {
+        has:        post.has_large?,
+        height:     post.large_image_height,
+        width:      post.large_image_width,
+        url:        post.visible? ? post.large_file_url : nil,
+        alternates: alternate_samples,
+      },
+      sources:       post.source&.split('\n'),
+      tags:          post.tag_string.split,
+      locked_tags:   post.locked_tags&.split || [],
+      is_favorited:  post.is_favorited?,
+      own_vote:      post.own_vote,
     }
   end
 
   def image_attributes
     attributes = {
-        :id        => "image",
-        :class     => @post.display_class_for(CurrentUser.user),
-        :alt       => humanized_essential_tag_string,
-        "itemprop" => "contentUrl"
+      :id        => "image",
+      :class     => @post.display_class_for(CurrentUser.user),
+      :alt       => humanized_essential_tag_string,
+      "itemprop" => "contentUrl",
     }
 
     if @post.bg_color

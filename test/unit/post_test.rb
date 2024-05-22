@@ -168,8 +168,8 @@ class PostTest < ActiveSupport::TestCase
     context "Assigning a parent to a post" do
       should "update the has_children flag on the parent" do
         p1 = create(:post)
-        assert(!p1.has_children?, "Parent should not have any children")
-        c1 = create(:post, parent_id: p1.id)
+        assert_not(p1.has_children?, "Parent should not have any children")
+        create(:post, parent_id: p1.id)
         p1.reload
         assert(p1.has_children?, "Parent not updated after child was added")
       end
@@ -182,7 +182,7 @@ class PostTest < ActiveSupport::TestCase
         c1.save
         p1.reload
         p2.reload
-        assert(!p1.has_children?, "Old parent should not have a child")
+        assert_not(p1.has_children?, "Old parent should not have a child")
         assert(p2.has_children?, "New parent should have a child")
       end
     end
@@ -202,7 +202,7 @@ class PostTest < ActiveSupport::TestCase
           c1 = create(:post, parent_id: p1.id)
           c1.expunge!
           p1.reload
-          assert(!p1.has_children?, "Parent should not have children")
+          assert_not(p1.has_children?, "Parent should not have children")
         end
       end
 
@@ -307,7 +307,7 @@ class PostTest < ActiveSupport::TestCase
       context "one child" do
         should "not remove the has_children flag" do
           p1 = create(:post)
-          c1 = create(:post, parent_id: p1.id)
+          create(:post, parent_id: p1.id)
           p1.delete!("test")
           p1.reload
           assert_equal(true, p1.has_children?)
@@ -502,7 +502,7 @@ class PostTest < ActiveSupport::TestCase
         end
 
         should "update the category of the tag" do
-          assert_equal(TagCategory.copyright, Tag.find_by_name("abc").category)
+          assert_equal(TagCategory.copyright, Tag.find_by(name: "abc").category)
         end
 
         should "update the category cache of the tag" do
@@ -733,7 +733,7 @@ class PostTest < ActiveSupport::TestCase
           end
 
           should "change the type" do
-            assert(Tag.where(name: "hoge", category: 4).exists?, "expected 'moge' tag to be created as a character")
+            assert(Tag.exists?(name: "hoge", category: 4), "expected 'hoge' tag to be created as a character")
           end
         end
 
@@ -836,7 +836,7 @@ class PostTest < ActiveSupport::TestCase
             context "that doesn't exist" do
               should "create a new pool and add the post to that pool" do
                 @post.update(tag_string: "aaa newpool:abc")
-                @pool = Pool.find_by_name("abc")
+                @pool = Pool.find_by(name: "abc")
                 @post.reload
                 assert_not_nil(@pool)
                 assert_equal([@post.id], @pool.post_ids)
@@ -1048,8 +1048,8 @@ class PostTest < ActiveSupport::TestCase
         post = create(:post)
         post.reload
         post.set_tag_string("aaa bbb")
-        assert_equal(%w(aaa bbb), post.tag_array)
-        assert_equal(%w(tag1 tag2), post.tag_array_was)
+        assert_equal(%w[aaa bbb], post.tag_array)
+        assert_equal(%w[tag1 tag2], post.tag_array_was)
       end
 
       context "with large dimensions" do
@@ -1118,7 +1118,7 @@ class PostTest < ActiveSupport::TestCase
       context "that has been updated" do
         should "create a new version if it's the first version" do
           assert_difference("PostVersion.count", 1) do
-            post = create(:post)
+            create(:post)
           end
         end
 
@@ -1241,37 +1241,37 @@ class PostTest < ActiveSupport::TestCase
 
         should "reset its tag array cache" do
           post = create(:post, tag_string: "aaa bbb ccc")
-          user = create(:user)
-          assert_equal(%w(aaa bbb ccc), post.tag_array)
+          create(:user)
+          assert_equal(%w[aaa bbb ccc], post.tag_array)
           post.tag_string = "ddd eee fff"
           post.tag_string = "ddd eee fff"
           post.save
           assert_equal("ddd eee fff", post.tag_string)
-          assert_equal(%w(ddd eee fff), post.tag_array)
+          assert_equal(%w[ddd eee fff], post.tag_array)
         end
 
         should "create the actual tag records" do
           assert_difference("Tag.count", 3) do
-            post = create(:post, tag_string: "aaa bbb ccc")
+            create(:post, tag_string: "aaa bbb ccc")
           end
         end
 
         should "update the post counts of relevant tag records" do
-          post1 = create(:post, tag_string: "aaa bbb ccc")
-          post2 = create(:post, tag_string: "bbb ccc ddd")
+          create(:post, tag_string: "aaa bbb ccc")
+          create(:post, tag_string: "bbb ccc ddd")
           post3 = create(:post, tag_string: "ccc ddd eee")
-          assert_equal(1, Tag.find_by_name("aaa").post_count)
-          assert_equal(2, Tag.find_by_name("bbb").post_count)
-          assert_equal(3, Tag.find_by_name("ccc").post_count)
+          assert_equal(1, Tag.find_by(name: "aaa").post_count)
+          assert_equal(2, Tag.find_by(name: "bbb").post_count)
+          assert_equal(3, Tag.find_by(name: "ccc").post_count)
           post3.reload
           post3.tag_string = "xxx"
           post3.save
-          assert_equal(1, Tag.find_by_name("aaa").post_count)
-          assert_equal(2, Tag.find_by_name("bbb").post_count)
-          assert_equal(2, Tag.find_by_name("ccc").post_count)
-          assert_equal(1, Tag.find_by_name("ddd").post_count)
-          assert_equal(0, Tag.find_by_name("eee").post_count)
-          assert_equal(1, Tag.find_by_name("xxx").post_count)
+          assert_equal(1, Tag.find_by(name: "aaa").post_count)
+          assert_equal(2, Tag.find_by(name: "bbb").post_count)
+          assert_equal(2, Tag.find_by(name: "ccc").post_count)
+          assert_equal(1, Tag.find_by(name: "ddd").post_count)
+          assert_equal(0, Tag.find_by(name: "eee").post_count)
+          assert_equal(1, Tag.find_by(name: "xxx").post_count)
         end
 
         should "update its tag counts" do
@@ -1311,7 +1311,7 @@ class PostTest < ActiveSupport::TestCase
 
           # final should be <aaa>, <bbb>, <ddd>, <eee>
           final_post = Post.find(post.id)
-          assert_equal(%w(aaa bbb ddd eee), TagQuery.scan(final_post.tag_string).sort)
+          assert_equal(%w[aaa bbb ddd eee], TagQuery.scan(final_post.tag_string).sort)
         end
 
         should "merge any tag changes that were made after loading the initial set of tags part 2" do
@@ -1334,7 +1334,7 @@ class PostTest < ActiveSupport::TestCase
 
           # final should be <aaa>, <bbb>, <ddd>, <eee>
           final_post = Post.find(post.id)
-          assert_equal(%w(aaa bbb ddd eee), TagQuery.scan(final_post.tag_string).sort)
+          assert_equal(%w[aaa bbb ddd eee], TagQuery.scan(final_post.tag_string).sort)
         end
 
         should "merge any parent, source, and rating changes that were made after loading the initial set" do
@@ -1451,7 +1451,7 @@ class PostTest < ActiveSupport::TestCase
       should "not allow values S, safe, derp" do
         %w[S safe derp].each do |rating|
           subject.rating = rating
-          assert(!subject.valid?)
+          assert_not(subject.valid?)
         end
       end
 
@@ -1470,14 +1470,14 @@ class PostTest < ActiveSupport::TestCase
       should "not allow values S, safe, derp" do
         %w[S safe derp].each do |rating|
           subject.rating = rating
-          assert(!subject.valid?)
+          assert_not(subject.valid?)
         end
       end
 
       should "not allow values s, e" do
         %w[s e].each do |rating|
           subject.rating = rating
-          assert(!subject.valid?)
+          assert_not(subject.valid?)
         end
       end
     end
@@ -1554,12 +1554,12 @@ class PostTest < ActiveSupport::TestCase
         FavoriteManager.remove!(user: @user, post: @post)
         @post.reload
         assert_equal("", @post.fav_string)
-        assert(!Favorite.exists?(user_id: @user.id, post_id: @post.id))
+        assert_not(Favorite.exists?(user_id: @user.id, post_id: @post.id))
 
         FavoriteManager.remove!(user: @user, post: @post)
         @post.reload
         assert_equal("", @post.fav_string)
-        assert(!Favorite.exists?(user_id: @user.id, post_id: @post.id))
+        assert_not(Favorite.exists?(user_id: @user.id, post_id: @post.id))
       end
     end
 
@@ -1632,7 +1632,7 @@ class PostTest < ActiveSupport::TestCase
         post = create(:post)
         user1 = create(:user)
         user2 = create(:user)
-        user3 = create(:user)
+        create(:user)
 
         post.uploader = user1
         assert_equal(user1.id, post.uploader_id)
@@ -1654,7 +1654,7 @@ class PostTest < ActiveSupport::TestCase
 
       should "increment the uploaders post_upload_count" do
         assert_difference(-> { CurrentUser.user.post_upload_count }) do
-          post = create(:post, uploader: CurrentUser.user)
+          create(:post, uploader: CurrentUser.user)
           CurrentUser.user.reload
         end
       end
@@ -1683,14 +1683,14 @@ class PostTest < ActiveSupport::TestCase
 
     should "return posts for the ' tag" do
       post1 = create(:post, tag_string: "'")
-      post2 = create(:post, tag_string: "aaa bbb")
+      create(:post, tag_string: "aaa bbb")
 
       assert_tag_match([post1], "'")
     end
 
     should "return posts for the ? tag" do
       post1 = create(:post, tag_string: "?")
-      post2 = create(:post, tag_string: "aaa bbb")
+      create(:post, tag_string: "aaa bbb")
 
       assert_tag_match([post1], "?")
     end
@@ -1698,22 +1698,22 @@ class PostTest < ActiveSupport::TestCase
     should "return posts for 1 tag" do
       post1 = create(:post, tag_string: "aaa")
       post2 = create(:post, tag_string: "aaa bbb")
-      post3 = create(:post, tag_string: "bbb ccc")
+      create(:post, tag_string: "bbb ccc")
 
       assert_tag_match([post2, post1], "aaa")
     end
 
     should "return posts for a 2 tag join" do
-      post1 = create(:post, tag_string: "aaa")
+      create(:post, tag_string: "aaa")
       post2 = create(:post, tag_string: "aaa bbb")
-      post3 = create(:post, tag_string: "bbb ccc")
+      create(:post, tag_string: "bbb ccc")
 
       assert_tag_match([post2], "aaa bbb")
     end
 
     should "return posts for a 2 tag union" do
       post1 = create(:post, tag_string: "aaa")
-      post2 = create(:post, tag_string: "aaab bbb")
+      create(:post, tag_string: "aaab bbb")
       post3 = create(:post, tag_string: "bbb ccc")
 
       assert_tag_match([post3, post1], "~aaa ~ccc")
@@ -1721,8 +1721,8 @@ class PostTest < ActiveSupport::TestCase
 
     should "return posts for 1 tag with exclusion" do
       post1 = create(:post, tag_string: "aaa")
-      post2 = create(:post, tag_string: "aaa bbb")
-      post3 = create(:post, tag_string: "bbb ccc")
+      create(:post, tag_string: "aaa bbb")
+      create(:post, tag_string: "bbb ccc")
 
       assert_tag_match([post1], "aaa -bbb")
     end
@@ -1730,15 +1730,15 @@ class PostTest < ActiveSupport::TestCase
     should "return posts for 1 tag with a pattern" do
       post1 = create(:post, tag_string: "aaa")
       post2 = create(:post, tag_string: "aaab bbb")
-      post3 = create(:post, tag_string: "bbb ccc")
+      create(:post, tag_string: "bbb ccc")
 
       assert_tag_match([post2, post1], "a*")
     end
 
     should "return posts for 2 tags, one with a pattern" do
-      post1 = create(:post, tag_string: "aaa")
+      create(:post, tag_string: "aaa")
       post2 = create(:post, tag_string: "aaab bbb")
-      post3 = create(:post, tag_string: "bbb ccc")
+      create(:post, tag_string: "bbb ccc")
 
       assert_tag_match([post2], "a* bbb")
     end
@@ -1819,7 +1819,7 @@ class PostTest < ActiveSupport::TestCase
     should "return posts for the commenter:<name> metatag" do
       users = create_list(:user, 2, created_at: 2.weeks.ago)
       posts = create_list(:post, 2)
-      comms = users.zip(posts).map { |u, p| as(u) { create(:comment, post: p) } }
+      users.zip(posts).map { |u, p| as(u) { create(:comment, post: p) } }
 
       assert_tag_match([posts[0]], "commenter:#{users[0].name}")
       assert_tag_match([posts[1]], "commenter:#{users[1].name}")
@@ -1837,7 +1837,7 @@ class PostTest < ActiveSupport::TestCase
     should "return posts for the noter:<name> metatag" do
       users = create_list(:user, 2)
       posts = create_list(:post, 2)
-      notes = users.zip(posts).map { |u, p| create(:note, creator: u, post: p) }
+      users.zip(posts).map { |u, p| create(:note, creator: u, post: p) }
 
       assert_tag_match([posts[0]], "noter:#{users[0].name}")
       assert_tag_match([posts[1]], "noter:#{users[1].name}")
@@ -1932,7 +1932,7 @@ class PostTest < ActiveSupport::TestCase
 
     should "return posts for the md5:<md5> metatag" do
       post1 = create(:post, md5: "abcd")
-      post2 = create(:post)
+      create(:post)
 
       assert_tag_match([post1], "md5:abcd")
     end
@@ -1951,7 +1951,7 @@ class PostTest < ActiveSupport::TestCase
 
     should "return posts for a case insensitive source search" do
       post1 = create(:post, source: "ABCD")
-      post2 = create(:post, source: "1234")
+      create(:post, source: "1234")
 
       assert_tag_match([post1], "source:*abcd")
     end
@@ -2020,9 +2020,9 @@ class PostTest < ActiveSupport::TestCase
           fav_count:    n,
           file_size:    1.megabyte * n,
           # posts[0] is portrait, posts[1] is landscape. posts[1].mpixels > posts[0].mpixels.
-          image_height: 100*n*n,
-          image_width:  100*(3-n)*n,
-          tag_string:   tags[n-1],
+          image_height: 100 * n * n,
+          image_width:  100 * (3 - n) * n,
+          tag_string:   tags[n - 1],
         )
 
         create(:comment, post: p, do_not_bump_post: false)
@@ -2109,16 +2109,16 @@ class PostTest < ActiveSupport::TestCase
     end
 
     should "succeed for exclusive tag searches with no other tag" do
-      post1 = create(:post, rating: "s", tag_string: "aaa")
+      create(:post, rating: "s", tag_string: "aaa")
       assert_nothing_raised do
-        relation = Post.tag_match("-aaa")
+        Post.tag_match("-aaa")
       end
     end
 
     should "succeed for exclusive tag searches combined with a metatag" do
-      post1 = create(:post, rating: "s", tag_string: "aaa")
+      create(:post, rating: "s", tag_string: "aaa")
       assert_nothing_raised do
-        relation = Post.tag_match("-aaa id:>0")
+        Post.tag_match("-aaa id:>0")
       end
     end
 
@@ -2126,7 +2126,7 @@ class PostTest < ActiveSupport::TestCase
       assert_tag_match([], "pending_replacements:true")
       assert_tag_match([], "pending_replacements:false")
       post = create(:post)
-      replacement = create(:png_replacement, creator: @user, post: post)
+      create(:png_replacement, creator: @user, post: post)
       assert_tag_match([post], "pending_replacements:true")
     end
 
@@ -2217,12 +2217,12 @@ class PostTest < ActiveSupport::TestCase
       VoteManager::Posts.unvote!(user: @user, post: @post)
       @post.reload
       assert_equal("", @post.vote_string)
-      assert(!PostVote.exists?(user_id: @user.id, post_id: @post.id))
+      assert_not(PostVote.exists?(user_id: @user.id, post_id: @post.id))
 
       VoteManager::Posts.unvote!(user: @user, post: @post)
       @post.reload
       assert_equal("", @post.vote_string)
-      assert(!PostVote.exists?(user_id: @user.id, post_id: @post.id))
+      assert_not(PostVote.exists?(user_id: @user.id, post_id: @post.id))
     end
 
     context "Moving votes to a parent post" do

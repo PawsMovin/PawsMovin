@@ -11,7 +11,7 @@ class UserEmailChange
 
   def process
     if user.is_banned?
-      raise(::User::PrivilegeError.new("Cannot change email while banned"))
+      raise(::User::PrivilegeError, "Cannot change email while banned")
     end
 
     if RateLimiter.check_limit("email:#{user.id}", 2, 24.hours)

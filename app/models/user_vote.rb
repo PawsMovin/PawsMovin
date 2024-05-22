@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class UserVote < ApplicationRecord
-  class Error < Exception; end
+  class Error < StandardError; end
 
   self.abstract_class = true
 
@@ -76,7 +76,7 @@ class UserVote < ApplicationRecord
 
       q = q.where_user(:user_id, :user, params)
 
-      allow_complex_params = (params.keys & %W[#{model_type}_id user_name user_id]).any?
+      allow_complex_params = params.keys.intersect?(%W[#{model_type}_id user_name user_id])
 
       if allow_complex_params
         q = q.where_user({ model_type => :"#{model_creator_column}_id" }, :"#{model_type}_creator", params) do |q, _user_ids|

@@ -45,7 +45,7 @@ Rails.application.configure do
   #   .then { |logger| ActiveSupport::TaggedLogging.new(logger) }
 
   # Prepend all log lines with the following tags.
-  config.log_tags = [ :request_id ]
+  config.log_tags = [:request_id]
 
   # "info" includes generic and useful information about system operation, but avoids logging too much
   # information to avoid inadvertent exposure of personally identifiable information (PII). If you
@@ -68,7 +68,7 @@ Rails.application.configure do
     authentication:       PawsMovin.config.smtp_authentication,
     enable_starttls_auto: PawsMovin.config.smtp_tls,
     open_timeout:         5,
-    read_timeout:         5
+    read_timeout:         5,
   }
 
   # Ignore bad email addresses and do not raise email delivery errors.

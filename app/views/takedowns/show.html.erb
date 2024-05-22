@@ -1,4 +1,4 @@
-<% if @show_instructions && (!@takedown.completed?) %>
+<% if @show_instructions && !@takedown.completed? %>
   <div class='box-section sect_red'>
     <div style="font-size:2rem;margin-top:0;margin-bottom:1rem;">Wait! You're not done yet!</div>
     <p>Your verification code is <span class='takedown-vericode'><%= @takedown.vericode %></span></p>
@@ -17,8 +17,8 @@
     <tr>
       <td><label>Source</label></td>
       <td>
-        <% if !@takedown.reason_hidden  || CurrentUser.user.is_janitor? || @show_instructions %>
-          <% if @takedown.source.match(/^https?:\/\//i) %>
+        <% if !@takedown.reason_hidden || CurrentUser.user.is_janitor? || @show_instructions %>
+          <% if @takedown.source.match(%r{^https?://}i) %>
             <%= link_to @takedown.source, @takedown.source, rel: "noopener noreferrer nofollow" %>
           <% else %>
             <%= link_to @takedown.source, "https://#{@takedown.source}", rel: "noopener noreferrer nofollow" %>
@@ -94,7 +94,7 @@
   </table>
 </div>
 
-<% if !@takedown.notes.blank? && @takedown.notes.downcase != "none" %>
+<% if @takedown.notes.present? && @takedown.notes.downcase != "none" %>
   <h3>Admin notes</h3>
   <div class="box-section dtext-container">
     <% if !@takedown.reason_hidden || CurrentUser.user.is_janitor? %>
@@ -119,14 +119,14 @@
 <% end %>
 
 <% if @show_instructions %>
-  <% if !@takedown.instructions.blank? %>
+  <% if @takedown.instructions.present? %>
     <h3>Special instructions</h3>
     <div class="box-section">
       <%= h @takedown.instructions %>
     </div>
   <% end %>
 
-  <% if @takedown.status == "pending" && !@takedown.kept_post_array.blank? %>
+  <% if @takedown.status == "pending" && @takedown.kept_post_array.present? %>
     <div class='box-section'>
       <p>The following posts are up for dispute:</p>
       <% @takedown.actual_kept_posts.each do |post| %>
@@ -134,7 +134,7 @@
       <% end %>
     </div>
 
-  <% elsif @takedown.status == "inactive" && !@takedown.takedown_posts.blank? %>
+  <% elsif @takedown.status == "inactive" && @takedown.takedown_posts.present? %>
     <div class='box-section sect_grey'>
       <p style="margin-bottom:0px;">This takedown request has been marked as inactive as the submitter has not responded in a reasonable time frame. It will be handled once the submitter responds.</p>
         <br>

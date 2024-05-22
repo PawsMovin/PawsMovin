@@ -22,7 +22,7 @@ class BulkUpdateRequestImporter
   end
 
   def self.tokenize(text)
-    text.split(/\r\n|\r|\n/).reject(&:blank?).map do |line|
+    text.split(/\r\n|\r|\n/).compact_blank.map do |line|
       line = line.gsub(/[[:space:]]+/, " ").strip
 
       if line =~ /^(?:create alias|aliasing|alias) (\S+) -> (\S+)( #.*)?$/i
@@ -80,7 +80,7 @@ class BulkUpdateRequestImporter
         comment = "# missing" if token[3] == false
         "nuke tag #{token[1]} #{comment}".strip
       else
-        raise(Error.new("Unknown token to reverse"))
+        raise(Error, "Unknown token to reverse")
       end
     end
   end
@@ -98,7 +98,7 @@ class BulkUpdateRequestImporter
     if tag_alias.has_transitives
       return [nil, "has blocking transitive relationships, cannot be applied through BUR"]
     end
-    return [nil, nil]
+    [nil, nil]
   end
 
   def validate_implication(token)
@@ -108,12 +108,12 @@ class BulkUpdateRequestImporter
     unless tag_implication.valid?
       return ["Error: #{tag_implication.errors.full_messages.join('; ')} (create implication #{tag_implication.antecedent_name} -> #{tag_implication.consequent_name})", nil]
     end
-    return [nil, nil]
+    [nil, nil]
   end
 
   def validate_annotate(tokens, user)
     errors = []
-    annotated = tokens.map do |token|
+    annotated = tokens.map do |token| # rubocop:disable Metrics/BlockLength
       case token[0]
       when :create_alias
         output = validate_alias(token)
@@ -212,8 +212,7 @@ class BulkUpdateRequestImporter
   end
 
   def execute(tokens, approver)
-    warnings = []
-    ActiveRecord::Base.transaction do
+    ActiveRecord::Base.transaction do # rubocop:disable Metrics/BlockLength
       tokens.map do |token|
         case token[0]
         when :create_alias

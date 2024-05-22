@@ -1,4 +1,4 @@
-<%= render partial: "search", locals: {path: takedowns_path} %>
+<%= render partial: "search", locals: { path: takedowns_path } %>
 <table class="striped">
   <thead>
   <tr>
@@ -22,7 +22,7 @@
     <td><%= link_to takedown.id, takedown_path(takedown) %></td>
     <td>
       <% if !takedown.reason_hidden || CurrentUser.user.is_janitor? %>
-        <% if takedown.source.match(/\Ahttps?:\/\//i) %>
+        <% if takedown.source.match(%r{\Ahttps?://}i) %>
           <%= link_to takedown.source, takedown.source, rel: "noopener noreferrer nofollow" %>
         <% else %>
           <%= link_to takedown.source, "https://#{takedown.source}", rel: "noopener noreferrer nofollow" %>

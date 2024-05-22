@@ -113,14 +113,14 @@ class UserTest < ActiveSupport::TestCase
       assert(@user.is_verified?)
       @user = create(:user)
       @user.mark_unverified!
-      assert(!@user.is_verified?)
-      assert_nothing_raised {@user.mark_verified!}
+      assert_not(@user.is_verified?)
+      assert_nothing_raised { @user.mark_verified! }
       assert(@user.is_verified?)
     end
 
     should "authenticate" do
       assert(User.authenticate(@user.name, "password"), "Authentication should have succeeded")
-      assert(!User.authenticate(@user.name, "password2"), "Authentication should not have succeeded")
+      assert_not(User.authenticate(@user.name, "password2"), "Authentication should not have succeeded")
     end
 
     should "normalize its level" do
@@ -129,19 +129,19 @@ class UserTest < ActiveSupport::TestCase
       assert(user.is_trusted?)
 
       user = create(:user, level: User::Levels::MODERATOR)
-      assert(!user.is_admin?)
+      assert_not(user.is_admin?)
       assert(user.is_moderator?)
       assert(user.is_trusted?)
 
       user = create(:user, level: User::Levels::TRUSTED)
-      assert(!user.is_admin?)
-      assert(!user.is_moderator?)
+      assert_not(user.is_admin?)
+      assert_not(user.is_moderator?)
       assert(user.is_trusted?)
 
       user = create(:user)
-      assert(!user.is_admin?)
-      assert(!user.is_moderator?)
-      assert(!user.is_trusted?)
+      assert_not(user.is_admin?)
+      assert_not(user.is_moderator?)
+      assert_not(user.is_trusted?)
     end
 
     context "name" do
@@ -298,8 +298,8 @@ class UserTest < ActiveSupport::TestCase
         user3 = create(:user, name: "bar123baz")
 
         assert_equal([user2.id, user1.id], User.search(name_matches: "foo*").map(&:id))
-        assert_equal([user2.id], User.search(name_matches: "foo\*bar").map(&:id))
-        assert_equal([user3.id], User.search(name_matches: "bar\*baz").map(&:id))
+        assert_equal([user2.id], User.search(name_matches: "foo*bar").map(&:id))
+        assert_equal([user3.id], User.search(name_matches: "bar*baz").map(&:id))
       end
     end
 

@@ -9,11 +9,6 @@ class TakedownsController < ApplicationController
     respond_with(@takedowns)
   end
 
-  def destroy
-    authorize(@takedown).destroy
-    respond_with(@takedown)
-  end
-
   def show
     authorize(@takedown)
     @show_instructions = (CurrentUser.ip_addr == @takedown.creator_ip_addr) || (@takedown.vericode == params[:code])
@@ -56,11 +51,16 @@ class TakedownsController < ApplicationController
     respond_with(@takedown)
   end
 
+  def destroy
+    authorize(@takedown).destroy
+    respond_with(@takedown)
+  end
+
   def add_by_ids
     added = authorize(@takedown).add_posts_by_ids!(params[:post_ids])
     respond_with(@takedown) do |fmt|
       fmt.json do
-        render(json: {added_count: added.size, added_post_ids: added})
+        render(json: { added_count: added.size, added_post_ids: added })
       end
     end
   end
@@ -69,7 +69,7 @@ class TakedownsController < ApplicationController
     added = authorize(@takedown).add_posts_by_tags!(params[:post_tags])
     respond_with(@takedown) do |fmt|
       fmt.json do
-        render(json: {added_count: added.size, added_post_ids: added})
+        render(json: { added_count: added.size, added_post_ids: added })
       end
     end
   end
@@ -77,7 +77,7 @@ class TakedownsController < ApplicationController
   def count_matching_posts
     authorize(Takedown)
     post_count = Post.tag_match_system(params[:post_tags]).count_only
-    render(json: {matched_post_count: post_count})
+    render(json: { matched_post_count: post_count })
   end
 
   def remove_by_ids

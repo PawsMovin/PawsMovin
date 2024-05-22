@@ -3,6 +3,8 @@
 class Ban < ApplicationRecord
   attr_accessor :is_permaban
 
+  before_validation :initialize_banner_id, on: :create
+  before_validation :initialize_permaban, on: %i[update create]
   after_create :create_feedback
   after_create :update_user_on_create
   after_create :log_create
@@ -12,13 +14,11 @@ class Ban < ApplicationRecord
   belongs_to :user
   belongs_to :banner, class_name: "User"
   validate :user_is_inferior
-  validates :user_id, :reason, :duration, presence: true
+  validates :reason, :duration, presence: true
   validates :reason, length: { minimum: 1, maximum: PawsMovin.config.user_feedback_max_size }
-  before_validation :initialize_banner_id, on: :create
-  before_validation :initialize_permaban, on: %i[update create]
 
   scope :unexpired, -> { where("bans.expires_at > ? OR bans.expires_at IS NULL", Time.now) }
-  scope :expired, -> { where("bans.expires_at IS NOT NULL").where("bans.expires_at <= ?", Time.now) }
+  scope :expired, -> { where.not(bans: { expires_at: nil }).where("bans.expires_at <= ?", Time.now) }
 
   def self.is_banned?(user)
     exists?(["user_id = ? AND (expires_at > ? OR expires_at IS NULL)", user.id, Time.now])
@@ -52,7 +52,7 @@ class Ban < ApplicationRecord
   end
 
   def initialize_banner_id
-    self.banner_id = CurrentUser.id if self.banner_id.blank?
+    self.banner_id = CurrentUser.id if banner_id.blank?
   end
 
   def initialize_permaban
@@ -71,7 +71,7 @@ class Ban < ApplicationRecord
       elsif user.is_moderator?
         errors.add(:base, "Only admins can ban moderators.")
         false
-      elsif banner.is_admin? || banner.is_moderator?
+      elsif banner.is_admin? || banner.is_moderator? # rubocop:disable Lint/DuplicateBranch
         true
       else
         errors.add(:base, "No one else can ban.")
@@ -92,7 +92,7 @@ class Ban < ApplicationRecord
   end
 
   def user_name
-    user ? user.name : nil
+    user&.name
   end
 
   def user_name=(username)
@@ -109,36 +109,34 @@ class Ban < ApplicationRecord
     @duration = dur if dur != 0
   end
 
-  def duration
-    @duration
-  end
+  attr_reader :duration
 
   def humanized_duration
-    return "permanent" if expires_at == nil
+    return "permanent" if expires_at.nil?
     ApplicationController.helpers.distance_of_time_in_words(created_at, expires_at)
   end
 
   def humanized_expiration
-    return "never" if expires_at == nil
+    return "never" if expires_at.nil?
     ApplicationController.helpers.compact_time(expires_at)
   end
 
   def expire_days
-    return "never" if expires_at == nil
+    return "never" if expires_at.nil?
     ApplicationController.helpers.time_ago_in_words(expires_at)
   end
 
   def expire_days_tagged
-    return "never" if expires_at == nil
+    return "never" if expires_at.nil?
     ApplicationController.helpers.time_ago_in_words_tagged(expires_at)
   end
 
   def expired?
-    expires_at != nil && expires_at < Time.now
+    !expires_at.nil? && expires_at < Time.now
   end
 
   def create_feedback
-    time = expires_at == nil ? "permanently" : "for #{humanized_duration}"
+    time = expires_at.nil? ? "permanently" : "for #{humanized_duration}"
     user.feedback.create(category: "negative", body: "Banned #{time}: #{reason}")
   end
 

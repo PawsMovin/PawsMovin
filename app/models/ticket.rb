@@ -6,9 +6,9 @@ class Ticket < ApplicationRecord
   belongs_to :claimant, class_name: "User", optional: true
   belongs_to :handler, class_name: "User", optional: true
   belongs_to :accused, class_name: "User", optional: true
-  before_validation :initialize_fields, on: :create
   after_initialize :validate_type
   after_initialize :classify
+  before_validation :initialize_fields, on: :create
   validates :reason, presence: true
   validates :reason, length: { minimum: 2, maximum: PawsMovin.config.ticket_max_size }
   validates :response, length: { minimum: 2, maximum: PawsMovin.config.ticket_max_size }, on: :update
@@ -20,30 +20,28 @@ class Ticket < ApplicationRecord
   validate :validate_model_exists, on: :create
   validate :validate_creator_is_not_limited, on: :create
 
-  scope :for_creator, ->(uid) {where("creator_id = ?", uid)}
+  scope :for_creator, ->(uid) { where("creator_id = ?", uid) }
 
   attr_accessor :record_type, :send_update_dmail
 
   MODEL_TYPES = %w[Artist Comment Dmail ForumPost Pool Post PostSet User WikiPage].freeze
 
-=begin
-Permissions Table
-
-|    Type    |      Can Create     |    Details Visible   |
-|:----------:|:-------------------:|:--------------------:|
-|   Artist   |         Any         |  Janitor+ / Creator  |
-|   Comment  |       Visible       | Moderator+ / Creator |
-|    Dmail   | Visible & Recipient | Moderator+ / Creator |
-| Forum Post |       Visible       | Moderator+ / Creator |
-|    Pool    |         Any         |  Janitor+ / Creator  |
-|    Post    |         Any         |  Janitor+ / Creator  |
-|  Post Set  |       Visible       | Moderator+ / Creator |
-|     Tag    |         Any         |  Janitor+ / Creator  |
-|    User    |         Any         |  *Janitor+ / Creator |
-|  Wiki Page |         Any         |  Janitor+ / Creator  |
-
-* Janitor+ can see details if the creator is Janitor+ or the ticket is a commendation, else Moderator+
-=end
+  # Permissions Table
+  #
+  # |    Type    |      Can Create     |    Details Visible   |
+  # |:----------:|:-------------------:|:--------------------:|
+  # |   Artist   |         Any         |  Janitor+ / Creator  |
+  # |   Comment  |       Visible       | Moderator+ / Creator |
+  # |    Dmail   | Visible & Recipient | Moderator+ / Creator |
+  # | Forum Post |       Visible       | Moderator+ / Creator |
+  # |    Pool    |         Any         |  Janitor+ / Creator  |
+  # |    Post    |         Any         |  Janitor+ / Creator  |
+  # |  Post Set  |       Visible       | Moderator+ / Creator |
+  # |     Tag    |         Any         |  Janitor+ / Creator  |
+  # |    User    |         Any         |  *Janitor+ / Creator |
+  # |  Wiki Page |         Any         |  Janitor+ / Creator  |
+  #
+  # * Janitor+ can see details if the creator is Janitor+ or the ticket is a commendation, else Moderator+
   module TicketTypes
     module Artist
       def can_create_for?(_user)
@@ -311,7 +309,7 @@ Permissions Table
     end
   end
 
-  def can_see_details?(user)
+  def can_see_details?(_user)
     true
   end
 
@@ -319,7 +317,7 @@ Permissions Table
     user.is_moderator? || (user.id == creator_id)
   end
 
-  def can_create_for?(user)
+  def can_create_for?(_user)
     false
   end
 
@@ -360,7 +358,7 @@ Permissions Table
       end
     end
 
-    def unclaim!(user = CurrentUser)
+    def unclaim!(_user = CurrentUser)
       transaction do
         ModAction.log!(:ticket_unclaim, self)
         update_attribute(:claimant_id, nil)
@@ -419,7 +417,7 @@ Permissions Table
           model_type:  model_type,
           report_type: report_type,
           reason:      reason,
-        }
+        },
       }
     end
 

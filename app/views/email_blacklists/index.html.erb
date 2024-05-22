@@ -21,7 +21,7 @@
         </td>
         <td><%= blacklist.reason %></td>
         <td><%= compact_time blacklist.created_at %></td>
-        <td><%= link_to "Delete", email_blacklist_path(blacklist), method: :delete, data: {confirm: "Do your really want to delete #{blacklist.domain}?"} %></td>
+        <td><%= link_to "Delete", email_blacklist_path(blacklist), method: :delete, data: { confirm: "Do your really want to delete #{blacklist.domain}?" } %></td>
       </tr>
     <% end %>
   </tbody>

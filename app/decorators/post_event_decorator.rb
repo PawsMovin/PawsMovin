@@ -12,7 +12,7 @@ class PostEventDecorator < ApplicationDecorator
 
     case object.action
     when "deleted", "flag_created"
-      "#{vals['reason']}"
+      (vals["reason"]).to_s
     when "favorites_moved"
       "Target: post ##{vals['parent_id']}"
     when "favorites_received"

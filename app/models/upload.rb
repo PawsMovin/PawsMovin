@@ -3,7 +3,7 @@
 require "tmpdir"
 
 class Upload < ApplicationRecord
-  class Error < Exception ; end
+  class Error < StandardError; end
 
   attr_accessor :as_pending, :replaced_post, :file, :original_post_id, :locked_tags, :locked_rating, :replacement_id
 
@@ -14,7 +14,7 @@ class Upload < ApplicationRecord
   before_validation :normalize_direct_url, on: :create
   validate :uploader_is_not_limited, on: :create
   validate :direct_url_is_whitelisted, on: :create
-  validates :rating, inclusion: { in: %w(q e s) }, allow_nil: false
+  validates :rating, inclusion: { in: %w[q e s] }, allow_nil: false
   validate :md5_is_unique, on: :file
   validate on: :file do |upload|
     FileValidator.new(upload, file.path).validate
@@ -58,15 +58,27 @@ class Upload < ApplicationRecord
     def normalize_direct_url
       return if direct_url.blank?
       self.direct_url = direct_url.unicode_normalize(:nfc)
-      if direct_url =~ %r!\Ahttps?://!i
-        self.direct_url = Addressable::URI.normalized_encode(direct_url) rescue direct_url
+      if direct_url =~ %r{\Ahttps?://}i
+        self.direct_url = begin
+          Addressable::URI.normalized_encode(direct_url)
+        rescue StandardError
+          direct_url
+        end
       end
-      self.direct_url = Sources::Strategies.find(direct_url).canonical_url rescue direct_url
+      self.direct_url = begin
+        Sources::Strategies.find(direct_url).canonical_url
+      rescue StandardError
+        direct_url
+      end
     end
 
     def direct_url_parsed
-      return nil unless direct_url =~ %r!\Ahttps?://!i
-      Addressable::URI.heuristic_parse(direct_url) rescue nil
+      return nil unless direct_url =~ %r{\Ahttps?://}i
+      begin
+        Addressable::URI.heuristic_parse(direct_url)
+      rescue StandardError
+        nil
+      end
     end
   end
 
@@ -155,7 +167,7 @@ class Upload < ApplicationRecord
 
     uploadable = uploader.can_upload_with_reason
     if uploadable != true
-      self.errors.add(:uploader, User.upload_reason_string(uploadable))
+      errors.add(:uploader, User.upload_reason_string(uploadable))
       return false
     end
     true
@@ -165,7 +177,7 @@ class Upload < ApplicationRecord
     return true if direct_url_parsed.blank?
     valid, reason = UploadWhitelist.is_whitelisted?(direct_url_parsed)
     unless valid
-      self.errors.add(:source, "is not whitelisted: #{reason}")
+      errors.add(:source, "is not whitelisted: #{reason}")
       return false
     end
     true

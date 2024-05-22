@@ -1,29 +1,27 @@
 # frozen_string_literal: true
 
-=begin
-
-Generalizes the hybrid storage manager to be more declarative in
-syntax. Matches are executed in order of appearance so the first
-matching manager is returned. You should always add at least one
-manager with no constraints as a default case.
-
+#
+# Generalizes the hybrid storage manager to be more declarative in
+# syntax. Matches are executed in order of appearance so the first
+# matching manager is returned. You should always add at least one
+# manager with no constraints as a default case.
+#
 ### Example
-
-  StorageManager::Match.new do |matcher|
-    matcher.add_manager(type: :crop) do
-      StorageManager::Local.new(hierarchical: true, base_dir: "/var/www/raikou3")
-    end
-
-    matcher.add_manager(id: 1..850_000) do
-      StorageManager::Local.new(hierarchical: true, base_dir: "/var/www/raikou1")
-    end
-
-    matcher.add_manager(id: 850_001..2_000_000) do
-      StorageManager::Local.new(hierarchical: true, base_dir: "/var/www/raikou2")
-    end
-  end
-
-=end
+#
+#   StorageManager::Match.new do |matcher|
+#     matcher.add_manager(type: :crop) do
+#       StorageManager::Local.new(hierarchical: true, base_dir: "/var/www/raikou3")
+#     end
+#
+#     matcher.add_manager(id: 1..850_000) do
+#       StorageManager::Local.new(hierarchical: true, base_dir: "/var/www/raikou1")
+#     end
+#
+#     matcher.add_manager(id: 850_001..2_000_000) do
+#       StorageManager::Local.new(hierarchical: true, base_dir: "/var/www/raikou2")
+#     end
+#   end
+#
 
 module StorageManager
   class Match < StorageManager::Base
@@ -39,10 +37,10 @@ module StorageManager
     end
 
     def find(params)
-      @managers.each do |constraints, manager|
+      @managers.each do |constraints, manager| # rubocop:disable Metrics/BlockLength
         match = true
 
-        if params[:id] && constraints[:id] && !constraints[:id].include?(params[:id].to_i)
+        if params[:id] && constraints[:id] && constraints[:id].exclude?(params[:id].to_i)
           match = false
         end
 
@@ -52,7 +50,7 @@ module StorageManager
 
         if params[:type] && constraints[:type]
           if constraints[:type].respond_to?(:include?)
-            if !constraints[:type].include?(params[:type])
+            if constraints[:type].exclude?(params[:type])
               match = false
             end
           elsif constraints[:type] != params[:type]

@@ -6,8 +6,8 @@ class NewsUpdate < ApplicationRecord
 
   validates :message, length: { minimum: 1, maximum: PawsMovin.config.news_update_max_size }
 
-  after_save :invalidate_cache
   after_destroy :invalidate_cache
+  after_save :invalidate_cache
 
   def self.recent
     Cache.fetch("recent_news", expires_in: 1.day) do

@@ -66,9 +66,9 @@ class TagAliasTest < ActiveSupport::TestCase
     end
 
     should "convert a tag to its normalized version" do
-      tag1 = create(:tag, name: "aaa")
-      tag2 = create(:tag, name: "bbb")
-      ta = create(:tag_alias, antecedent_name: "aaa", consequent_name: "bbb")
+      create(:tag, name: "aaa")
+      create(:tag, name: "bbb")
+      create(:tag_alias, antecedent_name: "aaa", consequent_name: "bbb")
 
       assert_equal(["bbb"], TagAlias.to_aliased("aaa"))
       assert_equal(%w[bbb ccc], TagAlias.to_aliased(%w[aaa ccc]))
@@ -94,7 +94,7 @@ class TagAliasTest < ActiveSupport::TestCase
     end
 
     should "not validate for transitive relations" do
-      ta1 = create(:tag_alias, antecedent_name: "bbb", consequent_name: "ccc")
+      create(:tag_alias, antecedent_name: "bbb", consequent_name: "ccc")
       assert_difference("TagAlias.count", 0) do
         ta2 = build(:tag_alias, antecedent_name: "aaa", consequent_name: "bbb")
         ta2.save
@@ -124,15 +124,15 @@ class TagAliasTest < ActiveSupport::TestCase
     end
 
     should "not push the antecedent's category to the consequent if the antecedent is general" do
-      tag1 = create(:tag, name: "aaa")
+      create(:tag, name: "aaa")
       tag2 = create(:artist_tag, name: "bbb")
-      ta = create(:tag_alias, antecedent_name: "aaa", consequent_name: "bbb")
+      create(:tag_alias, antecedent_name: "aaa", consequent_name: "bbb")
       tag2.reload
       assert_equal(TagCategory.artist, tag2.category)
     end
 
     should "not push the antecedent's category to the consequent if the consequent is non-general" do
-      tag1 = create(:artist_tag, name: "aaa")
+      create(:artist_tag, name: "aaa")
       tag2 = create(:copyright_tag, name: "bbb")
       ta = create(:tag_alias, antecedent_name: "aaa", consequent_name: "bbb")
       with_inline_jobs { ta.approve!(approver: @admin) }
@@ -141,7 +141,7 @@ class TagAliasTest < ActiveSupport::TestCase
     end
 
     should "push the antecedent's category to the consequent" do
-      tag1 = create(:artist_tag, name: "aaa")
+      create(:artist_tag, name: "aaa")
       tag2 = create(:tag, name: "bbb")
       ta = create(:tag_alias, antecedent_name: "aaa", consequent_name: "bbb")
       with_inline_jobs { ta.approve!(approver: @admin) }
@@ -151,7 +151,7 @@ class TagAliasTest < ActiveSupport::TestCase
     end
 
     should "not push the antecedent's category if the consequent is locked" do
-      tag1 = create(:artist_tag, name: "aaa")
+      create(:artist_tag, name: "aaa")
       tag2 = create(:copyright_tag, name: "bbb", is_locked: true)
       ta = create(:tag_alias, antecedent_name: "aaa", consequent_name: "bbb")
       with_inline_jobs { ta.approve!(approver: @admin) }

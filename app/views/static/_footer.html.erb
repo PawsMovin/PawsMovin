@@ -14,6 +14,6 @@
     <% if CurrentUser.user.enable_keyboard_navigation %>
       – <%= link_to "Keyboard Shortcuts", keyboard_shortcuts_path %>
     <% end %>
-    – <%= link_to disable_mobile_mode? ? "Enable mobile mode support": "Disable mobile mode support", toggle_mobile_mode_path, rel: "nofollow" %>
+    – <%= link_to disable_mobile_mode? ? "Enable mobile mode support" : "Disable mobile mode support", toggle_mobile_mode_path, rel: "nofollow" %>
   </span>
 </footer>

@@ -55,11 +55,11 @@ class CommentTest < ActiveSupport::TestCase
 
       should "not bump the parent post" do
         post = create(:post)
-        comment = create(:comment, do_not_bump_post: true, post: post)
+        create(:comment, do_not_bump_post: true, post: post)
         post.reload
         assert_nil(post.last_comment_bumped_at)
 
-        comment = create(:comment, post: post)
+        create(:comment, post: post)
         post.reload
         assert_not_nil(post.last_comment_bumped_at)
       end
@@ -69,7 +69,7 @@ class CommentTest < ActiveSupport::TestCase
         p = create(:post)
         c1 = create(:comment, post: p)
         travel_to(2.seconds.from_now) do
-          c2 = create(:comment, post: p)
+          create(:comment, post: p)
         end
         p.reload
         assert_equal(c1.created_at.to_s, p.last_comment_bumped_at.to_s)
@@ -89,7 +89,7 @@ class CommentTest < ActiveSupport::TestCase
       end
 
       should "not record the user id of the voter" do
-        user = create(:user)
+        create(:user)
         user2 = create(:user)
         post = create(:post)
         c1 = create(:comment, post: post)
@@ -102,7 +102,7 @@ class CommentTest < ActiveSupport::TestCase
       end
 
       should "not allow duplicate votes" do
-        user = create(:user)
+        create(:user)
         user2 = create(:user)
         post = create(:post)
         c1 = create(:comment, post: post)
@@ -147,7 +147,7 @@ class CommentTest < ActiveSupport::TestCase
       end
 
       should "allow undoing of votes" do
-        user = create(:user)
+        create(:user)
         user2 = create(:user)
         post = create(:post)
         comment = create(:comment, post: post)
@@ -165,7 +165,7 @@ class CommentTest < ActiveSupport::TestCase
       should "be searchable" do
         c1 = create(:comment, body: "aaa bbb ccc")
         c2 = create(:comment, body: "aaa ddd")
-        c3 = create(:comment, body: "eee")
+        create(:comment, body: "eee")
 
         matches = Comment.search(body_matches: "aaa")
         assert_equal(2, matches.count)

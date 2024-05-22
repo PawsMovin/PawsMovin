@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
 class Note < ApplicationRecord
-  class RevertError < Exception ; end
+  class RevertError < StandardError; end
 
   attr_accessor :html_id
 
   belongs_to :post
   belongs_to_creator
-  has_many :versions, -> {order("note_versions.id ASC")}, class_name: "NoteVersion", dependent: :destroy
-  validates :post_id, :creator_id, :x, :y, :width, :height, :body, presence: true
+  has_many :versions, -> { order("note_versions.id ASC") }, class_name: "NoteVersion", dependent: :destroy
+  validates :creator_id, :x, :y, :width, :height, :body, presence: true
   validate :user_not_limited
   validate :post_must_exist
   validate :note_within_image
@@ -75,22 +75,22 @@ class Note < ApplicationRecord
   def post_must_exist
     unless Post.exists?(post_id)
       errors.add(:post, "must exist")
-      return false
+      false
     end
   end
 
   def post_must_not_be_note_locked
     if is_locked?
       errors.add(:post, "is note locked")
-      return false
+      false
     end
   end
 
   def note_within_image
-    return false unless post.present?
+    return false if post.blank?
     if x < 0 || y < 0 || (x > post.image_width) || (y > post.image_height) || width < 0 || height < 0 || (x + width > post.image_width) || (y + height > post.image_height)
-      self.errors.add(:note, "must be inside the image")
-      return false
+      errors.add(:note, "must be inside the image")
+      false
     end
   end
 
@@ -108,7 +108,7 @@ class Note < ApplicationRecord
 
   def update_post
     if saved_changes?
-      post_noted_at = Note.where(is_active: true, post_id: post_id).exists? ? updated_at : nil
+      post_noted_at = Note.exists?(is_active: true, post_id: post_id) ? updated_at : nil
       Post.where(id: post_id).update_all(last_noted_at: post_noted_at)
       post.reload.update_index
     end
@@ -137,13 +137,13 @@ class Note < ApplicationRecord
       height:          height,
       is_active:       is_active,
       body:            body,
-      version:         version
+      version:         version,
     )
   end
 
   def revert_to(version)
     if id != version.note_id
-      raise(RevertError.new("You cannot revert to a previous version of another note."))
+      raise(RevertError, "You cannot revert to a previous version of another note.")
     end
 
     self.x = version.x

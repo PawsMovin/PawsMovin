@@ -6,7 +6,7 @@
     <br><br>
 
     <label for="takedown_post_delete_reason">Post deletion reason</label><br>
-    <%= text_field_tag "delete_reason", "Artist requested removal", {size: 80} %>
+    <%= text_field_tag "delete_reason", "Artist requested removal", { size: 80 } %>
     <br><br>
 
     <div id="takedown-keepall" class="takedown-post-label takedown-postall-label takedown-post-keep">Keep all
@@ -39,15 +39,15 @@
 
     <label for="takedown-add-posts-tags">Add posts with tags:</label><br>
     <%= text_field_tag "takedown-add-posts-tags", "", size: 40 %>
-    <%= button_tag "Add", 'data-tid': @takedown.id, id: "takedown-add-posts-tags-preview", type: :button, disabled: true %>
-    <%= button_tag "Confirm", 'data-tid': @takedown.id, id: "takedown-add-posts-tags-confirm", type: :button %>
+    <%= button_tag "Add", 'data-tid': @takedown.id, "id": "takedown-add-posts-tags-preview", "type": :button, "disabled": true %>
+    <%= button_tag "Confirm", 'data-tid': @takedown.id, "id": "takedown-add-posts-tags-confirm", "type": :button %>
     <%= button_tag "Cancel", id: "takedown-add-posts-tags-cancel", type: :button %>
     <div id="takedown-add-posts-tags-warning"></div>
     <br><br>
 
     <label for="takedown-add-posts-ids">Add post IDs to takedown (space-separated):</label><br>
     <%= text_field_tag "takedown-add-posts-ids", "", size: 40 %>
-    <%= button_tag "Add", 'data-tid': @takedown.id, id: "takedown-add-posts-ids-submit", disabled: true %>
+    <%= button_tag "Add", 'data-tid': @takedown.id, "id": "takedown-add-posts-ids-submit", "disabled": true %>
   </div>
 
   <h2>Update</h2>

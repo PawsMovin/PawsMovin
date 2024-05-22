@@ -25,8 +25,8 @@ class ApplicationRecord < ActiveRecord::Base
         where("lower(#{qualified_column_for(attr)}) LIKE ? ESCAPE E'\\\\'", value.downcase.to_escaped_for_sql_like)
       end
 
-      def attribute_exact_matches(attribute, value, **options)
-        return all unless value.present?
+      def attribute_exact_matches(attribute, value, **_options)
+        return all if value.blank?
 
         column = qualified_column_for(attribute)
         where("#{column} = ?", value)
@@ -208,20 +208,20 @@ class ApplicationRecord < ActiveRecord::Base
   concerning :ActiveRecordExtensions do
     class_methods do
       def without_timeout
-        connection.execute("SET STATEMENT_TIMEOUT = 0") unless Rails.env == "test"
+        connection.execute("SET STATEMENT_TIMEOUT = 0") unless Rails.env.test?
         yield
       ensure
-        connection.execute("SET STATEMENT_TIMEOUT = #{CurrentUser.user.try(:statement_timeout) || 3_000}") unless Rails.env == "test"
+        connection.execute("SET STATEMENT_TIMEOUT = #{CurrentUser.user.try(:statement_timeout) || 3_000}") unless Rails.env.test?
       end
 
-      def with_timeout(n, default_value = nil)
-        connection.execute("SET STATEMENT_TIMEOUT = #{n}") unless Rails.env == "test"
+      def with_timeout(time, default_value = nil)
+        connection.execute("SET STATEMENT_TIMEOUT = #{time}") unless Rails.env.test?
         yield
-      rescue ::ActiveRecord::StatementInvalid => x
-        PawsMovin::Logger.log(x, expected: true)
-        return default_value
+      rescue ::ActiveRecord::StatementInvalid => e
+        PawsMovin::Logger.log(e, expected: true)
+        default_value
       ensure
-        connection.execute("SET STATEMENT_TIMEOUT = #{CurrentUser.user.try(:statement_timeout) || 3_000}") unless Rails.env == "test"
+        connection.execute("SET STATEMENT_TIMEOUT = #{CurrentUser.user.try(:statement_timeout) || 3_000}") unless Rails.env.test?
       end
     end
   end
@@ -237,7 +237,7 @@ class ApplicationRecord < ActiveRecord::Base
         self.versioning_is_hidden_column = options[:is_hidden_column] || "is_hidden"
         self.versioning_is_sticky_column = options[:is_sticky_column] || "is_sticky"
 
-        class_eval do
+        class_eval do # rubocop:disable Metrics/BlockLength
           has_many(:versions, class_name: "EditHistory", as: :versionable)
           after_update(:save_version, if: :should_create_edited_history)
           after_save(if: :should_create_hidden_history) do |rec|

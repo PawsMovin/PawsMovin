@@ -5,8 +5,8 @@ class ForumPostVote < UserVote
   validates :score, inclusion: { in: [-1, 0, 1], message: "must be 1, 0 or -1" }
   validates :user_id, uniqueness: { scope: :forum_post_id }
   validate :validate_user_is_not_limited, on: :create
-  scope :by, ->(user_id) {where(user_id: user_id)}
-  scope :excluding_user, ->(user_id) {where("user_id <> ?", user_id)}
+  scope :by, ->(user_id) { where(user_id: user_id) }
+  scope :excluding_user, ->(user_id) { where.not(user_id: user_id) }
 
   def self.vote_types
     [%w[Downvote -1 redtext], %w[Meh 0 yellowtext], %w[Upvote 1 greentext]]

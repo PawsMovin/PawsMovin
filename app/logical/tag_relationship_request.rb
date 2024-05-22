@@ -50,7 +50,7 @@ class TagRelationshipRequest
   def build_tag_relationship
     x = tag_relationship_class.new(
       antecedent_name: antecedent_name,
-      consequent_name: consequent_name
+      consequent_name: consequent_name,
     )
     x.status = "pending"
     x
@@ -60,9 +60,9 @@ class TagRelationshipRequest
     ForumTopic.new(
       title:                    self.class.topic_title(antecedent_name, consequent_name),
       original_post_attributes: {
-        body: "Reason: #{reason}"
+        body: "Reason: #{reason}",
       },
-      category_id:              PawsMovin.config.alias_implication_forum_category
+      category_id:              PawsMovin.config.alias_implication_forum_category,
     )
   end
 
@@ -89,7 +89,7 @@ class TagRelationshipRequest
     end
   end
 
-  def skip_forum=(v)
-    @skip_forum = v.to_s.truthy?
+  def skip_forum=(value)
+    @skip_forum = value.to_s.truthy?
   end
 end

@@ -134,7 +134,7 @@ class TagImplication < TagRelationship
       rescue Exception => e
         if tries < 5 && !Rails.env.test?
           tries += 1
-          sleep(2 ** tries)
+          sleep(2**tries)
           retry
         end
 
@@ -146,7 +146,7 @@ class TagImplication < TagRelationship
     def create_undo_information
       Post.without_timeout do
         Post.sql_raw_tag_match(antecedent_name).find_in_batches do |posts|
-          post_info = Hash.new
+          post_info = {}
           posts.each do |p|
             post_info[p.id] = p.tag_string
           end
@@ -169,18 +169,19 @@ class TagImplication < TagRelationship
     end
 
     def create_mod_action
-      implication = %Q("tag implication ##{id}":[#{Rails.application.routes.url_helpers.tag_implication_path(self)}]: [[#{antecedent_name}]] -> [[#{consequent_name}]])
+      implication = %("tag implication ##{id}":[#{Rails.application.routes.url_helpers.tag_implication_path(self)}]: [[#{antecedent_name}]] -> [[#{consequent_name}]])
 
       if previously_new_record?
         ModAction.log!(:tag_implication_create, self, implication_desc: implication)
       else
         # format the changes hash more nicely.
         change_desc = saved_changes.except(:updated_at).map do |attribute, values|
-          old, new = values[0], values[1]
+          old = values[0]
+          new = values[1]
           if old.nil?
-            %Q(set #{attribute} to "#{new}")
+            %(set #{attribute} to "#{new}")
           else
-            %Q(changed #{attribute} from "#{old}" to "#{new}")
+            %(changed #{attribute} from "#{old}" to "#{new}")
           end
         end.join(", ")
 
@@ -212,7 +213,7 @@ class TagImplication < TagRelationship
 
     def update_posts_undo
       Post.without_timeout do
-        tag_rel_undos.where(applied: false).each do |tu|
+        tag_rel_undos.where(applied: false).find_each do |tu|
           Post.where(id: tu.undo_data.keys).find_each do |post|
             post.automated_edit = true
             if TagQuery.scan(tu.undo_data[post.id]).include?(consequent_name)
@@ -225,8 +226,8 @@ class TagImplication < TagRelationship
         end
 
         # TODO: Race condition with indexing jobs here.
-        antecedent_tag.fix_post_count if antecedent_tag
-        consequent_tag.fix_post_count if consequent_tag
+        antecedent_tag&.fix_post_count
+        consequent_tag&.fix_post_count
       end
     end
   end

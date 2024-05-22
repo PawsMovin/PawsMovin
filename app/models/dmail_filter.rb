@@ -2,7 +2,6 @@
 
 class DmailFilter < ApplicationRecord
   belongs_to :user
-  validates :user, presence: true
   before_validation :initialize_user
   validates :words, length: { maximum: 1000 }
 

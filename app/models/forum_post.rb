@@ -15,6 +15,7 @@ class ForumPost < ApplicationRecord
   belongs_to :tag_change_request, polymorphic: true, optional: true
   before_validation :initialize_is_hidden, on: :create
   after_create :update_topic_updated_at_on_create
+  before_destroy :validate_topic_is_unlocked
   after_destroy :update_topic_updated_at_on_destroy
   validates :body, :creator_id, presence: true
   validates :body, length: { minimum: 1, maximum: PawsMovin.config.forum_post_max_size }
@@ -25,7 +26,6 @@ class ForumPost < ApplicationRecord
   validate :validate_category_allows_replies, on: :create
   validate :validate_creator_is_not_limited, on: :create
   validate :validate_not_aibur, if: :will_save_change_to_is_hidden?
-  before_destroy :validate_topic_is_unlocked
   after_save :delete_topic_if_original_post
   after_update(if: ->(rec) { !rec.saved_change_to_is_hidden? && rec.updater_id != rec.creator_id }) do |rec|
     ModAction.log!(:forum_post_update, rec, forum_topic_id: rec.topic_id, user_id: rec.creator_id)
@@ -208,11 +208,10 @@ class ForumPost < ApplicationRecord
     max = ForumPost.where(topic_id: topic.id, is_hidden: false).order("updated_at desc").first
     if max
       ForumTopic.where(id: topic.id).update_all(["response_count = response_count - 1, updated_at = ?, updater_id = ?", max.updated_at, max.updater_id])
-      topic.response_count -= 1
     else
       ForumTopic.where(id: topic.id).update_all("response_count = response_count - 1")
-      topic.response_count -= 1
     end
+    topic.response_count -= 1
   end
 
   def initialize_is_hidden
@@ -225,7 +224,7 @@ class ForumPost < ApplicationRecord
 
   def is_original_post?(original_post_id = nil)
     if original_post_id
-      return id == original_post_id
+      id == original_post_id
     else
       ForumPost.exists?(["id = ? and id = (select _.id from forum_posts _ where _.topic_id = ? order by _.id asc limit 1)", id, topic_id])
     end

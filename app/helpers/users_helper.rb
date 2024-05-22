@@ -2,7 +2,7 @@
 
 module UsersHelper
   def email_sig(user, purpose, expires = nil)
-    EmailLinkValidator.generate("#{user.id}", purpose, expires)
+    EmailLinkValidator.generate(user.id.to_s, purpose, expires)
   end
 
   def email_domain_search(email)

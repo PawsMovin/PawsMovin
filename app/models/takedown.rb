@@ -50,7 +50,7 @@ class Takedown < ApplicationRecord
     def valid_posts_or_instructions
       if post_array.size <= 0 && instructions.blank?
         errors.add(:base, "You must provide post ids or instructions.")
-        return false
+        false
       end
     end
 
@@ -76,7 +76,7 @@ class Takedown < ApplicationRecord
 
     def validate_number_of_posts
       if post_array.size > 5_000
-        self.errors.add(:base, "You can only have 5000 posts in a takedown.")
+        errors.add(:base, "You can only have 5000 posts in a takedown.")
         return false
       end
       true
@@ -98,7 +98,7 @@ class Takedown < ApplicationRecord
       added_ids = []
       with_lock do
         self.post_ids = (post_array + matching_post_ids(ids)).uniq.join(" ")
-        added_ids = self.post_array - self.post_array_was
+        added_ids = post_array - post_array_was
         save!
       end
       added_ids
@@ -133,12 +133,12 @@ class Takedown < ApplicationRecord
     def normalize_deleted_post_ids
       posts = matching_post_ids(post_ids)
       del_posts = matching_post_ids(del_post_ids)
-      del_posts = del_posts & posts # ensure that all deleted posts are also posts
+      del_posts &= posts # ensure that all deleted posts are also posts
       self.del_post_ids = del_posts.join(" ")
     end
 
     def validate_post_ids
-      temp_post_ids = Post.select(:id).where(id: post_array).map {|x| x.id.to_s}
+      temp_post_ids = Post.select(:id).where(id: post_array).map { |x| x.id.to_s }
       self.post_ids = temp_post_ids.join(" ")
     end
 

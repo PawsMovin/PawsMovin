@@ -174,7 +174,7 @@ class Dmail < ApplicationRecord
     day_allowed = CurrentUser.can_dmail_day_with_reason
     if day_allowed != true
       errors.add(:base, "Sender #{User.throttle_reason(day_allowed, 'daily')}")
-      return
+      nil
     end
   end
 
@@ -195,7 +195,7 @@ class Dmail < ApplicationRecord
     end
     if to.is_blocking_messages_from?(from)
       errors.add(:to_name, "does not wish to receive DMails from you")
-      return false
+      false
     end
   end
 
@@ -224,7 +224,7 @@ class Dmail < ApplicationRecord
   end
 
   def filtered?
-    CurrentUser.dmail_filter.try(:filtered?, self)
+    CurrentUser.dmail_filter.try(:filtered?, self) || false
   end
 
   def auto_read_if_filtered

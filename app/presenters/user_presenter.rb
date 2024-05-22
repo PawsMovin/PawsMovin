@@ -19,7 +19,7 @@ class UserPresenter
     if user.is_banned?
       reason = template.format_text(user.recent_ban.reason)
       edit = template.link_to_enclosed("edit", template.edit_ban_path(user.recent_ban), if: template.policy(user.recent_ban).edit?)
-      %{#{reason}\n\n Expires #{user.recent_ban.expire_days_tagged} #{template.link_to_enclosed("#{user.bans.count} #{'ban'.pluralize(user.bans.count)} total", template.bans_path(search: { user_id: user.id }))} #{edit}}.html_safe
+      %(#{reason}\n\n Expires #{user.recent_ban.expire_days_tagged} #{template.link_to_enclosed("#{user.bans.count} #{'ban'.pluralize(user.bans.count)} total", template.bans_path(search: { user_id: user.id }))} #{edit}).html_safe
     end
   end
 
@@ -59,10 +59,10 @@ class UserPresenter
     perms = permissions.split(", ")
     return permissions if perms.length <= 2
     visible = perms.slice(0, 2)
-    %{<text class="permissions-list" data-short="#{visible.join(', ')}" data-full="#{perms.join(', ')}">#{visible.join(', ')}</text> <a href="#" title="Expand" class="expand-permissions-link">»</a><a title="Collapse" href="#" style="display: none;" class="collapse-permissions-link">«</a>}.html_safe
+    %(<text class="permissions-list" data-short="#{visible.join(', ')}" data-full="#{perms.join(', ')}">#{visible.join(', ')}</text> <a href="#" title="Expand" class="expand-permissions-link">»</a><a title="Collapse" href="#" style="display: none;" class="collapse-permissions-link">«</a>).html_safe
   end
 
-  def upload_limit(template)
+  def upload_limit(_template)
     if user.unrestricted_uploads?
       return "none"
     end
@@ -187,9 +187,9 @@ class UserPresenter
 
     total_class = (positive - negative) > 0 ? "user-feedback-positive" : "user-feedback-negative"
     total_class = "" if (positive - negative) == 0
-    positive_html = %{<span class="user-feedback-positive">#{positive} Pos</span>}.html_safe if positive > 0
-    neutral_html = %{<span class="user-feedback-neutral">#{neutral} Neutral</span>}.html_safe if neutral > 0
-    negative_html = %{<span class="user-feedback-negative">#{negative} Neg</span>}.html_safe if negative > 0
+    positive_html = %(<span class="user-feedback-positive">#{positive} Pos</span>).html_safe if positive > 0
+    neutral_html = %(<span class="user-feedback-neutral">#{neutral} Neutral</span>).html_safe if neutral > 0
+    negative_html = %(<span class="user-feedback-negative">#{negative} Neg</span>).html_safe if negative > 0
 
     %{<span class="#{total_class}">#{positive - negative}</span> ( #{positive_html} #{neutral_html} #{negative_html} ) }.html_safe
   end
@@ -201,7 +201,7 @@ class UserPresenter
   def favorite_tags_with_types
     tag_names = user&.favorite_tags.to_s.split
     tag_names = TagAlias.to_aliased(tag_names)
-    indices = tag_names.each_with_index.map {|x, i| [x, i]}.to_h
+    indices = tag_names.each_with_index.to_h { |x, i| [x, i] }
     tags = Tag.where(name: tag_names).map do |tag|
       {
         name:        tag.name,

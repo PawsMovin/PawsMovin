@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 module PostThumbnailer
-  extend self
   class CorruptFileError < RuntimeError; end
+  module_function
 
   def generate_resizes(file, height, width, type)
     if type == :video
@@ -33,10 +33,10 @@ module PostThumbnailer
 
   def generate_video_crop_for(video, width)
     vp = Tempfile.new(%w[video-preview .webp], binmode: true)
-    video.screenshot(vp.path, {seek_time: 0, resolution: "#{video.width}x#{video.height}"})
+    video.screenshot(vp.path, { seek_time: 0, resolution: "#{video.width}x#{video.height}" })
     crop = PawsMovin::ImageResizer.crop(vp, width, width, 87)
     vp.close
-    return crop
+    crop
   end
 
   def generate_video_preview_for(video, width)
@@ -46,7 +46,7 @@ module PostThumbnailer
     unless status == 0
       Rails.logger.warn("[FFMPEG PREVIEW STDOUT] #{stdout.chomp!}")
       Rails.logger.warn("[FFMPEG PREVIEW STDERR] #{stderr.chomp!}")
-      raise(CorruptFileError.new("could not generate thumbnail"))
+      raise(CorruptFileError, "could not generate thumbnail")
     end
     output_file
   end
@@ -58,7 +58,7 @@ module PostThumbnailer
     unless status == 0
       Rails.logger.warn("[FFMPEG SAMPLE STDOUT] #{stdout.chomp!}")
       Rails.logger.warn("[FFMPEG SAMPLE STDERR] #{stderr.chomp!}")
-      raise(CorruptFileError.new("could not generate sample"))
+      raise(CorruptFileError, "could not generate sample")
     end
     output_file
   end

@@ -11,17 +11,17 @@ class BansController < ApplicationController
     end
   end
 
+  def show
+    @ban = authorize(Ban.find(params[:id]))
+    respond_with(@ban)
+  end
+
   def new
     @ban = authorize(Ban.new(permitted_attributes(Ban)))
   end
 
   def edit
     @ban = authorize(Ban.find(params[:id]))
-  end
-
-  def show
-    @ban = authorize(Ban.find(params[:id]))
-    respond_with(@ban)
   end
 
   def create

@@ -29,10 +29,10 @@ module PostSets
     end
 
     def api_posts
-      _posts = posts
-      fill_children(_posts)
-      fill_tag_types(_posts)
-      _posts
+      posts = self.posts
+      fill_children(posts)
+      fill_tag_types(posts)
+      posts
     end
 
     def tag_array

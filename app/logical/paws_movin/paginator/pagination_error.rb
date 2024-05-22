@@ -2,7 +2,7 @@
 
 module PawsMovin
   module Paginator
-    class PaginationError < Exception
+    class PaginationError < StandardError
     end
   end
 end

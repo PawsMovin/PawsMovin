@@ -20,7 +20,7 @@ class UploadService
       rescue Exception => e
         raise(ProcessingError, "Failed to create post file backup: #{e.message}")
       end
-      raise(ProcessingError, "Could not create post file backup?") if !repl.valid?
+      raise(ProcessingError, "Could not create post file backup?") unless repl.valid?
     end
 
     def process!(penalize_current_uploader:)
@@ -28,7 +28,7 @@ class UploadService
       raise(ProcessingError, "Cannot replace post: post is deleted.") if post.is_deleted?
 
       create_backup_replacement
-      PostReplacement.transaction do
+      PostReplacement.transaction do # rubocop:disable Metrics/BlockLength
         replacement.replacement_file = PawsMovin.config.storage_manager.open(PawsMovin.config.storage_manager.replacement_path(replacement, replacement.file_ext, :original))
 
         upload = Upload.create(
@@ -87,7 +87,7 @@ class UploadService
           status:                       "approved",
           approver_id:                  CurrentUser.id,
           uploader_id_on_approve:       previous_uploader,
-          penalize_uploader_on_approve: penalize_current_uploader.to_s.truthy?
+          penalize_uploader_on_approve: penalize_current_uploader.to_s.truthy?,
         })
 
         User.where(id: previous_uploader).update_all("own_post_replaced_count = own_post_replaced_count + 1")

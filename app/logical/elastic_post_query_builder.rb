@@ -32,7 +32,7 @@ class ElasticPostQueryBuilder < ElasticQueryBuilder
 
   def build
     if @enable_safe_mode
-      must.push({term: {rating: "s"}})
+      must.push({ term: { rating: "s" } })
     end
 
     add_array_range_relation(:post_id, :id)
@@ -66,33 +66,33 @@ class ElasticPostQueryBuilder < ElasticQueryBuilder
     end
 
     if q[:status] == "pending"
-      must.push({term: {pending: true}})
+      must.push({ term: { pending: true } })
     elsif q[:status] == "flagged"
-      must.push({term: {flagged: true}})
+      must.push({ term: { flagged: true } })
     elsif q[:status] == "modqueue"
       must.push(match_any({ term: { pending: true } }, { term: { flagged: true } }))
     elsif q[:status] == "deleted"
-      must.push({term: {deleted: true}})
+      must.push({ term: { deleted: true } })
     elsif q[:status] == "active"
-      must.concat([{term: {pending: false}},
-                   {term: {deleted: false}},
-                   {term: {flagged: false}}])
+      must.push({ term: { pending: false } },
+                { term: { deleted: false } },
+                { term: { flagged: false } })
     elsif q[:status] == "all" || q[:status] == "any"
       # do nothing
     elsif q[:status_must_not] == "pending"
-      must_not.push({term: {pending: true}})
+      must_not.push({ term: { pending: true } })
     elsif q[:status_must_not] == "flagged"
-      must_not.push({term: {flagged: true}})
+      must_not.push({ term: { flagged: true } })
     elsif q[:status_must_not] == "modqueue"
       must_not.push(match_any({ term: { pending: true } }, { term: { flagged: true } }))
     elsif q[:status_must_not] == "deleted"
-      must_not.push({term: {deleted: true}})
+      must_not.push({ term: { deleted: true } })
     elsif q[:status_must_not] == "active"
       must.push(match_any({ term: { pending: true } }, { term: { deleted: true } }, { term: { flagged: true } }))
     end
 
     if hide_deleted_posts?
-      must.push({term: {deleted: false}})
+      must.push({ term: { deleted: false } })
     end
 
     add_array_relation(:uploader_ids, :uploader)
@@ -128,9 +128,9 @@ class ElasticPostQueryBuilder < ElasticQueryBuilder
     end
 
     if q[:child] == "none"
-      must.push({term: {has_children: false}})
+      must.push({ term: { has_children: false } })
     elsif q[:child] == "any"
-      must.push({term: {has_children: true}})
+      must.push({ term: { has_children: true } })
     end
 
     q[:locked]&.each do |lock_type|
@@ -146,145 +146,145 @@ class ElasticPostQueryBuilder < ElasticQueryBuilder
     end
 
     if q.include?(:hassource)
-      (q[:hassource] ? must : must_not).push({exists: {field: :source}})
+      (q[:hassource] ? must : must_not).push({ exists: { field: :source } })
     end
 
     if q.include?(:hasdescription)
-      (q[:hasdescription] ? must : must_not).push({exists: {field: :description}})
+      (q[:hasdescription] ? must : must_not).push({ exists: { field: :description } })
     end
 
     if q.include?(:ischild)
-      (q[:ischild] ? must : must_not).push({exists: {field: :parent}})
+      (q[:ischild] ? must : must_not).push({ exists: { field: :parent } })
     end
 
     if q.include?(:isparent)
-      must.push({term: {has_children: q[:isparent]}})
+      must.push({ term: { has_children: q[:isparent] } })
     end
 
     if q.include?(:inpool)
-      (q[:inpool] ? must : must_not).push({exists: {field: :pools}})
+      (q[:inpool] ? must : must_not).push({ exists: { field: :pools } })
     end
 
     if q.include?(:pending_replacements)
-      must.push({term: {has_pending_replacements: q[:pending_replacements]}})
+      must.push({ term: { has_pending_replacements: q[:pending_replacements] } })
     end
 
     add_tag_string_search_relation(q[:tags])
 
     case q[:order]
     when "id", "id_asc"
-      order.push({id: :asc})
+      order.push({ id: :asc })
 
     when "id_desc"
-      order.push({id: :desc})
+      order.push({ id: :desc })
 
     when "change", "change_desc"
-      order.push({change_seq: :desc})
+      order.push({ change_seq: :desc })
 
     when "change_asc"
-      order.push({change_seq: :asc})
+      order.push({ change_seq: :asc })
 
     when "md5"
-      order.push({md5: :desc})
+      order.push({ md5: :desc })
 
     when "md5_asc"
-      order.push({md5: :asc})
+      order.push({ md5: :asc })
 
     when "score", "score_desc"
-      order.concat([{score: :desc}, {id: :desc}])
+      order.push({ score: :desc }, { id: :desc })
 
     when "score_asc"
-      order.concat([{score: :asc}, {id: :asc}])
+      order.push({ score: :asc }, { id: :asc })
 
     when "duration", "duration_desc"
-      order.concat([{duration: :desc}, {id: :desc}])
+      order.push({ duration: :desc }, { id: :desc })
 
     when "duration_asc"
-      order.concat([{duration: :asc}, {id: :asc}])
+      order.push({ duration: :asc }, { id: :asc })
 
     when "favcount"
-      order.concat([{fav_count: :desc}, {id: :desc}])
+      order.push({ fav_count: :desc }, { id: :desc })
 
     when "favcount_asc"
-      order.concat([{fav_count: :asc}, {id: :asc}])
+      order.push({ fav_count: :asc }, { id: :asc })
 
     when "created_at", "created_at_desc"
-      order.push({created_at: :desc})
+      order.push({ created_at: :desc })
 
     when "created_at_asc"
-      order.push({created_at: :asc})
+      order.push({ created_at: :asc })
 
     when "updated", "updated_desc"
-      order.concat([{updated_at: :desc}, {id: :desc}])
+      order.push({ updated_at: :desc }, { id: :desc })
 
     when "updated_asc"
-      order.concat([{updated_at: :asc}, {id: :asc}])
+      order.push({ updated_at: :asc }, { id: :asc })
 
     when "comment", "comm"
-      order.push({commented_at: {order: :desc, missing: :_last}})
-      order.push({id: :desc})
+      order.push({ commented_at: { order: :desc, missing: :_last } })
+      order.push({ id: :desc })
 
     when "comment_bumped"
-      must.push({exists: {field: "comment_bumped_at"}})
-      order.push({comment_bumped_at: {order: :desc, missing: :_last}})
-      order.push({id: :desc})
+      must.push({ exists: { field: "comment_bumped_at" } })
+      order.push({ comment_bumped_at: { order: :desc, missing: :_last } })
+      order.push({ id: :desc })
 
     when "comment_bumped_asc"
-      must.push({exists: {field: "comment_bumped_at"}})
-      order.push({comment_bumped_at: {order: :asc, missing: :_last}})
-      order.push({id: :desc})
+      must.push({ exists: { field: "comment_bumped_at" } })
+      order.push({ comment_bumped_at: { order: :asc, missing: :_last } })
+      order.push({ id: :desc })
 
     when "comment_asc", "comm_asc"
-      order.push({commented_at: {order: :asc, missing: :_last}})
-      order.push({id: :asc})
+      order.push({ commented_at: { order: :asc, missing: :_last } })
+      order.push({ id: :asc })
 
     when "note"
-      order.push({noted_at: {order: :desc, missing: :_last}})
+      order.push({ noted_at: { order: :desc, missing: :_last } })
 
     when "note_asc"
-      order.push({noted_at: {order: :asc, missing: :_first}})
+      order.push({ noted_at: { order: :asc, missing: :_first } })
 
     when "mpixels", "mpixels_desc"
-      order.push({mpixels: :desc})
+      order.push({ mpixels: :desc })
 
     when "mpixels_asc"
-      order.push({mpixels: :asc})
+      order.push({ mpixels: :asc })
 
     when "portrait"
-      order.push({aspect_ratio: :asc})
+      order.push({ aspect_ratio: :asc })
 
     when "landscape"
-      order.push({aspect_ratio: :desc})
+      order.push({ aspect_ratio: :desc })
 
     when "filesize", "filesize_desc"
-      order.push({file_size: :desc})
+      order.push({ file_size: :desc })
 
     when "filesize_asc"
-      order.push({file_size: :asc})
+      order.push({ file_size: :asc })
 
     when /\A(?<column>#{TagQuery::COUNT_METATAGS.join('|')})(_(?<direction>asc|desc))?\z/i
       column = Regexp.last_match[:column]
       direction = Regexp.last_match[:direction] || "desc"
-      order.concat([{column => direction}, {id: direction}])
+      order.push({ column => direction }, { id: direction })
 
     when "tagcount", "tagcount_desc"
-      order.push({tag_count: :desc})
+      order.push({ tag_count: :desc })
 
     when "tagcount_asc"
-      order.push({tag_count: :asc})
+      order.push({ tag_count: :asc })
 
     when /(#{TagCategory.short_name_regex})tags(?:\Z|_desc)/
-      order.push({"tag_count_#{TagCategory.short_name_mapping[$1]}" => :desc})
+      order.push({ "tag_count_#{TagCategory.short_name_mapping[$1]}" => :desc })
 
     when /(#{TagCategory.short_name_regex})tags_asc/
-      order.push({"tag_count_#{TagCategory.short_name_mapping[$1]}" => :asc})
+      order.push({ "tag_count_#{TagCategory.short_name_mapping[$1]}" => :asc })
 
     when "rank"
       @function_score = {
         script_score: {
           script: {
-            params: { log3: Math.log(3), date2005_05_24: 1_116_936_000 },
-            source: "Math.log(doc['score'].value) / params.log3 + (doc['created_at'].value.millis / 1000 - params.date2005_05_24) / 35000",
+            params: { log3: Math.log(3), date2024_05_18: 1_715_990_400_000 }, # rubocop:disable Naming/VariableNumber
+            source: "Math.log(doc['score'].value) / params.log3 + (doc['created_at'].value.millis / 1000 - params.date2024_05_18) / 35000",
           },
         },
       }
@@ -305,10 +305,10 @@ class ElasticPostQueryBuilder < ElasticQueryBuilder
         }
       end
 
-      order.push({_score: :desc})
+      order.push({ _score: :desc })
 
-    else
-      order.push({id: :desc})
+    else # rubocop:disable Lint/DuplicateBranch
+      order.push({ id: :desc })
     end
   end
 end

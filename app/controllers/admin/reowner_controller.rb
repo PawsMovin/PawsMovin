@@ -9,8 +9,8 @@ module Admin
     def create
       authorize(:reowner)
       @reowner_params = permitted_attributes(:reowner)
-      @old_user = User.find_by_name_or_id(@reowner_params[:old_owner])
-      @new_user = User.find_by_name_or_id(@reowner_params[:new_owner])
+      @old_user = User.find_by_normalized_name_or_id(@reowner_params[:old_owner])
+      @new_user = User.find_by_normalized_name_or_id(@reowner_params[:new_owner])
       query = @reowner_params[:search]
       unless @old_user && @new_user
         flash[:notice] = "Old or new user failed to look up. Use !id for name to use an id"

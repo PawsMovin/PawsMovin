@@ -47,11 +47,11 @@ module PostSets
     end
 
     def hidden_posts
-      @hidden_posts ||= posts.select { |p| !p.visible? }
+      @hidden_posts ||= posts.reject(&:visible?)
     end
 
     def login_blocked_posts
-      @login_blocked ||= posts.select { |p| p.loginblocked? }
+      @login_blocked_posts ||= posts.select(&:loginblocked?)
     end
 
     def safe_posts
@@ -72,10 +72,10 @@ module PostSets
     end
 
     def api_posts
-      _posts = posts
-      fill_children(_posts)
-      fill_tag_types(_posts)
-      _posts
+      posts = self.posts
+      fill_children(posts)
+      fill_tag_types(posts)
+      posts
     end
 
     def current_page

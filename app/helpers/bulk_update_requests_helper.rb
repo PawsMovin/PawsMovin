@@ -6,10 +6,10 @@ module BulkUpdateRequestsHelper
 
     case command
     when :create_alias
-      TagAlias.exists?(antecedent_name: antecedent, consequent_name: consequent, status: %w(active processing queued))
+      TagAlias.exists?(antecedent_name: antecedent, consequent_name: consequent, status: %w[active processing queued])
 
     when :create_implication
-      TagImplication.exists?(antecedent_name: antecedent, consequent_name: consequent, status: %w(active processing queued))
+      TagImplication.exists?(antecedent_name: antecedent, consequent_name: consequent, status: %w[active processing queued])
 
     when :remove_alias
       TagAlias.exists?(antecedent_name: antecedent, consequent_name: consequent, status: "deleted") || !TagAlias.exists?(antecedent_name: antecedent, consequent_name: consequent)
@@ -18,7 +18,8 @@ module BulkUpdateRequestsHelper
       TagImplication.exists?(antecedent_name: antecedent, consequent_name: consequent, status: "deleted") || !TagImplication.exists?(antecedent_name: antecedent, consequent_name: consequent)
 
     when :change_category
-      tag, category = antecedent, consequent
+      tag = antecedent
+      category = consequent
       Tag.exists?(name: tag, category: TagCategory.value_for(category))
 
     else
@@ -42,7 +43,7 @@ module BulkUpdateRequestsHelper
   end
 
   def collect_script_tags(tokenized)
-    names = ::Set.new()
+    names = ::Set.new
     tokenized.each do |cmd, arg1, arg2|
       case cmd
       when :create_alias, :create_implication, :remove_alias, :remove_implication

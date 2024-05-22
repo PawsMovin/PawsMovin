@@ -2,8 +2,8 @@
 
 class UserNameChangeRequest < ApplicationRecord
   after_initialize :initialize_attributes, if: :new_record?
-  validates :user_id, :original_name, :desired_name, presence: true
-  validates :status, inclusion: { in: %w(pending approved rejected) }
+  validates :original_name, :desired_name, presence: true
+  validates :status, inclusion: { in: %w[pending approved rejected] }
   validates :change_reason, length: { maximum: 250 }
   belongs_to :user
   belongs_to :approver, class_name: "User", optional: true
@@ -63,9 +63,9 @@ class UserNameChangeRequest < ApplicationRecord
     return true if skip_limited_validation == true
     if UserNameChangeRequest.exists?(["user_id = ? and created_at >= ?", CurrentUser.user.id, 1.week.ago])
       errors.add(:base, "You can only submit one name change request per week")
-      return false
+      false
     else
-      return true
+      true
     end
   end
 

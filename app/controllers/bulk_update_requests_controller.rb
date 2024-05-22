@@ -9,24 +9,24 @@ class BulkUpdateRequestsController < ApplicationController
     respond_with(@bulk_update_requests)
   end
 
+  def show
+    @bulk_update_request = authorize(BulkUpdateRequest.find(params[:id]))
+    respond_with(@bulk_update_request)
+  end
+
   def new
     @bulk_update_request = authorize(BulkUpdateRequest.new)
     respond_with(@bulk_update_request)
+  end
+
+  def edit
+    authorize(@bulk_update_request)
   end
 
   def create
     @bulk_update_request = authorize(BulkUpdateRequest.new(permitted_attributes(BulkUpdateRequest)))
     @bulk_update_request.save
     respond_with(@bulk_update_request)
-  end
-
-  def show
-    @bulk_update_request = authorize(BulkUpdateRequest.find(params[:id]))
-    respond_with(@bulk_update_request)
-  end
-
-  def edit
-    authorize(@bulk_update_request)
   end
 
   def update

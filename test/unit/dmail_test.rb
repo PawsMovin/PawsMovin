@@ -40,7 +40,7 @@ class DmailTest < ActiveSupport::TestCase
           @dmail = create(:dmail, owner: @recipient, body: "banned word here", to: @recipient)
         end
 
-        assert_equal(false, !!@recipient.dmail_filter.filtered?(@dmail))
+        assert_equal(false, @recipient.dmail_filter.filtered?(@dmail))
         assert_equal(false, @dmail.is_read?)
         assert_equal(true, @recipient.has_mail?)
       end
@@ -71,7 +71,7 @@ class DmailTest < ActiveSupport::TestCase
       end
 
       should "return results based on body contents" do
-        dmail = create(:dmail, body: "xxx", owner: @user)
+        create(:dmail, body: "xxx", owner: @user)
         matches = Dmail.search(message_matches: "xxx")
         assert(matches.any?)
         matches = Dmail.search(message_matches: "aaa")

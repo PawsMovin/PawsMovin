@@ -41,7 +41,11 @@ module FileMethods
     return false unless is_gif?
 
     # Check whether the gif has multiple frames by trying to load the second frame.
-    result = Vips::Image.gifload(file_path, page: 1) rescue $ERROR_INFO
+    result = begin
+      Vips::Image.gifload(file_path, page: 1)
+    rescue StandardError
+      $ERROR_INFO
+    end
     if result.is_a?(Vips::Image)
       true
     elsif result.is_a?(Vips::Error) && result.message =~ /bad page number/
@@ -52,7 +56,7 @@ module FileMethods
   end
 
   def is_ai_generated?(file_path)
-    return false if !is_image?
+    return false unless is_image?
 
     image = Vips::Image.new_from_file(file_path)
     fetch = ->(key) do
@@ -118,7 +122,7 @@ module FileMethods
     image = Vips::Image.new_from_file(file_path, fail: true)
     image.stats
     false
-  rescue
+  rescue StandardError
     true
   end
 end

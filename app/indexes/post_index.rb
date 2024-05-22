@@ -96,52 +96,52 @@ module PostIndex
         [pid, array[1..-2].split(",")]
       end
 
-      relation.find_in_batches do |batch|
+      relation.find_in_batches(batch_size: batch_size) do |batch| # rubocop:disable Metrics/BlockLength
         post_ids = batch.map(&:id).join(",")
 
-        comments_sql = <<-SQL
+        comments_sql = <<-SQL.squish
           SELECT post_id, count(*) FROM comments
           WHERE post_id IN (#{post_ids})
           GROUP BY post_id
         SQL
-        pools_sql = <<-SQL
+        pools_sql = <<-SQL.squish
           SELECT post_id, ( SELECT COALESCE(array_agg(id), '{}'::int[]) FROM pools WHERE post_ids @> ('{}'::int[] || post_id) )
           FROM (SELECT unnest('{#{post_ids}}'::int[])) as input_list(post_id);
         SQL
-        sets_sql = <<-SQL
+        sets_sql = <<-SQL.squish
           SELECT post_id, ( SELECT COALESCE(array_agg(id), '{}'::int[]) FROM post_sets WHERE post_ids @> ('{}'::int[] || post_id) )
           FROM (SELECT unnest('{#{post_ids}}'::int[])) as input_list(post_id);
         SQL
-        commenter_sql = <<-SQL
+        commenter_sql = <<-SQL.squish
           SELECT post_id, array_agg(distinct creator_id) FROM comments
           WHERE post_id IN (#{post_ids}) AND is_hidden = false
           GROUP BY post_id
         SQL
-        noter_sql = <<-SQL
+        noter_sql = <<-SQL.squish
           SELECT post_id, array_agg(distinct creator_id) FROM notes
           WHERE post_id IN (#{post_ids}) AND is_active = true
           GROUP BY post_id
         SQL
-        faves_sql = <<-SQL
+        faves_sql = <<-SQL.squish
           SELECT post_id, array_agg(user_id) FROM favorites
           WHERE post_id IN (#{post_ids})
           GROUP BY post_id
         SQL
-        votes_sql = <<-SQL
+        votes_sql = <<-SQL.squish
           SELECT post_id, array_agg(user_id), array_agg(score) FROM post_votes
           WHERE post_id IN (#{post_ids})
           GROUP BY post_id
         SQL
-        child_sql = <<-SQL
+        child_sql = <<-SQL.squish
           SELECT parent_id, array_agg(id) FROM posts
           WHERE parent_id IN (#{post_ids})
           GROUP BY parent_id
         SQL
-        note_sql = <<-SQL
+        note_sql = <<-SQL.squish
           SELECT post_id, body FROM notes
           WHERE post_id IN (#{post_ids}) AND is_active = true
         SQL
-        deletion_sql = <<-SQL
+        deletion_sql = <<-SQL.squish
           SELECT pf.post_id, pf.creator_id, LOWER(pf.reason) as reason FROM
             (SELECT MAX(id) as mid, post_id
              FROM post_flags
@@ -149,7 +149,7 @@ module PostIndex
              GROUP BY post_id) pfi
           INNER JOIN post_flags pf ON pf.id = pfi.mid;
         SQL
-        pending_replacements_sql = <<-SQL
+        pending_replacements_sql = <<-SQL.squish
           SELECT DISTINCT p.id, CASE WHEN pr.post_id IS NULL THEN false ELSE true END FROM posts p
             LEFT OUTER JOIN post_replacements pr ON p.id = pr.post_id AND pr.status = 'pending'
           WHERE p.id IN (#{post_ids})
@@ -158,8 +158,8 @@ module PostIndex
         # Run queries
         conn = ApplicationRecord.connection
         deletions      = conn.execute(deletion_sql)
-        deleter_ids    = deletions.values.map {|p,did,dr| [p,did]}.to_h
-        del_reasons    = deletions.values.map {|p,did,dr| [p,dr]}.to_h
+        deleter_ids    = deletions.values.to_h { |p, did, _dr| [p, did] }
+        del_reasons    = deletions.values.to_h { |p, _did, dr| [p, dr] }
         comment_counts = conn.execute(comments_sql).values.to_h
         pool_ids       = conn.execute(pools_sql).values.map(&array_parse).to_h
         set_ids        = conn.execute(sets_sql).values.map(&array_parse).to_h
@@ -167,8 +167,8 @@ module PostIndex
         commenter_ids  = conn.execute(commenter_sql).values.map(&array_parse).to_h
         noter_ids      = conn.execute(noter_sql).values.map(&array_parse).to_h
         child_ids      = conn.execute(child_sql).values.map(&array_parse).to_h
-        notes          = Hash.new { |h,k| h[k] = [] }
-        conn.execute(note_sql).values.each { |p,b| notes[p] << b }
+        notes          = Hash.new { |h, k| h[k] = [] }
+        conn.execute(note_sql).each_value { |p, b| notes[p] << b }
         pending_replacements = conn.execute(pending_replacements_sql).values.to_h
 
         # Special handling for votes to do it with one query
@@ -178,8 +178,8 @@ module PostIndex
           [pid.to_i, uids.zip(scores)]
         end
 
-        upvote_ids   = vote_ids.map { |pid, user| [pid, user.reject { |uid, s| s <= 0 }.map {|uid, _| uid}] }.to_h
-        downvote_ids = vote_ids.map { |pid, user| [pid, user.reject { |uid, s| s >= 0 }.map {|uid, _| uid}] }.to_h
+        upvote_ids   = vote_ids.transform_values { |user| user.reject { |_uid, s| s <= 0 }.map { |uid, _| uid } }
+        downvote_ids = vote_ids.transform_values { |user| user.reject { |_uid, s| s >= 0 }.map { |uid, _| uid } }
 
         empty = []
         batch.map! do |p|
@@ -196,14 +196,14 @@ module PostIndex
             notes:                    notes[p.id] || empty,
             deleter:                  deleter_ids[p.id] || empty,
             del_reason:               del_reasons[p.id] || empty,
-            has_pending_replacements: pending_replacements[p.id]
+            has_pending_replacements: pending_replacements[p.id],
           }
 
           {
             index: {
               _id:  p.id,
               data: p.as_indexed_json(index_options),
-            }
+            },
           }
         end
 
@@ -261,12 +261,12 @@ module PostIndex
       aspect_ratio:             image_width && image_height ? (image_width.to_f / [image_height, 1].max).round(10) : 1.0,
       duration:                 duration,
 
-      tags:                     tag_string.split(" "),
+      tags:                     tag_string.split,
       md5:                      md5,
       rating:                   rating,
       file_ext:                 file_ext,
       source:                   source_array.map(&:downcase),
-      description:              description.present? ? description : nil,
+      description:              description.presence,
 
       rating_locked:            is_rating_locked,
       note_locked:              is_note_locked,
@@ -275,7 +275,7 @@ module PostIndex
       pending:                  is_pending,
       deleted:                  is_deleted,
       has_children:             has_children,
-      has_pending_replacements: options.key?(:has_pending_replacements) ? options[:has_pending_replacements] : replacements.pending.any?
+      has_pending_replacements: options.key?(:has_pending_replacements) ? options[:has_pending_replacements] : replacements.pending.any?,
     }
   end
 end

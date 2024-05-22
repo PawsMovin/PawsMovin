@@ -45,8 +45,8 @@ module Moderator
       end
 
       user_ids = sums.map { |_, v| v.map { |k, _| k } }.reduce([]) { |ids, id| ids + id }.uniq
-      users = ::User.where(id: user_ids).map { |u| [u.id, u] }.to_h
-      {sums: sums, users: users}
+      users = ::User.where(id: user_ids).index_by(&:id)
+      { sums: sums, users: users }
     end
 
     def search_by_user_name(user_names, with_history)
@@ -71,14 +71,14 @@ module Moderator
       end
 
       ip_addrs = sums.map { |_, v| v.map { |k, _| k } }.reduce([]) { |ids, id| ids + id }.uniq
-      {sums: sums, ip_addrs: ip_addrs}
+      { sums: sums, ip_addrs: ip_addrs }
     end
 
-    def add_by_user_id(target, name, ids, klass, ip_field, id_field)
+    def add_by_user_id(target, name, ids, klass, ip_field, id_field) # rubocop:disable Metrics/ParameterLists
       target.merge!({ name => klass.where(id_field => ids).where.not(ip_field => nil).group(ip_field).count })
     end
 
-    def add_by_ip_addr(target, name, ips, klass, ip_field, id_field)
+    def add_by_ip_addr(target, name, ips, klass, ip_field, id_field) # rubocop:disable Metrics/ParameterLists
       if ips.size == 1
         target.merge!({ name => klass.where("#{ip_field} <<= ?", ips[0]).group(id_field).count })
       else

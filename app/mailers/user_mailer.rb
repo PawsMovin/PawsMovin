@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class UserMailer < ActionMailer::Base
+class UserMailer < ApplicationMailer
   helper ApplicationHelper
   helper UsersHelper
   default from: PawsMovin.config.mail_from_addr, content_type: "text/html"

@@ -19,7 +19,7 @@ class RelatedTagCalculatorTest < ActiveSupport::TestCase
       end
 
       should "calculate the related tags" do
-        assert_equal({"aaa"=>3, "bbb"=>3, "ccc"=>2, "ddd"=>1}, RelatedTagCalculator.calculate_from_posts(@posts))
+        assert_equal({ "aaa" => 3, "bbb" => 3, "ccc" => 2, "ddd" => 1 }, RelatedTagCalculator.calculate_from_posts(@posts))
       end
     end
 
@@ -29,7 +29,7 @@ class RelatedTagCalculatorTest < ActiveSupport::TestCase
       posts << create(:post, tag_string: "aaa bbb ccc")
       posts << create(:post, tag_string: "aaa bbb")
 
-      assert_equal({"aaa" => 3, "bbb" => 3, "ccc" => 2, "ddd" => 1}, RelatedTagCalculator.calculate_from_sample("aaa", 10))
+      assert_equal({ "aaa" => 3, "bbb" => 3, "ccc" => 2, "ddd" => 1 }, RelatedTagCalculator.calculate_from_sample("aaa", 10))
     end
 
     should "calculate related tags for multiple tag" do
@@ -38,7 +38,7 @@ class RelatedTagCalculatorTest < ActiveSupport::TestCase
       posts << create(:post, tag_string: "aaa bbb ccc ddd")
       posts << create(:post, tag_string: "aaa eee fff")
 
-      assert_equal({"aaa"=>2, "bbb"=>2, "ddd"=>1, "ccc"=>2}, RelatedTagCalculator.calculate_from_sample("aaa bbb", 10))
+      assert_equal({ "aaa" => 2, "bbb" => 2, "ddd" => 1, "ccc" => 2 }, RelatedTagCalculator.calculate_from_sample("aaa bbb", 10))
     end
 
     should "calculate typed related tags for a tag" do
@@ -47,8 +47,8 @@ class RelatedTagCalculatorTest < ActiveSupport::TestCase
       posts << create(:post, tag_string: "aaa bbb art:ccc")
       posts << create(:post, tag_string: "aaa bbb")
 
-      assert_equal({"ccc" => 2}, RelatedTagCalculator.calculate_from_sample("aaa", 10, TagCategory.artist))
-      assert_equal({"ddd" => 1}, RelatedTagCalculator.calculate_from_sample("aaa", 10, TagCategory.copyright))
+      assert_equal({ "ccc" => 2 }, RelatedTagCalculator.calculate_from_sample("aaa", 10, TagCategory.artist))
+      assert_equal({ "ddd" => 1 }, RelatedTagCalculator.calculate_from_sample("aaa", 10, TagCategory.copyright))
     end
 
     should "convert a hash into string format" do
@@ -57,7 +57,7 @@ class RelatedTagCalculatorTest < ActiveSupport::TestCase
       posts << create(:post, tag_string: "aaa bbb ccc")
       posts << create(:post, tag_string: "aaa bbb")
 
-      tag = Tag.find_by_name("aaa")
+      Tag.find_by(name: "aaa")
       counts = RelatedTagCalculator.calculate_from_sample("aaa", 10)
       assert_equal("aaa 3 bbb 3 ccc 2 ddd 1", RelatedTagCalculator.convert_hash_to_string(counts))
     end

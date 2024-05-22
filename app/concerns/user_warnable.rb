@@ -10,7 +10,7 @@ module UserWarnable
       ban:     3,
     }
 
-    scope :user_warned, -> { where("warning_type IS NOT NULL") }
+    scope :user_warned, -> { where.not(warning_type: nil) }
   end
 
   def user_warned!(type, user)

@@ -5,19 +5,6 @@ class UsersController < ApplicationController
   skip_before_action :api_check
   before_action :logged_in_only, only: %i[edit upload_limit update]
 
-  def new
-    raise(User::PrivilegeError, "Already signed in") unless CurrentUser.is_anonymous?
-    return access_denied("Signups are disabled") unless PawsMovin.config.enable_signups?
-    @user = User.new
-    respond_with(@user)
-  end
-
-  def edit
-    @user = User.find(CurrentUser.id)
-    raise(User::PrivilegeError, "Must verify account email") unless @user.is_verified?
-    respond_with(@user)
-  end
-
   def index
     if params[:name].present?
       @user = User.find_by!(name: params[:name])
@@ -31,6 +18,25 @@ class UsersController < ApplicationController
         end
       end
     end
+  end
+
+  def show
+    @user = User.find(User.name_or_id_to_id_forced(params[:id]))
+    @presenter = UserPresenter.new(@user)
+    respond_with(@user, methods: @user.full_attributes)
+  end
+
+  def new
+    raise(User::PrivilegeError, "Already signed in") unless CurrentUser.is_anonymous?
+    return access_denied("Signups are disabled") unless PawsMovin.config.enable_signups?
+    @user = User.new
+    respond_with(@user)
+  end
+
+  def edit
+    @user = User.find(CurrentUser.id)
+    raise(User::PrivilegeError, "Must verify account email") unless @user.is_verified?
+    respond_with(@user)
   end
 
   def home
@@ -54,15 +60,9 @@ class UsersController < ApplicationController
     respond_with(@user, methods: @user.full_attributes)
   end
 
-  def show
-    @user = User.find(User.name_or_id_to_id_forced(params[:id]))
-    @presenter = UserPresenter.new(@user)
-    respond_with(@user, methods: @user.full_attributes)
-  end
-
   def create
-    raise(User::PrivilegeError.new("Already signed in")) unless CurrentUser.is_anonymous?
-    raise(User::PrivilegeError.new("Signups are disabled")) unless PawsMovin.config.enable_signups?
+    raise(User::PrivilegeError, "Already signed in") unless CurrentUser.is_anonymous?
+    raise(User::PrivilegeError, "Signups are disabled") unless PawsMovin.config.enable_signups?
     User.transaction do
       @user = User.new(permitted_attributes(User).merge({ last_ip_addr: request.remote_ip }))
       @user.validate_email_format = true
@@ -79,11 +79,10 @@ class UsersController < ApplicationController
           flash[:notice] = "Sign up failed: #{@user.errors.full_messages.join('; ')}"
         end
         set_current_user
-        respond_with(@user)
       else
         flash[:notice] = "Sign up failed"
-        respond_with(@user)
       end
+      respond_with(@user)
     end
   rescue ::Mailgun::CommunicationError
     session[:user_id] = nil

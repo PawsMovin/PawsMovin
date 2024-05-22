@@ -3,16 +3,6 @@
 class PoolsController < ApplicationController
   respond_to :html, :json
 
-  def new
-    @pool = authorize(Pool.new(permitted_attributes(Pool)))
-    respond_with(@pool)
-  end
-
-  def edit
-    @pool = authorize(Pool.find(params[:id]))
-    respond_with(@pool)
-  end
-
   def index
     @pools = authorize(Pool).search(search_params(Pool)).paginate(params[:page], limit: params[:limit], search_count: params[:search])
     respond_with(@pools) do |format|
@@ -23,10 +13,6 @@ class PoolsController < ApplicationController
     end
   end
 
-  def gallery
-    @pools = authorize(Pool).search(search_params(Pool)).paginate_posts(params[:page], limit: params[:limit], search_count: params[:search])
-  end
-
   def show
     @pool = authorize(Pool.find(params[:id]))
     respond_with(@pool) do |format|
@@ -34,6 +20,20 @@ class PoolsController < ApplicationController
         @posts = @pool.posts.paginate_posts(params[:page], limit: params[:limit], total_count: @pool.post_ids.count)
       end
     end
+  end
+
+  def new
+    @pool = authorize(Pool.new(permitted_attributes(Pool)))
+    respond_with(@pool)
+  end
+
+  def edit
+    @pool = authorize(Pool.find(params[:id]))
+    respond_with(@pool)
+  end
+
+  def gallery
+    @pools = authorize(Pool).search(search_params(Pool)).paginate_posts(params[:page], limit: params[:limit], search_count: params[:search])
   end
 
   def create
@@ -62,8 +62,6 @@ class PoolsController < ApplicationController
     @version = @pool.versions.find(params[:version_id])
     @pool.revert_to!(@version)
     flash[:notice] = "Pool reverted"
-    respond_with(@pool) do |format|
-      format.js
-    end
+    respond_with(@pool, &:js)
   end
 end

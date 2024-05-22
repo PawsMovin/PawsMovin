@@ -8,7 +8,7 @@ class PostReplacementTest < ActiveSupport::TestCase
     @mod_user = create(:moderator_user, created_at: 2.weeks.ago)
     @upload = UploadService.new(attributes_for(:jpg_upload).merge(uploader: @mod_user)).start!
     @post = @upload.post
-    @post.update_columns({is_pending: false, approver_id: @mod_user.id})
+    @post.update_columns({ is_pending: false, approver_id: @mod_user.id })
     CurrentUser.user = @user
   end
 
@@ -78,7 +78,7 @@ class PostReplacementTest < ActiveSupport::TestCase
     end
 
     should "affect user upload limit" do
-      assert_difference(-> { @user.post_replacements.pending.count}, 1) do
+      assert_difference(-> { @user.post_replacements.pending.count }, 1) do
         @replacement = @post.replacements.create(attributes_for(:png_replacement).merge(creator: @user))
       end
     end
@@ -199,17 +199,17 @@ class PostReplacementTest < ActiveSupport::TestCase
     end
 
     should "update users upload counts" do
-      assert_difference(->{Post.for_user(@mod_user.id).where("is_flagged = false AND is_deleted = false AND is_pending = false").count}, -1) do
-        assert_difference(->{Post.for_user(@user.id).where("is_flagged = false AND is_deleted = false AND is_pending = false").count}, 1) do
+      assert_difference(-> { Post.for_user(@mod_user.id).where("is_flagged = false AND is_deleted = false AND is_pending = false").count }, -1) do
+        assert_difference(-> { Post.for_user(@user.id).where("is_flagged = false AND is_deleted = false AND is_pending = false").count }, 1) do
           @replacement.approve!(penalize_current_uploader: true)
         end
       end
     end
 
     should "update the original users upload limit if penalized" do
-      assert_difference(->{@mod_user.own_post_replaced_count}, 1) do
-        assert_difference(->{@mod_user.own_post_replaced_penalize_count}, 1) do
-          assert_difference(->{PostReplacement.penalized.for_uploader_on_approve(@mod_user.id).count}, 1) do
+      assert_difference(-> { @mod_user.own_post_replaced_count }, 1) do
+        assert_difference(-> { @mod_user.own_post_replaced_penalize_count }, 1) do
+          assert_difference(-> { PostReplacement.penalized.for_uploader_on_approve(@mod_user.id).count }, 1) do
             @replacement.approve!(penalize_current_uploader: true)
             @mod_user.reload
           end
@@ -218,9 +218,9 @@ class PostReplacementTest < ActiveSupport::TestCase
     end
 
     should "not update the original users upload limit if not penalizing" do
-      assert_difference(-> {@mod_user.own_post_replaced_count}, 1) do
-        assert_difference(->{@mod_user.own_post_replaced_penalize_count}, 0) do
-          assert_difference(->{PostReplacement.not_penalized.for_uploader_on_approve(@mod_user.id).count}, 1) do
+      assert_difference(-> { @mod_user.own_post_replaced_count }, 1) do
+        assert_difference(-> { @mod_user.own_post_replaced_penalize_count }, 0) do
+          assert_difference(-> { PostReplacement.not_penalized.for_uploader_on_approve(@mod_user.id).count }, 1) do
             @replacement.approve!(penalize_current_uploader: false)
             @mod_user.reload
           end
@@ -271,8 +271,8 @@ class PostReplacementTest < ActiveSupport::TestCase
 
     should "change the users upload limit" do
       @replacement.approve!(penalize_current_uploader: false)
-      assert_difference(->{@mod_user.own_post_replaced_penalize_count}, 1) do
-        assert_difference(->{PostReplacement.penalized.for_uploader_on_approve(@mod_user.id).count}, 1) do
+      assert_difference(-> { @mod_user.own_post_replaced_penalize_count }, 1) do
+        assert_difference(-> { PostReplacement.penalized.for_uploader_on_approve(@mod_user.id).count }, 1) do
           @replacement.toggle_penalize!
           @mod_user.reload
         end
@@ -307,8 +307,8 @@ class PostReplacementTest < ActiveSupport::TestCase
     end
 
     should "credit replacer with new post" do
-      assert_difference(->{Post.for_user(@mod_user.id).where("is_flagged = false AND is_deleted = false AND is_pending = false").count}, 0) do
-        assert_difference(->{Post.for_user(@user.id).where("is_flagged = false AND is_deleted = false").count}, 1) do
+      assert_difference(-> { Post.for_user(@mod_user.id).where("is_flagged = false AND is_deleted = false AND is_pending = false").count }, 0) do
+        assert_difference(-> { Post.for_user(@user.id).where("is_flagged = false AND is_deleted = false").count }, 1) do
           post = @replacement.promote!
           assert post
           assert_equal [], post.errors.full_messages

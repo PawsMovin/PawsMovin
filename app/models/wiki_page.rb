@@ -1,12 +1,16 @@
 # frozen_string_literal: true
 
 class WikiPage < ApplicationRecord
-  class RevertError < Exception; end
+  class RevertError < StandardError; end
 
   INTERNAL_PREFIXES = %w[internal: help:].freeze
 
   before_validation :normalize_title
   before_validation :normalize_parent
+  before_validation :ensure_internal_locked
+  after_update :log_update
+  before_destroy :validate_not_used_as_help_page
+  after_destroy :log_delete
   after_save :create_version
   validates :title, uniqueness: { case_sensitive: false }
   validates :title, presence: true
@@ -19,11 +23,7 @@ class WikiPage < ApplicationRecord
   validate :validate_rename
   validate :validate_not_locked
 
-  before_validation :ensure_internal_locked
-  before_destroy :validate_not_used_as_help_page
-  after_destroy :log_delete
   after_save :log_save
-  after_update :log_update
 
   attr_accessor :skip_post_count_rename_check, :edit_reason
 
@@ -32,7 +32,7 @@ class WikiPage < ApplicationRecord
   has_one :tag, foreign_key: "name", primary_key: "title"
   has_one :artist, foreign_key: "name", primary_key: "title"
   has_one :help_page, foreign_key: "wiki_page", primary_key: "title"
-  has_many :versions, -> {order("wiki_page_versions.id ASC")}, class_name: "WikiPageVersion", dependent: :destroy
+  has_many :versions, -> { order("wiki_page_versions.id ASC") }, class_name: "WikiPageVersion", dependent: :destroy
 
   def validate_not_used_as_help_page
     if help_page.present?
@@ -121,14 +121,14 @@ class WikiPage < ApplicationRecord
   def validate_not_locked
     if is_locked? && !CurrentUser.is_janitor?
       errors.add(:is_locked, "and cannot be updated")
-      return false
+      false
     end
   end
 
   def validate_rename
     return if !will_save_change_to_title? || skip_post_count_rename_check
 
-    tag_was = Tag.find_by_name(Tag.normalize_name(title_was))
+    tag_was = Tag.find_by(name: Tag.normalize_name(title_was))
     if tag_was.present? && tag_was.post_count > 0
       errors.add(:title, "cannot be changed: '#{tag_was.name}' still has #{tag_was.post_count} posts. Move the posts and update any wikis linking to this page first.")
     end
@@ -153,7 +153,7 @@ class WikiPage < ApplicationRecord
 
   def revert_to(version)
     if id != version.wiki_page_id
-      raise(RevertError.new("You cannot revert to a previous version of another wiki page."))
+      raise(RevertError, "You cannot revert to a previous version of another wiki page.")
     end
 
     self.title = version.title
@@ -228,7 +228,7 @@ class WikiPage < ApplicationRecord
       else
         match
       end
-    end.map {|x| x.downcase.tr(" ", "_").to_s}.uniq
+    end.map { |x| x.downcase.tr(" ", "_").to_s }.uniq
   end
 
   def visible?

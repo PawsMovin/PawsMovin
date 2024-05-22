@@ -28,7 +28,11 @@ module Sources
         @url = url
         @urls = [url].select(&:present?)
 
-        @parsed_url = Addressable::URI.heuristic_parse(url) rescue nil
+        @parsed_url = begin
+          Addressable::URI.heuristic_parse(url)
+        rescue StandardError
+          nil
+        end
       end
 
       # Should return true if this strategy should be used. By default, checks
@@ -93,7 +97,7 @@ module Sources
       # Subclasses should merge in any required headers needed to access resources
       # on the site.
       def headers
-        return PawsMovin.config.http_headers
+        PawsMovin.config.http_headers
       end
 
       def file_url
@@ -108,7 +112,7 @@ module Sources
         (@tags || []).uniq
       end
 
-      def to_json
+      def to_json(*_args)
         to_h.to_json
       end
     end

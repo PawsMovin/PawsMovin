@@ -48,7 +48,7 @@ BCrypt::Engine::DEFAULT_COST = BCrypt::Engine::MIN_COST
 Post.document_store.create_index!(delete_existing: true)
 PostVersion.document_store.create_index!(delete_existing: true)
 
-class ActiveSupport::TestCase
+class ActiveSupport::TestCase # rubocop:disable Style/ClassAndModuleChildren
   include ActionDispatch::TestProcess::FixtureFile
   include FactoryBot::Syntax::Methods
 
@@ -58,8 +58,8 @@ class ActiveSupport::TestCase
     PawsMovin.config.stubs(:disable_throttles?).returns(true)
     PawsMovin.config.stubs(:reports_enabled?).returns(false)
 
-    FileUtils.mkdir_p("#{Rails.root}/tmp/test-storage2")
-    storage_manager = StorageManager::Local.new(base_dir: "#{Rails.root}/tmp/test-storage2")
+    FileUtils.mkdir_p(Rails.root.join("tmp/test-storage2").to_s)
+    storage_manager = StorageManager::Local.new(base_dir: Rails.root.join("tmp/test-storage2").to_s)
     PawsMovin.config.stubs(:storage_manager).returns(storage_manager)
     PawsMovin.config.stubs(:backup_storage_manager).returns(StorageManager::Null.new)
     PawsMovin.config.stubs(:enable_email_verification?).returns(false)
@@ -68,7 +68,7 @@ class ActiveSupport::TestCase
 
   teardown do
     # The below line is only mildly insane and may have resulted in the destruction of my data several times.
-    FileUtils.rm_rf("#{Rails.root}/tmp/test-storage2")
+    FileUtils.rm_rf(Rails.root.join("tmp/test-storage2").to_s)
     Cache.clear
     RequestStore.clear!
   end
@@ -88,10 +88,10 @@ class ActiveSupport::TestCase
   end
 end
 
-class ActionDispatch::IntegrationTest
+class ActionDispatch::IntegrationTest # rubocop:disable Style/ClassAndModuleChildren
   def method_authenticated(method_name, url, user, options)
     post(session_path, params: { session: { name: user.name, password: user.password } })
-    self.send(method_name, url, **options)
+    send(method_name, url, **options)
   end
 
   def get_auth(url, user, options = {})

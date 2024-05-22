@@ -36,10 +36,10 @@
       <td><%= compact_time m.updated_at %></td>
       <td>
         <% if @post_set.can_edit_settings?(CurrentUser) && m.status == "approved" %>
-          <%= link_to "Remove", post_set_maintainer_path(m), method: :delete, data: {confirm: "Are you sure you want to remove this maintainer?"} %>
+          <%= link_to "Remove", post_set_maintainer_path(m), method: :delete, data: { confirm: "Are you sure you want to remove this maintainer?" } %>
         <% end %>
         <% if @post_set.can_edit_settings?(CurrentUser) && m.status == "pending" %>
-          <%= link_to "Remove", post_set_maintainer_path(m), method: :delete, data: {confirm: "Are you sure you want to remove this pending invite?"} %>
+          <%= link_to "Remove", post_set_maintainer_path(m), method: :delete, data: { confirm: "Are you sure you want to remove this pending invite?" } %>
         <% end %>
       </td>
     </tr>

@@ -34,14 +34,14 @@ class PoolVersion < ApplicationRecord
   extend SearchMethods
 
   def self.queue(pool, updater, updater_ip_addr)
-    self.create({
-        pool_id:         pool.id,
-        post_ids:        pool.post_ids,
-        updater_id:      updater.id,
-        updater_ip_addr: updater_ip_addr,
-        description:     pool.description,
-        name:            pool.name,
-        is_active:       pool.is_active?,
+    create({
+      pool_id:         pool.id,
+      post_ids:        pool.post_ids,
+      updater_id:      updater.id,
+      updater_ip_addr: updater_ip_addr,
+      description:     pool.description,
+      name:            pool.name,
+      is_active:       pool.is_active?,
     })
   end
 
@@ -50,7 +50,7 @@ class PoolVersion < ApplicationRecord
   end
 
   def fill_version
-    self.version = PoolVersion.calculate_version(self.pool_id)
+    self.version = PoolVersion.calculate_version(pool_id)
   end
 
   def fill_changes

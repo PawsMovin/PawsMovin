@@ -40,7 +40,7 @@
 
           <span class="post-info">
             <strong>Source</strong>
-            <%= link_to_if (upload.source =~ %r!\Ahttps?://!i), (upload.source.presence.try(:truncate, 50) || tag.em("none")), upload.source %>
+            <%= link_to_if (upload.source =~ %r{\Ahttps?://}i), (upload.source.presence.try(:truncate, 50) || tag.em("none")), upload.source %>
             <%= link_to "»", uploads_path(search: params[:search].merge(source_matches: upload.source)) %>
           </span>
           <br>
@@ -63,7 +63,7 @@
         <td>
           <%= link_to_user upload.uploader %>
           <%= link_to "»", uploads_path(search: params[:search].merge(uploader_name: upload.uploader_name)) %>
-          <br><%= time_ago_in_words_tagged  upload.created_at %>
+          <br><%= time_ago_in_words_tagged upload.created_at %>
         </td>
         <td class="col-normal">
           <%= render_status(upload) %>

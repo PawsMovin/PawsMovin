@@ -3,10 +3,10 @@
 class Tag < ApplicationRecord
   has_one :wiki_page, foreign_key: "title", primary_key: "name"
   has_one :artist, foreign_key: "name", primary_key: "name"
-  has_one :antecedent_alias, -> {active}, class_name: "TagAlias", foreign_key: "antecedent_name", primary_key: "name"
-  has_many :consequent_aliases, -> {active}, class_name: "TagAlias", foreign_key: "consequent_name", primary_key: "name"
-  has_many :antecedent_implications, -> {active}, class_name: "TagImplication", foreign_key: "antecedent_name", primary_key: "name"
-  has_many :consequent_implications, -> {active}, class_name: "TagImplication", foreign_key: "consequent_name", primary_key: "name"
+  has_one :antecedent_alias, -> { active }, class_name: "TagAlias", foreign_key: "antecedent_name", primary_key: "name"
+  has_many :consequent_aliases, -> { active }, class_name: "TagAlias", foreign_key: "consequent_name", primary_key: "name"
+  has_many :antecedent_implications, -> { active }, class_name: "TagImplication", foreign_key: "antecedent_name", primary_key: "name"
+  has_many :consequent_implications, -> { active }, class_name: "TagImplication", foreign_key: "consequent_name", primary_key: "name"
   has_many :versions, class_name: "TagVersion"
 
   validates :name, uniqueness: true, tag_name: true, on: :create
@@ -43,9 +43,7 @@ class Tag < ApplicationRecord
         Tag.where("post_count < 0").find_each do |tag|
           tag_alias = TagAlias.where("status in ('active', 'processing') and antecedent_name = ?", tag.name).first
           tag.fix_post_count
-          if tag_alias
-            tag_alias.consequent_tag.fix_post_count
-          end
+          tag_alias&.consequent_tag&.fix_post_count
         end
       end
     end
@@ -93,8 +91,8 @@ class Tag < ApplicationRecord
       end
     end
 
-    def self.included(m)
-      m.extend(ClassMethods)
+    def self.included(mod)
+      mod.extend(ClassMethods)
     end
 
     def category_name
@@ -125,14 +123,12 @@ class Tag < ApplicationRecord
       cat = TagCategory.get(category)
       return false unless cat
       if !CurrentUser.user.is_admin? && cat.admin_only?
-        errors.add(:category,  "can only used by admins")
+        errors.add(:category, "can only used by admins")
         return false
       end
-      if cat.suffix
-        unless name&.ends_with?(cat.suffix)
-          errors.add(:category, "can only be applied to tags that end with '#{cat.suffix}'")
-          return false
-        end
+      if cat.suffix && !name&.ends_with?(cat.suffix)
+        errors.add(:category, "can only be applied to tags that end with '#{cat.suffix}'")
+        false
       end
     end
 
@@ -159,7 +155,7 @@ class Tag < ApplicationRecord
     end
 
     def find_by_name_list(names)
-      names = names.map {|x| [normalize_name(x), nil]}.to_h
+      names = names.to_h { |x| [normalize_name(x), nil] }
       existing = Tag.where(name: names.keys).to_a
       existing.each do |x|
         names[x.name] = x
@@ -168,14 +164,14 @@ class Tag < ApplicationRecord
     end
 
     def find_or_create_by_name_list(names, user: CurrentUser.user, reason: nil)
-      names = names.map {|x| normalize_name(x)}
-      names = names.map do |x|
+      names = names.map { |x| normalize_name(x) }
+      names = names.to_h do |x|
         if x =~ /\A(#{TagCategory.regexp}):(.+)\Z/
           [$2, $1]
         else
           [x, nil]
         end
-      end.to_h
+      end
 
       existing = Tag.where(name: names.keys).to_a
       CurrentUser.scoped(user) do
@@ -213,15 +209,15 @@ class Tag < ApplicationRecord
         name = $2
       end
 
-      tag = find_by_name(name)
+      tag = find_by(name: name)
       CurrentUser.scoped(user) do
         if tag
           if category
             category_id = TagCategory.value_for(category)
-              # in case a category change hasn't propagated to this server yet,
-              # force an update the local cache. This may get overwritten in the
-              # next few lines if the category is changed.
-              tag.update_category_cache
+            # in case a category change hasn't propagated to this server yet,
+            # force an update the local cache. This may get overwritten in the
+            # next few lines if the category is changed.
+            tag.update_category_cache
 
             unless category_id == tag.category
               if tag.category_editable_by_implicit?(user)
@@ -254,6 +250,7 @@ class Tag < ApplicationRecord
       fix_post_count if post_count > 20 && rand(post_count) <= 1
       save
     rescue ActiveRecord::StatementInvalid
+      # Ignored
     end
 
     def update_related_if_outdated
@@ -265,13 +262,7 @@ class Tag < ApplicationRecord
 
     def related_cache_expiry
       base = Math.sqrt([post_count, 0].max)
-      if base > 24 * 30
-        24 * 30
-      elsif base < 24
-        24
-      else
-        base
-      end
+      base.clamp(24, 24 * 30)
     end
 
     def should_update_related?

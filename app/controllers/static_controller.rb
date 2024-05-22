@@ -45,19 +45,17 @@ class StaticController < ApplicationController
       user = CurrentUser.user
       user.disable_responsive_mode = !user.disable_responsive_mode
       user.save
+    elsif cookies[:nmm]
+      cookies.delete(:nmm)
     else
-      if cookies[:nmm]
-        cookies.delete(:nmm)
-      else
-        cookies.permanent[:nmm] = "1"
-      end
+      cookies.permanent[:nmm] = "1"
     end
     redirect_back(fallback_location: posts_path)
   end
 
   def discord
     unless CurrentUser.can_discord?
-      raise(User::PrivilegeError.new("You must have an account for at least one week in order to join the Discord server."))
+      raise(User::PrivilegeError, "You must have an account for at least one week in order to join the Discord server.")
     end
     if request.post?
       time = (Time.now + 5.minutes).to_i

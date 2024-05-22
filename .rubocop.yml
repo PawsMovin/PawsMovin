@@ -1,7 +1,3 @@
-<% unless $PROGRAM_NAME.end_with?("ruby-lsp") %>
-inherit_from: .rubocop_todo.yml
-<% end %>
-
 inherit_mode:
   merge:
     - Exclude
@@ -179,3 +175,32 @@ Layout/HashAlignment:
   Enabled: true
   EnforcedHashRocketStyle: table
   EnforcedColonStyle: table
+
+Rails/DynamicFindBy:
+  Enabled: true
+  AllowedMethods:
+    - find_by_normalized_name_or_id
+    - find_by_normalized_name
+    - find_by_name_list
+
+Rails/TimeZoneAssignment:
+  Enabled: true
+  Exclude:
+    - test/**/*.rb
+
+Lint/UriEscapeUnescape:
+  Enabled: false
+
+Style/MultilineBlockChain:
+  Enabled: false
+
+Metrics/BlockNesting:
+  Enabled: false
+
+Lint/RescueException:
+  Enabled: false
+
+Lint/StructNewOverride:
+  Enabled: true
+  Exclude:
+    - app/logical/moderator/dashboard/queries/*.rb

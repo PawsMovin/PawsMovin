@@ -2,7 +2,7 @@
 
 class RemoveDevProdDifferences < ActiveRecord::Migration[6.1]
   def change
-    execute("DROP FUNCTION IF EXISTS sourcepattern");
+    execute("DROP FUNCTION IF EXISTS sourcepattern")
 
     non_null_timestamps(:artist_urls)
     non_null_timestamps(:artists)

@@ -72,7 +72,7 @@ class UploadServiceTest < ActiveSupport::TestCase
           end
 
           should "generate a video" do
-            preview, crop, sample = subject.generate_resizes(@file, @upload)
+            preview, crop, _sample = subject.generate_resizes(@file, @upload)
             assert_operator(File.size(preview.path), :>, 0)
             assert_operator(File.size(crop.path), :>, 0)
             preview_image = Vips::Image.new_from_file(preview.path)

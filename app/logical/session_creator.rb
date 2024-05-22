@@ -3,7 +3,7 @@
 class SessionCreator
   attr_reader :session, :cookies, :name, :password, :ip_addr, :remember, :secure
 
-  def initialize(session, cookies, name, password, ip_addr, remember = false, secure = false)
+  def initialize(session, cookies, name, password, ip_addr, remember: false, secure: false) # rubocop:disable Metrics/ParameterLists
     @session = session
     @cookies = cookies
     @name = name
@@ -15,7 +15,7 @@ class SessionCreator
 
   def authenticate
     if User.authenticate(name, password)
-      user = User.find_by_name(name)
+      user = User.find_by_normalized_name(name)
 
       session[:user_id] = user.id
       session[:last_authenticated_at] = Time.now.utc.to_s

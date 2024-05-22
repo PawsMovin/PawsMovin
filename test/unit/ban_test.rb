@@ -85,7 +85,7 @@ class BanTest < ActiveSupport::TestCase
       as(admin) do
         create(:ban, user: user, banner: admin)
       end
-      assert(!user.feedback.empty?)
+      assert_not(user.feedback.empty?)
       assert_equal("negative", user.feedback.last.category)
     end
   end
@@ -101,7 +101,7 @@ class BanTest < ActiveSupport::TestCase
         banner_name: ban.banner.name,
         reason:      ban.reason,
         expired:     false,
-        order:       :id_desc
+        order:       :id_desc,
       }
 
       bans = Ban.search(params)
@@ -124,7 +124,7 @@ class BanTest < ActiveSupport::TestCase
 
         should "not return expired bans" do
           travel_to(2.days.from_now) do
-            assert(!Ban.is_banned?(@user))
+            assert_not(Ban.is_banned?(@user))
           end
         end
       end

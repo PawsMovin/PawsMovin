@@ -1,19 +1,19 @@
 # frozen_string_literal: true
 
 class Presenter
-  def self.h(s)
-    CGI.escapeHTML(s.to_s)
+  def self.h(string)
+    CGI.escapeHTML(string.to_s)
   end
 
-  def self.u(s)
-    URI.escape(s)
+  def self.u(string)
+    URI.escape(string)
   end
 
-  def h(s)
-    CGI.escapeHTML(s)
+  def h(string)
+    CGI.escapeHTML(string)
   end
 
-  def u(s)
-    CGI.escape(s)
+  def u(string)
+    CGI.escape(string)
   end
 end

@@ -10,13 +10,13 @@ class RelatedTagQueryTest < ActiveSupport::TestCase
 
   context "a related tag query without a category constraint" do
     setup do
-      @post_1 = create(:post, tag_string: "aaa bbb")
+      @post1 = create(:post, tag_string: "aaa bbb")
       @post2 = create(:post, tag_string: "aaa bbb ccc")
     end
 
     context "for a tag that already exists" do
       setup do
-        Tag.find_by_name("aaa").update_related
+        Tag.find_by(name: "aaa").update_related
         @query = RelatedTagQuery.new(query: "aaa")
       end
 
@@ -49,7 +49,7 @@ class RelatedTagQueryTest < ActiveSupport::TestCase
         @wp = create(:wiki_page, title: "aaa", body: "blah [[foo|blah]] [[FOO]] [[bar]] blah")
         @query = RelatedTagQuery.new(query: "xyz")
 
-        Tag.find_by_name("aaa").update_related
+        Tag.find_by(name: "aaa").update_related
       end
 
       should "take related tags from the consequent tag" do
@@ -77,14 +77,14 @@ class RelatedTagQueryTest < ActiveSupport::TestCase
 
   context "a related tag query with a category constraint" do
     setup do
-      @post_1 = create(:post, tag_string: "aaa bbb")
+      @post1 = create(:post, tag_string: "aaa bbb")
       @post2 = create(:post, tag_string: "aaa art:ccc")
-      @post_3 = create(:post, tag_string: "aaa copy:ddd")
+      @post3 = create(:post, tag_string: "aaa copy:ddd")
       @query = RelatedTagQuery.new(query: "aaa", category_id: TagCategory.artist)
     end
 
     should "find the related tags" do
-      assert_equal(%w(ccc), @query.tags)
+      assert_equal(%w[ccc], @query.tags)
     end
   end
 end

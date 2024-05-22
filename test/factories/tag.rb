@@ -9,7 +9,7 @@ FactoryBot.define do
     related_tags_updated_at { Time.now }
 
     factory(:artist_tag) do
-      category {TagCategory.artist}
+      category { TagCategory.artist }
     end
 
     factory(:copyright_tag) do

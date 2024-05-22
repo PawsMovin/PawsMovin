@@ -40,7 +40,7 @@ class UploadsController < ApplicationController
     end
 
     if @upload.invalid?
-      flash[:notice] = @upload.errors.full_messages.join("; ")
+      flash.now[:notice] = @upload.errors.full_messages.join("; ")
       return render(json: { success: false, reason: "invalid", message: @upload.errors.full_messages.join("; ") }, status: 412)
     end
     if @service.warnings.any? && !@upload.is_errored? && !@upload.is_duplicate?
@@ -49,7 +49,7 @@ class UploadsController < ApplicationController
         Dmail.create_automated({
           to_id: CurrentUser.id,
           title: "Upload notices for post ##{@service.post.id}",
-          body:  "While uploading post ##{@service.post.id} some notices were generated. Please review them below:\n\n#{warnings}"
+          body:  "While uploading post ##{@service.post.id} some notices were generated. Please review them below:\n\n#{warnings}",
         })
         flash[:notice] = "This upload created a LOT of notices. They have been dmailed to you. Please review them"
       else

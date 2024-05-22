@@ -24,9 +24,15 @@ class CommentsController < ApplicationController
     comment_html = render_to_string(partial: "comments/partials/show/comment", collection: @comments, locals: { post: @post }, formats: [:html])
     respond_with do |format|
       format.json do
-        render(json: {html: comment_html, posts: deferred_posts})
+        render(json: { html: comment_html, posts: deferred_posts })
       end
     end
+  end
+
+  def show
+    @comment = authorize(Comment.find(params[:id]))
+    @comment_votes = CommentVote.for_comments_and_user([@comment.id], CurrentUser.id)
+    respond_with(@comment)
   end
 
   def new
@@ -34,10 +40,9 @@ class CommentsController < ApplicationController
     respond_with(@comment)
   end
 
-  def update
+  def edit
     @comment = authorize(Comment.find(params[:id]))
-    @comment.update(permitted_attributes(@comment))
-    respond_with(@comment, location: post_path(@comment.post_id))
+    respond_with(@comment)
   end
 
   def create
@@ -51,15 +56,10 @@ class CommentsController < ApplicationController
     end
   end
 
-  def edit
+  def update
     @comment = authorize(Comment.find(params[:id]))
-    respond_with(@comment)
-  end
-
-  def show
-    @comment = authorize(Comment.find(params[:id]))
-    @comment_votes = CommentVote.for_comments_and_user([@comment.id], CurrentUser.id)
-    respond_with(@comment)
+    @comment.update(permitted_attributes(@comment))
+    respond_with(@comment, location: post_path(@comment.post_id))
   end
 
   def destroy
@@ -96,8 +96,8 @@ class CommentsController < ApplicationController
 
   def index_by_post
     tags = params[:tags] || ""
-    @posts = Post.tag_match(tags + " order:comment_bumped").paginate(params[:page], limit: 5, search_count: params[:search])
-    comment_ids = @posts.select { |post| post.comments_visible_to?(CurrentUser.user) }.flat_map {|post| post.comments.visible(CurrentUser.user).recent.reverse.map(&:id)} if CurrentUser.id
+    @posts = Post.tag_match("#{tags} order:comment_bumped").paginate(params[:page], limit: 5, search_count: params[:search])
+    comment_ids = @posts.select { |post| post.comments_visible_to?(CurrentUser.user) }.flat_map { |post| post.comments.visible(CurrentUser.user).recent.reverse.map(&:id) } if CurrentUser.id
     @comment_votes = CommentVote.for_comments_and_user(comment_ids || [], CurrentUser.id)
     respond_with(@posts)
   end

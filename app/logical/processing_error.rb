@@ -1,4 +1,4 @@
 # frozen_string_literal: true
 
-class ProcessingError < Exception
+class ProcessingError < StandardError
 end

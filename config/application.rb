@@ -37,7 +37,7 @@ module PawsMovin
     # config.autoload_lib(ignore: %w(assets tasks))
 
     config.active_record.schema_format = :sql
-    config.log_tags = [->(req) {"PID:#{Process.pid}"}]
+    config.log_tags = [->(_req) { "PID:#{Process.pid}" }]
     config.action_controller.action_on_unpermitted_parameters = :raise
     config.force_ssl = true
     config.active_job.queue_adapter = :sidekiq
@@ -48,7 +48,7 @@ module PawsMovin
       config.ssl_options = {
         hsts:           false,
         secure_cookies: false,
-        redirect:       { exclude: ->(request) { true } }
+        redirect:       { exclude: ->(_request) { true } },
       }
     end
 

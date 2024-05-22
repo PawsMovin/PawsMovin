@@ -14,8 +14,6 @@ module PostsHelper
     current_page = (params[:page] || 1).to_i
     if current_page >= 2
       url_for(nav_params_for(current_page - 1)).html_safe
-    else
-      nil
     end
   end
 
@@ -72,17 +70,17 @@ module PostsHelper
   end
 
   def is_pool_selected?(pool)
-    return false if params.has_key?(:q)
-    return false if params.has_key?(:post_set_id)
-    return false unless params.has_key?(:pool_id)
-    return params[:pool_id].to_i == pool.id
+    return false if params.key?(:q)
+    return false if params.key?(:post_set_id)
+    return false unless params.key?(:pool_id)
+    params[:pool_id].to_i == pool.id
   end
 
   def is_post_set_selected?(post_set)
-    return false if params.has_key?(:q)
-    return false if params.has_key?(:pool_id)
-    return false unless params.has_key?(:post_set_id)
-    return params[:post_set_id].to_i == post_set.id
+    return false if params.key?(:q)
+    return false if params.key?(:pool_id)
+    return false unless params.key?(:post_set_id)
+    params[:post_set_id].to_i == post_set.id
   end
 
   def post_stats_section(post, daily_views: false)
@@ -101,7 +99,7 @@ module PostsHelper
       icon + amount
     end
     comments = tag.span("C#{post.visible_comment_count(CurrentUser)}", class: "post-score-comments")
-    rating =  tag.span(post.rating.upcase, class: "post-score-rating")
+    rating = tag.span(post.rating.upcase, class: "post-score-rating")
     views = tag.span(class: "post-score-views-classes-#{post.id}") do
       icon = tag.i("", class: "fa-regular fa-eye")
       amount = tag.span(" #{(daily_views ? post.daily_views : post.total_views) || 0}", class: "post-score-views-views-#{post.id}")
@@ -116,19 +114,19 @@ module PostsHelper
     negative = user.negative_feedback_count
 
     return "" unless positive > 0 || neutral > 0 || negative > 0
-    positive_html = %{<span class="user-feedback-positive">#{positive}</span>}.html_safe if positive > 0
-    neutral_html = %{<span class="user-feedback-neutral">#{neutral}</span>}.html_safe if neutral > 0
-    negative_html = %{<span class="user-feedback-negative">#{negative}</span>}.html_safe if negative > 0
+    positive_html = %(<span class="user-feedback-positive">#{positive}</span>).html_safe if positive > 0
+    neutral_html = %(<span class="user-feedback-neutral">#{neutral}</span>).html_safe if neutral > 0
+    negative_html = %(<span class="user-feedback-negative">#{negative}</span>).html_safe if negative > 0
 
     list = "#{positive_html} #{neutral_html} #{negative_html}".strip
-    link_to(%{(#{list})}.html_safe,  user_feedbacks_path(search: { user_id: user.id }))
+    link_to(%{(#{list})}.html_safe, user_feedbacks_path(search: { user_id: user.id }))
   end
 
   private
 
   def nav_params_for(page)
     query_params = params.except(:controller, :action, :id).merge(page: page).permit!
-    {params: query_params}
+    { params: query_params }
   end
 
   def pretty_html_rating(post)
@@ -155,7 +153,7 @@ module PostsHelper
       score_tag = tag.span(post.score, class: "post-score-#{post.id} post-score #{score_class(post_score)}", title: "#{post.up_score} up/#{post.down_score} down")
       CurrentUser.is_member? ? up_tag + score_tag + down_tag : ""
     else
-      vote_block = tag.span(" (".html_safe + up_tag + " vote " + down_tag + ")")
+      vote_block = tag.span("#{' ('.html_safe}#{up_tag} vote #{down_tag})")
       score_tag = tag.span(post.score, class: "post-score-#{post.id} post-score #{score_class(post_score)}", title: "#{post.up_score} up/#{post.down_score} down")
       score_tag + (CurrentUser.is_member? ? vote_block : "")
     end
@@ -168,7 +166,7 @@ module PostsHelper
 
   def confirm_score_class(score, want, buttons)
     base = buttons ? "button " : ""
-    return base + "score-neutral" if score != want || score == 0
+    return "#{base}score-neutral" if score != want || score == 0
     base + score_class(score)
   end
 
@@ -176,7 +174,7 @@ module PostsHelper
     [
       %w[Safe s],
       %w[Questionable q],
-      %w[Explicit e]
+      %w[Explicit e],
     ]
   end
 

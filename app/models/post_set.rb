@@ -35,12 +35,12 @@ class PostSet < ApplicationRecord
   validate :set_per_hour_limit, on: :create
   validate :can_create_new_set_limit, on: :create
 
-  after_update :send_maintainer_public_dmails
-  before_destroy :send_maintainer_destroy_dmails
   before_save :update_post_count
-  after_save :synchronize, if: :saved_change_to_post_ids?
+  after_update :send_maintainer_public_dmails
   after_update :log_update
+  before_destroy :send_maintainer_destroy_dmails
   after_destroy :log_delete
+  after_save :synchronize, if: :saved_change_to_post_ids?
 
   attr_accessor :skip_sync
 
@@ -63,7 +63,7 @@ class PostSet < ApplicationRecord
   end
 
   def self.active_maintainer(user = CurrentUser.user)
-    joins(:post_set_maintainers).where(post_set_maintainers: {status: "approved", user_id: user.id})
+    joins(:post_set_maintainers).where(post_set_maintainers: { status: "approved", user_id: user.id })
   end
 
   def if_names_changed?
@@ -77,7 +77,7 @@ class PostSet < ApplicationRecord
   module ValidationMethods
     def normalize_shortname
       if shortname_changed?
-        self.shortname.downcase!
+        shortname.downcase!
       end
     end
 
@@ -87,7 +87,7 @@ class PostSet < ApplicationRecord
       end
       if is_public_changed? && !is_public # If set was made private
         RateLimiter.hit("set.public.#{id}", 24.hours)
-        PostSetMaintainer.active.where(post_set_id: id).each do |maintainer|
+        PostSetMaintainer.active.where(post_set_id: id).find_each do |maintainer|
           Dmail.create_automated(to_id: maintainer.user_id, title: "A set you maintain was made private",
                                  body: "The set \"#{name}\":#{post_set_path(self)} by \"#{creator.name}\":#{user_path(creator)} that you maintain was set to private. You will not be able to view, add posts, or remove posts from the set until the owner makes it public again.",
                                  respond_to_id: creator_id)
@@ -96,7 +96,7 @@ class PostSet < ApplicationRecord
         PostSetMaintainer.pending.where(post_set_id: id).delete
       elsif is_public_changed? && is_public # If set was made public
         RateLimiter.hit("set.public.#{id}", 24.hours)
-        PostSetMaintainer.active.where(post_set_id: id).each do |maintainer|
+        PostSetMaintainer.active.where(post_set_id: id).find_each do |maintainer|
           Dmail.create_automated(to_id: maintainer.user_id, title: "A private set you had maintained was made public again",
                                  body: "The set \"#{name}\":#{post_set_path(self)} by \"#{creaator.name}\":#{user_path(creator)} that you previously maintained was made public again. You are now able to view the set and add/remove posts.",
                                  respond_to_id: creator_id)
@@ -105,7 +105,7 @@ class PostSet < ApplicationRecord
     end
 
     def send_maintainer_destroy_dmails
-      PostSetMaintainer.active.where(post_set_id: id).each do |maintainer|
+      PostSetMaintainer.active.where(post_set_id: id).find_each do |maintainer|
         Dmail.create_automated(to_id:         maintainer.user_id,
                                title:         "A set you maintain was deleted",
                                body:          "The set #{name} by \"#{creator.name}\":#{user_path(creator)} that you maintain was deleted.",
@@ -131,7 +131,7 @@ class PostSet < ApplicationRecord
     end
 
     def set_per_hour_limit
-      if PostSet.where("created_at > ? AND creator_id = ?", 1.hour.ago, creator.id).count() > 6 && !creator.is_janitor?
+      if PostSet.where("created_at > ? AND creator_id = ?", 1.hour.ago, creator.id).count > 6 && !creator.is_janitor?
         errors.add(:base, "You have already created 6 sets in the last hour.")
         false
       else
@@ -142,7 +142,7 @@ class PostSet < ApplicationRecord
     def validate_number_of_posts
       post_ids_before = post_ids_before_last_save || post_ids_was
       added = post_ids - post_ids_before
-      return unless added.size > 0
+      return if added.empty?
       if post_ids.size > 10_000
         errors.add(:base, "Sets can have up to 10,000 posts each")
         false
@@ -167,15 +167,15 @@ class PostSet < ApplicationRecord
 
     def is_maintainer?(user)
       return false if user.is_banned?
-      post_set_maintainers.where(user_id: user.id, status: "approved").count() > 0
+      post_set_maintainers.where(user_id: user.id, status: "approved").count > 0
     end
 
     def is_invited?(user)
-      post_set_maintainers.where(user_id: user.id, status: "pending").count() > 0
+      post_set_maintainers.where(user_id: user.id, status: "pending").count > 0
     end
 
     def is_blocked?(user)
-      post_set_maintainers.where(user_id: user.id, status: "blocked").count() > 0
+      post_set_maintainers.where(user_id: user.id, status: "blocked").count > 0
     end
 
     def is_owner?(user)
@@ -210,7 +210,7 @@ class PostSet < ApplicationRecord
         reload
         self.skip_sync = true
         update(post_ids: post_ids + [post.id])
-        post.add_set!(self, true)
+        post.add_set!(self, force: true)
         post.save
       end
     end
@@ -265,7 +265,7 @@ class PostSet < ApplicationRecord
 
       added_posts = Post.where(id: added)
       added_posts.find_each do |post|
-        post.add_set!(self, true)
+        post.add_set!(self, force: true)
         post.save
       end
 

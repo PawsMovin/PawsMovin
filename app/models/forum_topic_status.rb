@@ -17,6 +17,7 @@ class ForumTopicStatus < ApplicationRecord
           begin
             UserMailer.forum_notice(subscription.user, forum_topic, forum_posts).deliver_now
           rescue Net::SMTPSyntaxError
+            # Ignored
           end
           subscription.update_attribute(:subscription_last_read_at, forum_topic.updated_at)
         end

@@ -49,52 +49,49 @@ module PostVersionIndex
       q = q.where("id >= ?", options[:from]) if options[:from]
       q = q.where("id <= ?", options[:to]) if options[:to]
       q = q.where(options[:query]) if options[:query]
-
-      cnt = 0
-      q.find_in_batches(batch_size: 10000) do |batch|
-        puts(cnt+=1)
+      q.find_in_batches(batch_size: 10_000) do |batch|
         batch.map! do |pv|
           {
-              index: {
-                  _id:  pv.id,
-                  data: pv.as_indexed_json(),
-              }
+            index: {
+              _id:  pv.id,
+              data: pv.as_indexed_json,
+            },
           }
         end
 
         client.bulk({
-                        index: index_name,
-                        body:  batch
-                    })
+          index: index_name,
+          body:  batch,
+        })
       end
     end
   end
 
-  def as_indexed_json(options = {})
+  def as_indexed_json(_options = {})
     {
-        id:                  id,
-        post_id:             post_id,
-        updated_at:          updated_at,
-        version:             version,
-        updater_id:          updater_id,
-        parent_id:           parent_id,
-        rating:              rating,
-        source:              source,
-        description:         description,
-        reason:              reason,
+      id:                  id,
+      post_id:             post_id,
+      updated_at:          updated_at,
+      version:             version,
+      updater_id:          updater_id,
+      parent_id:           parent_id,
+      rating:              rating,
+      source:              source,
+      description:         description,
+      reason:              reason,
 
-        description_changed: description_changed,
-        parent_id_changed:   parent_changed,
-        source_changed:      source_changed,
-        rating_changed:      rating_changed,
+      description_changed: description_changed,
+      parent_id_changed:   parent_changed,
+      source_changed:      source_changed,
+      rating_changed:      rating_changed,
 
-        tags_added:          added_tags,
-        tags_removed:        removed_tags,
-        tags:                tag_array,
+      tags_added:          added_tags,
+      tags_removed:        removed_tags,
+      tags:                tag_array,
 
-        locked_tags_added:   added_locked_tags,
-        locked_tags_removed: removed_locked_tags,
-        locked_tags:         locked_tag_array
+      locked_tags_added:   added_locked_tags,
+      locked_tags_removed: removed_locked_tags,
+      locked_tags:         locked_tag_array,
     }
   end
 end

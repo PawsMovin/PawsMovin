@@ -1,22 +1,20 @@
 # frozen_string_literal: true
 
-=begin rdoc
-  A tag set represents a set of tags that are displayed together.
-  This class makes it easy to fetch the categories for all the
-  tags in one call instead of fetching them sequentially.
-=end
+# rdoc
+#   A tag set represents a set of tags that are displayed together.
+#   This class makes it easy to fetch the categories for all the
+#   tags in one call instead of fetching them sequentially.
 
 class TagSetPresenter < Presenter
   include Rails.application.routes.url_helpers
 
   attr_reader :tag_names
 
-  # @param [Array<String>] a list of tags to present. Tags will be presented in
+  # @param [Array<String>] tag_names a list of tags to present. Tags will be presented in
   # the order given. The list should not contain duplicates. The list may
   # contain tags that do not exist in the tags table, such as metatags.
   def initialize(tag_names)
     @tag_names = tag_names
-    @_cached = {}
   end
 
   def post_index_sidebar_tag_list_html(current_query: "")
@@ -32,20 +30,19 @@ class TagSetPresenter < Presenter
     html.html_safe
   end
 
-  def post_show_sidebar_tag_list_html(current_query: "", highlighted_tags:)
+  def post_show_sidebar_tag_list_html(highlighted_tags:, current_query: "")
     html = +""
 
     TagCategory::SPLIT_HEADER_LIST.each do |category|
       typetags = tags_for_category(category)
 
-      if typetags.any?
-        html += %{<h2 class="#{category}-tag-list-header tag-list-header" data-category="#{category}">#{TagCategory.get(category).header}</h2>}
-        html += %{<ul class="#{category}-tag-list">}
-        typetags.each do |tag|
-          html += build_list_item(tag, current_query: current_query, highlight: highlighted_tags.include?(tag.name))
-        end
-        html << "</ul>"
+      next unless typetags.any?
+      html += %(<h2 class="#{category}-tag-list-header tag-list-header" data-category="#{category}">#{TagCategory.get(category).header}</h2>)
+      html += %(<ul class="#{category}-tag-list">)
+      typetags.each do |tag|
+        html += build_list_item(tag, current_query: current_query, highlight: highlighted_tags.include?(tag.name))
       end
+      html << "</ul>"
     end
 
     html.html_safe
@@ -69,47 +66,46 @@ class TagSetPresenter < Presenter
   end
 
   def humanized_essential_tag_string(category_list: TagCategory.humanized, default: "")
-    return @_humanized if @_cached[:humanized]
-    strings = category_list.map do |category|
-      mapping = TagCategory.get(category)
-      max_tags = mapping.limit || 0
-      regexmap = mapping.regex || //
-      formatstr = mapping.formatstr || "%s"
-      excluded_tags = mapping.exclusion || []
+    @humanized_essential_tag_string ||= begin
+      strings = category_list.map do |category|
+        mapping = TagCategory.get(category)
+        max_tags = mapping.limit || 0
+        regexmap = mapping.regex || //
+        formatstr = mapping.formatstr || "%s"
+        excluded_tags = mapping.exclusion || []
 
-      type_tags = tags_for_category(category).map(&:name) - excluded_tags
-      next if type_tags.empty?
+        type_tags = tags_for_category(category).map(&:name) - excluded_tags
+        next if type_tags.empty?
 
-      if max_tags > 0 && type_tags.length > max_tags
-        type_tags = type_tags.sort_by {|x| -x.size}.take(max_tags) + ["etc"]
+        if max_tags > 0 && type_tags.length > max_tags
+          type_tags = type_tags.sort_by { |x| -x.size }.take(max_tags) + ["etc"]
+        end
+
+        if regexmap != //
+          type_tags = type_tags.map { |tag| tag.match(regexmap)[1] }
+        end
+
+        if category == "copyright" && tags_for_category("character").blank?
+          type_tags.to_sentence
+        else
+          formatstr % type_tags.to_sentence
+        end
       end
 
-      if regexmap != //
-        type_tags = type_tags.map { |tag| tag.match(regexmap)[1] }
-      end
-
-      if category == "copyright" && tags_for_category("character").blank?
-        type_tags.to_sentence
-      else
-        formatstr % type_tags.to_sentence
-      end
+      strings = strings.compact.join(" ").tr("_", " ")
+      output = strings.presence || default
+      output
     end
-
-    strings = strings.compact.join(" ").tr("_", " ")
-    output = strings.blank? ? default : strings
-    @_humanized = output
-    @_cached[:humanized] = true
-    output
   end
 
   private
 
   def tags
-    @_tags ||= Tag.where(name: tag_names).select(:name, :post_count, :category)
+    @tags ||= Tag.where(name: tag_names).select(:name, :post_count, :category)
   end
 
   def tags_by_category
-    @_tags_by_category ||= ordered_tags.group_by(&:category)
+    @tags_by_category ||= ordered_tags.group_by(&:category)
   end
 
   def tags_for_category(category_name)
@@ -118,15 +114,14 @@ class TagSetPresenter < Presenter
   end
 
   def ordered_tags
-    return @_ordered_tags if @_cached[:ordered_tags]
-    names_to_tags = tags.map { |tag| [tag.name, tag] }.to_h
+    @ordered_tags ||= begin
+      names_to_tags = tags.index_by(&:name)
 
-    ordered = tag_names.map do |name|
-      names_to_tags[name] || Tag.new(name: name).freeze
+      ordered = tag_names.map do |name|
+        names_to_tags[name] || Tag.new(name: name).freeze
+      end
+      ordered
     end
-    @_ordered_tags = ordered
-    @_cached[:ordered_tags] = true
-    ordered
   end
 
   def build_list_item(tag, current_query: "", highlight: false)
@@ -134,12 +129,12 @@ class TagSetPresenter < Presenter
     count = tag.post_count
     category = tag.category
 
-    html = %{<li class="category-#{tag.category}">}
+    html = %(<li class="category-#{tag.category}">)
 
     if category == TagCategory.artist
-      html += %{<a class="wiki-link" rel="nofollow" href="/artists/show_or_new?name=#{u(name)}">?</a> }
+      html += %(<a class="wiki-link" rel="nofollow" href="/artists/show_or_new?name=#{u(name)}">?</a> )
     else
-      html += %{<a class="wiki-link" rel="nofollow" href="/wiki_pages/show_or_new?title=#{u(name)}">?</a> }
+      html += %(<a class="wiki-link" rel="nofollow" href="/wiki_pages/show_or_new?title=#{u(name)}">?</a> )
     end
 
     if current_query.present?
@@ -153,7 +148,7 @@ class TagSetPresenter < Presenter
     if count >= 10_000
       post_count = "#{count / 1_000}k"
     elsif count >= 1_000
-      post_count = "%.1fk" % (count / 1_000.0)
+      post_count = format("%.1fk", (count / 1_000.0))
     else
       post_count = count
     end
@@ -162,7 +157,7 @@ class TagSetPresenter < Presenter
     klass = "color-muted post-count#{is_underused_tag ? ' low-post-count' : ''}"
     title = "New general tag detected. Check the spelling or populate it now."
 
-    html += %{<span data-count='#{count}' class="#{klass}"#{is_underused_tag ? " title='#{title}'" : ''}>#{post_count}</span>}
+    html += %(<span data-count='#{count}' class="#{klass}"#{is_underused_tag ? " title='#{title}'" : ''}>#{post_count}</span>)
 
     html += "</li>"
     html

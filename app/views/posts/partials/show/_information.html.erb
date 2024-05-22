@@ -13,7 +13,7 @@
   <li>Rating: <%= pretty_html_rating(post) %></li>
   <li>Score: <%= post_vote_block(post, post.own_vote) %>
     <% if PostVotePolicy.new(CurrentUser.user, post).index? %>
-      <span><%= link_to "(votes)", controller: "posts/votes", search: { post_id: post.id} %></span>
+      <span><%= link_to "(votes)", controller: "posts/votes", search: { post_id: post.id } %></span>
     <% end %>
   </li>
   <li>

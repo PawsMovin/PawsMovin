@@ -11,6 +11,15 @@ class ForumPostsController < ApplicationController
     respond_with(@forum_posts)
   end
 
+  def show
+    authorize(@forum_post)
+    if request.format.html? && @forum_post.id == @forum_post.topic.original_post.id
+      redirect_to(forum_topic_path(@forum_post.topic, page: params[:page]))
+    else
+      respond_with(@forum_post)
+    end
+  end
+
   def new
     @forum_post = authorize(ForumPost.new(permitted_attributes(ForumPost)))
     respond_with(@forum_post)
@@ -23,15 +32,6 @@ class ForumPostsController < ApplicationController
 
   def search
     authorize(ForumPost)
-  end
-
-  def show
-    authorize(@forum_post)
-    if request.format.html? && @forum_post.id == @forum_post.topic.original_post.id
-      redirect_to(forum_topic_path(@forum_post.topic, page: params[:page]))
-    else
-      respond_with(@forum_post)
-    end
   end
 
   def create

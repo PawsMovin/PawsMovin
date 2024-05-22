@@ -1,7 +1,7 @@
 <ul>
   <% if CurrentUser.user.is_member? %>
-    <li class="vpad-05"><%= tag.a("+Favorite", href: "#", class: "button btn-success", id: "add-to-favorites", "data-shortcut": "f", style: ("display: none;" if @post.is_favorited?), 'data-pid': @post.id) %></li>
-    <li class="vpad-05"><%= tag.a("-Favorite", href: "#", class: "button btn-danger", id: "remove-from-favorites", "data-shortcut": "shift+f", style: ("display: none;" unless @post.is_favorited?), 'data-pid': @post.id) %></li>
+    <li class="vpad-05"><%= tag.a("+Favorite", "href": "#", "class": "button btn-success", "id": "add-to-favorites", "data-shortcut": "f", "style": ("display: none;" if @post.is_favorited?), 'data-pid': @post.id) %></li>
+    <li class="vpad-05"><%= tag.a("-Favorite", "href": "#", "class": "button btn-danger", "id": "remove-from-favorites", "data-shortcut": "shift+f", "style": ("display: none;" unless @post.is_favorited?), 'data-pid': @post.id) %></li>
     <% if policy(post).update? %>
       <li><%= link_to "Edit", "#edit", id: "side-edit-link" %></li>
     <% end %>
@@ -23,7 +23,7 @@
       <%= li_link_to_if(TicketPolicy.new(CurrentUser.user, post).create?, "Report", model_new_ticket_path(model: post)) %>
 
       <% if post.is_deleted? && policy(post).undelete? %>
-        <li><%= tag.a("Undelete", href: "#", class: "undelete-post-link", 'data-pid': post.id) %></li>
+        <li><%= tag.a("Undelete", "href": "#", "class": "undelete-post-link", 'data-pid': post.id) %></li>
         <% if (post.fav_count > 0 || post.votes.exists?) && post.parent_id && policy(post).move_favorites? %>
           <li><%= link_to "Move favorites", confirm_move_favorites_post_path(post) %></li>
         <% end %>
@@ -32,25 +32,25 @@
       <% end %>
 
       <% if post.is_approvable? && policy(post).approve? %>
-        <li><%= tag.a("Approve", href: "#", class: "approve-post-link", 'data-pid': post.id) %></li>
+        <li><%= tag.a("Approve", "href": "#", "class": "approve-post-link", 'data-pid': post.id) %></li>
       <% end %>
 
       <% if post.is_unapprovable?(CurrentUser.user) && policy(post).unapprove? %>
-        <li><%= tag.a("Unapprove", href: "#", 'data-pid': post.id, id: "unapprove-post-link") %></li>
+        <li><%= tag.a("Unapprove", "href": "#", 'data-pid': post.id, "id": "unapprove-post-link") %></li>
       <% end %>
 
       <% if IqdbProxy.enabled? && policy(post).update_iqdb? %>
         <li><%= link_to("Update IQDB", update_iqdb_post_path(@post), method: :put) %></li>
       <% end %>
       <% if policy(post).expunge? %>
-        <li><%= tag.a("Destroy", href: "#", id: "destroy-post-link", 'data-pid': post.id) %></li>
+        <li><%= tag.a("Destroy", "href": "#", "id": "destroy-post-link", 'data-pid': post.id) %></li>
       <% end %>
     <% end %>
     <% if policy(post).regenerate_thumbnails? %>
-      <li><%= tag.a("Regenerate Thumbnails", href: "#", id: "regenerate-image-samples-link", 'data-pid': post.id) %></li>
+      <li><%= tag.a("Regenerate Thumbnails", "href": "#", "id": "regenerate-image-samples-link", 'data-pid': post.id) %></li>
     <% end %>
     <% if post.is_video? && policy(post).regenerate_videos? %>
-      <li><%= tag.a("Regenerate Video Samples", href: "#", id: "regenerate-video-samples-link", 'data-pid': post.id) %></li>
+      <li><%= tag.a("Regenerate Video Samples", "href": "#", "id": "regenerate-video-samples-link", 'data-pid': post.id) %></li>
     <% end %>
   <% end %>
 </ul>

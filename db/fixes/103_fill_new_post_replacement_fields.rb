@@ -16,7 +16,7 @@ PostReplacement.where(status: %w[approved original]).group(:post_id)
   original = replacements[1]
 
   # Don't double increment
-  next unless approved.uploader_id_on_approve.blank?
+  next if approved.uploader_id_on_approve.present?
 
   approved.uploader_id_on_approve = original.creator_id
   approved.penalize_uploader_on_approve = true

@@ -103,7 +103,7 @@ class PostQueryBuilder
     end
 
     if q[:approver] == "any"
-      relation = relation.where("posts.approver_id is not null")
+      relation = relation.where.not(posts: { approver_id: nil })
     elsif q[:approver] == "none"
       relation = relation.where("posts.approver_id is null")
     end
@@ -117,13 +117,13 @@ class PostQueryBuilder
     end
 
     if q[:commenter] == "any"
-      relation = relation.where("posts.last_commented_at is not null")
+      relation = relation.where.not(posts: { last_commented_at: nil })
     elsif q[:commenter] == "none"
       relation = relation.where("posts.last_commented_at is null")
     end
 
     if q[:noter] == "any"
-      relation = relation.where("posts.last_noted_at is not null")
+      relation = relation.where.not(posts: { last_noted_at: nil })
     elsif q[:noter] == "none"
       relation = relation.where("posts.last_noted_at is null")
     end
@@ -131,7 +131,7 @@ class PostQueryBuilder
     if q[:parent] == "none"
       relation = relation.where("posts.parent_id IS NULL")
     elsif q[:parent] == "any"
-      relation = relation.where("posts.parent_id IS NOT NULL")
+      relation = relation.where.not(posts: { parent_id: nil })
     end
 
     q[:parent_ids]&.each do |parent_id|

@@ -80,8 +80,8 @@ class ArtistTest < ActiveSupport::TestCase
     end
 
     should "resolve ambiguous urls" do
-      bobross = create(:artist, name: "bob_ross", url_string: "http://artists.com/bobross/image.jpg")
-      bob = create(:artist, name: "bob", url_string: "http://artists.com/bob/image.jpg")
+      create(:artist, name: "bob_ross", url_string: "http://artists.com/bobross/image.jpg")
+      create(:artist, name: "bob", url_string: "http://artists.com/bob/image.jpg")
       assert_artist_found("bob", "http://artists.com/bob/test.jpg")
     end
 
@@ -124,15 +124,15 @@ class ArtistTest < ActiveSupport::TestCase
     end
 
     should "ignore pixiv.net/ and pixiv.net/img/ url matches" do
-      a1 = create(:artist, name: "yomosaka", url_string: "http://i2.pixiv.net/img18/img/evazion/14901720.png")
-      a2 = create(:artist, name: "niwatazumi_bf", url_string: "http://i2.pixiv.net/img18/img/evazion/14901720_big_p0.png")
+      create(:artist, name: "yomosaka", url_string: "http://i2.pixiv.net/img18/img/evazion/14901720.png")
+      create(:artist, name: "niwatazumi_bf", url_string: "http://i2.pixiv.net/img18/img/evazion/14901720_big_p0.png")
       assert_artist_not_found("http://i2.pixiv.net/img28/img/kyang692/35563903.jpg")
     end
 
     should "find matches by url" do
-      a1 = create(:artist, name: "rembrandt", url_string: "http://rembrandt.com/x/test.jpg")
-      a2 = create(:artist, name: "subway", url_string: "http://subway.com/x/test.jpg")
-      a3 = create(:artist, name: "minko", url_string: "https://minko.com/x/test.jpg")
+      create(:artist, name: "rembrandt", url_string: "http://rembrandt.com/x/test.jpg")
+      create(:artist, name: "subway", url_string: "http://subway.com/x/test.jpg")
+      create(:artist, name: "minko", url_string: "https://minko.com/x/test.jpg")
 
       begin
         assert_artist_found("rembrandt", "http://rembrandt.com/x/test.jpg")
@@ -210,7 +210,7 @@ class ArtistTest < ActiveSupport::TestCase
     end
 
     should "search on has_tag and return matches" do
-      post = create(:post, tag_string: "bkub")
+      create(:post, tag_string: "bkub")
       bkub = create(:artist, name: "bkub")
       none = create(:artist, name: "none")
 
@@ -219,8 +219,8 @@ class ArtistTest < ActiveSupport::TestCase
     end
 
     should "revert to prior versions" do
-      user = create(:user)
-      reverter = create(:user)
+      create(:user)
+      create(:user)
       artist = nil
       assert_difference("ArtistVersion.count") do
         artist = create(:artist, other_names: "yyy")
@@ -241,7 +241,7 @@ class ArtistTest < ActiveSupport::TestCase
     should "update the category of the tag when created" do
       CurrentUser.user = create(:janitor_user)
       tag = create(:tag, name: "abc")
-      artist = create(:artist, name: "abc")
+      create(:artist, name: "abc")
       tag.reload
       assert_equal(TagCategory.artist, tag.category)
       assert_equal("artist creation", TagVersion.last.reason)

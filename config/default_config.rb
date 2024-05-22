@@ -158,7 +158,7 @@ module PawsMovin
 
     # List of memcached servers
     def memcached_servers
-      %w(127.0.0.1:11211)
+      %w[127.0.0.1:11211]
     end
 
     def alias_implication_forum_category
@@ -399,7 +399,7 @@ module PawsMovin
         "png"  => 100.megabytes,
         "webp" => 100.megabytes,
         "gif"  => 20.megabytes,
-        "webm" => 100.megabytes
+        "webm" => 100.megabytes,
       }
     end
 
@@ -430,17 +430,17 @@ module PawsMovin
 
     # Maximum resolution (width * height) of an upload. Default: 441 megapixels (21000x21000 pixels).
     def max_image_resolution
-      15000 * 15000
+      15_000 * 15_000
     end
 
     # Maximum width of an upload.
     def max_image_width
-      15000
+      15_000
     end
 
     # Maximum height of an upload.
     def max_image_height
-      15000
+      15_000
     end
 
     def max_tags_per_post
@@ -469,7 +469,7 @@ module PawsMovin
       # base_url - where to serve files from (default: http://#{hostname}/data)
       # hierarchical: false - store files in a single directory
       # hierarchical: true - store files in a hierarchical directory structure, based on the MD5 hash
-      StorageManager::Local.new(base_dir: "#{Rails.root}/public/data", hierarchical: true)
+      StorageManager::Local.new(base_dir: Rails.public_path.join("data").to_s, hierarchical: true)
       # StorageManager::Ftp.new(ftp_hostname, ftp_port, ftp_username, ftp_password, base_dir: "", base_path: "", base_url: "https://static.pawsmov.in", hierarchical: true)
 
       # Select the storage method based on the post's id and type (preview, large, or original).
@@ -500,43 +500,43 @@ module PawsMovin
         {
           name:   "uploading_guidelines",
           reason: "Does not meet the \"uploading guidelines\":/help/uploading_guidelines.",
-          text:   "This post fails to meet the site's standards, be it for artistic worth, image quality, relevancy, or something else.\nKeep in mind that your personal preferences have no bearing on this. If you find the content of a post objectionable, simply \"blacklist\":/help/blacklist it."
+          text:   "This post fails to meet the site's standards, be it for artistic worth, image quality, relevancy, or something else.\nKeep in mind that your personal preferences have no bearing on this. If you find the content of a post objectionable, simply \"blacklist\":/help/blacklist it.",
         },
         {
           name:   "dnp_artist",
           reason: "The artist of this post is on the \"avoid posting list\":/help/avoid_posting",
-          text:   "Certain artists have requested that their work is not to be published on this site, and were granted \"Do Not Post\":/help/avoid_posting status.\nSometimes, that status comes with conditions rather than a blanket ban."
+          text:   "Certain artists have requested that their work is not to be published on this site, and were granted \"Do Not Post\":/help/avoid_posting status.\nSometimes, that status comes with conditions rather than a blanket ban.",
         },
         {
           name:   "pay_content",
           reason: "Paysite, commercial, or subscription content",
-          text:   "We do not host paysite or commercial content of any kind. This includes Patreon leaks, reposts from piracy websites, and so on."
+          text:   "We do not host paysite or commercial content of any kind. This includes Patreon leaks, reposts from piracy websites, and so on.",
         },
         {
           name:   "trace",
           reason: "Trace of another artist's work",
-          text:   "Images traced from other artists' artwork are not accepted on this site. Referencing from something is fine, but outright copying someone else's work is not.\nPlease, leave more information in the comments, or simply add the original artwork as the posts's parent if it's hosted on this site."
+          text:   "Images traced from other artists' artwork are not accepted on this site. Referencing from something is fine, but outright copying someone else's work is not.\nPlease, leave more information in the comments, or simply add the original artwork as the posts's parent if it's hosted on this site.",
         },
         {
           name:   "previously_deleted",
           reason: "Previously deleted",
-          text:   "Posts usually get removed for a good reason, and reuploading of deleted content is not acceptable.\nPlease, leave more information in the comments, or simply add the original post as this post's parent."
+          text:   "Posts usually get removed for a good reason, and reuploading of deleted content is not acceptable.\nPlease, leave more information in the comments, or simply add the original post as this post's parent.",
         },
         {
           name:   "real_porn",
           reason: "Real-life pornography",
-          text:   "Posts featuring real-life pornography are not acceptable on this site. No exceptions.\nNote that images featuring non-erotic photographs are acceptable."
+          text:   "Posts featuring real-life pornography are not acceptable on this site. No exceptions.\nNote that images featuring non-erotic photographs are acceptable.",
         },
         {
           name:   "corrupt",
           reason: "File is either corrupted, broken, or otherwise does not work",
-          text:   "Something about this post does not work quite right. This may be a broken video, or a corrupted image.\nEither way, in order to avoid confusion, please explain the situation in the comments."
+          text:   "Something about this post does not work quite right. This may be a broken video, or a corrupted image.\nEither way, in order to avoid confusion, please explain the situation in the comments.",
         },
         {
           name:   "inferior",
           reason: "Duplicate or inferior version of another post",
           text:   "A superior version of this post already exists on the site.\nThis may include images with better visual quality (larger, less compressed), but may also feature \"fixed\" versions, with visual mistakes accounted for by the artist.\nNote that edits and alternate versions do not fall under this category.",
-          parent: true
+          parent: true,
         },
       ]
     end
@@ -565,12 +565,12 @@ module PawsMovin
       true
     end
 
-    def user_needs_login_for_post?(post)
+    def user_needs_login_for_post?(_post)
       false
     end
 
     def select_posts_visible_to_user(user, posts)
-      posts.select {|x| can_user_see_post?(user, x)}
+      posts.select { |x| can_user_see_post?(user, x) }
     end
 
     def enable_autotagging?
@@ -677,7 +677,7 @@ module PawsMovin
     # Additional video samples will be generated in these dimensions if it makes sense to do so
     # They will be available as additional scale options on applicable posts in the order they appear here
     def video_rescales
-      {"720p" => [1280, 720], "480p" => [640, 480]}
+      { "720p" => [1280, 720], "480p" => [640, 480] }
     end
 
     def image_rescales
@@ -791,7 +791,7 @@ module PawsMovin
     end
 
     def method_missing(method, *)
-      var = ENV["PAWSMOVIN_#{method.to_s.upcase.chomp('?')}"]
+      var = ENV.fetch("PAWSMOVIN_#{method.to_s.upcase.chomp('?')}", nil)
 
       if var.present?
         env_to_boolean(method, var)
@@ -802,7 +802,7 @@ module PawsMovin
   end
 
   def config
-    @configuration ||= EnvironmentConfiguration.new
+    @config ||= EnvironmentConfiguration.new
   end
 
   module_function :config

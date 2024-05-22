@@ -8,6 +8,11 @@ class TicketsController < ApplicationController
     respond_with(@tickets)
   end
 
+  def show
+    @ticket = authorize(Ticket.find(params[:id]))
+    respond_with(@ticket)
+  end
+
   def new
     @ticket = authorize(Ticket.new(permitted_attributes(Ticket)))
   end
@@ -22,11 +27,6 @@ class TicketsController < ApplicationController
     else
       respond_with(@ticket)
     end
-  end
-
-  def show
-    @ticket = authorize(Ticket.find(params[:id]))
-    respond_with(@ticket)
   end
 
   def update

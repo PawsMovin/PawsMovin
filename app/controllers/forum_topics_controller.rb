@@ -22,6 +22,16 @@ class ForumTopicsController < ApplicationController
     end
   end
 
+  def show
+    authorize(@forum_topic)
+    if request.format.html?
+      @forum_topic.mark_as_read!(CurrentUser.user)
+    end
+    @forum_posts = ForumPost.includes(topic: [:category]).search(topic_id: @forum_topic.id).reorder("forum_posts.id").paginate(params[:page])
+    @original_forum_post_id = @forum_topic.original_post.id
+    respond_with(@forum_topic)
+  end
+
   def new
     @forum_topic = authorize(ForumTopic.new(permitted_attributes(ForumTopic)))
     @forum_topic.original_post = ForumPost.new(permitted_attributes(ForumTopic)[:original_post_attributes])
@@ -30,16 +40,6 @@ class ForumTopicsController < ApplicationController
 
   def edit
     authorize(@forum_topic)
-    respond_with(@forum_topic)
-  end
-
-  def show
-    authorize(@forum_topic)
-    if request.format.html?
-      @forum_topic.mark_as_read!(CurrentUser.user)
-    end
-    @forum_posts = ForumPost.includes(topic: [:category]).search(topic_id: @forum_topic.id).reorder("forum_posts.id").paginate(params[:page])
-    @original_forum_post_id = @forum_topic.original_post.id
     respond_with(@forum_topic)
   end
 
@@ -137,9 +137,7 @@ class ForumTopicsController < ApplicationController
   def unsubscribe
     authorize(@forum_topic)
     status = ForumTopicStatus.where(forum_topic_id: @forum_topic.id, user_id: CurrentUser.user.id, subscription: true).first
-    if status
-      status.destroy
-    end
+    status&.destroy
     respond_with(@forum_topic)
   end
 
@@ -157,9 +155,7 @@ class ForumTopicsController < ApplicationController
   def unmute
     authorize(@forum_topic)
     status = ForumTopicStatus.where(forum_topic_id: @forum_topic.id, user_id: CurrentUser.user.id, mute: true).first
-    if status
-      status.destroy
-    end
+    status&.destroy
     respond_with(@forum_topic)
   end
 

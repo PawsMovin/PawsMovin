@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class ApplicationController < ActionController::Base
-  class APIThrottled < Exception; end
+  class APIThrottled < StandardError; end
   class FeatureUnavailable < StandardError; end
 
   skip_forgery_protection if: -> { SessionLoader.new(request).has_api_authentication? || request.options? }
@@ -45,11 +45,7 @@ class ApplicationController < ActionController::Base
     if !CurrentUser.is_anonymous? && !request.get? && !request.head?
       throttled = CurrentUser.user.token_bucket.throttled?
       headers["X-Api-Limit"] = CurrentUser.user.token_bucket.cached_count.to_s
-
-      if throttled
-        raise(APIThrottled.new)
-        return false
-      end
+      raise(APIThrottled) if throttled
     end
 
     true
@@ -77,7 +73,7 @@ class ApplicationController < ActionController::Base
     when ActionController::InvalidAuthenticityToken
       render_expected_error(403, "ActionController::InvalidAuthenticityToken. Did you properly authorize your request?")
     when ActiveRecord::RecordNotFound
-      render_404
+      render404
     when ActiveSupport::MessageVerifier::InvalidSignature, Pundit::NotAuthorizedError
       access_denied
     when User::PrivilegeError
@@ -103,7 +99,7 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def render_404
+  def render404
     respond_to do |fmt|
       fmt.html do
         render("static/404", formats: %i[html atom], status: 404)
@@ -130,7 +126,7 @@ class ApplicationController < ActionController::Base
   def render_error_page(status, exception, message: exception.message, format: request.format.symbol)
     @exception = exception
     @expected = status < 500
-    @message = message.encode("utf-8", invalid: :replace, undef: :replace )
+    @message = message.encode("utf-8", invalid: :replace, undef: :replace)
     @backtrace = Rails.backtrace_cleaner.clean(@exception.backtrace)
     format = :html unless format.in?(%i[html json atom])
 
@@ -162,7 +158,7 @@ class ApplicationController < ActionController::Base
         end
       end
       fmt.json do
-        render(json: {success: false, reason: @message}.to_json, status: 403)
+        render(json: { success: false, reason: @message }.to_json, status: 403)
       end
     end
   end
@@ -239,7 +235,7 @@ class ApplicationController < ActionController::Base
     params[:search] ||= ActionController::Parameters.new
 
     deep_reject_blank = ->(hash) do
-      hash.reject { |k, v| v.blank? || (v.is_a?(Hash) && deep_reject_blank.call(v).blank?) }
+      hash.reject { |_k, v| v.blank? || (v.is_a?(Hash) && deep_reject_blank.call(v).blank?) }
     end
     if params[:search].is_a?(ActionController::Parameters)
       nonblank_search_params = deep_reject_blank.call(params[:search])

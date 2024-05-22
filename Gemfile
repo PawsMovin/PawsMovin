@@ -42,11 +42,6 @@ group :production do
   gem "pitchfork"
 end
 
-group :development, :test do
-  gem "listen"
-  gem "puma"
-end
-
 group :development do
   gem "debug", require: false
   gem "rubocop", require: false

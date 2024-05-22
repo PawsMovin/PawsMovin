@@ -6,18 +6,16 @@ class EmailLinkValidator
   end
 
   def self.validate(hash, purpose)
-    begin
-      message = validator.verify(hash, purpose: purpose)
-      return false if message.nil?
-      return message
-    rescue
-      return false
-    end
+    message = validator.verify(hash, purpose: purpose)
+    return false if message.nil?
+    message
+  rescue StandardError
+    false
   end
-
-  private
 
   def self.validator
     @validator ||= ActiveSupport::MessageVerifier.new(PawsMovin.config.email_key, serializer: JSON, digest: "SHA256")
   end
+
+  private_class_method :validator
 end

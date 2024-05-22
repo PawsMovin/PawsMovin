@@ -11,8 +11,8 @@ FactoryBot.define do
     default_image_size { "large" }
     base_upload_limit { 10 }
     level { User::Levels::MEMBER }
-    created_at {Time.now}
-    last_logged_in_at {Time.now}
+    created_at { Time.now }
+    last_logged_in_at { Time.now }
 
     factory(:banned_user) do
       transient { ban_duration { 3 } }

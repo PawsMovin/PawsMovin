@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 class User < ApplicationRecord
-  class Error < Exception ; end
+  class Error < StandardError; end
 
-  class PrivilegeError < Exception
+  class PrivilegeError < StandardError
     attr_accessor :message
 
     def initialize(msg = nil)
@@ -112,7 +112,7 @@ class User < ApplicationRecord
   validate :validate_email_address_allowed, on: %i[create update], if: ->(rec) { (rec.new_record? && rec.email.present?) || (rec.email.present? && rec.email_changed?) }
 
   validates :name, user_name: true, on: :create
-  validates :default_image_size, inclusion: { in: %w(large fit fitv original) }
+  validates :default_image_size, inclusion: { in: %w[large fit fitv original] }
   validates :per_page, inclusion: { in: 1..PawsMovin.config.max_per_page }
   validates :comment_threshold, presence: true
   validates :comment_threshold, numericality: { only_integer: true, less_than: 50_000, greater_than: -50_000 }
@@ -133,12 +133,12 @@ class User < ApplicationRecord
   before_create :promote_to_owner_if_first_user
   before_create :encrypt_password_on_create
   before_update :encrypt_password_on_update
+  # after_create :notify_sock_puppets
+  after_update :log_update
   after_save :update_cache
   after_update(if: ->(rec) { rec.saved_change_to_profile_about? || rec.saved_change_to_profile_artinfo? || rec.saved_change_to_blacklisted_tags? }) do |rec|
     UserTextVersion.create_version(rec)
   end
-  #after_create :notify_sock_puppets
-  after_update :log_update
 
   has_many :api_keys, dependent: :destroy
   has_one :dmail_filter
@@ -169,8 +169,8 @@ class User < ApplicationRecord
   module BanMethods
     def validate_ip_addr_is_not_banned
       if IpBan.is_banned?(CurrentUser.ip_addr)
-        self.errors.add(:base, "IP address is banned")
-        return false
+        errors.add(:base, "IP address is banned")
+        false
       end
     end
 
@@ -197,7 +197,7 @@ class User < ApplicationRecord
 
       def name_or_id_to_id(name)
         if name =~ /\A!\d+\z/
-          return name[1..-1].to_i
+          return name[1..].to_i
         end
         User.name_to_id(name)
       end
@@ -221,15 +221,15 @@ class User < ApplicationRecord
         name
       end
 
-      def find_by_name(name)
+      def find_by_normalized_name(name)
         where("lower(name) = ?", normalize_name(name)).first
       end
 
-      def find_by_name_or_id(name)
+      def find_by_normalized_name_or_id(name)
         if name =~ /\A!\d+\z/
-          where("id = ?", name[1..-1].to_i).first
+          where("id = ?", name[1..].to_i).first
         else
-          find_by_name(name)
+          find_by(name: name)
         end
       end
 
@@ -250,7 +250,7 @@ class User < ApplicationRecord
 
   module PasswordMethods
     def password_token
-      Zlib::crc32(bcrypt_password_hash)
+      Zlib.crc32(bcrypt_password_hash)
     end
 
     def bcrypt_password
@@ -268,15 +268,15 @@ class User < ApplicationRecord
 
       if bcrypt_password == old_password
         self.bcrypt_password_hash = User.bcrypt(password)
-        return true
+        true
       else
         errors.add(:old_password, "is incorrect")
-        return false
+        false
       end
     end
 
     def upgrade_password(pass)
-      self.update_columns(password_hash: "", bcrypt_password_hash: User.bcrypt(pass))
+      update_columns(password_hash: "", bcrypt_password_hash: User.bcrypt(pass))
     end
   end
 
@@ -285,14 +285,12 @@ class User < ApplicationRecord
 
     module ClassMethods
       def authenticate(name, pass)
-        user = find_by_name(name)
+        user = find_by(name: name)
         if user && user.password_hash.present? && Pbkdf2.validate_password(pass, user.password_hash)
           user.upgrade_password(pass)
           user
-        elsif user && user.bcrypt_password_hash && user.bcrypt_password == pass
+        elsif user&.bcrypt_password_hash && user.bcrypt_password == pass
           user
-        else
-          nil
         end
       end
 
@@ -367,7 +365,7 @@ class User < ApplicationRecord
 
     def level_string_pretty
       return level_string if title.blank?
-      %{<span title="#{level_string}">#{title}</span>}.html_safe
+      %(<span title="#{level_string}">#{title}</span>).html_safe
     end
 
     def level_name
@@ -395,7 +393,7 @@ class User < ApplicationRecord
     end
 
     def staff_cant_disable_dmail
-      self.disable_user_dmails = false if self.is_janitor?
+      self.disable_user_dmails = false if is_janitor?
     end
 
     def level_css_class
@@ -423,9 +421,9 @@ class User < ApplicationRecord
     end
 
     def validate_email_address_allowed
-      if EmailBlacklist.is_banned?(self.email)
-        self.errors.add(:base, "Email address may not be used")
-        return false
+      if EmailBlacklist.is_banned?(email)
+        errors.add(:base, "Email address may not be used")
+        false
       end
     end
   end
@@ -469,10 +467,10 @@ class User < ApplicationRecord
 
     def upload_reason_string(reason)
       reasons = {
-          REJ_UPLOAD_HOURLY: "have reached your hourly upload limit",
-          REJ_UPLOAD_EDIT:   "have no remaining tag edits available",
-          REJ_UPLOAD_LIMIT:  "have reached your upload limit",
-          REJ_UPLOAD_NEWBIE: "cannot upload during your first week"
+        REJ_UPLOAD_HOURLY: "have reached your hourly upload limit",
+        REJ_UPLOAD_EDIT:   "have no remaining tag edits available",
+        REJ_UPLOAD_LIMIT:  "have reached your upload limit",
+        REJ_UPLOAD_NEWBIE: "cannot upload during your first week",
       }
       reasons.fetch(reason, "unknown upload rejection reason")
     end
@@ -502,44 +500,44 @@ class User < ApplicationRecord
     end
 
     def token_bucket
-      @token_bucket ||= UserThrottle.new({prefix: "thtl:", duration: 1.minute}, self)
+      @token_bucket ||= UserThrottle.new({ prefix: "thtl:", duration: 1.minute }, self)
     end
 
     def general_bypass_throttle?
       is_trusted?
     end
 
-    create_user_throttle(:artist_edit, ->{ PawsMovin.config.artist_edit_limit - ArtistVersion.for_user(id).where("updated_at > ?", 1.hour.ago).count },
+    create_user_throttle(:artist_edit, -> { PawsMovin.config.artist_edit_limit - ArtistVersion.for_user(id).where("updated_at > ?", 1.hour.ago).count },
                          :general_bypass_throttle?, 7.days)
-    create_user_throttle(:post_edit, ->{ PawsMovin.config.post_edit_limit - PostVersion.for_user(id).where("updated_at > ?", 1.hour.ago).count },
+    create_user_throttle(:post_edit, -> { PawsMovin.config.post_edit_limit - PostVersion.for_user(id).where("updated_at > ?", 1.hour.ago).count },
                          :general_bypass_throttle?, 7.days)
-    create_user_throttle(:wiki_edit, ->{ PawsMovin.config.wiki_edit_limit - WikiPageVersion.for_user(id).where("updated_at > ?", 1.hour.ago).count },
+    create_user_throttle(:wiki_edit, -> { PawsMovin.config.wiki_edit_limit - WikiPageVersion.for_user(id).where("updated_at > ?", 1.hour.ago).count },
                          :general_bypass_throttle?, 7.days)
-    create_user_throttle(:pool, ->{ PawsMovin.config.pool_limit - Pool.for_user(id).where("created_at > ?", 1.hour.ago).count },
+    create_user_throttle(:pool, -> { PawsMovin.config.pool_limit - Pool.for_user(id).where("created_at > ?", 1.hour.ago).count },
                          :is_janitor?, 7.days)
-    create_user_throttle(:pool_edit, ->{ PawsMovin.config.pool_edit_limit - PoolVersion.for_user(id).where("updated_at > ?", 1.hour.ago).count },
+    create_user_throttle(:pool_edit, -> { PawsMovin.config.pool_edit_limit - PoolVersion.for_user(id).where("updated_at > ?", 1.hour.ago).count },
                          :is_janitor?, 3.days)
     create_user_throttle(:pool_post_edit, -> { PawsMovin.config.pool_post_edit_limit - PoolVersion.for_user(id).where("updated_at > ?", 1.hour.ago).group(:pool_id).count(:pool_id).length },
                          :general_bypass_throttle?, 7.days)
-    create_user_throttle(:note_edit, ->{ PawsMovin.config.note_edit_limit - NoteVersion.for_user(id).where("updated_at > ?", 1.hour.ago).count },
+    create_user_throttle(:note_edit, -> { PawsMovin.config.note_edit_limit - NoteVersion.for_user(id).where("updated_at > ?", 1.hour.ago).count },
                          :general_bypass_throttle?, 3.days)
-    create_user_throttle(:comment, ->{ PawsMovin.config.member_comment_limit - Comment.for_creator(id).where("created_at > ?", 1.hour.ago).count },
+    create_user_throttle(:comment, -> { PawsMovin.config.member_comment_limit - Comment.for_creator(id).where("created_at > ?", 1.hour.ago).count },
                          :general_bypass_throttle?, 7.days)
-    create_user_throttle(:forum_post, ->{ PawsMovin.config.member_comment_limit - ForumPost.for_user(id).where("created_at > ?", 1.hour.ago).count },
+    create_user_throttle(:forum_post, -> { PawsMovin.config.member_comment_limit - ForumPost.for_user(id).where("created_at > ?", 1.hour.ago).count },
                          nil, 3.days)
-    create_user_throttle(:dmail_minute, ->{ PawsMovin.config.dmail_minute_limit - Dmail.sent_by_id(id).where("created_at > ?", 1.minute.ago).count },
+    create_user_throttle(:dmail_minute, -> { PawsMovin.config.dmail_minute_limit - Dmail.sent_by_id(id).where("created_at > ?", 1.minute.ago).count },
                          nil, 7.days)
-    create_user_throttle(:dmail, ->{ PawsMovin.config.dmail_limit - Dmail.sent_by_id(id).where("created_at > ?", 1.hour.ago).count },
+    create_user_throttle(:dmail, -> { PawsMovin.config.dmail_limit - Dmail.sent_by_id(id).where("created_at > ?", 1.hour.ago).count },
                          nil, 7.days)
-    create_user_throttle(:dmail_day, ->{ PawsMovin.config.dmail_day_limit - Dmail.sent_by_id(id).where("created_at > ?", 1.day.ago).count },
+    create_user_throttle(:dmail_day, -> { PawsMovin.config.dmail_day_limit - Dmail.sent_by_id(id).where("created_at > ?", 1.day.ago).count },
                          nil, 7.days)
-    create_user_throttle(:comment_vote, ->{ PawsMovin.config.comment_vote_limit - CommentVote.for_user(id).where("created_at > ?", 1.hour.ago).count },
+    create_user_throttle(:comment_vote, -> { PawsMovin.config.comment_vote_limit - CommentVote.for_user(id).where("created_at > ?", 1.hour.ago).count },
                          :general_bypass_throttle?, 3.days)
-    create_user_throttle(:post_vote, ->{ PawsMovin.config.post_vote_limit - PostVote.for_user(id).where("created_at > ?", 1.hour.ago).count },
+    create_user_throttle(:post_vote, -> { PawsMovin.config.post_vote_limit - PostVote.for_user(id).where("created_at > ?", 1.hour.ago).count },
                          :general_bypass_throttle?, nil)
-    create_user_throttle(:post_flag, ->{ PawsMovin.config.post_flag_limit - PostFlag.for_creator(id).where("created_at > ?", 1.hour.ago).count },
+    create_user_throttle(:post_flag, -> { PawsMovin.config.post_flag_limit - PostFlag.for_creator(id).where("created_at > ?", 1.hour.ago).count },
                          :can_approve_posts?, 3.days)
-    create_user_throttle(:ticket, ->{ PawsMovin.config.ticket_limit - Ticket.for_creator(id).where("created_at > ?", 1.hour.ago).count },
+    create_user_throttle(:ticket, -> { PawsMovin.config.ticket_limit - Ticket.for_creator(id).where("created_at > ?", 1.hour.ago).count },
                          :general_bypass_throttle?, 3.days)
     create_user_throttle(:suggest_tag, -> { PawsMovin.config.tag_suggestion_limit - (TagAlias.for_creator(id).where("created_at > ?", 1.hour.ago).count + TagImplication.for_creator(id).where("created_at > ?", 1.hour.ago).count + BulkUpdateRequest.for_creator(id).where("created_at > ?", 1.hour.ago).count) },
                          :is_janitor?, 7.days)
@@ -583,19 +581,12 @@ class User < ApplicationRecord
     end
 
     def can_upload_with_reason
-      if hourly_upload_limit <= 0 && !PawsMovin.config.disable_throttles?
-        :REJ_UPLOAD_HOURLY
-      elsif unrestricted_uploads? || is_admin?
-          true
-      elsif younger_than(7.days)
-        :REJ_UPLOAD_NEWBIE
-      elsif !is_trusted? && post_edit_limit <= 0 && !PawsMovin.config.disable_throttles?
-        :REJ_UPLOAD_EDIT
-      elsif upload_limit <= 0 && !PawsMovin.config.disable_throttles?
-        :REJ_UPLOAD_LIMIT
-      else
-        true
-      end
+      return :REJ_UPLOAD_HOURLY if hourly_upload_limit <= 0 && !PawsMovin.config.disable_throttles?
+      return true if unrestricted_uploads? || is_admin?
+      return :REJ_UPLOAD_NEWBIE if younger_than(7.days)
+      return :REJ_UPLOAD_EDIT if !is_trusted? && post_edit_limit <= 0 && !PawsMovin.config.disable_throttles?
+      return :REJ_UPLOAD_LIMIT if upload_limit <= 0 && !PawsMovin.config.disable_throttles?
+      true
     end
 
     def hourly_upload_limit
@@ -631,15 +622,15 @@ class User < ApplicationRecord
 
     def uploaders_list_pieces
       @uploaders_list_pieces ||= {
-          pending:              Post.pending.for_user(id).count,
-          approved:             Post.for_user(id).where(is_flagged: false, is_deleted: false, is_pending: false).count,
-          deleted:              Post.deleted.for_user(id).count,
-          flagged:              Post.flagged.for_user(id).count,
-          replaced:             own_post_replaced_count,
-          replacement_pending:  post_replacements.pending.count,
-          replacement_rejected: post_replacement_rejected_count,
-          replacement_promoted: post_replacements.promoted.count
-        }
+        pending:              Post.pending.for_user(id).count,
+        approved:             Post.for_user(id).where(is_flagged: false, is_deleted: false, is_pending: false).count,
+        deleted:              Post.deleted.for_user(id).count,
+        flagged:              Post.flagged.for_user(id).count,
+        replaced:             own_post_replaced_count,
+        replacement_pending:  post_replacements.pending.count,
+        replacement_rejected: post_replacement_rejected_count,
+        replacement_promoted: post_replacements.promoted.count,
+      }
     end
 
     def post_upload_throttle
@@ -837,28 +828,27 @@ class User < ApplicationRecord
       bitprefs_exclude = nil
 
       %i[can_approve_posts unrestricted_uploads].each do |x|
-        if params[x].present?
-          attr_idx = Preferences.const_get(x.upcase)
-          if params[x].to_s.truthy?
-            bitprefs_include ||= "0"*bitprefs_length
-            bitprefs_include[attr_idx] = "1"
-          elsif params[x].to_s.falsy?
-            bitprefs_exclude ||= "0"*bitprefs_length
-            bitprefs_exclude[attr_idx] = "1"
-          end
+        next if params[x].blank?
+        attr_idx = Preferences.const_get(x.upcase)
+        if params[x].to_s.truthy?
+          bitprefs_include ||= "0" * bitprefs_length
+          bitprefs_include[attr_idx] = "1"
+        elsif params[x].to_s.falsy?
+          bitprefs_exclude ||= "0" * bitprefs_length
+          bitprefs_exclude[attr_idx] = "1"
         end
       end
 
       if bitprefs_include
         bitprefs_include.reverse!
         q = q.where("bit_prefs::bit(:len) & :bits::bit(:len) = :bits::bit(:len)",
-                    {len: bitprefs_length, bits: bitprefs_include})
+                    { len: bitprefs_length, bits: bitprefs_include })
       end
 
       if bitprefs_exclude
         bitprefs_exclude.reverse!
         q = q.where("bit_prefs::bit(:len) & :bits::bit(:len) = 0::bit(:len)",
-                    {len: bitprefs_length, bits: bitprefs_exclude})
+                    { len: bitprefs_length, bits: bitprefs_exclude })
       end
 
       if params[:ip_addr].present?
@@ -975,7 +965,7 @@ class User < ApplicationRecord
       self.per_page = PawsMovin.config.posts_per_page
     end
 
-    return true
+    true
   end
 
   def blank_out_nonexistent_avatars
@@ -1036,7 +1026,7 @@ class User < ApplicationRecord
 
   def can_admin_edit?(user)
     return true if user.is_owner?
-    return false if self.is_admin?
+    return false if is_admin?
     user.is_admin?
   end
 

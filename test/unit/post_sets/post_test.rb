@@ -9,9 +9,9 @@ module PostSets
         @user = create(:user)
         CurrentUser.user = @user
 
-        @post_1 = create(:post, tag_string: "a")
+        @post1 = create(:post, tag_string: "a")
         @post2 = create(:post, tag_string: "b")
-        @post_3 = create(:post, tag_string: "c")
+        @post3 = create(:post, tag_string: "c")
       end
 
       context "a set for page 2" do
@@ -26,8 +26,8 @@ module PostSets
 
       context "a set for the 'a' tag query" do
         setup do
-          @post_4 = create(:post, tag_string: "a")
-          @post_5 = create(:post, tag_string: "a")
+          @post4 = create(:post, tag_string: "a")
+          @post5 = create(:post, tag_string: "a")
         end
 
         context "with no page" do
@@ -36,27 +36,27 @@ module PostSets
           end
 
           should "return the first element" do
-            assert_equal(@post_5.id, @set.posts.first.id)
+            assert_equal(@post5.id, @set.posts.first.id)
           end
         end
 
         context "for before the first element" do
           setup do
-            @set = PostSets::Post.new("a", "b#{@post_5.id}", limit: 1)
+            @set = PostSets::Post.new("a", "b#{@post5.id}", limit: 1)
           end
 
           should "return the second element" do
-            assert_equal(@post_4.id, @set.posts.first.id)
+            assert_equal(@post4.id, @set.posts.first.id)
           end
         end
 
         context "for after the second element" do
           setup do
-            @set = PostSets::Post.new("a", "a#{@post_4.id}", limit: 1)
+            @set = PostSets::Post.new("a", "a#{@post4.id}", limit: 1)
           end
 
           should "return the first element" do
-            assert_equal(@post_5.id, @set.posts.first.id)
+            assert_equal(@post5.id, @set.posts.first.id)
           end
         end
       end

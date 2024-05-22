@@ -2,10 +2,11 @@
 
 class UploadService
   module Utils
-    extend self
+    module_function
+
     class CorruptFileError < RuntimeError; end
 
-    IMAGE_TYPES = %i[original large preview crop]
+    IMAGE_TYPES = %i[original large preview crop].freeze
 
     def delete_file(md5, file_ext, upload_id = nil)
       if Post.exists?(md5: md5)
@@ -80,7 +81,7 @@ class UploadService
 
     def get_file_for_upload(upload, file: nil)
       return file if file.present?
-      raise(RuntimeError, "No file or source URL provided") if upload.direct_url.blank?
+      raise("No file or source URL provided") if upload.direct_url.blank?
 
       download = Downloads::File.new(upload.direct_url)
       download.download!

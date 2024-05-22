@@ -38,7 +38,7 @@ class TagImplicationTest < ActiveSupport::TestCase
       should_not allow_value(-1).for(:creator_id).with_message("must exist", against: :creator)
 
       should "not allow duplicate active implications" do
-        ti1 = create(:tag_implication, antecedent_name: "aaa", consequent_name: "bbb", status: "pending")
+        create(:tag_implication, antecedent_name: "aaa", consequent_name: "bbb", status: "pending")
         ti2 = build(:tag_implication, antecedent_name: "aaa", consequent_name: "bbb", status: "active")
         ti2.save
         assert_match(/Antecedent name has already been taken/, ti2.errors.full_messages.join)
@@ -90,21 +90,21 @@ class TagImplicationTest < ActiveSupport::TestCase
 
       assert(ti1.valid?)
       assert(ti2.valid?)
-      refute(ti3.valid?)
-      assert_equal("Tag implication can not create a circular relation with another tag implication", ti3.errors.full_messages.join(""))
+      assert_not(ti3.valid?)
+      assert_equal("Tag implication can not create a circular relation with another tag implication", ti3.errors.full_messages.join)
     end
 
     should "not validate when a transitive relation is created" do
-      ti_ab = create(:tag_implication, antecedent_name: "a", consequent_name: "b")
-      ti_bc = create(:tag_implication, antecedent_name: "b", consequent_name: "c")
+      create(:tag_implication, antecedent_name: "a", consequent_name: "b")
+      create(:tag_implication, antecedent_name: "b", consequent_name: "c")
       ti_ac = build(:tag_implication, antecedent_name: "a", consequent_name: "c")
       ti_ac.save
 
-      assert_equal("a already implies c through another implication", ti_ac.errors.full_messages.join(""))
+      assert_equal("a already implies c through another implication", ti_ac.errors.full_messages.join)
     end
 
     should "not allow for duplicates" do
-      ti1 = create(:tag_implication, antecedent_name: "aaa", consequent_name: "bbb")
+      create(:tag_implication, antecedent_name: "aaa", consequent_name: "bbb")
       ti2 = build(:tag_implication, antecedent_name: "aaa", consequent_name: "bbb")
       ti2.save
       assert(ti2.errors.any?, "Tag implication should not have validated.")
@@ -112,8 +112,8 @@ class TagImplicationTest < ActiveSupport::TestCase
     end
 
     should "not validate if its antecedent or consequent are aliased to another tag" do
-      ta1 = create(:tag_alias, antecedent_name: "aaa", consequent_name: "a")
-      ta2 = create(:tag_alias, antecedent_name: "bbb", consequent_name: "b")
+      create(:tag_alias, antecedent_name: "aaa", consequent_name: "a")
+      create(:tag_alias, antecedent_name: "bbb", consequent_name: "b")
       ti = build(:tag_implication, antecedent_name: "aaa", consequent_name: "bbb")
 
       assert(ti.invalid?)
@@ -145,7 +145,7 @@ class TagImplicationTest < ActiveSupport::TestCase
       ti1.reload
       ti2.reload
       ti2.update(
-        antecedent_name: "bbb"
+        antecedent_name: "bbb",
       )
       ti1.reload
       ti2.reload

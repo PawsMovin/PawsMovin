@@ -9,8 +9,8 @@ class BulkUpdateRequest < ApplicationRecord
   belongs_to :approver, optional: true, class_name: "User"
 
   validates :script, presence: true
-  validates :title, presence: { if: ->(rec) {rec.forum_topic_id.blank?} }
-  validates :status, inclusion: { in: %w(pending approved rejected) }
+  validates :title, presence: { if: ->(rec) { rec.forum_topic_id.blank? } }
+  validates :status, inclusion: { in: %w[pending approved rejected] }
   validate :script_formatted_correctly
   validate :forum_topic_id_not_invalid
   validate :validate_script, on: :create
@@ -20,7 +20,7 @@ class BulkUpdateRequest < ApplicationRecord
   after_create :create_forum_topic
 
   scope :pending_first, -> { order(Arel.sql("(case status when 'pending' then 0 when 'approved' then 1 else 2 end)")) }
-  scope :pending, -> {where(status: "pending")}
+  scope :pending, -> { where(status: "pending") }
 
   module SearchMethods
     def for_creator(id)
@@ -72,7 +72,7 @@ class BulkUpdateRequest < ApplicationRecord
         forum_topic,
         forum_post:     (forum_post || forum_topic.posts.first if forum_topic),
         expected_title: title,
-        skip_update:    !TagRelationship::SUPPORT_HARD_CODED
+        skip_update:    !TagRelationship::SUPPORT_HARD_CODED,
       )
     end
 
@@ -84,12 +84,12 @@ class BulkUpdateRequest < ApplicationRecord
           forum_updater.update("The #{bulk_update_request_link} (forum ##{forum_post&.id}) has been approved by @#{approver.name}.", "APPROVED")
         end
       end
-    rescue BulkUpdateRequestImporter::Error => x
+    rescue BulkUpdateRequestImporter::Error => e
       self.approver = approver
       CurrentUser.scoped(approver) do
-        forum_updater.update("The #{bulk_update_request_link} (forum ##{forum_post&.id}) has failed: #{x.to_s}", "FAILED")
+        forum_updater.update("The #{bulk_update_request_link} (forum ##{forum_post&.id}) has failed: #{e}", "FAILED")
       end
-      self.errors.add(:base, x.to_s)
+      errors.add(:base, e.to_s)
     end
 
     def create_forum_topic
@@ -119,10 +119,10 @@ class BulkUpdateRequest < ApplicationRecord
   module ValidationMethods
     def script_formatted_correctly
       BulkUpdateRequestImporter.tokenize(script)
-      return true
+      true
     rescue StandardError => e
       errors.add(:base, e.message)
-      return false
+      false
     end
 
     def forum_topic_id_not_invalid
@@ -137,7 +137,7 @@ class BulkUpdateRequest < ApplicationRecord
 
     def validate_script
       errors, new_script = BulkUpdateRequestImporter.new(script, forum_topic_id).validate!(CurrentUser.user)
-      if errors.size > 0
+      unless errors.empty?
         errors.each { |err| self.errors.add(:base, err) }
       end
       self.script = new_script
@@ -177,8 +177,8 @@ class BulkUpdateRequest < ApplicationRecord
     self.script = script.downcase
   end
 
-  def skip_forum=(v)
-    @skip_forum = v.to_s.truthy?
+  def skip_forum=(value) # rubocop:disable Lint/DuplicateMethods
+    @skip_forum = value.to_s.truthy?
   end
 
   def is_pending?

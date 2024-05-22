@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class UserDeletion
-  class ValidationError < Exception;
+  class ValidationError < StandardError
   end
 
   attr_reader :user, :password
@@ -54,12 +54,10 @@ class UserDeletion
   def rename_user
     name = "user_#{user.id}"
     n = 0
-    while User.exists?(name: name) && (n < 10)
-      name += "~"
-    end
+    name += "~" while User.exists?(name: name) && (n < 10)
 
     if n == 10
-      raise(ValidationError.new("New name could not be found"))
+      raise(ValidationError, "New name could not be found")
     end
 
     user.update_column(:name, name)
@@ -68,19 +66,19 @@ class UserDeletion
 
   def validate
     if user.is_banned?
-      raise(ValidationError.new("Banned users cannot delete their accounts"))
+      raise(ValidationError, "Banned users cannot delete their accounts")
     end
 
     if user.younger_than(1.week)
-      raise(ValidationError.new("Account must be one week old to be deleted"))
+      raise(ValidationError, "Account must be one week old to be deleted")
     end
 
     unless User.authenticate(user.name, password)
-      raise(ValidationError.new("Password is incorrect"))
+      raise(ValidationError, "Password is incorrect")
     end
 
     if user.level >= User::Levels::ADMIN
-      raise(ValidationError.new("Admins cannot delete their account"))
+      raise(ValidationError, "Admins cannot delete their account")
     end
   end
 end

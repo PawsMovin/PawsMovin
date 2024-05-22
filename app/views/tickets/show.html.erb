@@ -61,7 +61,7 @@
       <tr>
         <td><span class="title">Open Duplicates</span></td>
         <td><ul>
-          <% @ticket.open_duplicates.where("id != ?", @ticket.id).find_each do |dup| %>
+          <% @ticket.open_duplicates.where.not(id: @ticket.id).find_each do |dup| %>
           <li><%= link_to("Ticket #{dup.id} - #{dup.subject}", ticket_path(dup.id)) %></li>
           <% end %>
         </ul></td>
@@ -89,7 +89,7 @@
 
       <tr>
         <td><span class='title'>Response</span></td>
-        <td class="dtext-container"><%= format_text(!@ticket.response.blank? ? @ticket.response : "No response.") %></td>
+        <td class="dtext-container"><%= format_text((@ticket.response.presence || "No response.")) %></td>
       </tr>
     <% end %>
   </table>
@@ -100,7 +100,7 @@
     <%= custom_form_for(@ticket) do |f| %>
       <%= f.input(:status, collection: [%w[Approved approved], ["Under Investigation", "partial"], %w[Rejected rejected]], selected: @ticket.status || "approved") %>
       <% if @ticket.warnable? %>
-        <%= f.input(:record_type, label: "Mark the #{@ticket.model.model_name.singular.humanize(capitalize: false)} as having recieved", collection: @ticket.model.class.warning_types.to_h { |k, v| ["A #{k}", v] }, include_blank: "Nothing") %>
+        <%= f.input(:record_type, label: "Mark the #{@ticket.model.model_name.singular.humanize(capitalize: false)} as having recieved", collection: @ticket.model.class.warning_types.transform_keys { |k| "A #{k}" }, include_blank: "Nothing") %>
       <% end %>
       <% unless @ticket.pending? %>
         <%= f.input(:send_update_dmail, label: "Send update DMail", as: :boolean, hint: "A DMail is always sent if the status is changed") %>

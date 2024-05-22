@@ -3,7 +3,7 @@
 # reverts all changes made by a user
 class UserRevert
   THRESHOLD = 1_000
-  class TooManyChangesError < RuntimeError ; end
+  class TooManyChangesError < RuntimeError; end
 
   attr_reader :user_id
 

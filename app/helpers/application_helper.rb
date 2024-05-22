@@ -42,7 +42,7 @@ module ApplicationHelper
     return raw("") if parsed.nil?
     deferred_post_ids.merge(parsed[:post_ids]) if parsed[:post_ids].present?
     raw(parsed[:dtext])
-  rescue DText::Error => e
+  rescue DText::Error
     raw("")
   end
 
@@ -63,8 +63,8 @@ module ApplicationHelper
   def error_messages_for(instance_name)
     instance = instance_variable_get("@#{instance_name}")
 
-    if instance && instance.errors.any?
-      %{<div class="error-messages ui-state-error ui-corner-all"><strong>Error</strong>: #{instance.__send__(:errors).full_messages.join(', ')}</div>}.html_safe
+    if instance&.errors&.any?
+      %(<div class="error-messages ui-state-error ui-corner-all"><strong>Error</strong>: #{instance.__send__(:errors).full_messages.join(', ')}</div>).html_safe
     else
       ""
     end
@@ -79,11 +79,11 @@ module ApplicationHelper
     if time.nil?
       tag.em(tag.time("unknown"))
     elsif time.past?
-      text = time_ago_in_words(time) + " ago"
+      text = "#{time_ago_in_words(time)} ago"
       text = text.gsub(/almost|about|over/, "") if compact
       raw(time_tag(text, time))
     else
-      raw(time_tag("in " + distance_of_time_in_words(Time.now, time), time))
+      raw(time_tag("in #{distance_of_time_in_words(Time.now, time)}", time))
     end
   end
 
@@ -93,11 +93,11 @@ module ApplicationHelper
 
   def external_link_to(url, truncate: nil, strip_scheme: false, link_options: {})
     text = url
-    text = text.gsub(%r!\Ahttps?://!i, "") if strip_scheme
+    text = text.gsub(%r{\Ahttps?://}i, "") if strip_scheme
     text = text.truncate(truncate) if truncate
 
-    if url =~ %r!\Ahttps?://!i
-      link_to(text, url, {rel: :nofollow}.merge(link_options))
+    if url =~ %r{\Ahttps?://}i
+      link_to(text, url, { rel: :nofollow }.merge(link_options))
     else
       url
     end
@@ -105,7 +105,7 @@ module ApplicationHelper
 
   def link_to_ip(ip)
     return "(none)" unless ip
-    link_to(ip, moderator_ip_addrs_path(search: {ip_addr: ip}))
+    link_to(ip, moderator_ip_addrs_path(search: { ip_addr: ip }))
   end
 
   def link_to_wiki(text, title = text, classes: nil, **)
@@ -151,18 +151,18 @@ module ApplicationHelper
       data:  {
         controller: controller_param,
         action:     action_param,
-        **data_attributes_for(user, "user", attributes)
-      }
+        **data_attributes_for(user, "user", attributes),
+      },
     }
   end
 
   def data_attributes_for(record, prefix, attributes)
-    attributes.map do |attr|
+    attributes.to_h do |attr|
       name = attr.to_s.dasherize.delete("?")
       value = record.send(attr)
 
       [:"#{prefix}-#{name}", value]
-    end.to_h
+    end
   end
 
   def user_avatar(user)
@@ -170,7 +170,7 @@ module ApplicationHelper
     post_id = user.avatar_id
     return "" unless post_id
     deferred_post_ids.add(post_id)
-    tag.div(class: "post-thumb placeholder", id: "tp-#{post_id}", 'data-id': post_id) do
+    tag.div("class": "post-thumb placeholder", "id": "tp-#{post_id}", 'data-id': post_id) do
       tag.img(class: "thumb-img placeholder", src: "/images/thumb-preview.png", height: 100, width: 100)
     end
   end
@@ -207,47 +207,44 @@ module ApplicationHelper
 
     url =~ case controller
            when "sessions", "users", "users/login_reminders", "users/password_resets", "admin/users", "dmails"
-             /^\/(session|users)/
+             %r{^/(session|users)}
 
            when "post_sets"
-             /^\/post_sets/
-
-           when "forum_posts"
-             /^\/forum_topics/
+             %r{^/post_sets}
 
            when "comments"
-             /^\/comments/
+             %r{^/comments}
 
            when "notes", "notes/versions"
-             /^\/notes/
+             %r{^/notes}
 
            when "posts", "uploads", "posts/versions", "popular", "favorites"
-             /^\/posts/
+             %r{^/posts}
 
            when "artists", "artist_versions"
-             /^\/artist/
+             %r{^/artist}
 
            when "tags", "meta_searches", "tags/aliases", "tags/implications", "tags/related"
-             /^\/tags/
+             %r{^/tags}
 
            when "pools", "pools/versions"
-             /^\/pools/
+             %r{^/pools}
 
            when "moderator/dashboards"
-             /^\/moderator/
+             %r{^/moderator}
 
            when "wiki_pages", "wiki_pages/versions"
-             /^\/wiki_pages/
+             %r{^/wiki_pages}
 
            when "forum_topics", "forum_posts"
-             /^\/forum_topics/
+             %r{^/forum_topics}
 
            when "help"
-             /^\/help/
+             %r{^/help}
 
            # If there is no match activate the site map only
            else
              /^#{site_map_path}/
-    end
+           end
   end
 end

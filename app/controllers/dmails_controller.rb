@@ -10,17 +10,6 @@ class DmailsController < ApplicationController
     respond_with(@dmails)
   end
 
-  def new
-    if params[:respond_to_id].present?
-      parent = authorize(Dmail.find(params[:respond_to_id]), :respond?)
-      @dmail = parent.build_response(forward: params[:forward])
-    else
-      @dmail = authorize(Dmail.new(permitted_attributes(Dmail)))
-    end
-
-    respond_with(@dmail)
-  end
-
   def show
     if params[:key].present?
       @dmail = Dmail.find_by!(id: params[:id], key: params[:key])
@@ -32,6 +21,17 @@ class DmailsController < ApplicationController
     respond_with(@dmail) do |format|
       format.html { @dmail.mark_as_read! if CurrentUser.user == @dmail.owner }
     end
+  end
+
+  def new
+    if params[:respond_to_id].present?
+      parent = authorize(Dmail.find(params[:respond_to_id]), :respond?)
+      @dmail = parent.build_response(forward: params[:forward])
+    else
+      @dmail = authorize(Dmail.new(permitted_attributes(Dmail)))
+    end
+
+    respond_with(@dmail)
   end
 
   def create

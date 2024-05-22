@@ -12,14 +12,14 @@ class MascotsController < ApplicationController
     @mascot = authorize(Mascot.new(permitted_attributes(Mascot)))
   end
 
+  def edit
+    @mascot = authorize(Mascot.find(params[:id]))
+  end
+
   def create
     @mascot = authorize(Mascot.new(permitted_attributes(Mascot)))
     @mascot.save
     respond_with(@mascot, location: mascots_path)
-  end
-
-  def edit
-    @mascot = authorize(Mascot.find(params[:id]))
   end
 
   def update

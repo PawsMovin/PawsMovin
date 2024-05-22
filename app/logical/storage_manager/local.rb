@@ -2,10 +2,10 @@
 
 module StorageManager
   class Local < StorageManager::Base
-    DEFAULT_PERMISSIONS = 0644
+    DEFAULT_PERMISSIONS = 0o644
 
     def store(io, dest_path)
-      temp_path = dest_path + "-" + SecureRandom.uuid + ".tmp"
+      temp_path = "#{dest_path}-#{SecureRandom.uuid}.tmp"
 
       FileUtils.mkdir_p(File.dirname(temp_path))
       io.rewind

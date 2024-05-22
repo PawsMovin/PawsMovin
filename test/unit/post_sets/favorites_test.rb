@@ -9,29 +9,29 @@ module PostSets
         @user = create(:user)
         CurrentUser.user = @user
 
-        @post_1 = create(:post)
+        @post1 = create(:post)
         @post2 = create(:post)
-        @post_3 = create(:post)
+        @post3 = create(:post)
         FavoriteManager.add!(user: @user, post: @post2)
-        FavoriteManager.add!(user: @user, post: @post_1)
-        FavoriteManager.add!(user: @user, post: @post_3)
+        FavoriteManager.add!(user: @user, post: @post1)
+        FavoriteManager.add!(user: @user, post: @post3)
       end
 
       context "a favorite set for before the most recent post" do
         setup do
-          id = ::Favorite.where(user_id: @user.id, post_id: @post_3.id).first.id
+          id = ::Favorite.where(user_id: @user.id, post_id: @post3.id).first.id
           @set = PostSets::Favorites.new(@user, "b#{id}", limit: 1)
         end
 
         context "a sequential paginator" do
           should "return the second most recent element" do
-            assert_equal(@post_1.id, @set.posts.first.id)
+            assert_equal(@post1.id, @set.posts.first.id)
           end
 
           # FIXME: PaginatedArray does not preserve mode and mode_seq
           should_eventually "know what page it's on" do
-            refute(@set.posts.is_first_page?)
-            refute(@set.posts.is_last_page?)
+            assert_not(@set.posts.is_first_page?)
+            assert_not(@set.posts.is_last_page?)
           end
         end
       end
@@ -44,14 +44,14 @@ module PostSets
 
         context "a sequential paginator" do
           should "return the second most recent element" do
-            assert_equal(@post_1.id, @set.posts.first.id)
+            assert_equal(@post1.id, @set.posts.first.id)
           end
         end
       end
 
       context "a favorite set for before the second most recent post" do
         setup do
-          id = ::Favorite.where(user_id: @user.id, post_id: @post_1.id).first.id
+          id = ::Favorite.where(user_id: @user.id, post_id: @post1.id).first.id
           @set = PostSets::Favorites.new(@user, "b#{id}", limit: 1)
         end
 
@@ -64,13 +64,13 @@ module PostSets
 
       context "a favorite set for after the second most recent post" do
         setup do
-          id = ::Favorite.where(user_id: @user.id, post_id: @post_1.id).first.id
+          id = ::Favorite.where(user_id: @user.id, post_id: @post1.id).first.id
           @set = PostSets::Favorites.new(@user, "a#{id}", limit: 1)
         end
 
         context "a sequential paginator" do
           should "return the most recent element" do
-            assert_equal(@post_3.id, @set.posts.first.id)
+            assert_equal(@post3.id, @set.posts.first.id)
           end
         end
       end
@@ -82,7 +82,7 @@ module PostSets
 
         context "a numbered paginator" do
           should "return the second most recent element" do
-            assert_equal(@post_1.id, @set.posts.first.id)
+            assert_equal(@post1.id, @set.posts.first.id)
           end
         end
       end
@@ -93,7 +93,7 @@ module PostSets
         end
 
         should "return the most recent element" do
-          assert_equal(@post_3.id, @set.posts.first.id)
+          assert_equal(@post3.id, @set.posts.first.id)
         end
       end
     end

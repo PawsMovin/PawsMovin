@@ -19,10 +19,10 @@ module Maintenance
     ignoring_exceptions { Recommender.train! }
   end
 
-  def ignoring_exceptions(&block)
+  def ignoring_exceptions
     ActiveRecord::Base.connection.execute("set statement_timeout = 0")
     yield
-  rescue StandardError => exception
-    PawsMovin::Logger.log(exception)
+  rescue StandardError => e
+    PawsMovin::Logger.log(e)
   end
 end

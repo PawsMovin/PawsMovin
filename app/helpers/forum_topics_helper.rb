@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "English"
 module ForumTopicsHelper
   def forum_topic_category_select(object, field, options = {})
     select(object, field, ForumCategory.visible.reverse_mapping, options)
@@ -30,11 +31,11 @@ module ForumTopicsHelper
       end
 
       if obj.is_approved?
-        return "The #{obj.bulk_update_request_link} is active.\n\n#{embedded_script}"
+        "The #{obj.bulk_update_request_link} is active.\n\n#{embedded_script}"
       elsif obj.is_pending?
-        return "The #{obj.bulk_update_request_link} is pending approval.\n\n#{embedded_script}"
+        "The #{obj.bulk_update_request_link} is pending approval.\n\n#{embedded_script}"
       elsif obj.is_rejected?
-        return "The #{obj.bulk_update_request_link} has been rejected.\n\n#{embedded_script}"
+        "The #{obj.bulk_update_request_link} has been rejected.\n\n#{embedded_script}"
       end
     end
   end
@@ -42,12 +43,10 @@ module ForumTopicsHelper
   def parse_embedded_tag_request_text(text)
     [TagAlias, TagImplication, BulkUpdateRequest].each do |tag_request|
       text = text.gsub(tag_request.embedded_pattern) do |match|
-        begin
-          obj = tag_request.find($~[:id])
-          tag_request_message(obj) || match
-        rescue ActiveRecord::RecordNotFound
-          match
-        end
+        obj = tag_request.find($LAST_MATCH_INFO[:id])
+        tag_request_message(obj) || match
+      rescue ActiveRecord::RecordNotFound
+        match
       end
     end
 

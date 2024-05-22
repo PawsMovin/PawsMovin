@@ -13,6 +13,10 @@ class ForumCategoriesController < ApplicationController
     @forum_category = authorize(ForumCategory.new(permitted_attributes(ForumCategory)))
   end
 
+  def edit
+    authorize(@forum_category)
+  end
+
   def create
     @forum_category = authorize(ForumCategory.new(permitted_attributes(ForumCategory)))
     @forum_category.save
@@ -22,20 +26,16 @@ class ForumCategoriesController < ApplicationController
     end
   end
 
-  def destroy
-    authorize(@forum_category).destroy
-    notice(@forum_category.errors.any? ? @forum_category.errors.full_messages.join("; ") : "Forum category deleted")
-    respond_with(@forum_category, location: forum_categories_path)
-  end
-
-  def edit
-    authorize(@forum_category)
-  end
-
   def update
     authorize(@forum_category).update(permitted_attributes(ForumCategory))
 
     notice(@forum_category.valid? ? "Category updated" : @forum_category.errors.full_messages.join("; "))
+    respond_with(@forum_category, location: forum_categories_path)
+  end
+
+  def destroy
+    authorize(@forum_category).destroy
+    notice(@forum_category.errors.any? ? @forum_category.errors.full_messages.join("; ") : "Forum category deleted")
     respond_with(@forum_category, location: forum_categories_path)
   end
 

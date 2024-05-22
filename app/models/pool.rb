@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Pool < ApplicationRecord
-  class RevertError < Exception;
+  class RevertError < StandardError
   end
 
   array_attribute :post_ids, parse: %r{(?:https://pawsmov.in/posts/)?(\d+)}i, cast: :to_i
@@ -18,11 +18,11 @@ class Pool < ApplicationRecord
   validate :validate_number_of_posts
   before_validation :normalize_post_ids
   before_validation :normalize_name
-  after_save :create_version
-  after_save :synchronize, if: :saved_change_to_post_ids?
   after_create :synchronize!
   before_destroy :remove_all_posts
   after_destroy :log_delete
+  after_save :create_version
+  after_save :synchronize, if: :saved_change_to_post_ids?
 
   attr_accessor :skip_sync
 
@@ -104,7 +104,7 @@ class Pool < ApplicationRecord
   def user_not_posts_limited
     allowed = CurrentUser.can_pool_post_edit_with_reason
     if allowed != true
-      errors.add(:updater, User.throttle_reason(allowed) + ": updating unique pools posts")
+      errors.add(:updater, "#{User.throttle_reason(allowed)}: updating unique pools posts")
       return false
     end
     true
@@ -127,8 +127,6 @@ class Pool < ApplicationRecord
       where("pools.id = ?", name.to_i).first
     elsif name
       where("lower(pools.name) = ?", normalize_name(name).downcase).first
-    else
-      nil
     end
   end
 
@@ -151,7 +149,7 @@ class Pool < ApplicationRecord
 
   def revert_to!(version)
     if id != version.pool_id
-      raise(RevertError.new("You cannot revert to a previous version of another pool."))
+      raise(RevertError, "You cannot revert to a previous version of another pool.")
     end
 
     self.post_ids = version.post_ids
@@ -175,7 +173,7 @@ class Pool < ApplicationRecord
   def validate_number_of_posts
     post_ids_before = post_ids_before_last_save || post_ids_was
     added = post_ids - post_ids_before
-    return unless added.size > 0
+    return if added.empty?
     if post_ids.size > PawsMovin.config.pool_post_limit
       errors.add(:base, "Pools can only have up to #{ActiveSupport::NumberHelper.number_to_delimited(PawsMovin.config.pool_post_limit)} posts each")
       false
@@ -204,7 +202,7 @@ class Pool < ApplicationRecord
     return if id.nil?
     return if contains?(id)
 
-    self.post_ids << id
+    post_ids << id
   end
 
   def remove!(post)
@@ -337,7 +335,7 @@ class Pool < ApplicationRecord
       errors.add(:name, "cannot contain only digits")
     when /,/
       errors.add(:name, "cannot contain commas")
-    when /(__|\-\-|  )/
+    when /(__|--|  )/
       errors.add(:name, "cannot contain consecutive underscores, hyphens or spaces")
     end
   end

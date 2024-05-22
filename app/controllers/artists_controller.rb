@@ -22,16 +22,6 @@ class ArtistsController < ApplicationController
     end
   end
 
-  def new
-    @artist = authorize(Artist.new(permitted_attributes(Artist)))
-    respond_with(@artist)
-  end
-
-  def edit
-    authorize(@artist)
-    respond_with(@artist)
-  end
-
   def show
     if params[:id] =~ /\A\d+\z/
       @artist = Artist.find(params[:id])
@@ -52,6 +42,16 @@ class ArtistsController < ApplicationController
     authorize(@artist)
     @post_set = PostSets::Post.new(@artist.name, 1, limit: 10)
     respond_with(@artist, methods: %i[domains], include: %i[urls])
+  end
+
+  def new
+    @artist = authorize(Artist.new(permitted_attributes(Artist)))
+    respond_with(@artist)
+  end
+
+  def edit
+    authorize(@artist)
+    respond_with(@artist)
   end
 
   def create

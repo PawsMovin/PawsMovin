@@ -48,7 +48,7 @@ class PostsController < ApplicationController
     @fixup_post_url = true
 
     respond_with(@post) do |fmt|
-      fmt.html { render("posts/show")}
+      fmt.html { render("posts/show") }
     end
   end
 
@@ -70,9 +70,7 @@ class PostsController < ApplicationController
 
     @post.revert_to!(@version)
 
-    respond_with(@post) do |format|
-      format.js
-    end
+    respond_with(@post, &:js)
   end
 
   def copy_notes
@@ -83,16 +81,16 @@ class PostsController < ApplicationController
 
     if @post.errors.any?
       @error_message = @post.errors.full_messages.join("; ")
-      render(json: {success: false, reason: @error_message}.to_json, status: 400)
+      render(json: { success: false, reason: @error_message }.to_json, status: 400)
     else
-      head(:no_content)
+      head(204)
     end
   end
 
   def random
     authorize(Post)
     tags = params[:tags] || ""
-    @post = Post.tag_match(tags + " order:random").limit(1).first
+    @post = Post.tag_match("#{tags} order:random").limit(1).first
     raise(ActiveRecord::RecordNotFound) if @post.nil?
     respond_with(@post) do |format|
       format.html { redirect_to(post_path(@post, tags: params[:tags])) }
@@ -251,23 +249,23 @@ class PostsController < ApplicationController
   end
 
   def respond_with_post_after_update(post)
-    respond_with(post) do |format|
-      format.html do
+    respond_with(post) do |format| # rubocop:disable Metrics/BlockLength
+      format.html do # rubocop:disable Metrics/BlockLength
         if post.warnings.any?
           warnings = post.warnings.full_messages.join(".\n \n")
           if warnings.length > 45_000
             Dmail.create_automated({
-               to_id: CurrentUser.id,
-               title: "Post update notices for post ##{post.id}",
-               body:  "While editing post ##{post.id} some notices were generated. Please review them below:\n\n#{warnings[0..45_000]}"
-           })
+              to_id: CurrentUser.id,
+              title: "Post update notices for post ##{post.id}",
+              body:  "While editing post ##{post.id} some notices were generated. Please review them below:\n\n#{warnings[0..45_000]}",
+            })
             flash[:notice] = "What the heck did you even do to this poor post? That generated way too many warnings. But you get a dmail with most of them anyways"
           elsif warnings.length > 1500
             Dmail.create_automated({
-                 to_id: CurrentUser.id,
-                 title: "Post update notices for post ##{post.id}",
-                 body:  "While editing post ##{post.id} some notices were generated. Please review them below:\n\n#{warnings}"
-             })
+              to_id: CurrentUser.id,
+              title: "Post update notices for post ##{post.id}",
+              body:  "While editing post ##{post.id} some notices were generated. Please review them below:\n\n#{warnings}",
+            })
             flash[:notice] = "This edit created a LOT of notices. They have been dmailed to you. Please review them"
           else
             flash[:notice] = warnings
@@ -278,8 +276,8 @@ class PostsController < ApplicationController
           @message = post.errors.full_messages.join("; ")
           render(template: "static/error", status: 500)
         else
-          response_params = {q: params[:tags_query], pool_id: params[:pool_id], post_set_id: params[:post_set_id]}
-          response_params.reject!{|key, value| value.blank?}
+          response_params = { q: params[:tags_query], pool_id: params[:pool_id], post_set_id: params[:post_set_id] }
+          response_params.compact_blank!
           redirect_to(post_path(post, response_params))
         end
       end
@@ -290,9 +288,9 @@ class PostsController < ApplicationController
     end
   end
 
-  def ensure_can_edit(post)
+  def ensure_can_edit(_post)
     can_edit = CurrentUser.can_post_edit_with_reason
-    raise(User::PrivilegeError.new("Updater #{User.throttle_reason(can_edit)}")) unless can_edit == true
+    raise(User::PrivilegeError, "Updater #{User.throttle_reason(can_edit)}") unless can_edit == true
   end
 
   def append_pool_to_session(pool)

@@ -19,25 +19,25 @@ class PostSetsController < ApplicationController
     respond_with(@post_sets)
   end
 
-  def new
-    @post_set = authorize(PostSet.new(permitted_attributes(@post_set)))
-  end
-
-  def create
-    @post_set = authorize(PostSet.new(permitted_attributes(@post_set)))
-    @post_set.save
-    notice(@post_set.valid? ? "Set created" : @post_set.errors.full_messages.join("; "))
-    respond_with(@post_set)
-  end
-
   def show
     @post_set = authorize(PostSet.find(params[:id]))
 
     respond_with(@post_set)
   end
 
+  def new
+    @post_set = authorize(PostSet.new(permitted_attributes(@post_set)))
+  end
+
   def edit
     @post_set = authorize(PostSet.find(params[:id]))
+    respond_with(@post_set)
+  end
+
+  def create
+    @post_set = authorize(PostSet.new(permitted_attributes(@post_set)))
+    @post_set.save
+    notice(@post_set.valid? ? "Set created" : @post_set.errors.full_messages.join("; "))
     respond_with(@post_set)
   end
 
@@ -76,8 +76,8 @@ class PostSetsController < ApplicationController
     maintained = PostSet.active_maintainer(CurrentUser.user).order(:name)
 
     @for_select = {
-        "Owned"      => owned.map {|x| [x.name.tr("_", " ").truncate(35), x.id]},
-        "Maintained" => maintained.map {|x| [x.name.tr("_", " ").truncate(35), x.id]}
+      "Owned"      => owned.map { |x| [x.name.tr("_", " ").truncate(35), x.id] },
+      "Maintained" => maintained.map { |x| [x.name.tr("_", " ").truncate(35), x.id] },
     }
 
     render(json: @for_select)

@@ -12,12 +12,12 @@ class TagRelationship < ApplicationRecord
   belongs_to :antecedent_tag, class_name: "Tag", foreign_key: "antecedent_name", primary_key: "name", default: -> { Tag.find_or_create_by_name(antecedent_name) }
   belongs_to :consequent_tag, class_name: "Tag", foreign_key: "consequent_name", primary_key: "name", default: -> { Tag.find_or_create_by_name(consequent_name) }
 
-  scope :active, ->{approved}
-  scope :approved, ->{where(status: %w[active processing queued])}
-  scope :deleted, ->{where(status: "deleted")}
-  scope :pending, ->{where(status: "pending")}
-  scope :retired, ->{where(status: "retired")}
-  scope :duplicate_relevant, ->{where(status: %w[active processing queued pending])}
+  scope :active, -> { approved }
+  scope :approved, -> { where(status: %w[active processing queued]) }
+  scope :deleted, -> { where(status: "deleted") }
+  scope :pending, -> { where(status: "pending") }
+  scope :retired, -> { where(status: "retired") }
+  scope :duplicate_relevant, -> { where(status: %w[active processing queued pending]) }
 
   before_validation :initialize_creator, on: :create
   before_validation :normalize_names
@@ -184,8 +184,8 @@ class TagRelationship < ApplicationRecord
       "The #{relationship} [[#{antecedent_name}]] -> [[#{consequent_name}]] #{forum_link} has been approved by @#{approver.name}."
     end
 
-    def failure_message(e = nil)
-      "The #{relationship} [[#{antecedent_name}]] -> [[#{consequent_name}]] #{forum_link} failed during processing. Reason: #{e}"
+    def failure_message(error = nil)
+      "The #{relationship} [[#{antecedent_name}]] -> [[#{consequent_name}]] #{forum_link} failed during processing. Reason: #{error}"
     end
 
     def reject_message(rejector)

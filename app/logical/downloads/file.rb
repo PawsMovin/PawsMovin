@@ -3,7 +3,7 @@
 module Downloads
   class File
     include ActiveModel::Validations
-    class Error < Exception ; end
+    class Error < StandardError; end
 
     attr_reader :url
 
@@ -43,8 +43,8 @@ module Downloads
 
     def validate_url
       errors.add(:base, "URL must not be blank") if url.blank?
-      errors.add(:base, "'#{url}' is not a valid url") if !url.host.present?
-      errors.add(:base, "'#{url}' is not a valid url. Did you mean 'http://#{url}'?") if !url.scheme.in?(%w[http https])
+      errors.add(:base, "'#{url}' is not a valid url") if url.host.blank?
+      errors.add(:base, "'#{url}' is not a valid url. Did you mean 'http://#{url}'?") unless url.scheme.in?(%w[http https])
       validate_uri_allowed!(url)
     end
 
