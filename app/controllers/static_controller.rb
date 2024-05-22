@@ -19,6 +19,10 @@ class StaticController < ApplicationController
     @page = view_context.safe_wiki("help:takedown")
   end
 
+  def staff
+    @page = view_context.safe_wiki("help:staff")
+  end
+
   def not_found
     render("static/404", formats: [:html], status: 404)
   end

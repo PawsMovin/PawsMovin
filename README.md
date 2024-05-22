@@ -79,6 +79,7 @@ These wik/help pages are expected to exist, as they are linked to in various pla
 * help:privacy_policy
 * help:replacement_notice
 * help:sets
+* help:staff
 * help:tag_aliases
 * help:tag_implications
 * help:tagging_checklist
@@ -111,6 +112,7 @@ These wik/help pages are expected to exist, as they are linked to in various pla
 * posts (help:posts)
 * privacy_policy (help:privacy_policy)
 * sets (help:sets)
+* staff (help:staff)
 * tag_aliases (help:tag_aliases)
 * tag_implications (help:tag_implications)
 * tagging_checklist (help:tagging_checklist)

@@ -5,7 +5,7 @@ Rails.application.routes.draw do
   require "sidekiq/web"
   require "sidekiq_unique_jobs/web"
 
-  mount Sidekiq::Web => "/sidekiq", :constraints => AdminRouteConstraint.new
+  mount Sidekiq::Web => "/sidekiq", constraints: AdminRouteConstraint.new
 
   namespace :admin do
     resources :users, only: %i[edit update edit_blacklist update_blacklist alt_list] do
@@ -388,16 +388,17 @@ Rails.application.routes.draw do
 
   options "*all", to: "application#enable_cors"
 
-  get "/static/keyboard_shortcuts" => "static#keyboard_shortcuts", :as => "keyboard_shortcuts"
-  get "/static/site_map" => "static#site_map", :as => "site_map"
-  get "/static/privacy" => "static#privacy", :as => "privacy_policy"
-  get "/static/takedown" => "static#takedown", :as => "takedown_static"
-  get "/static/terms_of_service" => "static#terms_of_service", :as => "terms_of_service"
-  get "/static/contact" => "static#contact", :as => "contact"
-  get "/static/discord" => "static#discord", :as => "discord_get"
-  post "/static/discord" => "static#discord", :as => "discord_post"
-  get "/static/toggle_mobile_mode" => "static#toggle_mobile_mode", :as => "toggle_mobile_mode"
-  get "/static/theme" => "static#theme", :as => "theme"
+  get "/static/keyboard_shortcuts", to: "static#keyboard_shortcuts", as: "keyboard_shortcuts"
+  get "/static/site_map", to: "static#site_map", as: "site_map"
+  get "/static/privacy", to: "static#privacy", as: "privacy_policy"
+  get "/static/takedown", to: "static#takedown", as: "takedown_static"
+  get "/static/terms_of_service", to: "static#terms_of_service", as: "terms_of_service"
+  get "/static/contact", to: "static#contact", as: "contact"
+  get "/static/discord", to: "static#discord", as: "discord_get"
+  post "/static/discord", to: "static#discord", as: "discord_post"
+  get "/static/toggle_mobile_mode", to: "static#toggle_mobile_mode", as: "toggle_mobile_mode"
+  get "/static/theme", to: "static#theme", as: "theme"
+  get "/static/staff", to: "static#staff", as: "staff"
   get "/robots", to: "static#robots", as: "robots"
   root to: "static#home"
 
