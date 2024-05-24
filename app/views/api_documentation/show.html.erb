@@ -1,0 +1,31 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <title>API Documentation</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.17.12/swagger-ui-bundle.min.js" integrity="sha512-ruEOr+AHiNjOWlvGRvHZLHOBHfQr/9gfeOLHm8gfW5RTi+SvQysKWdjV9zYS4lDU+K2cFGbuNVqUBNfa6C2dgQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.17.12/swagger-ui-standalone-preset.js" integrity="sha512-DgicCd4AI/d7/OdgaHqES3hA+xJ289Kb5NmMEegbN8w/Dxn5mvvqr9szOR6TQC+wjTTMeqPscKE4vj6bmAQn6g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.17.12/swagger-ui.min.css" integrity="sha512-+9UD8YSD9GF7FzOH38L9S6y56aYNx3R4dYbOCgvTJ2ZHpJScsahNdaMQJU/8osUiz9FPu0YZ8wdKf4evUbsGSg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+  <div id="page">
+    <div id="c-api-documentation">
+      <div id="a-show">
+        <div id="swagger-ui"></div>
+      </div>
+    </div>
+  </div>
+  <%= javascript_tag(nonce: true) do-%>
+    window.onload = function() {
+      SwaggerUIBundle({
+        url: "/api/spec",
+        dom_id: "#swagger-ui",
+        presets: [
+          SwaggerUIBundle.presets.apis,
+          SwaggerUIStandalonePreset
+        ],
+        layout: "StandaloneLayout"
+      });
+    };
+  <% end %>
+</body>
+</html>

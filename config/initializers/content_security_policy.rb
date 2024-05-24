@@ -9,8 +9,8 @@
 Rails.application.configure do
   config.content_security_policy do |policy|
     policy.default_src(:self)
-    policy.script_src(:self, "js-agent.newrelic.com", "https://www.google.com/recaptcha/", "https://www.gstatic.com/recaptcha/", "https://www.recaptcha.net/")
-    policy.style_src(:self, :unsafe_inline)
+    policy.script_src(:self, "js-agent.newrelic.com", "https://www.google.com/recaptcha/", "https://www.gstatic.com/recaptcha/", "https://www.recaptcha.net/", "https://cdnjs.cloudflare.com")
+    policy.style_src(:self, :unsafe_inline, "https://cdnjs.cloudflare.com")
     policy.connect_src(:self)
     policy.object_src(:self, "static.pawsmov.in")
     policy.media_src(:self, "static.pawsmov.in")

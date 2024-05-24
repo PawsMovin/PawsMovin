@@ -385,6 +385,9 @@ Rails.application.routes.draw do
     end
   end
   resources :mascots, only: %i[index new create edit update destroy]
+  resource :api, controller: "api_documentation", as: "api_documentation" do
+    get :spec
+  end
 
   options "*all", to: "application#enable_cors"
 

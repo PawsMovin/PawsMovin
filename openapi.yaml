@@ -2,6 +2,16 @@ openapi: "3.1.0"
 info:
   title: "PawsMovin"
   version: "1"
+  termsOfService: "https://pawsmov.in/static/terms_of_service"
+  license:
+    name: MIT
+    url: "https://opensource.org/licenses/MIT"
+
+servers:
+  - url: "https://pawsmov.in"
+    description: "Production Server"
+  - url: "http://localhost:3001"
+    description: "Development server"
 
 x-constants:
   - &modaction-actions
