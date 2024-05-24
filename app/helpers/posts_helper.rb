@@ -153,7 +153,7 @@ module PostsHelper
       score_tag = tag.span(post.score, class: "post-score-#{post.id} post-score #{score_class(post_score)}", title: "#{post.up_score} up/#{post.down_score} down")
       CurrentUser.is_member? ? up_tag + score_tag + down_tag : ""
     else
-      vote_block = tag.span("#{' ('.html_safe}#{up_tag} vote #{down_tag})")
+      vote_block = tag.span(" (#{up_tag} vote #{down_tag})".html_safe)
       score_tag = tag.span(post.score, class: "post-score-#{post.id} post-score #{score_class(post_score)}", title: "#{post.up_score} up/#{post.down_score} down")
       score_tag + (CurrentUser.is_member? ? vote_block : "")
     end
