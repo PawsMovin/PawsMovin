@@ -7,7 +7,7 @@
   <li><strong>Creator</strong> <%= link_to_user @tag_implication.creator %></li>
   <li><strong>Created</strong> <%= @tag_implication.created_at %></li>
   <li><strong>Updated</strong> <%= @tag_implication.updated_at %></li>
-  <li><strong>Estimated Update Count</strong> <span class="<%= CurrentUser.user&.can_manage_aibur? ? @tag_implication.approvable_by?(CurrentUser.user) ? "greentext" : "redtext" : "" %>"><%= @tag_implication.estimate_update_count %></span></li>
+  <li><strong>Estimated Update Count</strong> <span class="<%= CurrentUser.user&.can_manage_aibur? && @tag_implication.is_pending? ? @tag_implication.approvable_by?(CurrentUser.user) ? "greentext" : "redtext" : "" %>"><%= @tag_implication.estimate_update_count %></span></li>
   <% if @tag_implication.respond_to?(:reason) && @tag_implication.reason.present? %>
     <li><strong>Reason</strong> <%= format_text @tag_implication.reason %></li>
   <% end %>
