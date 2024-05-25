@@ -96,6 +96,11 @@ class User < ApplicationRecord
     def self.public_list
       map.filter { |_name, value| public.include?(value) }.keys.map(&:to_sym)
     end
+
+    def self.index(value)
+      value = const_get(value) unless value.is_a?(Integer)
+      Math.log2(value).to_i
+    end
   end
 
   include PawsMovin::HasBitFlags
@@ -829,7 +834,7 @@ class User < ApplicationRecord
 
       %i[can_approve_posts unrestricted_uploads].each do |x|
         next if params[x].blank?
-        attr_idx = Preferences.const_get(x.upcase)
+        attr_idx = Preferences.index(x.upcase)
         if params[x].to_s.truthy?
           bitprefs_include ||= "0" * bitprefs_length
           bitprefs_include[attr_idx] = "1"
