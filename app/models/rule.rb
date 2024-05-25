@@ -7,6 +7,7 @@ class Rule < ApplicationRecord
   validates :name, presence: true, uniqueness: true, length: { min: 3, maximum: 100 }
   validates :description, presence: true, length: { maximum: 50_000 }
   validates :order, uniqueness: { scope: :category_id }, numericality: { only_integer: true, greater_than: 0 }
+  has_many :quick_rules, -> { order(:order) }
 
   before_validation(on: :create) do
     self.order = (Rule.where(category: category).maximum(:order) || 0) + 1 if order.blank?

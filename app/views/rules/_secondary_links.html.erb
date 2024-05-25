@@ -9,6 +9,9 @@
   <% if category.create? %>
     <%= subnav_link_to "New Rule Category", new_rule_category_path %>
   <% end %>
+  <% if quick.create? %>
+    <%= subnav_link_to "New Quick Rule", new_quick_rule_path %>
+  <% end %>
   <% if params[:action] == "order" %>
     |
     <% if rule.reorder? %>

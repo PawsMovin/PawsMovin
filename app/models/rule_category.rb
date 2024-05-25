@@ -7,7 +7,7 @@ class RuleCategory < ApplicationRecord
   validates :name, presence: true, length: { min: 3, maximum: 100 }
   validates :anchor, length: { maximum: 100 }
   validates :order, uniqueness: true, numericality: { only_integer: true, greater_than: 0 }
-  has_many :rules, dependent: :destroy, foreign_key: :category_id
+  has_many :rules, -> { order(:order) }, dependent: :destroy, foreign_key: :category_id
 
   before_validation(on: :create) do
     self.order = (RuleCategory.maximum(:order) || 0) + 1 if order.blank?

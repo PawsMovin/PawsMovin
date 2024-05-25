@@ -3,7 +3,7 @@
 <form class="record-builder">
   <div class="record-header">
     <div class="quick-record">
-      <% QuickRule.order(:order).where.not(header: nil).and(QuickRule.where.not(header: "")).each do |quick| %>
+      <% QuickRule.order(:order).where.not(header: [nil, ""]).each do |quick| %>
         <%= link_to quick.header, "#", class: "quick-record-link", data: { reason: quick.reason, rule: quick.rule.anchor } %>
       <% end %>
     </div>
@@ -14,7 +14,7 @@
     <select id="record-reason-<%= id %>" class="record-reason">
       <option></option>
       <% QuickRule.order(:order).each do |quick| %>
-        <option value="<%= quick.rule.anchor %>"><%= quick.reason.split("\n")[0] %></option>
+        <option value="<%= quick.reason %>" data-rule="<%= quick.rule.anchor %>"><%= quick.reason.split("\n")[0] %></option>
       <% end %>
     </select>
     <textarea id="record-custom-<%= id %>" class="custom-reason" placeholder="Custom Reason"></textarea>

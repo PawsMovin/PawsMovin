@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ApiDocumentationController < ApplicationController
   layout false
 
@@ -5,6 +7,6 @@ class ApiDocumentationController < ApplicationController
   end
 
   def spec
-    send_file Rails.root.join("openapi.yaml")
+    send_file(Rails.root.join("openapi.yaml"))
   end
 end

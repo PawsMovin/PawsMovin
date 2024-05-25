@@ -59,7 +59,7 @@ RecordBuilder.process_form = function(form) {
 RecordBuilder.process_source = function(source) {
   return decodeURI(source)
     .trim()
-    .replace(/https:\/\/e(?:621|926).net\//g, "/") // Make links relative
+    .replace(/https?:\/\/pawsmov\.in\//g, "/") // Make links relative
     .replace(/\/posts\/(\d+)#comment-(\d+)/g, "/comments/$2") // Convert comment links
     .replace(/\/forum_topics\/(\d+)(?:\?page=\d+)?#forum_post_(\d+)/g, "/forum_posts/$2") // Convert forum post links
     .replace(/\?lr=\d+&/, "?") // Trim the tag history links
@@ -106,6 +106,10 @@ RecordBuilder.reinitialize_listeners = function() {
   $(".record-reason").on("change rb:change", function(event, preventChange) {
     const $select = $(event.currentTarget);
     const $parent = $select.closest(".record-builder");
+    const $selected = $select.find("option:selected");
+    $parent.find("button.rules-button").removeClass("active");
+    $parent.find(`button.rules-button[data-name="${$selected.attr("data-rule")}"]`).addClass("active");
+    $parent.trigger("rb:buttons", true);
     $parent.find(".custom-reason").val($select.val() || "").trigger("rb:input");
   });
 

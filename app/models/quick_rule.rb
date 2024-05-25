@@ -2,7 +2,7 @@
 
 class QuickRule < ApplicationRecord
   validates :order, uniqueness: true, numericality: { only_integer: true, greater_than: 0 }
-  validates :reason, length: { minimum: 3, maximum: 250 }
+  validates :reason, length: { minimum: 3, maximum: 500 }
   validates :header, length: { maximum: 30 }
   belongs_to :rule
 

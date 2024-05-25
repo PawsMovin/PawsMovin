@@ -6,7 +6,6 @@ class RulesController < ApplicationController
   respond_to :js, only: %i[reorder]
 
   def index
-    @rules = authorize(Rule).order(:order).paginate(params[:page], limit: params[:limit])
     @wiki = WikiPage.find_by(title: "internal:rules_body")
     respond_to do |format|
       format.html
