@@ -988,57 +988,69 @@ Post.vote = function (id, score, prevent_unvote) {
         accept: '*/*;q=0.5,text/javascript'
       }
     }).done(function(data) {
-      const scoreClasses = "score-neutral score-positive score-negative";
-      const postID = id;
-      const postScore = data.score;
-      const ourScore = data.our_score;
-      const post = $(`#post_${id}`);
-      // TODO: some way to distinguish locked votes from no vote
-      if (ourScore === 0) {
-        post.removeAttr("data-own-vote");
-      }
-      else {
-        post.attr("data-own-vote", ourScore);
-      }
-      post.attr("data-score-up", data.up)
-      post.attr("data-score-down", data.down)
-      post.attr("data-score", data.score)
-      function scoreToClass(inScore) {
-        if(inScore === 0) return "score-neutral";
-        return inScore > 0 ? "score-positive" : "score-negative";
-      }
-
-      const scoreSelector = $(`.post-score-${postID}`);
-      const voteUpSelector = $(`.post-vote-up-${postID}`);
-      const voteDownSelector = $(`.post-vote-down-${postID}`);
-      scoreSelector.removeClass(scoreClasses);
-      scoreSelector.text(postScore);
-      scoreSelector.attr("title", `${data.up} up/${data.down} down`);
-      scoreSelector.addClass(scoreToClass(postScore));
-      voteUpSelector.removeClass(scoreClasses);
-      voteUpSelector.addClass(ourScore > 0 ? "score-positive" : "score-neutral");
-      voteDownSelector.removeClass(scoreClasses);
-      voteDownSelector.addClass(ourScore < 0 ? "score-negative" : "score-neutral");
-
-      const scoreScoreSelector = $(`.post-score-score-${postID}`);
-      const scoreClassesSelector = $(`.post-score-classes-${postID}`);
-      const iconsSelector = $(scoreClassesSelector.find(`.post-score-icon-${postID}`));
-      scoreScoreSelector.text(postScore)
-      scoreScoreSelector.attr("title", `${data.up} up/${data.down} down`);
-      scoreClassesSelector.removeClass(scoreClasses);
-      scoreClassesSelector.addClass(scoreToClass(postScore));
-      if(iconsSelector.length) {
-        const positive = iconsSelector.attr("data-icon-positive");
-        const negative = iconsSelector.attr("data-icon-negative");
-        const neutral = iconsSelector.attr("data-icon-neutral");
-        const icon = postScore > 0 ? positive : postScore < 0 ? negative : neutral;
-        iconsSelector.text(icon);
-      }
+      Post.after_vote(id, data);
       $(window).trigger("danbooru:notice", "Vote saved");
     }).always(function() {
       Post.notice_update("dec");
     });
   });
+}
+
+/**
+ * @typedef PostVote
+ * @prop {Number} score
+ * @prop {Number} up
+ * @prop {Number} down
+ * @prop {Number} our_score
+ * @prop {Number} is_locked
+ */
+
+/**
+ * @param {Number} post_id
+ * @param {PostVote} vote
+ */
+Post.after_vote = function(post_id, vote) {
+  const scoreClasses = "score-neutral score-positive score-negative";
+  const post = $(`#post_${post_id}`);
+  if (vote.is_locked) {
+    post.removeAttr("data-own-vote");
+  } else {
+    post.attr("data-own-vote", vote.our_score);
+  }
+  post.attr("data-score-up", vote.up)
+  post.attr("data-score-down", vote.down)
+  post.attr("data-score", vote.score)
+  function scoreToClass(inScore) {
+    if(inScore === 0) return "score-neutral";
+    return inScore > 0 ? "score-positive" : "score-negative";
+  }
+
+  const scoreSelector = $(`.post-score-${post_id}`);
+  const voteUpSelector = $(`.post-vote-up-${post_id}`);
+  const voteDownSelector = $(`.post-vote-down-${post_id}`);
+  scoreSelector.removeClass(scoreClasses);
+  scoreSelector.text(vote.score);
+  scoreSelector.attr("title", `${vote.up} up/${vote.down} down`);
+  scoreSelector.addClass(scoreToClass(vote.score));
+  voteUpSelector.removeClass(scoreClasses);
+  voteUpSelector.addClass(vote.our_score > 0 ? "score-positive" : "score-neutral");
+  voteDownSelector.removeClass(scoreClasses);
+  voteDownSelector.addClass(vote.our_score < 0 ? "score-negative" : "score-neutral");
+
+  const scoreScoreSelector = $(`.post-score-score-${post_id}`);
+  const scoreClassesSelector = $(`.post-score-classes-${post_id}`);
+  const iconsSelector = $(scoreClassesSelector.find(`.post-score-icon-${post_id}`));
+  scoreScoreSelector.text(vote.score)
+  scoreScoreSelector.attr("title", `${vote.up} up/${vote.down} down`);
+  scoreClassesSelector.removeClass(scoreClasses);
+  scoreClassesSelector.addClass(scoreToClass(vote.score));
+  if(iconsSelector.length) {
+    const positive = iconsSelector.attr("data-icon-positive");
+    const negative = iconsSelector.attr("data-icon-negative");
+    const neutral = iconsSelector.attr("data-icon-neutral");
+    const icon = vote.score > 0 ? positive : vote.score < 0 ? negative : neutral;
+    iconsSelector.text(icon);
+  }
 }
 
 Post.set_as_avatar = function(id) {

@@ -160,35 +160,35 @@ class PostsDecorator < ApplicationDecorator
   def ribbons(template)
     template.tag.div(class: "ribbons") do # rubocop:disable Metrics/BlockLength
       [if post.parent_id.present?
-        if post.has_visible_children?
-          template.tag.div(class: "ribbon left has-parent has-children", title: "Has Parent\nHas Children") do
-            template.tag.span
-          end
-        else
-          template.tag.div(class: "ribbon left has-parent", title: "Has Parent") do
-            template.tag.span
-          end
-        end
-      elsif post.has_visible_children?
-        template.tag.div(class: "ribbon left has-children", title: "Has Children") do
-          template.tag.span
-        end
-      end,
-      if post.is_flagged?
-        if post.is_pending?
-          template.tag.div(class: "ribbon right is-flagged is-pending", title: "Flagged\nPending") do
-            template.tag.span
-          end
-        else
-          template.tag.div(class: "ribbon right is-flagged", title: "Flagged") do
-            template.tag.span
-          end
-        end
-      elsif post.is_pending?
-        template.tag.div(class: "ribbon right is-pending", title: "Pending") do
-          template.tag.span
-        end
-      end].join.html_safe
+         if post.has_visible_children?
+           template.tag.div(class: "ribbon left has-parent has-children", title: "Has Parent\nHas Children") do
+             template.tag.span
+           end
+         else
+           template.tag.div(class: "ribbon left has-parent", title: "Has Parent") do
+             template.tag.span
+           end
+         end
+       elsif post.has_visible_children?
+         template.tag.div(class: "ribbon left has-children", title: "Has Children") do
+           template.tag.span
+         end
+       end,
+       if post.is_flagged?
+         if post.is_pending?
+           template.tag.div(class: "ribbon right is-flagged is-pending", title: "Flagged\nPending") do
+             template.tag.span
+           end
+         else
+           template.tag.div(class: "ribbon right is-flagged", title: "Flagged") do
+             template.tag.span
+           end
+         end
+       elsif post.is_pending?
+         template.tag.div(class: "ribbon right is-pending", title: "Pending") do
+           template.tag.span
+         end
+       end,].join.html_safe
     end
   end
 

@@ -1822,6 +1822,7 @@ components:
           type: boolean
         own_vote:
           type: ["number", "null"]
+          description: 0 is locked.
           enum:
             - -1
             - 0
@@ -9028,6 +9029,9 @@ paths:
                   type: string
                 source:
                   type: string
+                as_pending:
+                  type: boolean
+                  description: Must have the "Approve Posts" permission.
           multipart/form-data:
             schema:
               type: object
@@ -12351,59 +12355,59 @@ paths:
                       description: ID of suspected alt.
                 examples:
                   - [[1,[2]],[2,[1]]]
-/admins/users/{id}.json:
-  patch:
-    summary: Admin Edit User
-    tags:
-      - Admin Users
-    security:
-      - basicAuth: []
-    description: You must be Admin+. If editing an Admin+, you must be Owner+.
-    parameters:
-      - name: id
-        in: path
-        required: true
-        description: The ID of the user.
-        schema:
-          type: number
-    requestBody:
-      content:
-        application/json:
+  /admin/users/{id}.json:
+    patch:
+      summary: Admin Edit User
+      tags:
+        - Admin Users
+      security:
+        - basicAuth: []
+      description: You must be Admin+. If editing an Admin+, you must be Owner+.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the user.
           schema:
-            type: object
-            properties:
-              verified:
-                type: boolean
-                description: Must be Owner+ to use.
-              level:
-                type: number
-                description: Must be Owner+ to promote to Admin+.
-              name:
-                type: string
-              profile_about:
-                type: string
-              profile_artinfo:
-                type: string
-              base_upload_limit:
-                type: number
-              enable_privacy_mode:
-                type: boolean
-              force_name_change:
-                type: boolean
-              email:
-                type: string
-                description: Must be Owner+ to use.
-              title:
-                type: string
-                description: Must be Owner+ to use.
-    responses:
-      204:
-        description: Success
-      400:
-        $ref: "#/components/responses/MessageError"
-      403:
-        $ref: "#/components/responses/AccessDenied"
-      404:
-        $ref: "#/components/responses/NotFound"
-      422:
-        $ref: "#/components/responses/ExpectedError"
+            type: number
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                verified:
+                  type: boolean
+                  description: Must be Owner+ to use.
+                level:
+                  type: number
+                  description: Must be Owner+ to promote to Admin+.
+                name:
+                  type: string
+                profile_about:
+                  type: string
+                profile_artinfo:
+                  type: string
+                base_upload_limit:
+                  type: number
+                enable_privacy_mode:
+                  type: boolean
+                force_name_change:
+                  type: boolean
+                email:
+                  type: string
+                  description: Must be Owner+ to use.
+                title:
+                  type: string
+                  description: Must be Owner+ to use.
+      responses:
+        204:
+          description: Success
+        400:
+          $ref: "#/components/responses/MessageError"
+        403:
+          $ref: "#/components/responses/AccessDenied"
+        404:
+          $ref: "#/components/responses/NotFound"
+        422:
+          $ref: "#/components/responses/ExpectedError"

@@ -30,7 +30,9 @@ class PostReplacementPolicy < ApplicationPolicy
   end
 
   def permitted_attributes
-    %i[replacement_url replacement_file reason source]
+    attr = %i[replacement_url replacement_file reason source]
+    attr += %i[as_pending] if approver?
+    attr
   end
 
   def permitted_search_params

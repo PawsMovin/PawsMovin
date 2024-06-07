@@ -33,6 +33,48 @@ module Posts
 
           assert_equal @response.parsed_body["location"], post_path(@post)
         end
+
+        should "automatically approve replacements by approvers" do
+          file = fixture_file_upload("alpha.png")
+          params = {
+            format:           :json,
+            post_id:          @post.id,
+            post_replacement: {
+              replacement_file: file,
+              reason:           "test replacement",
+              as_pending:       false,
+            },
+          }
+
+          assert_difference(-> { @post.replacements.size }, 2) do
+            post_auth(post_replacements_path, @user, params: params)
+            @post.reload
+          end
+
+          assert_equal @response.parsed_body["location"], post_path(@post)
+          assert_equal %w[approved original], @post.replacements.last(2).pluck(:status)
+        end
+
+        should "not automatically approve replacements by approvers if as_pending=true" do
+          file = fixture_file_upload("alpha.png")
+          params = {
+            format:           :json,
+            post_id:          @post.id,
+            post_replacement: {
+              replacement_file: file,
+              reason:           "test replacement",
+              as_pending:       true,
+            },
+          }
+
+          assert_difference(-> { @post.replacements.size }) do
+            post_auth(post_replacements_path, @user, params: params)
+            @post.reload
+          end
+
+          assert_equal @response.parsed_body["location"], post_path(@post)
+          assert_equal "pending", @post.replacements.last.status
+        end
       end
 
       context "reject action" do

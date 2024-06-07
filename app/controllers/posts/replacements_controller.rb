@@ -30,6 +30,9 @@ module Posts
       if @post_replacement.errors.none?
         flash.now[:notice] = "Post replacement submitted"
       end
+      if CurrentUser.user.can_approve_posts? && @post_replacement.as_pending.to_s.falsy?
+        @post_replacement.approve!(penalize_current_uploader: @post_replacement.post.uploader != @post_replacement.creator)
+      end
       respond_to do |format|
         format.json do
           return render(json: { success: false, message: @post_replacement.errors.full_messages.join("; ") }, status: 412) if @post_replacement.errors.any?

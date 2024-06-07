@@ -19,6 +19,11 @@
     <span class="hint">Tell us why this file should replace the original.</span>
   </div>
 
+  <div v-if="allowUploadAsPending" class="input">
+    <label><input type="checkbox" v-model="uploadAsPending"/> Upload as Pending</label>
+    <span class="hint">If you aren't sure if this replacement is correct, checking this box will put it into the moderation queue.</span>
+  </div>
+
   <div class="sect_red error_message" v-if="showErrors && errorMessage !== undefined">
     {{ errorMessage }}
   </div>
@@ -35,6 +40,7 @@ import autocompletableInput from "./autocompletable_input.vue";
 import filePreview from "./uploader/file_preview.vue";
 import fileInput from "./uploader/file_input.vue";
 import sources from "./uploader/sources.vue";
+import Utility from "./utility";
 
 export default {
   components: {
@@ -52,6 +58,8 @@ export default {
       sources: [""],
       uploadValue: "",
       reason: "",
+      allowUploadAsPending: Utility.meta("current-user-can-approve-posts") === "true",
+      uploadAsPending: false,
       errorMessage: undefined,
       showErrors: false,
       sourceWarning: false,
@@ -79,6 +87,9 @@ export default {
       }
       formData.append("post_replacement[source]", this.sources[0]);
       formData.append("post_replacement[reason]", this.reason);
+      if (this.allowUploadAsPending) {
+        formData.append("post_replacement[as_pending]", this.uploadAsPending);
+      }
 
       this.submittedReason = this.reason;
 

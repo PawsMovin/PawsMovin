@@ -1091,7 +1091,7 @@ class Post < ApplicationRecord
   module VoteMethods
     def own_vote(user = CurrentUser.user)
       return nil unless user
-      v = vote_string.scan(/(?:\A| )(up|down):#{user.id}(?:\Z| )/).map { $1 }.first
+      v = vote_string.scan(/(?:\A| )(up|down|locked):#{user.id}(?:\Z| )/).map { $1 }.first
       return nil if v.nil?
       %w[down locked up].index(v) - 1
     end
