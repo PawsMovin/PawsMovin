@@ -22,7 +22,7 @@ class UserFeedbackPolicy < ApplicationPolicy
   end
 
   def permitted_attributes_for_update
-    super + %i[send_update_dmail]
+    super + %i[send_update_notification]
   end
 
   def permitted_search_params

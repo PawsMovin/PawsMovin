@@ -2400,10 +2400,10 @@ ALTER SEQUENCE public.user_blocks_id_seq OWNED BY public.user_blocks.id;
 
 
 --
--- Name: user_feedback; Type: TABLE; Schema: public; Owner: -
+-- Name: user_feedbacks; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.user_feedback (
+CREATE TABLE public.user_feedbacks (
     id integer NOT NULL,
     user_id integer NOT NULL,
     creator_id integer NOT NULL,
@@ -2417,10 +2417,10 @@ CREATE TABLE public.user_feedback (
 
 
 --
--- Name: user_feedback_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: user_feedbacks_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.user_feedback_id_seq
+CREATE SEQUENCE public.user_feedbacks_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -2430,10 +2430,10 @@ CREATE SEQUENCE public.user_feedback_id_seq
 
 
 --
--- Name: user_feedback_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+-- Name: user_feedbacks_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE public.user_feedback_id_seq OWNED BY public.user_feedback.id;
+ALTER SEQUENCE public.user_feedbacks_id_seq OWNED BY public.user_feedbacks.id;
 
 
 --
@@ -3131,10 +3131,10 @@ ALTER TABLE ONLY public.user_blocks ALTER COLUMN id SET DEFAULT nextval('public.
 
 
 --
--- Name: user_feedback id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: user_feedbacks id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.user_feedback ALTER COLUMN id SET DEFAULT nextval('public.user_feedback_id_seq'::regclass);
+ALTER TABLE ONLY public.user_feedbacks ALTER COLUMN id SET DEFAULT nextval('public.user_feedbacks_id_seq'::regclass);
 
 
 --
@@ -3686,11 +3686,11 @@ ALTER TABLE ONLY public.user_blocks
 
 
 --
--- Name: user_feedback user_feedback_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: user_feedbacks user_feedbacks_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.user_feedback
-    ADD CONSTRAINT user_feedback_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.user_feedbacks
+    ADD CONSTRAINT user_feedbacks_pkey PRIMARY KEY (id);
 
 
 --
@@ -4786,45 +4786,45 @@ CREATE INDEX index_user_blocks_on_user_id ON public.user_blocks USING btree (use
 
 
 --
--- Name: index_user_feedback_on_created_at; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_user_feedback_on_created_at ON public.user_feedback USING btree (created_at);
-
-
---
--- Name: index_user_feedback_on_creator_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_user_feedback_on_creator_id ON public.user_feedback USING btree (creator_id);
-
-
---
--- Name: index_user_feedback_on_creator_ip_addr; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_user_feedback_on_creator_ip_addr ON public.user_feedback USING btree (creator_ip_addr);
-
-
---
 -- Name: index_user_feedback_on_lower_body_trgm; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_user_feedback_on_lower_body_trgm ON public.user_feedback USING gin (lower(body) public.gin_trgm_ops);
+CREATE INDEX index_user_feedback_on_lower_body_trgm ON public.user_feedbacks USING gin (lower(body) public.gin_trgm_ops);
 
 
 --
 -- Name: index_user_feedback_on_to_tsvector_english_body; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_user_feedback_on_to_tsvector_english_body ON public.user_feedback USING gin (to_tsvector('english'::regconfig, body));
+CREATE INDEX index_user_feedback_on_to_tsvector_english_body ON public.user_feedbacks USING gin (to_tsvector('english'::regconfig, body));
 
 
 --
--- Name: index_user_feedback_on_user_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_user_feedbacks_on_created_at; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_user_feedback_on_user_id ON public.user_feedback USING btree (user_id);
+CREATE INDEX index_user_feedbacks_on_created_at ON public.user_feedbacks USING btree (created_at);
+
+
+--
+-- Name: index_user_feedbacks_on_creator_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_user_feedbacks_on_creator_id ON public.user_feedbacks USING btree (creator_id);
+
+
+--
+-- Name: index_user_feedbacks_on_creator_ip_addr; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_user_feedbacks_on_creator_ip_addr ON public.user_feedbacks USING btree (creator_ip_addr);
+
+
+--
+-- Name: index_user_feedbacks_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_user_feedbacks_on_user_id ON public.user_feedbacks USING btree (user_id);
 
 
 --
@@ -5078,10 +5078,10 @@ ALTER TABLE ONLY public.dmails
 
 
 --
--- Name: user_feedback fk_rails_9329a36823; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: user_feedbacks fk_rails_9329a36823; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.user_feedback
+ALTER TABLE ONLY public.user_feedbacks
     ADD CONSTRAINT fk_rails_9329a36823 FOREIGN KEY (updater_id) REFERENCES public.users(id);
 
 
@@ -5188,6 +5188,7 @@ ALTER TABLE ONLY public.staff_notes
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20240614223206'),
 ('20240614185647'),
 ('20240614154755'),
 ('20240613223218'),

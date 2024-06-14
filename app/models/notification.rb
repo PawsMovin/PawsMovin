@@ -2,8 +2,8 @@
 
 class Notification < ApplicationRecord
   belongs_to :user
-  enum :category, %i[default new_post dmail mention]
-  store_accessor :data, %i[post_id tag_name dmail_id dmail_title mention_id mention_type topic_id topic_title]
+  enum :category, %i[default new_post dmail mention feedback_create feedback_update feedback_delete]
+  store_accessor :data, %i[post_id tag_name dmail_id dmail_title mention_id mention_type topic_id topic_title record_id record_type]
   store_accessor :data, %i[user_id], prefix: true
   after_commit :update_unread_count
 
@@ -26,6 +26,8 @@ class Notification < ApplicationRecord
         base += " in topic ##{topic_id} titled \"#{topic_title}\""
       end
       base
+    when "feedback_create", "feedback_update", "feedback_delete"
+      "@#{User.id_to_name(data_user_id)} #{category[9..]}d a #{record_type} on your account: record ##{record_id}"
     else
       "Unknown notification category: #{category}"
     end
@@ -44,6 +46,8 @@ class Notification < ApplicationRecord
       when "ForumPost"
         h.forum_topic_path(topic_id, anchor: "forum_post_#{mention_id}", n: id)
       end
+    when "feedback_create", "feedback_update", "feedback_delete"
+      h.user_feedback_path(record_id, n: id)
     else
       "#"
     end

@@ -53,7 +53,7 @@ module Users
 
       context "create action" do
         should "create a new feedback" do
-          assert_difference([-> { UserFeedback.count }, -> { Dmail.count }], 1) do
+          assert_difference(%w[UserFeedback.count Notification.count], 1) do
             post_auth user_feedbacks_path, @critic, params: { user_feedback: { category: "positive", user_name: @user.name, body: "xxx" } }
           end
         end
@@ -65,23 +65,23 @@ module Users
             @feedback = create(:user_feedback, user: @user, category: "negative")
           end
 
-          assert_no_difference(-> { Dmail.count }) do
+          assert_no_difference("Notification.count") do
             put_auth user_feedback_path(@feedback), @critic, params: { id: @feedback.id, user_feedback: { category: "positive" } }
           end
 
           assert_redirected_to(@feedback)
           assert("positive", @feedback.reload.category)
-          assert_match(/created a/, Dmail.last.body)
+          assert_equal("feedback_create", Notification.last.category)
         end
 
         should "send a new dmail" do
           as(@critic) do
             @feedback = create(:user_feedback, user: @user, category: "negative")
           end
-          assert_difference(-> { Dmail.count }, 1) do
-            put_auth user_feedback_path(@feedback), @critic, params: { id: @feedback.id, user_feedback: { body: "changed", send_update_dmail: true } }
+          assert_difference("Notification.count", 1) do
+            put_auth user_feedback_path(@feedback), @critic, params: { id: @feedback.id, user_feedback: { body: "changed", send_update_notification: true } }
           end
-          assert_match(/updated a/, Dmail.last.body)
+          assert_equal("feedback_update", Notification.last.category)
         end
       end
 
@@ -93,16 +93,22 @@ module Users
         end
 
         should "delete a feedback" do
-          assert_difference(-> { UserFeedback.count }, -1) do
-            delete_auth user_feedback_path(@user_feedback), @critic
+          assert_difference("UserFeedback.count", -1) do
+            assert_difference("Notification.count", 1) do
+              delete_auth user_feedback_path(@user_feedback), @critic
+            end
           end
+          assert_equal("feedback_delete", Notification.last.category)
         end
 
         context "by a moderator" do
           should "allow deleting feedbacks given to other users" do
-            assert_difference(-> { UserFeedback.count }, -1) do
-              delete_auth user_feedback_path(@user_feedback), @mod
+            assert_difference("UserFeedback.count", -1) do
+              assert_difference("Notification.count", 1) do
+                delete_auth user_feedback_path(@user_feedback), @mod
+              end
             end
+            assert_equal("feedback_delete", Notification.last.category)
           end
 
           should "not allow deleting feedbacks given to themselves" do
@@ -110,7 +116,7 @@ module Users
               @user_feedback = create(:user_feedback, user: @mod)
             end
 
-            assert_no_difference(-> { UserFeedback.count }) do
+            assert_no_difference(%w[UserFeedback.count Notification.count]) do
               delete_auth user_feedback_path(@user_feedback), @mod
             end
           end

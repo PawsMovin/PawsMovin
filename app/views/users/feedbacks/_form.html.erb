@@ -4,7 +4,7 @@
   <% end %>
   <%= f.input(:category, as: :button_select, collection: %w[positive neutral negative].map { |e| [e.titleize, e] }) %>
   <% unless user_feedback.new_record? %>
-    <%= f.input(:send_update_dmail, label: "Send update DMail", as: :boolean) %>
+    <%= f.input(:send_update_notification, as: :boolean) %>
   <% end %>
   <%= f.input(:body, as: :dtext, limit: PawsMovin.config.user_feedback_max_size) %>
   <%= f.button(:submit, "Submit") %>

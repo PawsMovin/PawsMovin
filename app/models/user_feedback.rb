@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class UserFeedback < ApplicationRecord
-  self.table_name = "user_feedback"
   belongs_to :user
   belongs_to_creator
   belongs_to_updater
@@ -13,24 +12,28 @@ class UserFeedback < ApplicationRecord
   after_create :log_create
   after_update :log_update
   after_destroy :log_delete
-  after_save :create_dmail
 
-  attr_accessor :send_update_dmail
+  attr_accessor :send_update_notification
 
   module LogMethods
     def log_create
       ModAction.log!(:user_feedback_create, self, user_id: user_id, reason: body, type: category)
+      user.notifications.create!(category: "feedback_create", data: { user_id: CurrentUser.user.id, record_id: id, record_type: category })
     end
 
     def log_update
       ModAction.log!(:user_feedback_update, self, user_id: user_id, reason: body, old_reason: body_before_last_save, type: category, old_type: category_before_last_save)
+      if send_update_notification.to_s.truthy? && saved_change_to_body?
+        user.notifications.create!(category: "feedback_update", data: { user_id: CurrentUser.user.id, record_id: id, record_type: category })
+      end
     end
 
     def log_delete
       ModAction.log!(:user_feedback_delete, self, user_id: user_id, reason: body, type: category)
-      deletion_user = "\"#{CurrentUser.name}\":/users/#{CurrentUser.id}"
+      deletion_user = "\"#{CurrentUser.user.name}\":/users/#{CurrentUser.user.id}"
       creator_user = "\"#{creator.name}\":/users/#{creator.id}"
       StaffNote.create(body: "#{deletion_user} deleted #{category} feedback, created #{created_at.to_date} by #{creator_user}: #{body}", user_id: user_id, creator: User.system)
+      user.notifications.create!(category: "feedback_delete", data: { user_id: CurrentUser.user.id, record_id: id, record_type: category })
     end
   end
 
@@ -80,15 +83,6 @@ class UserFeedback < ApplicationRecord
 
   def user_name=(name)
     self.user_id = User.name_to_id(name)
-  end
-
-  def create_dmail
-    should_send = saved_change_to_id? || (send_update_dmail.to_s.truthy? && saved_change_to_body?)
-    return unless should_send
-
-    action = saved_change_to_id? ? "created" : "updated"
-    body = %("#{updater_name}":/users/#{updater_id} #{action} a "#{category} record":#{Rails.application.routes.url_helpers.user_feedbacks_path(search: { user_id: user_id })} for your account:\n\n#{self.body})
-    Dmail.create_automated(to_id: user_id, title: "Your user record has been updated", body: body, respond_to_id: updater_id)
   end
 
   def creator_is_moderator
