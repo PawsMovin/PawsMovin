@@ -20,10 +20,13 @@
           <%= link_to(tag.name, posts_path(tags: tag.name)) %>
         </td>
         <td>
-          <%= link_to_if(policy(tag).update?, "edit", edit_tag_path(tag)) { "" } %>
-          | <%= link_to "history", tag_versions_path(search: { tag: tag.name }) %>
+          <%= link_to("view", tag_path(tag)) %> |
+          <% if policy(tag).update? %>
+            <%= link_to("edit", edit_tag_path(tag)) %> |
+          <% end %>
+          <%= link_to("history", tag_versions_path(search: { tag: tag.name })) %>
           <% if policy(tag).correct? %>
-            | <%= link_to "fix", correct_tag_path(tag), method: :put %>
+            | <%= link_to("fix", correct_tag_path(tag), method: :put) %>
           <% end %>
         </td>
       </tr>

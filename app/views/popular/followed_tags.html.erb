@@ -1,0 +1,28 @@
+<h1>Most Followed Tags</h1>
+
+<table class="striped autofit">
+  <thead>
+  <tr>
+    <th>Count</th>
+    <th>Tag</th>
+  </tr>
+  </thead>
+  <tbody>
+  <% @tags.each do |tag| %>
+    <tr id="popular-search-<%= tag.name %>">
+      <td><%= tag.follower_count %></td>
+      <td><%= link_to(tag.name, posts_path(tags: tag.name)) %></td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
+
+<%= render partial: "popular/secondary_links" %>
+
+<% content_for(:page_title) do %>
+  Most Followed Tags
+<% end %>
+
+<% content_for(:html_header) do %>
+  <meta name="description" content="The most followed tags">
+<% end %>

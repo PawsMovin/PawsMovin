@@ -116,12 +116,12 @@ class ForumTopicsControllerTest < ActionDispatch::IntegrationTest
       should "cause the unread indicator to show" do
         @other_user.update(last_forum_read_at: Time.now)
         get_auth posts_path, @other_user
-        assert_select "#nav-forum.forum-updated", false
+        assert_select "#nav-forum.unread", false
 
         post_auth forum_topics_path, @user, params: { forum_topic: { title: "bababa", category_id: PawsMovin.config.alias_implication_forum_category, original_post_attributes: { body: "xaxaxa" } } }
 
         get_auth posts_path, @other_user
-        assert_select "#nav-forum.forum-updated"
+        assert_select "#nav-forum.unread"
       end
     end
 

@@ -188,6 +188,8 @@ x-constants:
     - retired
     - error
     - pending
+  - &notification-categories
+    - new_post
 
 components:
   securitySchemes:
@@ -1473,6 +1475,45 @@ components:
           format: date-time
         version:
           type: number
+    Notification:
+      type: object
+      required:
+        - id
+        - user_id
+        - category
+        - data
+        - is_read
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: number
+        user_id:
+          type: number
+        category:
+          type: string
+          enum: *notification-categories
+        data:
+          $ref: "#/components/schemas/NotificationData"
+        is_read:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    NotificationData:
+      type: object
+      properties:
+        post_id:
+          type: number
+          description: |
+            Valid for: `new_post`
+        tag_name:
+          type: string
+          description: |
+            Valid for: `new_post`
     Pool:
       type: object
       required:
@@ -5128,7 +5169,7 @@ paths:
         - $ref: "#/components/parameters/page"
         - in: query
           name: user_id
-          description: You must be the user or Moderator+ if the user has their favorites hidden.
+          description: You must be the user or Moderator+ if the user has privacy mode enabled.
           schema:
             type: number
       responses:
@@ -6936,6 +6977,119 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/NoteVersion"
+  # Notifications
+  /notifications.json:
+    get:
+      summary: Search Notifications
+      tags:
+        - Notifications
+      security:
+        - basicAuth: []
+      parameters:
+        - $ref: "#/components/parameters/limit"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/id"
+        - name: search[order]
+          in: query
+          schema:
+            type: string
+            enum:
+              - id_asc
+              - id_desc
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Notification"
+        403:
+          $ref: "#/components/responses/AccessDenied"
+  /notifications/{id}.json:
+    get:
+      summary: Get Notifications
+      tags:
+        - Notifications
+      security:
+        - basicAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the notification.
+          schema:
+            type: number
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Notification"
+        404:
+          $ref: "#/components/responses/NotFound"
+    delete:
+      summary: Delete Notification
+      tags:
+        - Notifications
+      security:
+        - basicAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the notification.
+          schema:
+            type: number
+      responses:
+        204:
+          description: Success
+        403:
+          $ref: "#/components/responses/AccessDenied"
+        404:
+          $ref: "#/components/responses/NotFound"
+  /notifications/{id}/mark_as_read.json:
+    put:
+      summary: Mark Notification As Read
+      tags:
+        - Notifications
+      security:
+        - basicAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the notification.
+          schema:
+            type: number
+      responses:
+        204:
+          description: Success
+        403:
+          $ref: "#/components/responses/AccessDenied"
+        404:
+          $ref: "#/components/responses/NotFound"
+  /notifications/mark_all_as_read.json:
+    put:
+      summary: Mark All Notifications As Read
+      tags:
+        - Notifications
+      security:
+        - basicAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the notification.
+          schema:
+            type: number
+      responses:
+        204:
+          description: Success
+        403:
+          $ref: "#/components/responses/AccessDenied"
   # Pools
   /pools.json:
     get:
@@ -8531,8 +8685,6 @@ paths:
       summary: Search Post Events
       tags:
         - Post Events
-      security:
-        - basicAuth: []
       parameters:
         - $ref: "#/components/parameters/limit"
         - $ref: "#/components/parameters/page"
@@ -10029,6 +10181,100 @@ paths:
           $ref: "#/components/responses/AccessDenied"
         404:
           $ref: "#/components/responses/NotFound"
+  /tags/{id}/follow.json:
+    put:
+      summary: Follow Tag
+      description: Normal users can follow up to 100 tags. Aliased tags cannot be followed.
+      tags:
+        - Tags
+      security:
+        - basicAuth: []
+      responses:
+        204:
+          description: Success
+        400:
+          $ref: "#/components/responses/MessageError"
+        403:
+          $ref: "#/components/responses/AccessDenied"
+        404:
+          $ref: "#/components/responses/NotFound"
+  /tags/{id}/unfollow.json:
+    put:
+      summary: Unfollow Tag
+      tags:
+        - Tags
+      security:
+        - basicAuth: []
+      responses:
+        204:
+          description: Success
+        403:
+          $ref: "#/components/responses/AccessDenied"
+        404:
+          $ref: "#/components/responses/NotFound"
+  /tags/{id}/followers.json:
+    get:
+      summary: Get Tag Followers
+      tags:
+        - Tags
+      security:
+        - basicAuth: []
+      parameters:
+        - $ref: "#/components/parameters/limit"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/id"
+        - name: search[order]
+          in: query
+          schema:
+            type: string
+            enum:
+              - id_asc
+              - id_desc
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+        404:
+          $ref: "#/components/responses/NotFound"
+  /tags/followed.json:
+    get:
+      summary: Get Followed Tags
+      tags:
+        - Tags
+      parameters:
+        - $ref: "#/components/parameters/limit"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/id"
+        - name: search[order]
+          in: query
+          schema:
+            type: string
+            enum:
+              - id_asc
+              - id_desc
+        - name: user_id
+          in: query
+          description: You must be the user or Moderator+ if the user has privacy mode enabled.
+          schema:
+            type: number
+      security:
+        - basicAuth: []
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+        403:
+          $ref: "#/components/responses/AccessDenied"
   /tags/meta_search.json:
     get:
       summary: Tag Meta Search

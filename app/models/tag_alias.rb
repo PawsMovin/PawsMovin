@@ -10,7 +10,7 @@ class TagAlias < TagRelationship
   validate :absence_of_transitive_relation, unless: :is_deleted?
 
   module ApprovalMethods
-    def approve!(update_topic: true, approver: CurrentUser.user)
+    def approve!(approver: CurrentUser.user, update_topic: true)
       CurrentUser.scoped(approver) do
         update(status: "queued", approver_id: approver.id)
         create_undo_information
@@ -182,6 +182,7 @@ class TagAlias < TagRelationship
         CurrentUser.as_system { update_posts_locked_tags }
         update_blacklists
         CurrentUser.as_system { update_posts }
+        update_followers
         rename_artist
         forum_updater.update(approval_message(approver), "APPROVED") if update_topic
         update(status: "active", post_count: consequent_tag.post_count)
@@ -242,7 +243,7 @@ class TagAlias < TagRelationship
   end
 
   def ensure_category_consistency
-    return if consequent_tag.post_count > 10_000 # Don't change category of large established tags.
+    return if consequent_tag.post_count > PawsMovin.config.alias_category_change_cutoff # Don't change category of large established tags.
     return if consequent_tag.is_locked? # Prevent accidentally changing tag type if category locked.
     return if consequent_tag.category != TagCategory.general # Don't change the already existing category of the target tag
     return if antecedent_tag.category == TagCategory.general # Don't set the target tag to general
@@ -284,6 +285,14 @@ class TagAlias < TagRelationship
     if antecedent_tag.category == TagCategory.artist && (antecedent_tag.artist.present? && consequent_tag.artist.blank?)
       antecedent_tag.artist.update!(name: consequent_name)
     end
+  end
+
+  def update_followers
+    TagFollower.where(tag_id: antecedent_tag.id).find_each do |follower|
+      follower.update!(tag_id: consequent_tag.id)
+    end
+    consequent_tag.update!(follower_count: consequent_tag.followers.count)
+    antecedent_tag.update!(follower_count: 0)
   end
 
   def reject!(update_topic: true)

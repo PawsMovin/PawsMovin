@@ -126,6 +126,26 @@ Utility.regexp_escape = function(string) {
   return string.replace(/([.?*+^$[\]\\(){}|-])/g, "\\$1");
 }
 
+/**
+ * @param string
+ * @returns {URLSearchParams}
+ */
+Utility.get_query_params = function(string) {
+  const url = new URL(string, window.location.origin);
+  return new URLSearchParams(url.search);
+}
+
+/**
+ * @param {string} string
+ * @param {URLSearchParams} params
+ * @returns {string}
+ */
+Utility.set_query_params = function(string, params) {
+  const url = new URL(string, window.location.origin);
+  url.search = params.toString();
+  return url.toString();
+}
+
 $.fn.selectEnd = function() {
   return this.each(function() {
     this.focus();

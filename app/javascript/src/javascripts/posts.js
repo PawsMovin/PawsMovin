@@ -6,6 +6,7 @@ import { SendQueue } from './send_queue'
 import Shortcuts from './shortcuts'
 import PostSet from "./post_sets";
 import Favorite from "./favorites";
+import Blacklist from "./blacklists";
 
 let Post = {};
 
@@ -17,6 +18,7 @@ Post.initialize_all = function() {
   if ($("#c-posts").length) {
     this.initialize_shortcuts();
     this.initialize_collapse();
+    this.initialize_tag_actions();
   }
 
   if ($("#c-posts #a-index").length) {
@@ -65,6 +67,70 @@ Post.initialize_all = function() {
   var $fields_multiple = $('[data-autocomplete="tag-edit"]');
   $fields_multiple.on("keypress.danbooru", Post.update_tag_count);
   $fields_multiple.on("click", Post.update_tag_count);
+}
+
+Post.initialize_tag_actions = function() {
+  $(".blacklist-tag-toggle").on("click", async function(event) {
+    event.preventDefault();
+    const tag = $(event.currentTarget).closest(".tag-actions").data("tag");
+    const blacklist = JSON.parse(Utility.meta("blacklisted-tags") || "[]");
+    const idx = blacklist.indexOf(tag);
+
+    if(idx === -1) {
+      blacklist.push(tag);
+    } else {
+      blacklist.splice(idx, 1);
+    }
+
+    SendQueue.add(function() {
+      $.ajax({
+        method: "POST",
+        url: "/users/update.json",
+        data: {
+          "user[blacklisted_tags]": blacklist.join("\n")
+        },
+        success: function (data) {
+          if(idx === -1) {
+            Utility.notice(`Added tag "${tag}" to blacklist`);
+          } else {
+            Utility.notice(`Removed tag "${tag}" from blacklist`);
+          }
+          $("meta[name=blacklisted-tags]").attr("content", JSON.stringify(blacklist));
+          Blacklist.initialize_all();
+        },
+        error: function (data) {
+          Utility.error("Error:" + data);
+        }
+      });
+    });
+  });
+
+  $(".tag-action-follow").on("click", function(event) {
+    event.preventDefault();
+    const $link = $(event.currentTarget).find("a.follow-button-minor");
+    const tag = $(event.currentTarget).closest(".tag-actions").data("tag");
+    const followed = $link.attr("data-followed") === "true";
+
+    SendQueue.add(function () {
+      $.ajax({
+        type: "PUT",
+        url: `/tags/${tag}/${followed ? "un" : ""}follow.json`,
+        dataType: "json",
+        success: function () {
+          if(followed) {
+            Utility.notice(`Removed follow for "${tag}"`);
+            $link.attr("data-followed", false);
+          } else {
+            Utility.notice(`Added follow for "${tag}"`);
+            $link.attr("data-followed", true);
+          }
+        },
+        error: function (data) {
+          Utility.error("Error:" + data);
+        }
+      });
+    });
+  });
 }
 
 Post.initialize_moderation = function() {

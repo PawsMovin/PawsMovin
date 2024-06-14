@@ -18,6 +18,22 @@ class TagPolicy < ApplicationPolicy
     user.is_janitor?
   end
 
+  def followed?
+    unbanned?
+  end
+
+  def followers?
+    unbanned?
+  end
+
+  def follow?
+    unbanned?
+  end
+
+  def unfollow?
+    unbanned?
+  end
+
   def permitted_attributes
     attr = %i[category reason]
     attr += %i[is_locked] if user.is_admin?

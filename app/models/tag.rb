@@ -8,6 +8,7 @@ class Tag < ApplicationRecord
   has_many :antecedent_implications, -> { active }, class_name: "TagImplication", foreign_key: "antecedent_name", primary_key: "name"
   has_many :consequent_implications, -> { active }, class_name: "TagImplication", foreign_key: "consequent_name", primary_key: "name"
   has_many :versions, class_name: "TagVersion"
+  has_many :followers, class_name: "TagFollower"
 
   validates :name, uniqueness: true, tag_name: true, on: :create
   validates :name, length: { minimum: 1, maximum: 100 }
@@ -355,6 +356,23 @@ class Tag < ApplicationRecord
     end
   end
 
+  module FollowerMethods
+    def follow!
+      return if followers.exists?(user: CurrentUser.user)
+      raise(TagFollower::AliasedTagError) if antecedent_alias.present?
+      last_post = Post.sql_raw_tag_match(name).order(id: :asc).last
+      follower = followers.create(user: CurrentUser.user, last_post: last_post)
+      CurrentUser.user.increment!(:followed_tag_count) unless follower.errors.any?
+      follower
+    end
+
+    def unfollow!
+      return unless followers.exists?(user: CurrentUser.user)
+      CurrentUser.user.decrement!(:followed_tag_count)
+      followers.find_by(user: CurrentUser.user).destroy
+    end
+  end
+
   def category_editable_by_implicit?(user)
     return false unless user.is_janitor?
     return false if is_locked?
@@ -381,8 +399,9 @@ class Tag < ApplicationRecord
 
   include CountMethods
   include CategoryMethods
-  extend NameMethods
   include RelationMethods
+  include FollowerMethods
+  extend NameMethods
   extend SearchMethods
 
   def serializable_hash(*)

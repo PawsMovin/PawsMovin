@@ -11,6 +11,12 @@ class User < ApplicationRecord
     end
   end
 
+  class PrivacyModeError < PrivilegeError
+    def initialize(msg = "This user has privacy mode enabled")
+      super
+    end
+  end
+
   module Levels
     ANONYMOUS    = 0
     BANNED       = 1
@@ -167,6 +173,8 @@ class User < ApplicationRecord
   has_many :text_versions, -> { order(id: :desc) }, class_name: "UserTextVersion"
   has_many :artists, foreign_key: "linked_user_id"
   has_many :blocks, class_name: "UserBlock"
+  has_many :followed_tags, class_name: "TagFollower"
+  has_many :notifications
 
   belongs_to :avatar, class_name: "Post", optional: true
   accepts_nested_attributes_for :dmail_filter
@@ -699,7 +707,7 @@ class User < ApplicationRecord
           updated_at email last_logged_in_at last_forum_read_at
           recent_tags comment_threshold default_image_size
           favorite_tags blacklisted_tags time_zone per_page
-          custom_style favorite_count
+          custom_style favorite_count followed_tags_list
           api_regen_multiplier api_burst_limit remaining_api_limit
           statement_timeout favorite_limit
           tag_query_limit has_mail?
@@ -949,6 +957,27 @@ class User < ApplicationRecord
     end
   end
 
+  module FollowerMethods
+    def tag_followed?(tag)
+      tag = tag.name if tag.is_a?(Tag)
+      if tag.to_s =~ /\A\d+\z/
+        followed_tags.joins(:tag).exists?(tag: { id: tag })
+      else
+        followed_tags.joins(:tag).exists?(tag: { name: tag })
+      end
+    end
+
+    def followed_tags_list
+      followed_tags.map(&:tag_name)
+    end
+  end
+
+  module NotificationMethods
+    def has_unread_notifications?
+      unread_notification_count > 0
+    end
+  end
+
   include BanMethods
   include NameMethods
   include PasswordMethods
@@ -962,6 +991,8 @@ class User < ApplicationRecord
   include CountMethods
   include BlockMethods
   include LogChanges
+  include FollowerMethods
+  include NotificationMethods
   extend SearchMethods
   extend ThrottleMethods
 
@@ -986,6 +1017,11 @@ class User < ApplicationRecord
   def hide_favorites?
     return false if CurrentUser.is_moderator?
     return true if is_banned?
+    enable_privacy_mode? && CurrentUser.user.id != id
+  end
+
+  def hide_followed_tags?
+    return false if CurrentUser.is_moderator?
     enable_privacy_mode? && CurrentUser.user.id != id
   end
 

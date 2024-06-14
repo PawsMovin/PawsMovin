@@ -14,7 +14,7 @@
   <% end %>
 
   <div class="input">
-    <label class="block" for="user_enable_privacy_mode">Hide Favorites</label>
+    <label class="block" for="user_enable_privacy_mode">Privacy Mode</label>
     <%= select_tag("user[enable_privacy_mode]", options_for_select([["Yes", true], ["No", false]], @user.enable_privacy_mode?)) %>
   </div>
 

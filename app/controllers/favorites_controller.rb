@@ -13,9 +13,7 @@ class FavoritesController < ApplicationController
       @user = User.find(user_id)
       authorize(@user, policy_class: FavoritePolicy)
 
-      if @user.hide_favorites?
-        raise(Favorite::HiddenError)
-      end
+      raise(User::PrivacyModeError) if @user.hide_favorites?
 
       @favorite_set = PostSets::Favorites.new(@user, params[:page], limit: params[:limit])
       respond_with(@favorite_set.posts) do |fmt|

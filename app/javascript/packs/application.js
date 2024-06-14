@@ -41,6 +41,7 @@ export { default as Block } from '../src/javascripts/blocks.js';
 export { default as Comment } from '../src/javascripts/comments.js';
 export { default as DText } from '../src/javascripts/dtext.js';
 export { default as Note } from '../src/javascripts/notes.js';
+export { default as Notification } from '../src/javascripts/notifications.js';
 export { default as Post } from '../src/javascripts/posts.js';
 export { default as PostDeletion } from "../src/javascripts/post_delete.js";
 export { default as PostModeMenu } from '../src/javascripts/post_mode_menu.js';

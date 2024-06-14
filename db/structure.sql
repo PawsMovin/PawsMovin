@@ -1160,6 +1160,40 @@ ALTER SEQUENCE public.notes_id_seq OWNED BY public.notes.id;
 
 
 --
+-- Name: notifications; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.notifications (
+    id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    category integer DEFAULT 0 NOT NULL,
+    data json DEFAULT '{}'::json NOT NULL,
+    is_read boolean DEFAULT false NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: notifications_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.notifications_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: notifications_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.notifications_id_seq OWNED BY public.notifications.id;
+
+
+--
 -- Name: pool_versions; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1978,6 +2012,39 @@ ALTER SEQUENCE public.tag_aliases_id_seq OWNED BY public.tag_aliases.id;
 
 
 --
+-- Name: tag_followers; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.tag_followers (
+    id bigint NOT NULL,
+    tag_id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    last_post_id bigint,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: tag_followers_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.tag_followers_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: tag_followers_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.tag_followers_id_seq OWNED BY public.tag_followers.id;
+
+
+--
 -- Name: tag_implications; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -2100,7 +2167,8 @@ CREATE TABLE public.tags (
     related_tags_updated_at timestamp without time zone,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    is_locked boolean DEFAULT false NOT NULL
+    is_locked boolean DEFAULT false NOT NULL,
+    follower_count integer DEFAULT 0 NOT NULL
 );
 
 
@@ -2523,7 +2591,9 @@ furry -rating:s'::text,
     own_post_replaced_penalize_count integer DEFAULT 0 NOT NULL,
     post_replacement_rejected_count integer DEFAULT 0 NOT NULL,
     ticket_count integer DEFAULT 0 NOT NULL,
-    title character varying
+    title character varying,
+    unread_notification_count integer DEFAULT 0 NOT NULL,
+    followed_tag_count integer DEFAULT 0 NOT NULL
 );
 
 
@@ -2834,6 +2904,13 @@ ALTER TABLE ONLY public.notes ALTER COLUMN id SET DEFAULT nextval('public.notes_
 
 
 --
+-- Name: notifications id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.notifications ALTER COLUMN id SET DEFAULT nextval('public.notifications_id_seq'::regclass);
+
+
+--
 -- Name: pool_versions id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -2978,6 +3055,13 @@ ALTER TABLE ONLY public.staff_notes ALTER COLUMN id SET DEFAULT nextval('public.
 --
 
 ALTER TABLE ONLY public.tag_aliases ALTER COLUMN id SET DEFAULT nextval('public.tag_aliases_id_seq'::regclass);
+
+
+--
+-- Name: tag_followers id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tag_followers ALTER COLUMN id SET DEFAULT nextval('public.tag_followers_id_seq'::regclass);
 
 
 --
@@ -3341,6 +3425,14 @@ ALTER TABLE ONLY public.notes
 
 
 --
+-- Name: notifications notifications_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.notifications
+    ADD CONSTRAINT notifications_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: pool_versions pool_versions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3508,6 +3600,14 @@ ALTER TABLE ONLY public.staff_notes
 
 ALTER TABLE ONLY public.tag_aliases
     ADD CONSTRAINT tag_aliases_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: tag_followers tag_followers_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tag_followers
+    ADD CONSTRAINT tag_followers_pkey PRIMARY KEY (id);
 
 
 --
@@ -4164,6 +4264,13 @@ CREATE INDEX index_notes_on_to_tsvector_english_body ON public.notes USING gin (
 
 
 --
+-- Name: index_notifications_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_notifications_on_user_id ON public.notifications USING btree (user_id);
+
+
+--
 -- Name: index_pool_versions_on_pool_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -4550,6 +4657,27 @@ CREATE INDEX index_tag_aliases_on_post_count ON public.tag_aliases USING btree (
 
 
 --
+-- Name: index_tag_followers_on_last_post_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_tag_followers_on_last_post_id ON public.tag_followers USING btree (last_post_id);
+
+
+--
+-- Name: index_tag_followers_on_tag_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_tag_followers_on_tag_id ON public.tag_followers USING btree (tag_id);
+
+
+--
+-- Name: index_tag_followers_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_tag_followers_on_user_id ON public.tag_followers USING btree (user_id);
+
+
+--
 -- Name: index_tag_implications_on_antecedent_name; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -4859,6 +4987,14 @@ ALTER TABLE ONLY public.staff_audit_logs
 
 
 --
+-- Name: tag_followers fk_rails_0a453c2219; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tag_followers
+    ADD CONSTRAINT fk_rails_0a453c2219 FOREIGN KEY (last_post_id) REFERENCES public.posts(id);
+
+
+--
 -- Name: avoid_posting_versions fk_rails_1d1f54e17a; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -5049,6 +5185,11 @@ ALTER TABLE ONLY public.staff_notes
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20240613223218'),
+('20240612201430'),
+('20240612175355'),
+('20240612044339'),
+('20240612044331'),
 ('20240516010953'),
 ('20240514063636'),
 ('20240513033445'),

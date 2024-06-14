@@ -6,7 +6,7 @@
 #nav {
   display: grid;
   grid-template-columns: 3.75em 1fr;
-  grid-template-areas: "logo main" "logo secondary";
+  grid-template-areas: "logo main" "logo secondary" "tertiary tertiary";
 
   .logo {
     grid-area: logo;
@@ -28,6 +28,10 @@
 
   .secondary {
     grid-area: secondary;
+  }
+
+  .tertiary {
+    grid-area: tertiary;
   }
 }
 
@@ -85,7 +89,7 @@ header#top {
       color: $page-header-sign-in-link-color;
     }
 
-    li.forum-updated a::after {
+    li.unread a::after {
       content: unicode('f111');
       @include FontAwesomeFamily;
       font-weight: 900;
@@ -94,6 +98,24 @@ header#top {
 
       position: absolute;
       top: -3px;
+    }
+  }
+
+  &:not(.notification) {
+    menu.tertiary {
+      display: none;
+    }
+  }
+
+  &.notification {
+    menu.secondary {
+      border-radius: 6px 6px 0 0;
+    }
+
+    menu.tertiary {
+      border-radius: 6px 0 6px 6px;
+      font-size: 1.5em;
+      font-weight: bold;
     }
   }
 }

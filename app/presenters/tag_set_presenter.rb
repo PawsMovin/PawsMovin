@@ -137,6 +137,8 @@ class TagSetPresenter < Presenter
       html += %(<a class="wiki-link" rel="nofollow" href="/wiki_pages/show_or_new?title=#{u(name)}">?</a> )
     end
 
+    html += %(<span class="tag-type">)
+
     if current_query.present?
       html += %(<a rel="nofollow" href="/posts?tags=#{u(current_query)}+#{u(name)}" class="search-inc-tag">+</a> )
       html += %(<a rel="nofollow" href="/posts?tags=#{u(current_query)}+-#{u(name)}" class="search-exl-tag">–</a> )
@@ -158,6 +160,12 @@ class TagSetPresenter < Presenter
     title = "New general tag detected. Check the spelling or populate it now."
 
     html += %(<span data-count='#{count}' class="#{klass}"#{is_underused_tag ? " title='#{title}'" : ''}>#{post_count}</span>)
+    html += %(</span>)
+
+    html += %(<div class="tag-actions" data-tag="#{tag.name}">)
+    html += %(<span class="tag-action-blacklist"><a href="#" class="blacklist-tag-toggle" title="Blacklist Tag"><i class='fas fa-times'></i></a></span>)
+    html += %(<span class="tag-action-follow"><a href="#" class="follow-button-minor" title="Follow Tag" data-followed="#{CurrentUser.user.tag_followed?(tag)}"></a></span>)
+    html += %(</div>)
 
     html += "</li>"
     html

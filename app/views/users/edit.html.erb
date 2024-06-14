@@ -64,7 +64,7 @@
                 hint: "Enables auto-completion on most tag and user entry fields.") %>
 
     <%= f.input(:enable_privacy_mode, as: :select, collection: [%w[No false], %w[Yes true]], include_blank: false,
-    hint: "Prevent showing your favorites to others users (except staff).") %>
+    hint: "Prevent showing your favorites and followed tags to others users (except moderators).") %>
 
     <%= f.input(:description_collapsed_initially, as: :select, collection: [%w[No false], %w[Yes true]], include_blank: false,
     hint: "Don't expand post descriptions on page load.") %>

@@ -1,0 +1,25 @@
+<h1>Tag Followers</h1>
+
+<table class="striped">
+  <thead>
+  <tr>
+    <th>Followed by</th>
+    <th>Other Followed tags</th>
+  </tr>
+  </thead>
+  <tbody>
+  <% @users.each do |user| %>
+    <tr>
+      <td><%= link_to_user(user) %></td>
+      <td><%= link_to(user.followed_tag_count, followed_tags_path(user_id: user.id)) %></td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
+<%= numbered_paginator(@users) %>
+
+<%= render "secondary_links" %>
+
+<% content_for(:page_title) do %>
+  Followers - <%= @tag.name %>
+<% end %>

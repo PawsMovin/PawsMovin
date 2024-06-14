@@ -1,0 +1,39 @@
+<%= render "secondary_links" %>
+
+<% is_self = @user == CurrentUser.user %>
+<h1>Followed Tags<%= ": #{link_to_user(@user)}".html_safe unless is_self %></h1>
+
+<table class="striped" id="followed-tag-list">
+  <thead>
+  <tr>
+    <% if is_self %>
+      <th width="10%">Followed At</th>
+      <th width="10%">Updated At</th>
+      <th>Tag</th>
+      <th width="10%"></th>
+    <% else %>
+      <th>Tag</th>
+    <% end %>
+  </tr>
+  </thead>
+  <tbody>
+  <% @tags.each do |follow| %>
+    <tr data-id="<%= follow.id %>" data-tag-id="<%= follow.tag_id %>">
+      <% if is_self %>
+        <td><%= compact_time(follow.created_at) %></td>
+        <td><%= compact_time(follow.updated_at) %></td>
+        <td><%= link_to(follow.tag_name, posts_path(tags: follow.tag_name)) %></td>
+        <td><%= link_to("Unfollow", unfollow_tag_path(follow.tag), method: :put) %></td>
+      <% else %>
+        <td><%= link_to(follow.tag_name, posts_path(tags: follow.tag_name)) %></td>
+      <% end %>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
+
+<%= numbered_paginator(@tags) %>
+
+<% content_for(:page_title) do %>
+  Followed Tags
+<% end %>

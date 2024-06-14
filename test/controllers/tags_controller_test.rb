@@ -103,6 +103,79 @@ class TagsControllerTest < ActionDispatch::IntegrationTest
       end
     end
 
+    context "follow action" do
+      should "work" do
+        assert_equal(0, @tag.reload.follower_count)
+        put_auth follow_tag_path(@tag), @user
+        assert_redirected_to(tag_path(@tag))
+        assert_equal(1, @tag.reload.follower_count)
+        assert_equal(true, @user.followed_tags.exists?(tag: @tag))
+      end
+
+      should "not allow following aliased tags" do
+        @tag2 = create(:tag)
+        as(@user) do
+          @ta = create(:tag_alias, antecedent_name: @tag.name, consequent_name: @tag2.name)
+          with_inline_jobs { @ta.approve! }
+        end
+        put_auth follow_tag_path(@tag), @user, params: { format: :json }
+        assert_response(400)
+        assert_equal(0, @tag.reload.follower_count)
+        assert_equal(false, @user.followed_tags.exists?(tag: @tag))
+        assert_equal("You cannot follow aliased tags.", response.parsed_body["message"])
+      end
+
+      should "not allow following more than the user's limit" do
+        PawsMovin.config.stubs(:followed_tag_limit).returns(0)
+        put_auth follow_tag_path(@tag), @user, params: { format: :json }
+        assert_response(422)
+        assert_equal(0, @tag.reload.follower_count)
+        assert_equal(false, @user.followed_tags.exists?(tag: @tag))
+        assert_equal("cannot follow more than 0 tags", response.parsed_body.dig("errors", "user").first)
+      end
+    end
+
+    context "unfollow action" do
+      should "work" do
+        as(@user) { @tag.follow! }
+        assert_equal(1, @tag.reload.follower_count)
+        put_auth unfollow_tag_path(@tag), @user
+        assert_redirected_to(tag_path(@tag))
+        assert_equal(0, @tag.reload.follower_count)
+        assert_equal(false, @user.followed_tags.exists?(tag: @tag))
+      end
+    end
+
+    context "followers action" do
+      should "render" do
+        create(:tag_follower, tag: @tag, user: @user)
+        get_auth followers_tag_path(@tag), @user
+        assert_response :success
+      end
+    end
+
+    context "followed action" do
+      should "render" do
+        create(:tag_follower, tag: @tag, user: @user)
+        get_auth followed_tags_path, @user
+        assert_response :success
+      end
+
+      should "render for other users" do
+        @user2 = create(:user)
+        create(:tag_follower, tag: @tag, user: @user2)
+        get_auth followed_tags_path, @user, params: { user_id: @user2.id }
+        assert_response :success
+      end
+
+      should "not render for other users if privacy mode is enabled" do
+        @user2 = create(:user, enable_privacy_mode: true)
+        create(:tag_follower, tag: @tag, user: @user2)
+        get_auth followed_tags_path, @user, params: { user_id: @user2.id }
+        assert_response :forbidden
+      end
+    end
+
     context "meta_search action" do
       should "work" do
         get meta_search_tags_path, params: { name: "long_hair" }

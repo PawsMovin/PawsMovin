@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 module WikiPagesHelper
-  def link_to_wiki_or_new(text, tag = text)
-    link_to(text, show_or_new_wiki_pages_path(title: tag))
+  def link_to_wiki_or_new(text, tag = text, **)
+    link_to(text, show_or_new_wiki_pages_path(title: tag), **)
   end
 
   def multiple_link_to_wiki_or_new(tags)

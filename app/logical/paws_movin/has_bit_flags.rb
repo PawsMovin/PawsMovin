@@ -11,7 +11,8 @@ module PawsMovin
         field = options[:field] || :bit_flags
 
         define_singleton_method("flag_value_for") do |key|
-          return value if key == name
+          value = attributes[key]
+          return value if value
           raise(ArgumentError, "Invalid flag: #{key}")
         end
 

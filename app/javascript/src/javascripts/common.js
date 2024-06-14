@@ -37,11 +37,19 @@ $(function() {
 
   // Account notices
   $("#hide-dmail-notice").on("click.danbooru", function(e) {
-    var $dmail_notice = $("#dmail-notice");
-    $dmail_notice.hide();
-    var dmail_id = $dmail_notice.data("id");
-    Cookie.put("hide_dmail_notice", dmail_id);
     e.preventDefault();
+    const $notice = $("#dmail-notice");
+    $notice.hide();
+    const id = $notice.data("id");
+    Cookie.put("hide_dmail_notice", id);
+  });
+
+  $("#hide-notification-notice").on("click.danbooru", function(e) {
+    e.preventDefault();
+    const $notice = $("#notification-notice");
+    $notice.hide();
+    const id = $notice.data("id");
+    Cookie.put("hide_notification_notice", id);
   });
 
   $("#close-notice-link").on("click.danbooru", function(e) {

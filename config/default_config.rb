@@ -297,6 +297,16 @@ module PawsMovin
       40
     end
 
+    def followed_tag_limit(user)
+      if user.is_staff?
+        1000
+      elsif user.is_trusted?
+        500
+      else
+        100
+      end
+    end
+
     # If the user can request a bulk update request containing a nuke instruction
     def can_bur_nuke?(user)
       user.is_admin?
@@ -773,6 +783,10 @@ module PawsMovin
       else
         0
       end
+    end
+
+    def alias_category_change_cutoff
+      10_000
     end
 
     include Users

@@ -43,8 +43,10 @@
   <ul>
     <li><h1>Tags</h1></li>
     <%= li_link_to("Listing", tags_path) %>
+    <%= li_link_to_if(policy(Tag).followed?, "Followed", followed_tags_path) %>
     <%= li_link_to("Aliases", tag_aliases_path) %>
     <%= li_link_to("Implications", tag_implications_path) %>
+    <%= li_link_to("Most Followed", followed_tags_popular_index_path) %>
     <%= li_link_to("Cheat Sheet", help_page_path(id: "cheatsheet")) %>
     <%= li_link_to("Help", help_page_path(id: "tags")) %>
   </ul>
@@ -90,6 +92,7 @@
       <%= li_link_to("Profile", user_path(CurrentUser.user)) %>
       <%= li_link_to("Settings", edit_users_path) %>
       <%= li_link_to("Refresh Counts", new_users_count_fixes_path) %>
+      <%= li_link_to("Followed Tags", followed_tags_path) %>
     <% end %>
     <%= li_link_to("Feedback", user_feedbacks_path) %>
     <%= li_link_to("Terms of Service", terms_of_service_path) %>

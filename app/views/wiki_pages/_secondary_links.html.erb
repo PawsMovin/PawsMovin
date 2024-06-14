@@ -14,6 +14,8 @@
 
       <%= subnav_link_to_if(policy(@wiki_page.tag).update?, "Edit Tag Type", edit_tag_path(@wiki_page.tag)) %>
       <%= subnav_link_to_if(policy(@wiki_page.tag).correct?, "Fix Tag Count", correct_tag_path(@wiki_page.tag), method: :put) %>
+      <%= subnav_link_to_if(policy(@wiki_page.tag).followers?, "Followers#{" (#{@wiki_page.tag.follower_count})" if @wiki_page.tag.follower_count > 0}", followers_tag_path(@wiki_page.tag)) %>
+      <li>|</li>
     <% end %>
 
     <% if @wiki_page.persisted? %>

@@ -51,6 +51,7 @@ Rails.application.routes.draw do
     collection do
       get :uploads
       get :views
+      get :followed_tags
       get :searches
       get "/searches/missed", to: "popular#missed_searches", as: "missed_searches"
     end
@@ -194,6 +195,12 @@ Rails.application.routes.draw do
       put :revert
     end
   end
+  resources :notifications, only: %i[index show destroy] do
+    member do
+      put :mark_as_read
+    end
+    put :mark_all_as_read, on: :collection
+  end
   resources :pools do
     resource :order, only: %i[edit], controller: "pools/orders"
     member do
@@ -302,6 +309,7 @@ Rails.application.routes.draw do
     collection do
       get :preview
       get :meta_search
+      get :followed
       resource :related, controller: "tags/related", as: "related_tags", only: %i[show] do
         collection do
           get :bulk
@@ -316,7 +324,12 @@ Rails.application.routes.draw do
         put :approve, on: :member
       end
     end
-    put :correct, on: :member
+    member do
+      get :followers
+      put :follow
+      put :unfollow
+      put :correct
+    end
   end
   resources :uploads, only: %i[index show new create]
   resources :users, except: %i[edit update] do

@@ -32,6 +32,11 @@ class PopularController < ApplicationController
     respond_with(@ranking, &format_json(@ranking))
   end
 
+  def followed_tags
+    @tags = Tag.order(follower_count: :desc, name: :asc).paginate(params[:page], limit: limit)
+    respond_with(@tags)
+  end
+
   private
 
   def parse_date(params, scales: %w[day week month])

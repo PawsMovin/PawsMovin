@@ -185,9 +185,7 @@ class TagQuery
           favuser = User.find_by_normalized_name_or_id(g2)
 
           next 0 unless favuser
-          if favuser.hide_favorites?
-            raise(Favorite::HiddenError)
-          end
+          raise(User::PrivacyModeError) if favuser.hide_favorites?
 
           favuser.id
         end
