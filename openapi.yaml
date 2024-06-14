@@ -190,6 +190,7 @@ x-constants:
     - pending
   - &notification-categories
     - new_post
+    - dmail
 
 components:
   securitySchemes:
@@ -1514,6 +1515,10 @@ components:
           type: string
           description: |
             Valid for: `new_post`
+        dmail_id:
+          type: number
+          description: |
+            Valid for: `dmail`
     Pool:
       type: object
       required:
@@ -2805,6 +2810,7 @@ components:
         - created_at
         - updated_at
         - is_locked
+        - follower_count
       properties:
         id:
           type: number
@@ -2829,8 +2835,9 @@ components:
           type: string
           format: date-time
         is_locked:
-          type: string
-          format: date-time
+          type: boolean
+        follower_count
+          type: number
     TagAlias:
       type: object
       required:
@@ -7406,6 +7413,23 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Post"
+  /popular/views.json:
+    get:
+      summary: List Most Followed Tags
+      tags:
+        - Popular
+      parameters:
+        - $ref: "#/components/parameters/limit"
+        - $ref: "#/components/parameters/page"
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Tag"
   /popular/searches.json:
     get:
       summary: List Most Used Searches

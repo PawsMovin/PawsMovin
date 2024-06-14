@@ -8,7 +8,7 @@ class UsersController < ApplicationController
   def index
     if params[:name].present?
       @user = User.find_by!(name: params[:name])
-      redirect_to(user_path(@user))
+      redirect_to(user_path(@user, n: params[:n]))
     else
       @users = User.search(search_params(User)).paginate(params[:page], limit: params[:limit], search_count: params[:search])
       respond_with(@users) do |format|

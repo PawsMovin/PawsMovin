@@ -186,6 +186,48 @@ class DmailTest < ActiveSupport::TestCase
       end
     end
 
+    context "marking as read" do
+      setup do
+        @recipient = create(:user)
+      end
+
+      should "update the recipient's unread dmail count" do
+        dmail = create(:dmail, owner: @recipient, to: @recipient, from: @user)
+        assert_equal(1, @recipient.reload.unread_dmail_count)
+        dmail.mark_as_read!
+        assert_equal(0, @recipient.reload.unread_dmail_count)
+      end
+
+      should "mark all related notifications as read" do
+        dmail = create(:dmail, owner: @recipient, to: @recipient, from: @user)
+        assert_equal(1, @recipient.notifications.unread.count)
+        dmail.mark_as_read!
+        assert_equal(0, @recipient.notifications.unread.count)
+      end
+    end
+
+    context "marking as unread" do
+      setup do
+        @recipient = create(:user)
+      end
+
+      should "update the recipient's unread dmail count" do
+        dmail = create(:dmail, owner: @recipient, to: @recipient, from: @user)
+        dmail.mark_as_read!
+        assert_equal(0, @recipient.reload.unread_dmail_count)
+        dmail.mark_as_unread!
+        assert_equal(1, @recipient.reload.unread_dmail_count)
+      end
+
+      should "mark all related notifications as unread" do
+        dmail = create(:dmail, owner: @recipient, to: @recipient, from: @user)
+        dmail.mark_as_read!
+        assert_equal(0, @recipient.notifications.unread.count)
+        dmail.mark_as_unread!
+        assert_equal(1, @recipient.notifications.unread.count)
+      end
+    end
+
     context "during validation" do
       subject { build(:dmail) }
 

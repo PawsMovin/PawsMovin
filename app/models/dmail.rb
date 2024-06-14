@@ -212,11 +212,13 @@ class Dmail < ApplicationRecord
   def mark_as_read!
     update_column(:is_read, true)
     owner.update(unread_dmail_count: owner.dmails.unread.count)
+    owner.notifications.unread.where(category: "dmail").and(owner.notifications.where("data->>'dmail_id' = ?", id.to_s)).each(&:mark_as_read!)
   end
 
   def mark_as_unread!
     update_column(:is_read, false)
     owner.update(unread_dmail_count: owner.dmails.unread.count)
+    owner.notifications.read.where(category: "dmail").and(owner.notifications.where("data->>'dmail_id' = ?", id.to_s)).each(&:mark_as_unread!)
   end
 
   def is_automated?
@@ -228,14 +230,15 @@ class Dmail < ApplicationRecord
   end
 
   def auto_read_if_filtered
-    if owner_id != CurrentUser.id && to.dmail_filter.try(:filtered?, self)
+    if owner_id != from_id && to.dmail_filter.try(:filtered?, self)
       self.is_read = true
     end
   end
 
   def update_recipient
-    if owner_id != CurrentUser.user.id && !is_deleted? && !is_read?
+    if owner_id != from_id && !is_deleted? && !is_read?
       to.update(unread_dmail_count: to.dmails.unread.count)
+      to.notifications.create!(category: "dmail", data: { dmail_id: id })
     end
   end
 

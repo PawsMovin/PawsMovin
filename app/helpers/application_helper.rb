@@ -177,7 +177,7 @@ module ApplicationHelper
 
   def unread_dmails(user)
     if user.has_mail?
-      " (#{user.unread_dmail_count})"
+      "(#{user.unread_dmail_count})"
     else
       ""
     end
@@ -185,7 +185,7 @@ module ApplicationHelper
 
   def unread_notifications(user)
     if user.has_unread_notifications?
-      " (#{user.unread_notification_count})"
+      "(#{user.unread_notification_count})"
     else
       ""
     end

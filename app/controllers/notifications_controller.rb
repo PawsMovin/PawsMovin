@@ -33,7 +33,7 @@ class NotificationsController < ApplicationController
 
   def mark_as_read
     @notification = authorize(Notification.find(params[:id]))
-    @notification.update!(is_read: true)
+    @notification.mark_as_read!
     notice("Notification marked as read")
     respond_with(@notification) do |format|
       format.html { redirect_to(notifications_path) }
@@ -42,7 +42,7 @@ class NotificationsController < ApplicationController
 
   def mark_all_as_read
     authorize(Notification).for_user(CurrentUser.user.id).update_all(is_read: true)
-    CurrentUser.user.update!(unread_notification_count: 0)
+    CurrentUser.user.update!(unread_notification_count: 0, unread_dmail_count: 0)
     notice("Marked all notifications as read")
     respond_to do |format|
       format.html { redirect_to(notifications_path) }

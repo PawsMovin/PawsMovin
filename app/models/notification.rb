@@ -2,8 +2,8 @@
 
 class Notification < ApplicationRecord
   belongs_to :user
-  enum :category, %i[default new_post]
-  store_accessor :data, %i[post_id tag_name]
+  enum :category, %i[default new_post dmail]
+  store_accessor :data, %i[post_id tag_name dmail_id]
   after_commit :update_unread_count
 
   def h
@@ -14,6 +14,13 @@ class Notification < ApplicationRecord
     case category
     when "new_post"
       "New post in tag [[#{tag_name}]]: \"post ##{post_id}\":#{view_link}"
+    when "dmail"
+      dmail = Dmail.find_by(id: dmail_id)
+      if dmail.present?
+        "@#{dmail.from.name} sent you a dmail titled \"#{dmail.title}\""
+      else
+        "you received a dmail"
+      end
     else
       "Unknown notification category: #{category}"
     end
@@ -23,6 +30,8 @@ class Notification < ApplicationRecord
     case category
     when "new_post"
       h.post_path(post_id, n: id)
+    when "dmail"
+      h.dmail_path(dmail_id, n: id)
     else
       "#"
     end
@@ -51,5 +60,19 @@ class Notification < ApplicationRecord
 
   def update_unread_count
     user.update!(unread_notification_count: user.notifications.unread.count)
+  end
+
+  def mark_as_read!
+    update_column(:is_read, true)
+    update_unread_count
+
+    if dmail_id.present?
+      Dmail.find_by(id: dmail_id, is_read: false).try(:mark_as_read!)
+    end
+  end
+
+  def mark_as_unread!
+    update_column(:is_read, false)
+    update_unread_count
   end
 end

@@ -9,7 +9,7 @@ class DmailsControllerTest < ActionDispatch::IntegrationTest
       @user2 = create(:user)
       @mod = create(:moderator_user)
       as(@user) do
-        @dmail = create(:dmail, owner: @user)
+        @dmail = create(:dmail, owner: @user, to: @user, from: @user2)
       end
     end
 
@@ -67,18 +67,21 @@ class DmailsControllerTest < ActionDispatch::IntegrationTest
         get_auth dmail_path(@dmail), @dmail.owner
         assert_response :success
         assert_predicate @dmail.reload, :is_read?
+        assert_predicate @dmail.owner.notifications.last, :is_read?
       end
 
       should "not mark the dmail as read for json requests" do
         get_auth dmail_path(@dmail), @dmail.owner, params: { format: :json }
         assert_response :success
         assert_not_predicate @dmail.reload, :is_read?
+        assert_not_predicate @dmail.owner.notifications.last, :is_read?
       end
 
       should "not mark the dmail as read when shown to users that don't own it" do
         get_auth dmail_path(@dmail, key: @dmail.key), @mod
         assert_response :success
         assert_not_predicate @dmail.reload, :is_read?
+        assert_not_predicate @dmail.owner.notifications.last, :is_read?
       end
 
       should "not show dmails not owned by the current user" do
@@ -102,6 +105,7 @@ class DmailsControllerTest < ActionDispatch::IntegrationTest
         put_auth mark_as_read_dmail_path(@dmail), @dmail.owner, params: { format: :json }
         assert_response :success
         assert_predicate @dmail.reload, :is_read?
+        assert_predicate @dmail.owner.notifications.last, :is_read?
       end
     end
 
@@ -110,13 +114,18 @@ class DmailsControllerTest < ActionDispatch::IntegrationTest
         @dmail.mark_as_read!
         assert_equal 0, @dmail.owner.reload.unread_dmail_count
         assert_not_predicate @dmail.owner, :has_mail?
+        assert_equal 0, @dmail.owner.reload.unread_notification_count
+        assert_not_predicate @dmail.owner, :has_unread_notifications?
 
         put_auth mark_as_unread_dmail_path(@dmail), @dmail.owner, params: { format: :json }
         assert_response :success
         assert_not_predicate @dmail.reload, :is_read?
+        assert_not_predicate @dmail.owner.notifications.last, :is_read?
 
         assert_equal 1, @dmail.owner.reload.unread_dmail_count
         assert_predicate @dmail.owner, :has_mail?
+        assert_equal 1, @dmail.owner.reload.unread_notification_count
+        assert_predicate @dmail.owner, :has_unread_notifications?
       end
     end
 

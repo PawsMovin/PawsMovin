@@ -42,10 +42,6 @@
       <%= render "users/ban_notice" %>
     <% end %>
 
-    <% if CurrentUser.user.has_mail? && CurrentUser.user.dmails.unread.first.present? && (cookies[:hide_dmail_notice].blank? || cookies[:hide_dmail_notice].to_i < CurrentUser.dmails.unread.first.id) %>
-      <%= render "users/dmail_notice" %>
-    <% end %>
-
     <% if CurrentUser.user.has_unread_notifications? && CurrentUser.user.notifications.unread.first.present? && (cookies[:hide_notification_notice].blank? || cookies[:hide_notification_notice].to_i < CurrentUser.notifications.unread.first.id) %>
       <%= render "notifications/notice" %>
     <% end %>
