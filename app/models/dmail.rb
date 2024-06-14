@@ -200,7 +200,7 @@ class Dmail < ApplicationRecord
   end
 
   def quoted_body
-    "[quote]\n#{from.pretty_name} said:\n\n#{body}\n[/quote]\n\n"
+    "[quote]\n@#{from.pretty_name} said:\n\n#{body}\n[/quote]\n\n"
   end
 
   def send_email
@@ -238,7 +238,7 @@ class Dmail < ApplicationRecord
   def update_recipient
     if owner_id != from_id && !is_deleted? && !is_read?
       to.update(unread_dmail_count: to.dmails.unread.count)
-      to.notifications.create!(category: "dmail", data: { dmail_id: id })
+      to.notifications.create!(category: "dmail", data: { user_id: from_id, dmail_id: id, dmail_title: title })
     end
   end
 

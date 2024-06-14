@@ -407,7 +407,8 @@ CREATE TABLE public.comments (
     is_hidden boolean DEFAULT false NOT NULL,
     is_sticky boolean DEFAULT false NOT NULL,
     warning_type integer,
-    warning_user_id integer
+    warning_user_id integer,
+    notified_mentions integer[] DEFAULT '{}'::integer[] NOT NULL
 );
 
 
@@ -766,7 +767,8 @@ CREATE TABLE public.forum_posts (
     warning_type integer,
     warning_user_id integer,
     tag_change_request_id bigint,
-    tag_change_request_type character varying
+    tag_change_request_type character varying,
+    notified_mentions integer[] DEFAULT '{}'::integer[] NOT NULL
 );
 
 
@@ -2373,7 +2375,8 @@ CREATE TABLE public.user_blocks (
     hide_forum_posts boolean DEFAULT false NOT NULL,
     disable_messages boolean DEFAULT false NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    updated_at timestamp(6) without time zone NOT NULL,
+    suppress_mentions boolean DEFAULT false NOT NULL
 );
 
 
@@ -5185,6 +5188,8 @@ ALTER TABLE ONLY public.staff_notes
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20240614185647'),
+('20240614154755'),
 ('20240613223218'),
 ('20240612201430'),
 ('20240612175355'),

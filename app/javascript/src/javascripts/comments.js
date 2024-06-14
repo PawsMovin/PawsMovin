@@ -96,7 +96,7 @@ Comment.reply = function (event) {
     accept: 'text/javascript'
   }).done(function (data) {
     let stripped_body = data.body.replace(/\[quote\](?:.|\n|\r)+?\[\/quote\][\n\r]*/gm, "");
-    stripped_body = `[quote]"${parent.data('creator')}":/users/${parent.data('creator-id')} said:
+    stripped_body = `[quote]@${parent.data('creator')} said:
 ${stripped_body}
 [/quote]
 

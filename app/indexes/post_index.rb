@@ -7,7 +7,7 @@ module PostIndex
         index: {
           number_of_shards:   5,
           number_of_replicas: 1,
-          max_result_window:  250_000,
+          max_result_window:  500_000,
         },
       },
       mappings: {

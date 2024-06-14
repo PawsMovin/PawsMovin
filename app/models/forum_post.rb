@@ -3,6 +3,7 @@
 class ForumPost < ApplicationRecord
   include UserWarnable
   simple_versioning
+  mentionable
   attr_readonly :topic_id
   belongs_to_creator counter_cache: "forum_post_count"
   belongs_to_updater
@@ -38,6 +39,20 @@ class ForumPost < ApplicationRecord
   end
 
   attr_accessor :bypass_limits
+
+  module ApiMethods
+    def hidden_attributes
+      super + %i[notified_mentions]
+    end
+
+    def mentions
+      notified_mentions.map { |id| { id: id, name: User.id_to_name(id) } }
+    end
+
+    def method_attributes
+      super + %i[mentions creator_name updater_name]
+    end
+  end
 
   module SearchMethods
     def topic_title_matches(title)
@@ -92,6 +107,7 @@ class ForumPost < ApplicationRecord
     end
   end
 
+  include ApiMethods
   extend SearchMethods
 
   def votable?

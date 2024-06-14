@@ -486,6 +486,7 @@ components:
         - is_sticky
         - warning_type
         - warning_user_id
+        - mentions
         - creator_name
         - updater_name
       properties:
@@ -522,6 +523,18 @@ components:
             - ban
         warning_user_id:
           type: ["number", "null"]
+        mentions:
+          type: array
+          items:
+            type: object
+            required:
+              - id
+              - name
+            properties:
+              id:
+                type: number
+              name:
+                type: string
         creator_name:
           type: string
         updater_name:
@@ -857,6 +870,9 @@ components:
         - warning_user_id
         - tag_change_request_id
         - tag_change_request_type
+        - mentions
+        - creator_name
+        - creator_id
       properties:
         id:
           type: number
@@ -892,6 +908,22 @@ components:
             - BulkUpdateRequest
             - TagAlias
             - TagImplication
+        mentions:
+          type: array
+          items:
+            type: object
+            required:
+              - id
+              - name
+            properties:
+              id:
+                type: number
+              name:
+                type: string
+        creator_name:
+          type: string
+        updater_name:
+          type: string
     ForumPostVote:
       allOf:
         - $ref: "#/components/schemas/UserVote"
@@ -2836,7 +2868,7 @@ components:
           format: date-time
         is_locked:
           type: boolean
-        follower_count
+        follower_count:
           type: number
     TagAlias:
       type: object
@@ -3182,6 +3214,7 @@ components:
         - hide_forum_topics
         - hide_forum_posts
         - disable_messages
+        - suppress_mentions
         - created_at
         - updated_at
       properties:
@@ -3200,6 +3233,8 @@ components:
         hide_forum_posts:
           type: boolean
         disable_messages:
+          type: boolean
+        suppress_mentions:
           type: boolean
         created_at:
           type: string
@@ -11827,6 +11862,8 @@ paths:
                   type: boolean
                 disable_messages:
                   type: boolean
+                suppress_mentions:
+                  type: boolean
       responses:
         201:
           description: Success
@@ -11876,6 +11913,8 @@ paths:
                 hide_forum_posts:
                   type: boolean
                 disable_messages:
+                  type: boolean
+                suppress_mentions:
                   type: boolean
       responses:
         204:

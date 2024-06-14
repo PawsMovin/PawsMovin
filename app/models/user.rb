@@ -925,6 +925,10 @@ class User < ApplicationRecord
     def is_blocking_messages_from?(target)
       is_blocking?(target) && block_for(target).disable_messages?
     end
+
+    def is_suppressing_mentions_from?(target)
+      is_blocking?(target) && block_for(target).suppress_mentions?
+    end
   end
 
   module LogChanges
@@ -959,6 +963,7 @@ class User < ApplicationRecord
 
   module FollowerMethods
     def tag_followed?(tag)
+      return false # TODO: revert
       tag = tag.name if tag.is_a?(Tag)
       if tag.to_s =~ /\A\d+\z/
         followed_tags.joins(:tag).exists?(tag: { id: tag })

@@ -2,8 +2,9 @@
 
 class Notification < ApplicationRecord
   belongs_to :user
-  enum :category, %i[default new_post dmail]
-  store_accessor :data, %i[post_id tag_name dmail_id]
+  enum :category, %i[default new_post dmail mention]
+  store_accessor :data, %i[post_id tag_name dmail_id dmail_title mention_id mention_type topic_id topic_title]
+  store_accessor :data, %i[user_id], prefix: true
   after_commit :update_unread_count
 
   def h
@@ -13,14 +14,18 @@ class Notification < ApplicationRecord
   def message
     case category
     when "new_post"
-      "New post in tag [[#{tag_name}]]: \"post ##{post_id}\":#{view_link}"
+      "New post in tag [[#{tag_name}]]: post ##{post_id}"
     when "dmail"
-      dmail = Dmail.find_by(id: dmail_id)
-      if dmail.present?
-        "@#{dmail.from.name} sent you a dmail titled \"#{dmail.title}\""
-      else
-        "you received a dmail"
+      "@#{User.id_to_name(data_user_id)} sent you a dmail titled \"#{dmail_title}\""
+    when "mention"
+      base = "@#{User.id_to_name(data_user_id)} mentioned you in #{mention_type.humanize} ##{mention_id}"
+      case mention_type
+      when "Comment"
+        base += " on post ##{post_id}"
+      when "ForumPost"
+        base += " in topic ##{topic_id} titled \"#{topic_title}\""
       end
+      base
     else
       "Unknown notification category: #{category}"
     end
@@ -32,6 +37,13 @@ class Notification < ApplicationRecord
       h.post_path(post_id, n: id)
     when "dmail"
       h.dmail_path(dmail_id, n: id)
+    when "mention"
+      case mention_type
+      when "Comment"
+        h.post_path(post_id, anchor: "comment-#{mention_id}", n: id)
+      when "ForumPost"
+        h.forum_topic_path(topic_id, anchor: "forum_post_#{mention_id}", n: id)
+      end
     else
       "#"
     end

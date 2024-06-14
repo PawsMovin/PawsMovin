@@ -4,6 +4,7 @@ class Comment < ApplicationRecord
   RECENT_COUNT = 6
   include UserWarnable
   simple_versioning
+  mentionable
   belongs_to_creator counter_cache: "comment_count"
   belongs_to_updater
   validate :validate_post_exists, on: :create
@@ -29,6 +30,20 @@ class Comment < ApplicationRecord
   belongs_to :post, counter_cache: :comment_count
   belongs_to :warning_user, class_name: "User", optional: true
   has_many :votes, class_name: "CommentVote", dependent: :destroy
+
+  module ApiMethods
+    def hidden_attributes
+      super + %i[notified_mentions]
+    end
+
+    def mentions
+      notified_mentions.map { |id| { id: id, name: User.id_to_name(id) } }
+    end
+
+    def method_attributes
+      super + %i[mentions creator_name updater_name]
+    end
+  end
 
   module SearchMethods
     def recent
@@ -117,6 +132,7 @@ class Comment < ApplicationRecord
     end
   end
 
+  include ApiMethods
   extend SearchMethods
 
   def validate_post_exists
@@ -200,10 +216,6 @@ class Comment < ApplicationRecord
   def should_see?(user)
     return user.show_hidden_comments? if creator_id == user.id && is_hidden?
     visible_to?(user)
-  end
-
-  def method_attributes
-    super + %i[creator_name updater_name]
   end
 
   def hide!

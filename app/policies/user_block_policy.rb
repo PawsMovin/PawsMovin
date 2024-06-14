@@ -23,7 +23,7 @@ class UserBlockPolicy < ApplicationPolicy
   end
 
   def permitted_attributes
-    %i[hide_uploads hide_comments hide_forum_topics hide_forum_posts disable_messages]
+    %i[hide_uploads hide_comments hide_forum_topics hide_forum_posts disable_messages suppress_mentions]
   end
 
   def permitted_attributes_for_create
